@@ -4,15 +4,22 @@ namespace Lambda.Host;
 
 public sealed class LambdaApplication : IHost, IAsyncDisposable
 {
-    public void Dispose() => throw new NotImplementedException();
+    private readonly IHost _host;
 
-    public Task StartAsync(CancellationToken cancellationToken = new()) =>
-        throw new NotImplementedException();
+    public LambdaApplication(IHost host)
+    {
+        _host = host ?? throw new ArgumentNullException(nameof(host));
+    }
 
-    public Task StopAsync(CancellationToken cancellationToken = new()) =>
-        throw new NotImplementedException();
+    public void Dispose() => _host.Dispose();
 
-    public IServiceProvider Services { get; }
+    public Task StartAsync(CancellationToken cancellationToken = default) =>
+        _host.StartAsync(cancellationToken);
 
-    public ValueTask DisposeAsync() => throw new NotImplementedException();
+    public Task StopAsync(CancellationToken cancellationToken = default) =>
+        _host.StopAsync(cancellationToken);
+
+    public IServiceProvider Services => _host.Services;
+
+    public ValueTask DisposeAsync() => _host.DisposeAsync();
 }
