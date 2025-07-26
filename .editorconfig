@@ -5,3 +5,6 @@ max_line_length = 100
 
 [*.cs]
 indent_size = 4
+
+[*.xml]
+indent_size = 4

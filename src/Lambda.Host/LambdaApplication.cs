@@ -5,11 +5,12 @@ namespace Lambda.Host;
 public sealed class LambdaApplication : IHost, IAsyncDisposable
 {
     private readonly IHost _host;
+    private Delegate _handler;
 
-    public LambdaApplication(IHost host)
-    {
+    public LambdaApplication(IHost host) =>
         _host = host ?? throw new ArgumentNullException(nameof(host));
-    }
+
+    public ValueTask DisposeAsync() => ((IAsyncDisposable)_host).DisposeAsync();
 
     public void Dispose() => _host.Dispose();
 
@@ -21,5 +22,6 @@ public sealed class LambdaApplication : IHost, IAsyncDisposable
 
     public IServiceProvider Services => _host.Services;
 
-    public ValueTask DisposeAsync() => ((IAsyncDisposable)_host).DisposeAsync();
+    public void MapHandler(Delegate handler) =>
+        _handler = handler ?? throw new ArgumentNullException(nameof(handler));
 }

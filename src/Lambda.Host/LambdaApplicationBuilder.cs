@@ -10,20 +10,13 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
 {
     private readonly HostApplicationBuilder _hostBuilder;
 
-    public LambdaApplicationBuilder()
-    {
-        _hostBuilder = new HostApplicationBuilder();
-    }
+    public LambdaApplicationBuilder() => _hostBuilder = new HostApplicationBuilder();
 
-    public LambdaApplicationBuilder(string[] args)
-    {
+    public LambdaApplicationBuilder(string[] args) =>
         _hostBuilder = new HostApplicationBuilder(args);
-    }
 
-    public LambdaApplicationBuilder(HostApplicationBuilderSettings settings)
-    {
+    public LambdaApplicationBuilder(HostApplicationBuilderSettings settings) =>
         _hostBuilder = new HostApplicationBuilder(settings);
-    }
 
     public void ConfigureContainer<TContainerBuilder>(
         IServiceProviderFactory<TContainerBuilder> factory,
@@ -31,19 +24,20 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
     )
         where TContainerBuilder : notnull => _hostBuilder.ConfigureContainer(factory, configure);
 
-    public LambdaApplication Build()
-    {
-        var host = _hostBuilder.Build();
-        return new LambdaApplication(host);
-    }
-
     public IDictionary<object, object> Properties =>
         ((IHostApplicationBuilder)_hostBuilder).Properties;
+
     public IConfigurationManager Configuration => _hostBuilder.Configuration;
     public IHostEnvironment Environment => _hostBuilder.Environment;
     public ILoggingBuilder Logging => _hostBuilder.Logging;
     public IMetricsBuilder Metrics => _hostBuilder.Metrics;
     public IServiceCollection Services => _hostBuilder.Services;
+
+    public LambdaApplication Build()
+    {
+        var host = _hostBuilder.Build();
+        return new LambdaApplication(host);
+    }
 
     public static LambdaApplicationBuilder CreateBuilder() => new();
 
