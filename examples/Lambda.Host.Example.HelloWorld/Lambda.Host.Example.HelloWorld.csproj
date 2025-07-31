@@ -11,6 +11,8 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <!-- Generate ready to run images during publishing to improve cold start time. -->
     <PublishReadyToRun>true</PublishReadyToRun>
+    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+    <CompilerGeneratedFilesOutputPath>obj/Generated</CompilerGeneratedFilesOutputPath>
   </PropertyGroup>
 
   <ItemGroup>
@@ -21,6 +23,18 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\src\Lambda.Host\Lambda.Host.csproj"/>
+    <ProjectReference Include="..\..\src\Lambda.Host.SourceGenerators\Lambda.Host.SourceGenerators.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="false"/>
   </ItemGroup>
+
+  <ItemGroup>
+    <Compile Include="obj/Generated/**/*.g.cs" Condition="'$(DesignTimeBuild)' == 'true'" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="obj\Generated\**\" />
+  </ItemGroup>
+  
 
 </Project>

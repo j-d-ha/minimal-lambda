@@ -4,6 +4,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lambda.Host.Example.HelloWo
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lambda.Host", "src\Lambda.Host\Lambda.Host.csproj", "{0FBC7AD9-7BE7-4832-9DF7-03367831B981}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lambda.Host.SourceGenerators", "src\Lambda.Host.SourceGenerators\Lambda.Host.SourceGenerators.csproj", "{4E5847B4-AF98-4F08-A0C4-54039D166AA4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -18,5 +20,9 @@ Global
 		{0FBC7AD9-7BE7-4832-9DF7-03367831B981}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0FBC7AD9-7BE7-4832-9DF7-03367831B981}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0FBC7AD9-7BE7-4832-9DF7-03367831B981}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4E5847B4-AF98-4F08-A0C4-54039D166AA4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4E5847B4-AF98-4F08-A0C4-54039D166AA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4E5847B4-AF98-4F08-A0C4-54039D166AA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4E5847B4-AF98-4F08-A0C4-54039D166AA4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

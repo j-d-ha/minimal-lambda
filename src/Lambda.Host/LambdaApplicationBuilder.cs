@@ -1,3 +1,4 @@
+using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.Metrics;
@@ -35,7 +36,28 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
 
     public LambdaApplication Build()
     {
+        var hostedServiceTypes = Assembly
+            .GetCallingAssembly()
+            .GetTypes()
+            .Where(t => t.IsClass && !t.IsAbstract && typeof(IHostedService).IsAssignableFrom(t))
+            .ToArray();
+
+        if (!hostedServiceTypes.Any())
+            throw new InvalidOperationException("No hosted services found.");
+
+        foreach (var serviceType in hostedServiceTypes)
+        {
+            Services.AddSingleton(serviceType);
+
+            Services.AddSingleton<IHostedService>(serviceProvider =>
+                (IHostedService)serviceProvider.GetRequiredService(serviceType)
+            );
+        }
+
+        Services.AddSingleton<DelegateHolder>();
+
         var host = _hostBuilder.Build();
+
         return new LambdaApplication(host);
     }
 
