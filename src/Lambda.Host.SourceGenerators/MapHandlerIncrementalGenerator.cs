@@ -6,16 +6,18 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 namespace Lambda.Host.SourceGenerators;
 
 [Generator]
-public class MapHandlerLambdaAnalyzer : IIncrementalGenerator
+public class MapHandlerIncrementalGenerator : IIncrementalGenerator
 {
-    private const string LambdaContextType = "Amazon.Lambda.Core.ILambdaContext";
-    private const string RequestAttribute = "Lambda.Host.RequestAttribute";
+    private const string LambdaContextType = "global::Amazon.Lambda.Core.ILambdaContext";
+    private const string RequestAttribute = "global::Lambda.Host.RequestAttribute";
     private const string VoidType = "void";
+    private const string TaskType = "global::System.Threading.Tasks.Task";
 
     private const string KeyedServiceAttribute =
         "Microsoft.Extensions.DependencyInjection.FromKeyedServicesAttribute";
 
-    private const string TaskType = "System.Threading.Tasks.Task";
+    private const string LambdaApplicationClassName = "LambdaApplication";
+    private const string MapHandlerMethodName = "MapHandler";
 
     private const string LambdaStartupServiceTemplateFile =
         "Templates/LambdaStartupService.scriban";
@@ -44,7 +46,7 @@ public class MapHandlerLambdaAnalyzer : IIncrementalGenerator
             return false;
 
         return invocation.Expression
-            is MemberAccessExpressionSyntax { Name.Identifier.ValueText: "MapHandler" };
+            is MemberAccessExpressionSyntax { Name.Identifier.ValueText: MapHandlerMethodName };
     }
 
     // Analyze the lambda expression passed to MapHandler
@@ -59,7 +61,7 @@ public class MapHandlerLambdaAnalyzer : IIncrementalGenerator
             context.SemanticModel.GetSymbolInfo(invocationExpr).Symbol as IMethodSymbol;
 
         // Check if it's from LambdaApplication
-        if (methodSymbol?.ContainingType?.Name != "LambdaApplication")
+        if (methodSymbol?.ContainingType?.Name != LambdaApplicationClassName)
             return null;
 
         // // commented out as we need to be able to handle type casts which will have two arguments
@@ -68,20 +70,26 @@ public class MapHandlerLambdaAnalyzer : IIncrementalGenerator
 
         var firstArgument = invocationExpr.ArgumentList.Arguments[0];
 
-        // handle delegate expression
-        if (firstArgument.Expression is IdentifierNameSyntax or MemberAccessExpressionSyntax)
-            return ExtractInfoFromDelegate(context, firstArgument.Expression);
+        return firstArgument.Expression switch
+        {
+            // handle delegate expression
+            IdentifierNameSyntax or MemberAccessExpressionSyntax => ExtractInfoFromDelegate(
+                context,
+                firstArgument.Expression
+            ),
 
-        // We can know that the lambda MUST be a ParenthesizedLambdaExpression as
-        // SimpleLambdaExpression won't satisfy the Delegate type for MapHandler
-        if (firstArgument.Expression is ParenthesizedLambdaExpressionSyntax lambda)
-            return ExtractInfoFromLambda(context, lambda);
+            // We can know that the lambda MUST be a ParenthesizedLambdaExpression as
+            // SimpleLambdaExpression won't satisfy the Delegate type for MapHandler
+            ParenthesizedLambdaExpressionSyntax lambda => ExtractInfoFromLambda(context, lambda),
 
-        // check for cast expression
-        if (firstArgument.Expression is CastExpressionSyntax castExpression)
-            return ExtractInfoFromCastLambda(context, castExpression);
+            // check for cast expression
+            CastExpressionSyntax castExpression => ExtractInfoFromCastLambda(
+                context,
+                castExpression
+            ),
 
-        return null;
+            _ => null,
+        };
     }
 
     private static string GetFileNamespace(SyntaxNode node, SemanticModel semanticModel)
@@ -118,37 +126,34 @@ public class MapHandlerLambdaAnalyzer : IIncrementalGenerator
                 return null;
         }
 
-        // Extract method information
         var parameters = methodSymbol
             .Parameters.AsEnumerable()
-            .Select(p => new ParameterInfo(
-                p.Name,
-                new TypeInfo(
-                    p.Type.ToDisplayString(),
-                    p.Type.ContainingNamespace.ToDisplayString()
-                ),
-                p.GetAttributes()
-                    .Select(attr => new AttributeInfo(
-                        attr.ToString(),
-                        attr.AttributeClass?.ContainingNamespace.ToDisplayString(),
-                        attr.ConstructorArguments.Select(a => a.Value?.ToString())
-                            .Where(a => a is not null)
-                            .ToList()!
-                    ))
-                    .ToList()
-            ))
+            .Select(p =>
+            {
+                return new ParameterInfo
+                {
+                    ParameterName = p!.Name,
+                    Type = p.Type.GetAsGlobal(),
+                    Attributes = p.GetAttributes()
+                        .Select(a => new AttributeInfo
+                        {
+                            Type = a.ToString(),
+                            Arguments = a
+                                .ConstructorArguments.Select(aa => aa.Value?.ToString())
+                                .Where(aa => aa is not null)
+                                .ToList()!,
+                        })
+                        .ToList(),
+                };
+            })
             .ToList();
 
-        var responseType = new TypeInfo(
-            methodSymbol.ReturnType.ToDisplayString(),
-            methodSymbol.ReturnType.ContainingNamespace.ToDisplayString()
-        );
-
-        return new DelegateInfo(
-            responseType,
-            parameters,
-            GetFileNamespace(context.Node, context.SemanticModel)
-        );
+        return new DelegateInfo
+        {
+            ResponseType = methodSymbol.ReturnType.GetAsGlobal(),
+            Namespace = GetFileNamespace(context.Node, context.SemanticModel),
+            Parameters = parameters,
+        };
     }
 
     private static DelegateInfo? ExtractInfoFromCastLambda(
@@ -191,34 +196,32 @@ public class MapHandlerLambdaAnalyzer : IIncrementalGenerator
                     methodSymbol2.Parameters,
                     (t, p) =>
                         t is not null && p is not null
-                            ? new ParameterInfo(
-                                p.Name,
-                                new TypeInfo(
-                                    t.Type.ToDisplayString(),
-                                    t.Type.ContainingNamespace.ToDisplayString()
-                                ),
-                                p.GetAttributes()
-                                    .Select(attr => new AttributeInfo(
-                                        attr.ToString(),
-                                        attr.AttributeClass?.ContainingNamespace.ToDisplayString(),
-                                        attr.ConstructorArguments.Select(a => a.Value?.ToString())
-                                            .Where(a => a is not null)
-                                            .ToList()!
-                                    ))
-                                    .ToList()
-                            )
+                            ? new ParameterInfo
+                            {
+                                ParameterName = p.Name,
+                                Type = t.Type.GetAsGlobal(),
+                                Attributes = p.GetAttributes()
+                                    .Select(a => new AttributeInfo
+                                    {
+                                        Type = a.ToString(),
+                                        Arguments = a
+                                            .ConstructorArguments.Select(aa => aa.Value?.ToString())
+                                            .Where(aa => aa is not null)
+                                            .ToList()!,
+                                    })
+                                    .ToList(),
+                            }
                             : null
                 )
                 .Where(p => p is not null)
                 .ToList() ?? [];
 
-        var responseType = new TypeInfo(invokeMethod?.ReturnType.ToDisplayString() ?? VoidType, "");
-
-        return new DelegateInfo(
-            responseType,
-            parameters,
-            GetFileNamespace(context.Node, context.SemanticModel)
-        );
+        return new DelegateInfo
+        {
+            ResponseType = invokeMethod?.ReturnType.GetAsGlobal() ?? VoidType,
+            Namespace = GetFileNamespace(context.Node, context.SemanticModel),
+            Parameters = parameters!,
+        };
     }
 
     private static DelegateInfo? ExtractInfoFromLambda(
@@ -236,23 +239,21 @@ public class MapHandlerLambdaAnalyzer : IIncrementalGenerator
             .Where(p => p is not null)
             .Select(p =>
             {
-                return new ParameterInfo(
-                    p!.Name,
-                    new TypeInfo(
-                        p.Type.ToDisplayString(),
-                        p.Type.ContainingNamespace.ToDisplayString()
-                    ),
-                    p.GetAttributes()
-                        .Select(attr => new AttributeInfo(
-                            attr.ToString(),
-                            attr.AttributeClass?.ContainingNamespace.ToDisplayString(),
-                            // get list of arguments for attribute
-                            attr.ConstructorArguments.Select(a => a.Value?.ToString())
-                                .Where(a => a is not null)
-                                .ToList()!
-                        ))
-                        .ToList()
-                );
+                return new ParameterInfo
+                {
+                    ParameterName = p!.Name,
+                    Type = p.Type.GetAsGlobal(),
+                    Attributes = p.GetAttributes()
+                        .Select(a => new AttributeInfo
+                        {
+                            Type = a.ToString(),
+                            Arguments = a
+                                .ConstructorArguments.Select(aa => aa.Value?.ToString())
+                                .Where(aa => aa is not null)
+                                .ToList()!,
+                        })
+                        .ToList(),
+                };
             })
             .ToList();
 
@@ -267,19 +268,13 @@ public class MapHandlerLambdaAnalyzer : IIncrementalGenerator
         var isAsync = lambdaExpression.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword);
 
         // Handle both expression and block bodies
-        TypeInfo? returnTypeInfo = null;
+        string? returnType = null;
 
         if (lambdaExpression.Body is ExpressionSyntax expression)
         {
             // Expression-bodied lambda: x => expression
             var typeInfo = context.SemanticModel.GetTypeInfo(expression);
-            returnTypeInfo =
-                typeInfo.Type != null
-                    ? new TypeInfo(
-                        typeInfo.Type.ToDisplayString(),
-                        typeInfo.Type.ContainingNamespace.ToDisplayString()
-                    )
-                    : null;
+            returnType = typeInfo.Type?.GetAsGlobal();
         }
         else if (lambdaExpression.Body is BlockSyntax block)
         {
@@ -297,35 +292,25 @@ public class MapHandlerLambdaAnalyzer : IIncrementalGenerator
                 var firstReturn = returnStatements.First();
                 var typeInfo = context.SemanticModel.GetTypeInfo(firstReturn.Expression!);
 
-                returnTypeInfo =
-                    typeInfo.Type != null
-                        ? new TypeInfo(
-                            typeInfo.Type.ToDisplayString(),
-                            typeInfo.Type.ContainingNamespace.ToDisplayString()
-                        )
-                        : null;
+                returnType = typeInfo.Type?.GetAsGlobal();
             }
             // If no return statements found, returnTypeInfo remains null (void)
         }
 
-        var returnTypeName = (ReturnType: returnTypeInfo?.TypeName, IsAsync: isAsync) switch
+        var returnTypeName = (ReturnType: returnType, IsAsync: isAsync) switch
         {
             (null, true) => TaskType,
             (null, false) => VoidType,
-            (_, true) returnType => $"{TaskType}<{returnType.ReturnType}>",
-            var (typeName, _) => typeName,
+            (var type, true) => $"{TaskType}<{type}>",
+            var (type, _) => type,
         };
 
-        var responseType = new TypeInfo(
-            returnTypeName,
-            returnTypeInfo?.Namespace ?? (isAsync ? TaskType : "System")
-        );
-
-        return new DelegateInfo(
-            responseType,
-            parameters,
-            GetFileNamespace(context.Node, context.SemanticModel)
-        );
+        return new DelegateInfo
+        {
+            ResponseType = returnTypeName,
+            Namespace = GetFileNamespace(context.Node, context.SemanticModel),
+            Parameters = parameters,
+        };
     }
 
     private static void GenerateLambdaReport(
@@ -353,46 +338,35 @@ public class MapHandlerLambdaAnalyzer : IIncrementalGenerator
         // TODO: validate that nullable types work as expected
         // TODO: update to work with
 
-        var delegateArguments = string.Join(
-            ", ",
-            (delegateInfo?.Parameters.Select(p => p.Type.TypeName) ?? new List<string>()).Concat(
-                new[] { delegateInfo?.ResponseType.TypeName }.Where(t => t != null && t != VoidType)
-            )
-        );
+        var delegateArguments = (
+            delegateInfo?.Parameters.Select(p => p.Type) ?? new List<string>()
+        ).Concat(new[] { delegateInfo?.ResponseType }.Where(t => t != null && t != VoidType));
 
         var classFields = delegateInfo
             ?.Parameters.Where(p =>
-                p.Attributes.All(a => a.FullName != RequestAttribute)
-                && p.Type.TypeName != LambdaContextType
+                p.Attributes.All(a => a.Type != RequestAttribute) && p.Type != LambdaContextType
             )
             .Select(p => new
             {
-                attributes = p
-                    .Attributes.Where(a => a.FullName is not null)
-                    .Select(a => a.FullName)
-                    .ToList(),
+                attributes = p.Attributes.Select(a => a.Type).ToList(),
                 keyed_service_key = p
-                    .Attributes.Where(a => a?.FullName?.StartsWith(KeyedServiceAttribute) ?? false)
+                    .Attributes.Where(a => a?.Type?.StartsWith(KeyedServiceAttribute) ?? false)
                     .Select(a => a.Arguments.FirstOrDefault())
                     .FirstOrDefault(),
                 name = p.ParameterName.ToCamelCase(),
-                type = p.Type.TypeName,
+                type = p.Type,
             })
             .ToList();
 
-        var lambdaArgs = string.Join(
-            ", ",
-            delegateInfo?.Parameters.Select(p => p.ParameterName.ToPrivateCamelCase()) ?? []
-        );
+        var handlerArgs = delegateInfo?.Parameters.Select(p => p.ParameterName.ToCamelCase()) ?? [];
 
         var lambdaParams =
             delegateInfo
                 ?.Parameters.Where(p =>
-                    p.Attributes.Any(a => a.FullName == RequestAttribute)
-                    || p.Type.TypeName == LambdaContextType
+                    p.Attributes.Any(a => a.Type == RequestAttribute) || p.Type == LambdaContextType
                 )
-                .OrderBy(p => p.Type.TypeName == LambdaContextType ? 1 : 0)
-                .Select(p => p.Type.TypeName + " " + p.ParameterName.ToPrivateCamelCase())
+                .OrderBy(p => p.Type == LambdaContextType ? 1 : 0)
+                .Select(p => p.Type + " " + p.ParameterName.ToCamelCase())
                 .ToList() ?? [];
 
         var model = new
@@ -400,9 +374,9 @@ public class MapHandlerLambdaAnalyzer : IIncrementalGenerator
             @namespace = delegateInfo?.Namespace,
             service = "LambdaStartupService",
             fields = classFields,
-            delegate_type = delegateInfo?.ResponseType.TypeName == VoidType ? "Action" : "Func",
+            delegate_type = delegateInfo?.ResponseType == VoidType ? "Action" : "Func",
             delegate_args = delegateArguments,
-            handler_args = lambdaArgs,
+            handler_args = handlerArgs,
             lambda_params = lambdaParams,
         };
 
@@ -414,33 +388,22 @@ public class MapHandlerLambdaAnalyzer : IIncrementalGenerator
     }
 }
 
-internal sealed class DelegateInfo2
+internal sealed class DelegateInfo
 {
-    string ResponseType { get; set; }
-    string Namespace { get; set; }
+    internal required string ResponseType { get; set; }
+    internal required string Namespace { get; set; }
+    internal List<ParameterInfo> Parameters { get; set; } = [];
 }
 
-internal sealed class ParameterInfo2
+internal sealed class ParameterInfo
 {
-    string ParameterName { get; set; }
-    string Type { get; set; }
-    List<AttributeInfo2> Attributes { get; set; }
+    internal required string ParameterName { get; set; }
+    internal required string Type { get; set; }
+    internal List<AttributeInfo> Attributes { get; set; } = [];
 }
 
-internal sealed class AttributeInfo2
+internal sealed class AttributeInfo
 {
-    string Type { get; set; }
-    List<string> Arguments { get; set; }
+    internal required string Type { get; set; }
+    internal List<string> Arguments { get; set; } = [];
 }
-
-public record DelegateInfo(
-    TypeInfo ResponseType,
-    List<ParameterInfo> Parameters,
-    string? Namespace
-);
-
-public record ParameterInfo(string ParameterName, TypeInfo Type, List<AttributeInfo> Attributes);
-
-public record TypeInfo(string TypeName, string Namespace);
-
-public record AttributeInfo(string? FullName, string? Namespace, List<string> Arguments);

@@ -27,7 +27,7 @@ public class {{ service }} : IHostedService
         if (!_delegateHolder.IsHandlerSet)
             throw new InvalidOperationException("Handler is not set");
     
-        if (_delegateHolder.Handler is not {{ delegate_type }}<{{ delegate_args }}> lambdaHandler)
+        if (_delegateHolder.Handler is not {{ delegate_type }}<{{ delegate_args | array.join ", " }}> lambdaHandler)
             throw new InvalidOperationException("Invalid handler type.");
             
         var lambdaSerializer = _serviceProvider.GetService<global::Amazon.Lambda.Core.ILambdaSerializer>() ?? new global::Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer();
@@ -40,13 +40,13 @@ public class {{ service }} : IHostedService
                     
                     {{~ for field in fields ~}}
                         {{~ if field.keyed_service_key ~}}
-                    var _{{ field.name }} = scope.ServiceProvider.GetRequiredKeyedService<global::{{ field.type }}>("{{ field.keyed_service_key }}");
+                    var {{ field.name }} = scope.ServiceProvider.GetRequiredKeyedService<{{ field.type }}>("{{ field.keyed_service_key }}");
                         {{~ else ~}}
-                    var _{{ field.name }} = scope.ServiceProvider.GetRequiredService<global::{{ field.type }}>();
+                    var {{ field.name }} = scope.ServiceProvider.GetRequiredService<{{ field.type }}>();
                         {{~ end ~}}
                     {{~ end ~}}
                     
-                    {{ if delegate_type == "Func" ~}}return {{ end ~}}lambdaHandler({{ handler_args }});
+                    {{ if delegate_type == "Func" ~}}return {{ end ~}}lambdaHandler({{ handler_args | array.join ", " }});
                 },
                 lambdaSerializer
             )
