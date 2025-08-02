@@ -17,11 +17,13 @@ builder.Services.AddKeyedSingleton<IService>(
 
 var lambda = builder.Build();
 
+lambda.MapHandler(() => "hello world");
+
 // lambda.MapHandler(
 //     async ([Request] string input, IService service) => (await service.GetMessage()).ToUpper()
 // );
 
-lambda.MapHandler(HandlerFactory.Handler);
+// lambda.MapHandler(HandlerFactory.Handler);
 
 // lambda.MapHandler(
 //     IService ([Request] string input, IService service) =>

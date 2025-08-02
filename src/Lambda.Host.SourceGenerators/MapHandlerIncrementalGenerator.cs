@@ -57,8 +57,22 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
             return null;
 
         // Get the method symbol being invoked
-        var methodSymbol =
-            context.SemanticModel.GetSymbolInfo(invocationExpr).Symbol as IMethodSymbol;
+        var symbolInfo = context.SemanticModel.GetSymbolInfo(invocationExpr);
+
+        // var methodSymbol = symbolInfo.Symbol as IMethodSymbol;
+        if (symbolInfo.Symbol is not IMethodSymbol methodSymbol)
+        {
+            if (symbolInfo.CandidateSymbols.Length == 0)
+                return null;
+
+            // If direct resolution fails, check candidates
+            var candidates = symbolInfo.CandidateSymbols.OfType<IMethodSymbol>().ToList();
+            if (candidates.Count == 0)
+                return null;
+
+            // Pick the first candidate or apply your own logic to choose
+            methodSymbol = candidates.First();
+        }
 
         // Check if it's from LambdaApplication
         if (methodSymbol?.ContainingType?.Name != LambdaApplicationClassName)
@@ -336,11 +350,11 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
         // TODO: add code to handle injecting ILambdaSerializer
         // TODO: add support for default values
         // TODO: validate that nullable types work as expected
-        // TODO: update to work with
+        // TODO: update to handle situations where serializer is not needed
 
-        var delegateArguments = (
-            delegateInfo?.Parameters.Select(p => p.Type) ?? new List<string>()
-        ).Concat(new[] { delegateInfo?.ResponseType }.Where(t => t != null && t != VoidType));
+        var delegateArguments = (delegateInfo?.Parameters.Select(p => p.Type) ?? [])
+            .Concat(new[] { delegateInfo?.ResponseType }.Where(t => t != null && t != VoidType))
+            .ToList();
 
         var classFields = delegateInfo
             ?.Parameters.Where(p =>
@@ -358,7 +372,8 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
             })
             .ToList();
 
-        var handlerArgs = delegateInfo?.Parameters.Select(p => p.ParameterName.ToCamelCase()) ?? [];
+        var handlerArgs =
+            delegateInfo?.Parameters.Select(p => p.ParameterName.ToCamelCase()).ToList() ?? [];
 
         var lambdaParams =
             delegateInfo

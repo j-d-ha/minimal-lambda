@@ -57,3 +57,5 @@ nunit-*.xml
 
 .DS_Store
 */.DS_Store
+
+*.received.*

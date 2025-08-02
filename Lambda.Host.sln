@@ -6,6 +6,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lambda.Host", "src\Lambda.H
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lambda.Host.SourceGenerators", "src\Lambda.Host.SourceGenerators\Lambda.Host.SourceGenerators.csproj", "{4E5847B4-AF98-4F08-A0C4-54039D166AA4}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Lambda.Host.Tests", "test\Lambda.Host.Tests\Lambda.Host.Tests.csproj", "{A8CEB01A-C729-48BE-95E0-919BEBC1F49F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,5 +26,9 @@ Global
 		{4E5847B4-AF98-4F08-A0C4-54039D166AA4}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4E5847B4-AF98-4F08-A0C4-54039D166AA4}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4E5847B4-AF98-4F08-A0C4-54039D166AA4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8CEB01A-C729-48BE-95E0-919BEBC1F49F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8CEB01A-C729-48BE-95E0-919BEBC1F49F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8CEB01A-C729-48BE-95E0-919BEBC1F49F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8CEB01A-C729-48BE-95E0-919BEBC1F49F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
