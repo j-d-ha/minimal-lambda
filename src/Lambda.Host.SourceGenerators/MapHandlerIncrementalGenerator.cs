@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using System.Text;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -9,7 +10,7 @@ namespace Lambda.Host.SourceGenerators;
 public class MapHandlerIncrementalGenerator : IIncrementalGenerator
 {
     private const string LambdaContextType = "global::Amazon.Lambda.Core.ILambdaContext";
-    private const string RequestAttribute = "global::Lambda.Host.RequestAttribute";
+    private const string RequestAttribute = "Lambda.Host.RequestAttribute";
     private const string VoidType = "void";
     private const string TaskType = "global::System.Threading.Tasks.Task";
 
@@ -166,6 +167,7 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
         {
             ResponseType = methodSymbol.ReturnType.GetAsGlobal(),
             Namespace = GetFileNamespace(context.Node, context.SemanticModel),
+            IsAsync = methodSymbol.IsAsync,
             Parameters = parameters,
         };
     }
@@ -175,9 +177,14 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
         CastExpressionSyntax castExpression
     )
     {
-        var castType = context.SemanticModel.GetTypeInfo(castExpression.Type).Type;
+        var castTypeInfo = context.SemanticModel.GetTypeInfo(castExpression.Type);
 
-        if (castType is not INamedTypeSymbol namedType)
+        if (castTypeInfo.Type is IErrorTypeSymbol)
+            throw new InvalidOperationException(
+                $"Failed to resolve type info for {castTypeInfo.Type.ToDisplayString()}."
+            );
+
+        if (castTypeInfo.Type is not INamedTypeSymbol namedType)
             return null;
 
         var invokeMethod = namedType.GetMembers("Invoke").OfType<IMethodSymbol>().FirstOrDefault();
@@ -234,6 +241,7 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
         {
             ResponseType = invokeMethod?.ReturnType.GetAsGlobal() ?? VoidType,
             Namespace = GetFileNamespace(context.Node, context.SemanticModel),
+            IsAsync = invokeMethod?.IsAsync ?? false,
             Parameters = parameters!,
         };
     }
@@ -284,12 +292,22 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
         // Handle both expression and block bodies
         string? returnType = null;
 
-        if (lambdaExpression.Body is ExpressionSyntax expression)
+        // add check for explicit return type
+        if (lambdaExpression.ReturnType != null)
+        {
+            var explicitReturnTypeInfo = context.SemanticModel.GetTypeInfo(
+                lambdaExpression.ReturnType
+            );
+            returnType = explicitReturnTypeInfo.Type?.GetAsGlobal();
+        }
+        // Handle implicit return type for expression lambda
+        else if (lambdaExpression.Body is ExpressionSyntax expression)
         {
             // Expression-bodied lambda: x => expression
             var typeInfo = context.SemanticModel.GetTypeInfo(expression);
             returnType = typeInfo.Type?.GetAsGlobal();
         }
+        // Handle implicit return type for block lambda
         else if (lambdaExpression.Body is BlockSyntax block)
         {
             // Block-bodied lambda: x => { statements; }
@@ -323,6 +341,7 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
         {
             ResponseType = returnTypeName,
             Namespace = GetFileNamespace(context.Node, context.SemanticModel),
+            IsAsync = isAsync,
             Parameters = parameters,
         };
     }
@@ -350,6 +369,8 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
         // xTODO: add code to handle injecting ILambdaSerializer
         // TODO: validate that nullable types work as expected
         // TODO: update to handle situations where serializer is not needed
+        // TODO: look into adding code to fail fast for DI stuff at startup.
+        // TODO: look into adding support for dependencies inside of an object like minimal APIs have.
 
         var delegateArguments = (delegateInfo?.Parameters.Select(p => p.Type) ?? [])
             .Concat(new[] { delegateInfo?.ResponseType }.Where(t => t != null && t != VoidType))
@@ -392,6 +413,7 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
             delegate_args = delegateArguments,
             handler_args = handlerArgs,
             lambda_params = lambdaParams,
+            is_lambda_async = delegateInfo?.IsAsync ?? false,
         };
 
         var template = TemplateHelper.LoadTemplate(LambdaStartupServiceTemplateFile);
@@ -406,6 +428,7 @@ internal sealed class DelegateInfo
 {
     internal required string ResponseType { get; set; }
     internal required string Namespace { get; set; }
+    internal required bool IsAsync { get; set; }
     internal List<ParameterInfo> Parameters { get; set; } = [];
 }
 

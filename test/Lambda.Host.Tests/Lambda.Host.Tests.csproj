@@ -1,14 +1,19 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Amazon.Lambda.Core" Version="2.7.0" />
+    <PackageReference Include="Amazon.Lambda.RuntimeSupport" Version="1.13.1" />
+    <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.4.4" />
     <PackageReference Include="AwesomeAssertions" Version="9.1.0"/>
+    <PackageReference Include="Basic.Reference.Assemblies.Net472" Version="1.8.3" />
+    <PackageReference Include="Basic.Reference.Assemblies.Net80" Version="1.8.3" />
     <PackageReference Include="coverlet.collector" Version="6.0.4"/>
     <PackageReference Include="Microsoft.CodeAnalysis" Version="4.14.0" />
     <PackageReference Include="Microsoft.CodeAnalysis.Common" Version="4.14.0" />
@@ -30,6 +35,10 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Lambda.Host.SourceGenerators\Lambda.Host.SourceGenerators.csproj"/>
     <ProjectReference Include="..\..\src\Lambda.Host\Lambda.Host.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Snapshots\" />
   </ItemGroup>
 
 </Project>

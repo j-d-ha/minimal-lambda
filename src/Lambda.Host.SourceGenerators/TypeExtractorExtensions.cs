@@ -6,8 +6,15 @@ internal static class TypeExtractorExtensions
 {
     private const string Global = "global::";
 
-    internal static string GetAsGlobal(this ITypeSymbol typeSymbol) =>
-        typeSymbol.ShouldOmitGlobalPrefix() ? typeSymbol.ToString() : Global + typeSymbol;
+    internal static string GetAsGlobal(this ITypeSymbol typeSymbol)
+    {
+        if (typeSymbol is IErrorTypeSymbol)
+            throw new InvalidOperationException(
+                $"Failed to resolve type info for {typeSymbol.ToDisplayString()}."
+            );
+
+        return typeSymbol.ShouldOmitGlobalPrefix() ? typeSymbol.ToString() : Global + typeSymbol;
+    }
 
     private static bool ShouldOmitGlobalPrefix(this ITypeSymbol typeSymbol) =>
         typeSymbol.SpecialType switch
