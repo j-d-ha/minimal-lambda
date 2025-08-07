@@ -251,13 +251,14 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
         ParenthesizedLambdaExpressionSyntax lambdaExpression
     )
     {
-        var lambdaTypeInfo = context.SemanticModel.GetTypeInfo(lambdaExpression);
+        var sematicModel = context.SemanticModel;
+        var lambdaTypeInfo = sematicModel.GetTypeInfo(lambdaExpression);
         var delegateType = lambdaTypeInfo.ConvertedType as INamedTypeSymbol;
 
         // extract parameter information
         var parameters = lambdaExpression
             .ParameterList.Parameters.AsEnumerable()
-            .Select(p => context.SemanticModel.GetDeclaredSymbol(p))
+            .Select(p => sematicModel.GetDeclaredSymbol(p))
             .Where(p => p is not null)
             .Select(p =>
             {
@@ -279,55 +280,40 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
             })
             .ToList();
 
+        var isAsync = lambdaExpression.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword);
+
         // Hierarchy for determining lambda return type.
         //
-        // 1. type conversion
+        // 1. type conversion (not handled here)
         // 2. explicit return type
         // 3. implicit return type in expression body
         // 4. implicit return type in block body
         // 5. default void (or Task if async)
-
-        var isAsync = lambdaExpression.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword);
-
-        // Handle both expression and block bodies
-        string? returnType = null;
-
-        // add check for explicit return type
-        if (lambdaExpression.ReturnType != null)
+        var returnType = lambdaExpression switch
         {
-            var explicitReturnTypeInfo = context.SemanticModel.GetTypeInfo(
-                lambdaExpression.ReturnType
-            );
-            returnType = explicitReturnTypeInfo.Type?.GetAsGlobal(lambdaExpression.ReturnType);
-        }
-        // Handle implicit return type for expression lambda
-        else if (lambdaExpression.Body is ExpressionSyntax expression)
-        {
-            // Expression-bodied lambda: x => expression
-            var typeInfo = context.SemanticModel.GetTypeInfo(expression);
-            returnType = typeInfo.Type?.GetAsGlobal();
-        }
-        // Handle implicit return type for block lambda
-        else if (lambdaExpression.Body is BlockSyntax block)
-        {
-            // Block-bodied lambda: x => { statements; }
-            // Find all return statements in the block
-            var returnStatements = block
+            // check for explicit return type
+            { ReturnType: var syntax } when syntax is not null => sematicModel
+                .GetTypeInfo(syntax)
+                .Type?.GetAsGlobal(syntax),
+
+            // Handle implicit return type for expression lambda
+            { Body: var expression } when expression is ExpressionSyntax => sematicModel
+                .GetTypeInfo(expression)
+                .Type?.GetAsGlobal(),
+
+            // Handle implicit return type for block lambda
+            { Body: var block } when block is BlockSyntax => block
                 .DescendantNodes()
                 .OfType<ReturnStatementSyntax>()
-                .Where(r => r.Expression != null)
-                .ToList();
+                .FirstOrDefault(syntax => syntax.Expression is not null)
+                ?.Transform(syntax =>
+                {
+                    return sematicModel.GetTypeInfo(syntax?.Expression).Type?.GetAsGlobal();
+                }),
 
-            if (returnStatements.Count > 0)
-            {
-                // Analyze the first return statement to determine the type
-                var firstReturn = returnStatements.First();
-                var typeInfo = context.SemanticModel.GetTypeInfo(firstReturn.Expression!);
-
-                returnType = typeInfo.Type?.GetAsGlobal();
-            }
-            // If no return statements found, returnTypeInfo remains null (void)
-        }
+            // Default to void if no return type is found
+            _ => null,
+        };
 
         var returnTypeName = (ReturnType: returnType, IsAsync: isAsync) switch
         {
