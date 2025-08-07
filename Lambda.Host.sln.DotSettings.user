@@ -39,43 +39,24 @@
   &lt;Assembly Path="/Users/jonasha/Repos/CSharp/dotnet-lambda-host/src/Lambda.Host.SourceGenerators/bin/Debug/netstandard2.0/Lambda.Host.SourceGenerators.dll" /&gt;
   &lt;Assembly Path="/Users/jonasha/.nuget/packages/system.text.json/9.0.7/analyzers/dotnet/roslyn4.4/cs/System.Text.Json.SourceGeneration.dll" /&gt;
 &lt;/AssemblyExplorer&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=58c56b00_002Df81e_002D48fd_002Da74f_002Dc8e84271fcf4/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Continuous Testing" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
-  &lt;Or&gt;
-    &lt;And&gt;
-      &lt;TestAncestor&gt;
-        &lt;TestId&gt;xUnit::A8CEB01A-C729-48BE-95E0-919BEBC1F49F::net8.0::Lambda.Host.Tests.MapHandlerIncrementalGeneratorVerifyTests.Test_StaticMethodHandler_BlockBody&lt;/TestId&gt;
-        &lt;TestId&gt;xUnit::A8CEB01A-C729-48BE-95E0-919BEBC1F49F::net8.0::Lambda.Host.Tests.MapHandlerIncrementalGeneratorVerifyTests.Test_Async_Expression_Lambda_With_DI&lt;/TestId&gt;
-        &lt;TestId&gt;xUnit::A8CEB01A-C729-48BE-95E0-919BEBC1F49F::net8.0::Lambda.Host.Tests.MapHandlerIncrementalGeneratorVerifyTests.Test_ExpressionLambda_NoInputNoOutput&lt;/TestId&gt;
-        &lt;TestId&gt;xUnit::A8CEB01A-C729-48BE-95E0-919BEBC1F49F::net8.0::Lambda.Host.Tests.MapHandlerIncrementalGeneratorVerifyTests.Test_ExpressionLambda_NoInputReturningString&lt;/TestId&gt;
-      &lt;/TestAncestor&gt;
-      &lt;Not&gt;
-        &lt;TestAncestor&gt;
-          &lt;TestId&gt;xUnit::A8CEB01A-C729-48BE-95E0-919BEBC1F49F::net8.0::Lambda.Host.Tests.MapHandlerIncrementalGeneratorVerifyTests.Test_ExpressionLambda_NoInputReturningString&lt;/TestId&gt;
-        &lt;/TestAncestor&gt;
-      &lt;/Not&gt;
-    &lt;/And&gt;
-    &lt;TestAncestor&gt;
-      &lt;TestId&gt;xUnit::A8CEB01A-C729-48BE-95E0-919BEBC1F49F::net8.0::Lambda.Host.Tests.MapHandlerIncrementalGeneratorVerifyTests.Test_ExpressionLambda_NoInputReturningString&lt;/TestId&gt;
-      &lt;TestId&gt;xUnit::A8CEB01A-C729-48BE-95E0-919BEBC1F49F::net8.0::Lambda.Host.Tests.MapHandlerIncrementalGeneratorVerifyTests.Test_ExpressionLambda_DiAndAsync&lt;/TestId&gt;
-      &lt;TestId&gt;xUnit::A8CEB01A-C729-48BE-95E0-919BEBC1F49F::net8.0::Lambda.Host.Tests.MapHandlerIncrementalGeneratorVerifyTests.Test_StaticMethodHandler_BlockBodyWithKeyedServices&lt;/TestId&gt;
-      &lt;TestId&gt;xUnit::A8CEB01A-C729-48BE-95E0-919BEBC1F49F::net8.0::Lambda.Host.Tests.MapHandlerIncrementalGeneratorVerifyTests.Test_ExpressionLambda_ExplicitReturnType&lt;/TestId&gt;
-      &lt;TestId&gt;xUnit::A8CEB01A-C729-48BE-95E0-919BEBC1F49F::net8.0::Lambda.Host.Tests.MapHandlerIncrementalGeneratorVerifyTests.Test_BlockLambda_ReturningString&lt;/TestId&gt;
-      &lt;TestId&gt;xUnit::A8CEB01A-C729-48BE-95E0-919BEBC1F49F::net8.0::Lambda.Host.Tests.MapHandlerIncrementalGeneratorVerifyTests.Test_BlockLambda_ExplicitReturnType&lt;/TestId&gt;
-      &lt;TestId&gt;xUnit::A8CEB01A-C729-48BE-95E0-919BEBC1F49F::net8.0::Lambda.Host.Tests.MapHandlerIncrementalGeneratorVerifyTests.Test_Action_Cast&lt;/TestId&gt;
-      &lt;TestId&gt;xUnit::A8CEB01A-C729-48BE-95E0-919BEBC1F49F::net8.0::Lambda.Host.Tests.MapHandlerIncrementalGeneratorVerifyTests.Test_Func_Cast_With_Keyed_Services&lt;/TestId&gt;
-      &lt;TestId&gt;xUnit::A8CEB01A-C729-48BE-95E0-919BEBC1F49F::net8.0::Lambda.Host.Tests.MapHandlerIncrementalGeneratorVerifyTests.Test_BlockLambda_TypeCast&lt;/TestId&gt;
-      &lt;TestId&gt;xUnit::A8CEB01A-C729-48BE-95E0-919BEBC1F49F::net8.0::Lambda.Host.Tests.MapHandlerIncrementalGeneratorVerifyTests.Test_ExpressionLambda_DiAndAsyncAndAwait&lt;/TestId&gt;
-      &lt;TestId&gt;xUnit::A8CEB01A-C729-48BE-95E0-919BEBC1F49F::net8.0::Lambda.Host.Tests.MapHandlerIncrementalGeneratorVerifyTests.Test_BlockLambda_TypeCast_NoReturn&lt;/TestId&gt;
-      &lt;TestId&gt;xUnit::A8CEB01A-C729-48BE-95E0-919BEBC1F49F::net8.0::Lambda.Host.Tests.MapHandlerIncrementalGeneratorVerifyTests.Test_ExpressionLambda_NullableInput_NullableOutput&lt;/TestId&gt;
-      &lt;TestId&gt;xUnit::A8CEB01A-C729-48BE-95E0-919BEBC1F49F::net8.0::Lambda.Host.Tests.MapHandlerIncrementalGeneratorVerifyTests.Test_ExpressionLambda_NullableInput_ImplicitNullableOutput&lt;/TestId&gt;
-      &lt;TestId&gt;xUnit::A8CEB01A-C729-48BE-95E0-919BEBC1F49F::net8.0::Lambda.Host.Tests.MapHandlerIncrementalGeneratorVerifyTests.Test_ExpressionLambda_NullableInput_ExplicitNullableOutput&lt;/TestId&gt;
-    &lt;/TestAncestor&gt;
-  &lt;/Or&gt;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=58c56b00_002Df81e_002D48fd_002Da74f_002Dc8e84271fcf4/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="Continuous Testing" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;xUnit::A8CEB01A-C729-48BE-95E0-919BEBC1F49F::net8.0::Lambda.Host.Tests.MapHandlerIncrementalGeneratorVerifyTests&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
 	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=62b84071_002D5c70_002D4089_002Da3d1_002De7e18499b29e/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="Test_StaticMethodHandler_BlockBody" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
   &lt;TestAncestor&gt;
     &lt;TestId&gt;xUnit::A8CEB01A-C729-48BE-95E0-919BEBC1F49F::net8.0::Lambda.Host.Tests.MapHandlerIncrementalGeneratorVerifyTests.Test_StaticMethodHandler_BlockBody&lt;/TestId&gt;
     &lt;TestId&gt;xUnit::A8CEB01A-C729-48BE-95E0-919BEBC1F49F::net8.0::Lambda.Host.Tests.MapHandlerIncrementalGeneratorVerifyTests.Test_ExpressionLambda_NoInputNoOutput&lt;/TestId&gt;
+  &lt;/TestAncestor&gt;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=f6b37bae_002Dfba7_002D4f06_002Db0bc_002D45537b5e4369/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="Test_BlockLambda_ImplicitNullableOutput" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;
+  &lt;TestAncestor&gt;
+    &lt;TestId&gt;xUnit::A8CEB01A-C729-48BE-95E0-919BEBC1F49F::net8.0::Lambda.Host.Tests.MapHandlerIncrementalGeneratorVerifyTests.Test_BlockLambda_ImplicitNullableOutput&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::A8CEB01A-C729-48BE-95E0-919BEBC1F49F::net8.0::Lambda.Host.Tests.MapHandlerIncrementalGeneratorVerifyTests.Test_StaticMethodHandler_NoInput_NoOutput&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::A8CEB01A-C729-48BE-95E0-919BEBC1F49F::net8.0::Lambda.Host.Tests.MapHandlerIncrementalGeneratorVerifyTests.Test_Generic_Handler_Complex_Types&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::A8CEB01A-C729-48BE-95E0-919BEBC1F49F::net8.0::Lambda.Host.Tests.MapHandlerIncrementalGeneratorVerifyTests.Test_ExpressionLambda_ComplexInput_ComplexOutput&lt;/TestId&gt;
+    &lt;TestId&gt;xUnit::A8CEB01A-C729-48BE-95E0-919BEBC1F49F::net8.0::Lambda.Host.Tests.MapHandlerIncrementalGeneratorVerifyTests.Test_ExpressionLambda_NullableInput_ImplicitNullableOutput&lt;/TestId&gt;
   &lt;/TestAncestor&gt;
 &lt;/SessionState&gt;</s:String>
 	

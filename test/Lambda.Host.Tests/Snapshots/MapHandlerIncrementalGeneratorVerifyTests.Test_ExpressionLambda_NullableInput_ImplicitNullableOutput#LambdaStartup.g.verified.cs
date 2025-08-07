@@ -29,7 +29,7 @@ public class LambdaStartupService : IHostedService
         if (!_delegateHolder.IsHandlerSet)
             throw new InvalidOperationException("Handler is not set");
             
-        if (_delegateHolder.Handler is not Func<string?, global::IService, string> lambdaHandler)
+        if (_delegateHolder.Handler is not Func<string?, global::IService, string?> lambdaHandler)
             throw new InvalidOperationException("Invalid handler type.");
             
         var lambdaSerializer = _serviceProvider.GetService<global::Amazon.Lambda.Core.ILambdaSerializer>() ?? new global::Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer();

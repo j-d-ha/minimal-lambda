@@ -1,4 +1,5 @@
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace Lambda.Host.SourceGenerators;
 
@@ -14,6 +15,15 @@ internal static class TypeExtractorExtensions
             );
 
         return typeSymbol.ShouldOmitGlobalPrefix() ? typeSymbol.ToString() : Global + typeSymbol;
+    }
+
+    internal static string GetAsGlobal(this ITypeSymbol typeSymbol, TypeSyntax typeSyntax)
+    {
+        var globalType = typeSymbol.GetAsGlobal();
+
+        return typeSyntax is NullableTypeSyntax && !globalType.EndsWith("?")
+            ? globalType + "?"
+            : globalType;
     }
 
     private static bool ShouldOmitGlobalPrefix(this ITypeSymbol typeSymbol) =>

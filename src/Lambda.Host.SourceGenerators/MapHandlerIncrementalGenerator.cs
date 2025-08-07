@@ -298,7 +298,7 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
             var explicitReturnTypeInfo = context.SemanticModel.GetTypeInfo(
                 lambdaExpression.ReturnType
             );
-            returnType = explicitReturnTypeInfo.Type?.GetAsGlobal();
+            returnType = explicitReturnTypeInfo.Type?.GetAsGlobal(lambdaExpression.ReturnType);
         }
         // Handle implicit return type for expression lambda
         else if (lambdaExpression.Body is ExpressionSyntax expression)
@@ -363,14 +363,15 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
         // xTODO: build out lambda handler arguments
         // xTODO: build out lambda invocation arguments
         // xTODO: handle default values for parameters -> not needed
-        // TODO: add guards around number of arguments with request attributes
+        // TODO: add guards around number of arguments with request attributes and number of arguments with ILambdaContext
         // TODO: look into handling duplicate field names
         // xTODO: look into handling namespace vs type -> using `global::`
         // xTODO: add code to handle injecting ILambdaSerializer
-        // TODO: validate that nullable types work as expected
+        // xTODO: validate that nullable types work as expected and body
         // TODO: update to handle situations where serializer is not needed
         // TODO: look into adding code to fail fast for DI stuff at startup.
         // TODO: look into adding support for dependencies inside of an object like minimal APIs have.
+        // TODO: handle IServiceScope and IServiceProvider as arguments
 
         var delegateArguments = (delegateInfo?.Parameters.Select(p => p.Type) ?? [])
             .Concat(new[] { delegateInfo?.ResponseType }.Where(t => t != null && t != VoidType))

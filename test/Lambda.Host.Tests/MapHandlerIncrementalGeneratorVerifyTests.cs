@@ -372,63 +372,68 @@ public class MapHandlerIncrementalGeneratorVerifyTests
         );
 
     [Fact]
-    public async Task Test_Simple_Nullable_Input_Lambda() =>
+    public async Task Test_BlockLambda_ImplicitNullableOutput() =>
         await Verify(
             """
-            using Amazon.Lambda.Core;
-            using Lambda.Host;
-            using Microsoft.Extensions.Hosting;
-
-            var builder = LambdaApplication.CreateBuilder();
-            var lambda = builder.Build();
-
-            lambda.MapHandler(([Request] string? input) => "hello world");
-
-            await lambda.RunAsync();
-            """
-        );
-
-    [Fact]
-    public async Task Test_Static_Void_Method_Handler() =>
-        await Verify(
-            """
-            using Amazon.Lambda.Core;
             using Lambda.Host;
             using Microsoft.Extensions.DependencyInjection;
             using Microsoft.Extensions.Hosting;
 
             var builder = LambdaApplication.CreateBuilder();
             builder.Services.AddSingleton<IService, Service>();
-            builder.Services.AddKeyedSingleton<IService>("key", (sp, _) => sp.GetRequiredService<IService>());
+            var lambda = builder.Build();
+
+            lambda.MapHandler(
+                ([Request] string input, IService service) =>
+                {
+                    return service.GetMessage();
+                }
+            );
+
+            await lambda.RunAsync();
+
+            public interface IService
+            {
+                string? GetMessage();
+            }
+
+            public class Service : IService
+            {
+                public string? GetMessage() => "hello world";
+            }
+            """
+        );
+
+    [Fact]
+    public async Task Test_StaticMethodHandler_NoInput_NoOutput() =>
+        await Verify(
+            """
+            using System;
+            using Lambda.Host;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
             var lambda = builder.Build();
 
             lambda.MapHandler(Handler);
 
             await lambda.RunAsync();
 
-            static async void Handler(
-                [Request] string input,
-                ILambdaContext context,
-                [FromKeyedServices("key")] IService service
-            ) { }
+            return;
 
-            public interface IService
+            static async void Handler()
             {
-                Task<string> GetMessage();
-            }
-
-            public class Service : IService
-            {
-                public Task<string> GetMessage() => Task.FromResult("hello world");
+                Console.WriteLine("Hello World!");
             }
             """
         );
 
     // Additional handler type not shown in the examples - generic handlers with complex custom types
     [Fact]
-    public async Task Test_Generic_Handler_Complex_Types() =>
+    public async Task Test_ExpressionLambda_ComplexInput_ComplexOutput() =>
         await Verify(
             """
+            using System.Threading.Tasks;
             using Amazon.Lambda.Core;
             using Lambda.Host;
             using Microsoft.Extensions.DependencyInjection;
@@ -438,13 +443,9 @@ public class MapHandlerIncrementalGeneratorVerifyTests
             builder.Services.AddSingleton<IService, Service>();
             var lambda = builder.Build();
 
-            lambda.MapHandler<CustomRequest, CustomResponse>(
-                async ([Request] CustomRequest request, IService service) => 
-                new CustomResponse 
-                { 
-                    Result = await service.GetMessage(), 
-                    Success = true 
-                }
+            lambda.MapHandler(
+                async ([Request] CustomRequest request, IService service, ILambdaContext context) =>
+                    new CustomResponse { Result = await service.GetMessage(), Success = true }
             );
 
             await lambda.RunAsync();
@@ -470,6 +471,7 @@ public class MapHandlerIncrementalGeneratorVerifyTests
             {
                 public Task<string> GetMessage() => Task.FromResult("hello world");
             }
+
             """
         );
 
@@ -485,7 +487,10 @@ public class MapHandlerIncrementalGeneratorVerifyTests
             MetadataReference.CreateFromFile(typeof(ILambdaContext).Assembly.Location),
         ];
 
-        var compilationOptions = new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary);
+        var compilationOptions = new CSharpCompilationOptions(
+            OutputKind.DynamicallyLinkedLibrary,
+            nullableContextOptions: NullableContextOptions.Enable
+        );
 
         var compilation = CSharpCompilation.Create(
             "Tests",
