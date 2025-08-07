@@ -307,9 +307,10 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
                 .OfType<ReturnStatementSyntax>()
                 .FirstOrDefault(syntax => syntax.Expression is not null)
                 ?.Transform(syntax =>
-                {
-                    return sematicModel.GetTypeInfo(syntax?.Expression).Type?.GetAsGlobal();
-                }),
+                    syntax.Expression is null
+                        ? null
+                        : sematicModel.GetTypeInfo(syntax.Expression).Type?.GetAsGlobal()
+                ),
 
             // Default to void if no return type is found
             _ => null,
