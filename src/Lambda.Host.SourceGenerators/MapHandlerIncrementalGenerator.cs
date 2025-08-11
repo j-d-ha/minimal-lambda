@@ -359,6 +359,61 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
             .ToList();
     }
 
+    private static (string returnType, bool isAsync) ExtractLambdaReturnType(
+        GeneratorSyntaxContext context,
+        ParenthesizedLambdaExpressionSyntax lambdaExpression
+    )
+    {
+        var sematicModel = context.SemanticModel;
+        
+        var isAsync = lambdaExpression.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword);
+
+        // Hierarchy for determining lambda return type.
+        //
+        // 1. type conversion (not handled here)
+        // 2. explicit return type
+        // 3. implicit return type in expression body
+        // 4. implicit return type in block body
+        // 5. default void (or Task if async)
+        var returnType = lambdaExpression switch
+        {
+            // check for explicit return type
+            { ReturnType: var syntax } when syntax is not null => sematicModel
+                .GetTypeInfo(syntax)
+                .Type?.GetAsGlobal(syntax),
+
+            // Handle implicit return type for expression lambda
+            { Body: var expression } when expression is ExpressionSyntax => sematicModel
+                .GetTypeInfo(expression)
+                .Type?.GetAsGlobal(),
+
+            // Handle implicit return type for block lambda
+            { Body: var block } when block is BlockSyntax => block
+                .DescendantNodes()
+                .OfType<ReturnStatementSyntax>()
+                .FirstOrDefault(syntax => syntax.Expression is not null)
+                ?.Transform(syntax =>
+                    syntax.Expression is null
+                        ? null
+                        : sematicModel.GetTypeInfo(syntax.Expression).Type?.GetAsGlobal()
+                ),
+
+            // Default to void if no return type is found
+            _ => null,
+        };
+
+        var returnTypeName = (ReturnType: returnType, IsAsync: isAsync) switch
+        {
+            (null, true) => TypeConstants.Task,
+            (null, false) => TypeConstants.Void,
+            (TypeConstants.Task, true) => TypeConstants.Task,
+            (var type, true) => $"{TypeConstants.Task}<{type}>",
+            var (type, _) => type,
+        };
+
+        return (returnTypeName, isAsync);
+    }
+
     private static void GenerateLambdaReport(
         SourceProductionContext context,
         ImmutableArray<DelegateInfo> delegateInfos
