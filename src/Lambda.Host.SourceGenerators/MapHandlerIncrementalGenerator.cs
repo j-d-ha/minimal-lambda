@@ -56,23 +56,11 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
         // Get the method symbol being invoked
         var symbolInfo = context.SemanticModel.GetSymbolInfo(invocationExpr);
 
-        // var methodSymbol = symbolInfo.Symbol as IMethodSymbol;
         if (symbolInfo.Symbol is not IMethodSymbol methodSymbol)
-        {
-            if (symbolInfo.CandidateSymbols.Length == 0)
-                return null;
-
-            // If direct resolution fails, check candidates
-            var candidates = symbolInfo.CandidateSymbols.OfType<IMethodSymbol>().ToList();
-            if (candidates.Count == 0)
-                return null;
-
-            // Pick the first candidate or apply your own logic to choose
-            methodSymbol = candidates.First();
-        }
+            return null;
 
         // Check if it's from LambdaApplication
-        if (methodSymbol?.ContainingType?.Name != StartupClassName)
+        if (methodSymbol.ContainingType?.Name != StartupClassName)
             return null;
 
         var firstArgument = invocationExpr.ArgumentList.Arguments[0];
@@ -365,7 +353,7 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
     )
     {
         var sematicModel = context.SemanticModel;
-        
+
         var isAsync = lambdaExpression.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword);
 
         // Hierarchy for determining lambda return type.
@@ -465,8 +453,8 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
                 .ToList() ?? [];
 
         // 1. if Action -> no return
-        // 2. if Func + Task return type -> return value
         // 3. if Func + Task return type + async -> no return
+        // 2. if Func + Task return type -> return value
         // 4. if Func + non-Task return type -> return value
         var hasReturnValue = delegateInfo switch
         {
