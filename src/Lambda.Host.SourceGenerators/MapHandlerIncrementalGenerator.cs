@@ -53,7 +53,6 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
         if (context.Node is not InvocationExpressionSyntax invocationExpr)
             return null;
 
-        // Get the method symbol being invoked
         var symbolInfo = context.SemanticModel.GetSymbolInfo(invocationExpr);
 
         if (symbolInfo.Symbol is not IMethodSymbol methodSymbol)
@@ -86,6 +85,62 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
             _ => null,
         };
     }
+
+    private static Func<DelegateInfo, DelegateInfo> UpdateTypesFromCast(
+        GeneratorSyntaxContext context,
+        CastExpressionSyntax castExpression
+    ) =>
+        (delegateInfo) =>
+        {
+            var castTypeInfo = context.SemanticModel.GetTypeInfo(castExpression.Type);
+
+            if (castTypeInfo.Type is IErrorTypeSymbol)
+                throw new InvalidOperationException(
+                    $"Failed to resolve type info for {castTypeInfo.Type.ToDisplayString()}."
+                );
+
+            if (castTypeInfo.Type is not INamedTypeSymbol namedType)
+                throw new InvalidOperationException(
+                    $"Cast type must be a named delegate type, but got {castTypeInfo.Type?.ToDisplayString() ?? "null"}."
+                );
+
+            var invokeMethod = namedType
+                .GetMembers("Invoke")
+                .OfType<IMethodSymbol>()
+                .FirstOrDefault();
+
+            if (invokeMethod == null)
+                throw new InvalidOperationException(
+                    $"Cast type {namedType.ToDisplayString()} is not a valid delegate type (missing Invoke method)."
+                );
+
+            if (invokeMethod.Parameters.Length != delegateInfo.Parameters.Count)
+                throw new InvalidOperationException(
+                    $"Parameter count mismatch: cast delegate has {invokeMethod.Parameters.Length} parameters, "
+                        + $"but existing delegate has {delegateInfo.Parameters.Count} parameters."
+                );
+
+            var updatedParameters = invokeMethod
+                .Parameters.Zip(
+                    delegateInfo.Parameters,
+                    (castParam, originalParam) =>
+                        new ParameterInfo
+                        {
+                            ParameterName = originalParam.ParameterName,
+                            Type = castParam.Type.GetAsGlobal(),
+                            Attributes = originalParam.Attributes,
+                        }
+                )
+                .ToList();
+
+            return new DelegateInfo
+            {
+                ResponseType = invokeMethod.ReturnType.GetAsGlobal(),
+                Namespace = delegateInfo.Namespace,
+                IsAsync = invokeMethod.IsAsync,
+                Parameters = updatedParameters,
+            };
+        };
 
     private static string GetFileNamespace(SyntaxNode node, SemanticModel semanticModel)
     {
@@ -486,9 +541,9 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
 
 internal sealed class DelegateInfo
 {
-    internal required string ResponseType { get; set; }
-    internal required string Namespace { get; set; }
-    internal required bool IsAsync { get; set; }
+    internal required string? ResponseType { get; set; } = TypeConstants.Void;
+    internal required string? Namespace { get; set; } = null;
+    internal required bool IsAsync { get; set; } = false;
 
     internal string DelegateType => ResponseType == TypeConstants.Void ? "Action" : "Func";
     internal List<ParameterInfo> Parameters { get; set; } = [];
@@ -496,13 +551,13 @@ internal sealed class DelegateInfo
 
 internal sealed class ParameterInfo
 {
-    internal required string ParameterName { get; set; }
-    internal required string Type { get; set; }
+    internal required string? ParameterName { get; set; } = null;
+    internal required string? Type { get; set; } = null;
     internal List<AttributeInfo> Attributes { get; set; } = [];
 }
 
 internal sealed class AttributeInfo
 {
-    internal required string Type { get; set; }
+    internal required string? Type { get; set; } = null;
     internal List<string> Arguments { get; set; } = [];
 }
