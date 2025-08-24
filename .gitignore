@@ -61,3 +61,4 @@ nunit-*.xml
 *.received.*
 
 **/PLAN.md
+**/*.DotSettings.user
