@@ -22,6 +22,15 @@
 - Commit only after user approval
 - Use clear commit messages
 - Create feature branches for substantial changes
+- Use conventional commits format:
+  - ```text
+    <type>[optional scope]: <description>
+
+    [optional body]
+    
+    [optional footer(s)]
+    ```  
+  - Types: feat, fix, docs, refactor, test, chore
 
 #### 4. Plan Template
 ```markdown

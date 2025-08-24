@@ -271,6 +271,150 @@ public class MapHandlerIncrementalGeneratorVerifyTests
         );
 
     [Fact]
+    public async Task Test_BlockLambda_SimpleLambdaTypeCast() =>
+        await Verify(
+            """
+            using System;
+            using Lambda.Host;
+            using Microsoft.Extensions.DependencyInjection;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
+            builder.Services.AddSingleton<IService, Service>();
+            var lambda = builder.Build();
+
+            lambda.MapHandler(
+                (Func<IService, string>)(
+                    service =>
+                    {
+                        Console.WriteLine("hello world");
+                        return service.GetMessage();
+                    }
+                )
+            );
+
+            await lambda.RunAsync();
+
+            public interface IService
+            {
+                string GetMessage();
+            }
+
+            public class Service : IService
+            {
+                public string GetMessage() => "hello world";
+            }
+
+            """
+        );
+
+    [Fact]
+    public async Task Test_BlockLambda_LambdaWithNoTypeInfoTypeCast() =>
+        await Verify(
+            """
+            using System;
+            using Lambda.Host;
+            using Microsoft.Extensions.DependencyInjection;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
+            builder.Services.AddSingleton<IService, Service>();
+            var lambda = builder.Build();
+
+            lambda.MapHandler(
+                (Func<IService, string, string>)(
+                    (service, input) =>
+                    {
+                        Console.WriteLine("hello world");
+                        return service.GetMessage();
+                    }
+                )
+            );
+
+            await lambda.RunAsync();
+
+            public interface IService
+            {
+                string GetMessage();
+            }
+
+            public class Service : IService
+            {
+                public string GetMessage() => "hello world";
+            }
+            """
+        );
+
+    [Fact]
+    public async Task Test_StaticMethodHandler_IdentifierNameTypeCast() =>
+        await Verify(
+            """
+            using System;
+            using Lambda.Host;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
+            var lambda = builder.Build();
+
+            lambda.MapHandler((Func<Int32>)Handler);
+
+            await lambda.RunAsync();
+
+            static int Handler()
+            {
+                return 0;
+            }
+            """
+        );
+
+    [Fact]
+    public async Task Test_StaticMethodHandler_MemberAccessExpressionTypeCast() =>
+        await Verify(
+            """
+            using System;
+            using Lambda.Host;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
+            var lambda = builder.Build();
+
+            lambda.MapHandler((Func<Int32>)Handler.Function);
+
+            await lambda.RunAsync();
+
+            public static class Handler
+            {
+                public static int Function()
+                {
+                    return 0;
+                }
+            }
+            """
+        );
+
+    [Fact]
+    public async Task Test_StaticMethodHandler_TypeCast_ExtraParentheses() =>
+        await Verify(
+            """
+            using System;
+            using Lambda.Host;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
+            var lambda = builder.Build();
+
+            lambda.MapHandler((Func<Int32>)(Handler));
+
+            await lambda.RunAsync();
+
+            static int Handler()
+            {
+                return 0;
+            }
+            """
+        );
+
+    [Fact]
     public async Task Test_BlockLambda_TypeCast_NoReturn() =>
         await Verify(
             """
