@@ -19,10 +19,13 @@
     <PackageReference Include="Amazon.Lambda.RuntimeSupport" Version="1.12.0"/>
     <PackageReference Include="Amazon.Lambda.Core" Version="2.5.0"/>
     <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.4.4"/>
+    <PackageReference Include="System.Collections.Immutable" Version="8.0.0"/>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Lambda.Host\Lambda.Host.csproj"/>
+    <ProjectReference Include="..\..\src\Lambda.Host\Lambda.Host.csproj"
+                      OutputItemType="Analyzer"
+                      ReferenceOutputAssembly="true"/>
   </ItemGroup>
 
   <ItemGroup>
