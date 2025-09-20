@@ -7,18 +7,28 @@
     <Nullable>enable</Nullable>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
     <IncludeBuildOutput>true</IncludeBuildOutput>
+
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <PackageScribanIncludeSource>true</PackageScribanIncludeSource>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Bcl.AsyncInterfaces" Version="10.0.0-preview.6.25358.103"/>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.7"/>
+
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" Version="4.14.0" PrivateAssets="all"/>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="4.14.0" PrivateAssets="all"/>
+    <PackageReference Include="PolySharp" Version="1.15.0">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="Scriban" Version="6.2.1" IncludeAssets="Build"/>
+    <PackageReference Include="Microsoft.CSharp" Version="4.7.0"/>
+    <PackageReference Include="System.Threading.Tasks.Extensions" Version="4.6.3"/>
   </ItemGroup>
 
-  <!-- Reference source generator as analyzer -->
   <ItemGroup>
-    <ProjectReference Include="../Lambda.Host.SourceGenerators/Lambda.Host.SourceGenerators.csproj"
-                      OutputItemType="Analyzer"
-                      ReferenceOutputAssembly="false"/>
+    <EmbeddedResource Include="Templates\*.scriban"/>
   </ItemGroup>
 
 </Project>
