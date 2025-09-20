@@ -1,8 +1,8 @@
-namespace Lambda.Host.SourceGenerators;
+namespace Lambda.Host.SourceGenerators.Extensions;
 
-public static class StringCaseExtensions
+internal static class StringCaseExtensions
 {
-    public static string ToCamelCase(this string str)
+    internal static string ToCamelCase(this string str)
     {
         if (string.IsNullOrEmpty(str) || str.Length == 0)
             return str;
@@ -12,7 +12,7 @@ public static class StringCaseExtensions
         return char.ToLowerInvariant(str[0]) + str[1..];
     }
 
-    public static string ToPrivateCamelCase(this string str) => "_" + str.ToCamelCase();
+    internal static string ToPrivateCamelCase(this string str) => "_" + str.ToCamelCase();
 
     private static string RemoveInterfaceI(this string str) =>
         string.IsNullOrEmpty(str) || str.Length < 2 || str[0] != 'I' || !char.IsUpper(str[1])

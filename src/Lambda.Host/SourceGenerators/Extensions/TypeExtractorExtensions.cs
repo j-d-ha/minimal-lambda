@@ -1,7 +1,7 @@
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 
-namespace Lambda.Host.SourceGenerators;
+namespace Lambda.Host.SourceGenerators.Extensions;
 
 internal static class TypeExtractorExtensions
 {

@@ -3,7 +3,7 @@ using Scriban;
 
 namespace Lambda.Host.SourceGenerators;
 
-public static class TemplateHelper
+internal static class TemplateHelper
 {
     /// <summary>
     ///     Loads a Scriban template from embedded resources

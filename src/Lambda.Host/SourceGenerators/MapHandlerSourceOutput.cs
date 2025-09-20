@@ -1,4 +1,5 @@
 using System.Collections.Immutable;
+using Lambda.Host.SourceGenerators.Extensions;
 using Lambda.Host.SourceGenerators.Models;
 using Microsoft.CodeAnalysis;
 

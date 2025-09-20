@@ -1,3 +1,4 @@
+using Lambda.Host.SourceGenerators.Extensions;
 using Lambda.Host.SourceGenerators.Models;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
