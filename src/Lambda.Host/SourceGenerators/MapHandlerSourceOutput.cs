@@ -104,24 +104,24 @@ internal static class MapHandlerSourceOutput
         var diagnostics = new List<Diagnostic>();
 
         // check for multiple invocations of MapHandler
-        if (delegateInfos.Length > 1)
-            diagnostics.AddRange(
-                delegateInfos
-                    .Skip(1)
-                    .Select(df =>
-                        Diagnostic.Create(
-                            new DiagnosticDescriptor(
-                                DiagnosticCodeConstants.MapHandlerCalledMultipleTimes,
-                                "MapHandler called multiple times",
-                                "MapHandler called multiple times",
-                                "Lambda.Host",
-                                DiagnosticSeverity.Error,
-                                true
-                            ),
-                            df.Location
-                        )
+        diagnostics.AddRange(
+            delegateInfos
+                .Skip(1)
+                .Select(df =>
+                    Diagnostic.Create(
+                        new DiagnosticDescriptor(
+                            DiagnosticCodeConstants.MapHandlerCalledMultipleTimes,
+                            "Method can only be invoked once per project",
+                            "Method '{0}' can only be invoked once per project. Remove this duplicate invocation.",
+                            "Lambda.Host",
+                            DiagnosticSeverity.Error,
+                            true
+                        ),
+                        df.Location,
+                        "LambdaApplication.MapHandler(Delegate)"
                     )
-            );
+                )
+        );
 
         return diagnostics;
     }
