@@ -650,36 +650,12 @@ public class MapHandlerIncrementalGeneratorVerifyTests
 
     private static Task Verify(string source)
     {
-        var syntaxTree = CSharpSyntaxTree.ParseText(source);
+        var driver = GeneratorTestHelpers.GenerateFromSource(source);
 
-        List<MetadataReference> references =
-        [
-            .. Net80.References.All,
-            MetadataReference.CreateFromFile(typeof(LambdaApplication).Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(FromKeyedServicesAttribute).Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(ILambdaContext).Assembly.Location),
-        ];
-
-        var compilationOptions = new CSharpCompilationOptions(
-            OutputKind.DynamicallyLinkedLibrary,
-            nullableContextOptions: NullableContextOptions.Enable
-        );
-
-        var compilation = CSharpCompilation.Create(
-            "Tests",
-            [syntaxTree],
-            references,
-            compilationOptions
-        );
-
-        var generator = new MapHandlerIncrementalGenerator().AsSourceGenerator();
-
-        GeneratorDriver driver = CSharpGeneratorDriver.Create(generator);
-
-        driver = driver.RunGenerators(compilation);
         driver.Should().NotBeNull();
 
         var result = driver.GetRunResult();
+
         result.Diagnostics.Should().BeEmpty();
         result.GeneratedTrees.Length.Should().Be(1);
 
