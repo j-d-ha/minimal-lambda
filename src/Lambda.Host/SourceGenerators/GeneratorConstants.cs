@@ -6,6 +6,7 @@ namespace Lambda.Host.SourceGenerators;
 internal static class TypeConstants
 {
     internal const string ILambdaContext = "global::Amazon.Lambda.Core.ILambdaContext";
+    internal const string ILambdaContextName = "lambdaContext";
     internal const string Task = "global::System.Threading.Tasks.Task";
     internal const string Void = "void";
 }
