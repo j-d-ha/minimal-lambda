@@ -7,6 +7,30 @@ namespace Lambda.Host.SourceGenerators;
 
 internal static class MapHandlerSourceOutput
 {
+    private static readonly DependencyInfo DelegateHolderInfo = new()
+    {
+        Type = "global::Lambda.Host.DelegateHolder",
+        ParameterName = "delegateHolder",
+    };
+
+    private static readonly DependencyInfo ServiceProviderInfo = new()
+    {
+        Type = "global::System.IServiceProvider",
+        ParameterName = "serviceProvider",
+    };
+
+    private static readonly DependencyInfo LambdaCancellationTokenSourceFactoryInfo = new()
+    {
+        Type = "global::Lambda.Host.Interfaces.ILambdaCancellationTokenSourceFactory",
+        ParameterName = "lambdaCancellationTokenSourceFactory",
+    };
+
+    private static readonly ImmutableList<DependencyInfo> DefaultInjectedDependencies =
+    [
+        DelegateHolderInfo,
+        ServiceProviderInfo,
+    ];
+
     internal static void Generate(
         SourceProductionContext context,
         ImmutableArray<MapHandlerInvocationInfo> delegateInfos
@@ -23,6 +47,30 @@ internal static class MapHandlerSourceOutput
         }
 
         var delegateInfo = delegateInfos.First().DelegateInfo;
+
+        // handle cancellation token
+        //
+        // ILambdaContext needs to be added to lambdaParams if a CancellationToken is requested and
+        // the ILambdaContext is not asked for yet. If a ILambdaContext is asked for, and it is
+        // named something other than lambdaContext, we need to assign it to the variable name
+        // lambdaContext OR update out code to work with the new name.
+        //
+        // Will need to support multiple tokens asked for (stupid but easier than telling the user that).
+
+        var isCancellationTokenRequested = delegateInfo.Parameters.Any(p =>
+            p.Type == TypeConstants.CancellationToken
+        );
+
+        var injectedDependencies = DefaultInjectedDependencies
+            .ToList()
+            .Concat(isCancellationTokenRequested ? [LambdaCancellationTokenSourceFactoryInfo] : [])
+            .Select(di => new
+            {
+                type = di.Type,
+                parameter_name = di.ParameterName,
+                field_name = di.FieldName,
+            })
+            .ToList();
 
         var delegateArguments = delegateInfo
             .Parameters.Select(p => p.Type)
@@ -69,8 +117,9 @@ internal static class MapHandlerSourceOutput
         // 4. if Func + non-Task return type -> return value
         var hasReturnValue = delegateInfo switch
         {
-            { DelegateType: "Action" } => false,
-            { DelegateType: "Func", IsAsync: true, ResponseType: TypeConstants.Task } => false,
+            { DelegateType: TypeConstants.Action } => false,
+            { DelegateType: TypeConstants.Func, IsAsync: true, ResponseType: TypeConstants.Task } =>
+                false,
             _ => true,
         };
 
@@ -78,6 +127,7 @@ internal static class MapHandlerSourceOutput
         {
             @namespace = delegateInfo.Namespace,
             service = "LambdaStartupService",
+            injected_dependencies = injectedDependencies,
             fields = classFields,
             delegate_type = delegateInfo.DelegateType,
             delegate_args = delegateArguments,

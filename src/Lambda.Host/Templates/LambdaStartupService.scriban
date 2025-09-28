@@ -6,53 +6,51 @@
 
 #nullable enable
 
-using System;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-
 namespace {{ @namespace }};
 
-public class {{ service }} : IHostedService
+public class {{ service }} : global::Microsoft.Extensions.Hosting.IHostedService
 {
-    private readonly global::Lambda.Host.DelegateHolder _delegateHolder;
-    private readonly global::System.IServiceProvider _serviceProvider;
-    
-    public {{ service }}(global::Lambda.Host.DelegateHolder delegateHolder, IServiceProvider serviceProvider)
+    {{~ for dependency in injected_dependencies ~}}
+    private readonly {{ dependency.type }} {{ dependency.field_name }};
+    {{~ end ~}}
+
+    public {{ service }}({{ for dependency in injected_dependencies }}{{ dependency.type }} {{ dependency.parameter_name }}{{ if !for.last }}, {{ end }}{{ end }})
     {
-        _delegateHolder = delegateHolder;
-        _serviceProvider = serviceProvider;
+        {{~ for dependency in injected_dependencies ~}}
+        this.{{ dependency.field_name }} = {{ dependency.parameter_name }};
+        {{~ end ~}}
     }
     
     public async global::System.Threading.Tasks.Task StartAsync(global::System.Threading.CancellationToken cancellationToken)
     {
-        if (!_delegateHolder.IsHandlerSet)
-            throw new InvalidOperationException("Handler is not set");
+        if (!this._delegateHolder.IsHandlerSet)
+            throw new global::System.InvalidOperationException("Handler is not set");
             
-        if (_delegateHolder.Handler is not {{ delegate_type }} {{~ if delegate_args.size > 0 ~}} <{{ delegate_args | array.join ", " }}> {{~ end }} lambdaHandler)
-            throw new InvalidOperationException("Invalid handler type.");
+        if (this._delegateHolder.Handler is not {{ delegate_type }} {{~ if delegate_args.size > 0 ~}} <{{ delegate_args | array.join ", " }}> {{~ end }} lambdaHandler)
+            throw new global::System.InvalidOperationException("Invalid handler type.");
             
-        var lambdaSerializer = _serviceProvider.GetService<global::Amazon.Lambda.Core.ILambdaSerializer>() ?? new global::Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer();
+        var lambdaSerializer = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetService<global::Amazon.Lambda.Core.ILambdaSerializer>(this._serviceProvider) ?? new global::Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer();
 
         await global::Amazon.Lambda.RuntimeSupport.LambdaBootstrapBuilder
             .Create(
                 {{ if is_lambda_async ~}} async {{ end ~}}({{ lambda_params | array.join ", " }}) => 
                 {
-                    using var scope = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.CreateScope(_serviceProvider);
+                    using var __scope = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.CreateScope(this._serviceProvider);
                     
                     {{~ if fields.size > 0 ~}}
                     {{~ for field in fields ~}}
                         {{~ if field.keyed_service_key ~}}
-                    var {{ field.name }} = scope.ServiceProvider.GetRequiredKeyedService<{{ field.type }}>("{{ field.keyed_service_key }}");
+                    var {{ field.name }} = global::Microsoft.Extensions.DependencyInjection.ServiceProviderKeyedServiceExtensions.GetRequiredKeyedService<{{ field.type }}>(__scope.ServiceProvider, "{{ field.keyed_service_key }}");
                         {{~ else ~}}
-                    var {{ field.name }} = scope.ServiceProvider.GetRequiredService<{{ field.type }}>();
+                    var {{ field.name }} = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetRequiredService<{{ field.type }}>(__scope.ServiceProvider);
                         {{~ end ~}}
                     {{~ end ~}}
                     
                     {{~ end ~}}
-                    {{ if has_return_value ~}}var response = {{ end ~}}{{~ if is_lambda_async ~}} await {{ end ~}}lambdaHandler({{ handler_args | array.join ", " }});
+                    {{ if has_return_value ~}}var __response = {{ end ~}}{{~ if is_lambda_async ~}} await {{ end ~}}lambdaHandler({{ handler_args | array.join ", " }});
                     {{~ if has_return_value ~}}
                     
-                    return response;
+                    return __response;
                     {{~ end ~}}
                 },
                 lambdaSerializer

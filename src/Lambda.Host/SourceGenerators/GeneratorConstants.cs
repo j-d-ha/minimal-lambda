@@ -7,8 +7,16 @@ internal static class TypeConstants
 {
     internal const string ILambdaContext = "global::Amazon.Lambda.Core.ILambdaContext";
     internal const string ILambdaContextName = "lambdaContext";
+
+    internal const string CancellationToken = "global::System.Threading.CancellationToken";
+
     internal const string Task = "global::System.Threading.Tasks.Task";
+
     internal const string Void = "void";
+
+    internal const string Action = "global::System.Action";
+
+    internal const string Func = "global::System.Func";
 }
 
 /// <summary>

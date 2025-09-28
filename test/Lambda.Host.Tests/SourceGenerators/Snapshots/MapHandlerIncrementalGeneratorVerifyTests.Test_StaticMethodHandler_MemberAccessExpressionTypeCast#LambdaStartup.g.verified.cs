@@ -7,42 +7,38 @@
 
 #nullable enable
 
-using System;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
-
 namespace Tests;
 
-public class LambdaStartupService : IHostedService
+public class LambdaStartupService : global::Microsoft.Extensions.Hosting.IHostedService
 {
     private readonly global::Lambda.Host.DelegateHolder _delegateHolder;
     private readonly global::System.IServiceProvider _serviceProvider;
-    
-    public LambdaStartupService(global::Lambda.Host.DelegateHolder delegateHolder, IServiceProvider serviceProvider)
+
+    public LambdaStartupService(global::Lambda.Host.DelegateHolder delegateHolder, global::System.IServiceProvider serviceProvider)
     {
-        _delegateHolder = delegateHolder;
-        _serviceProvider = serviceProvider;
+        this._delegateHolder = delegateHolder;
+        this._serviceProvider = serviceProvider;
     }
     
     public async global::System.Threading.Tasks.Task StartAsync(global::System.Threading.CancellationToken cancellationToken)
     {
-        if (!_delegateHolder.IsHandlerSet)
-            throw new InvalidOperationException("Handler is not set");
+        if (!this._delegateHolder.IsHandlerSet)
+            throw new global::System.InvalidOperationException("Handler is not set");
             
-        if (_delegateHolder.Handler is not Func<int> lambdaHandler)
-            throw new InvalidOperationException("Invalid handler type.");
+        if (this._delegateHolder.Handler is not global::System.Func<int> lambdaHandler)
+            throw new global::System.InvalidOperationException("Invalid handler type.");
             
-        var lambdaSerializer = _serviceProvider.GetService<global::Amazon.Lambda.Core.ILambdaSerializer>() ?? new global::Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer();
+        var lambdaSerializer = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetService<global::Amazon.Lambda.Core.ILambdaSerializer>(this._serviceProvider) ?? new global::Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer();
 
         await global::Amazon.Lambda.RuntimeSupport.LambdaBootstrapBuilder
             .Create(
                 () => 
                 {
-                    using var scope = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.CreateScope(_serviceProvider);
+                    using var __scope = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.CreateScope(this._serviceProvider);
                     
-                    var response = lambdaHandler();
+                    var __response = lambdaHandler();
                     
-                    return response;
+                    return __response;
                 },
                 lambdaSerializer
             )

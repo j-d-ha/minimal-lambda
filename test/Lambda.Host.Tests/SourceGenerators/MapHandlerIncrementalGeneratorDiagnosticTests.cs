@@ -54,7 +54,7 @@ public class MapHandlerIncrementalGeneratorDiagnosticTests
 
     private static ImmutableArray<Diagnostic> GenerateDiagnostics(string source)
     {
-        var driver = GeneratorTestHelpers.GenerateFromSource(source);
+        var (driver, _) = GeneratorTestHelpers.GenerateFromSource(source);
 
         driver.Should().NotBeNull();
 

@@ -1,6 +1,8 @@
 using System.Reflection;
+using Lambda.Host.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.Metrics;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -9,6 +11,7 @@ namespace Lambda.Host;
 
 public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
 {
+    private readonly TimeSpan _defaultCancellationBuffer = TimeSpan.FromSeconds(3);
     private readonly HostApplicationBuilder _hostBuilder;
 
     public LambdaApplicationBuilder() => _hostBuilder = new HostApplicationBuilder();
@@ -57,6 +60,15 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
         }
 
         Services.AddSingleton<DelegateHolder>();
+
+        // Attempt to add a default cancellation token source factory if one is not already
+        // registered.
+        Services.TryAddSingleton<ILambdaCancellationTokenSourceFactory>(
+            _ => new LambdaCancellationTokenSourceFactory(_defaultCancellationBuffer)
+        );
+
+        // NOTE: we cannot provide a default for ILambdaSerializer as DefaultLambdaJsonSerializer from
+        // Amazon.Lambda.Serialization.SystemTextJson does not support netstandard2.1.
 
         var host = _hostBuilder.Build();
 
