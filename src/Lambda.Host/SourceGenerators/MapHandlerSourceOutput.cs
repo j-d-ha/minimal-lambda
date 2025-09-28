@@ -24,11 +24,10 @@ internal static class MapHandlerSourceOutput
 
         var delegateInfo = delegateInfos.First().DelegateInfo;
 
-        var delegateArguments = (delegateInfo.Parameters.Select(p => p.Type) ?? [])
+        var delegateArguments = delegateInfo
+            .Parameters.Select(p => p.Type)
             .Concat(
-                new[] { delegateInfo?.ResponseType }.Where(t =>
-                    t != null && t != TypeConstants.Void
-                )
+                new[] { delegateInfo.ResponseType }.Where(t => t != null && t != TypeConstants.Void)
             )
             .ToList();
 
@@ -51,18 +50,18 @@ internal static class MapHandlerSourceOutput
             })
             .ToList();
 
-        var handlerArgs =
-            delegateInfo.Parameters.Select(p => p.ParameterName.ToCamelCase()).ToList() ?? [];
+        var handlerArgs = delegateInfo
+            .Parameters.Select(p => p.ParameterName.ToCamelCase())
+            .ToList();
 
-        var lambdaParams =
-            delegateInfo
-                .Parameters.Where(p =>
-                    p.Attributes.Any(a => a.Type == AttributeConstants.Request)
-                    || p.Type == TypeConstants.ILambdaContext
-                )
-                .OrderBy(p => p.Type == TypeConstants.ILambdaContext ? 1 : 0)
-                .Select(p => p.Type + " " + p.ParameterName.ToCamelCase())
-                .ToList() ?? [];
+        var lambdaParams = delegateInfo
+            .Parameters.Where(p =>
+                p.Attributes.Any(a => a.Type == AttributeConstants.Request)
+                || p.Type == TypeConstants.ILambdaContext
+            )
+            .OrderBy(p => p.Type == TypeConstants.ILambdaContext ? 1 : 0)
+            .Select(p => p.Type + " " + p.ParameterName.ToCamelCase())
+            .ToList();
 
         // 1. if Action -> no return
         // 3. if Func + Task return type + async -> no return
@@ -84,7 +83,7 @@ internal static class MapHandlerSourceOutput
             delegate_args = delegateArguments,
             handler_args = handlerArgs,
             lambda_params = lambdaParams,
-            is_lambda_async = delegateInfo?.IsAsync ?? false,
+            is_lambda_async = delegateInfo.IsAsync,
             has_return_value = hasReturnValue,
         };
 
