@@ -62,3 +62,6 @@ nunit-*.xml
 
 **/PLAN.md
 **/*.DotSettings.user
+
+/LocalPackages/
+/examples/Lambda.Host.Example.HelloWorld/Generated/
