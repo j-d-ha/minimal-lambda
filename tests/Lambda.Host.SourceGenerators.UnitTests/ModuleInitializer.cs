@@ -1,6 +1,6 @@
 using System.Runtime.CompilerServices;
 
-namespace Lambda.Host.Tests.SourceGenerators;
+namespace Lambda.Host.SourceGenerators.UnitTests;
 
 public static class ModuleInitializer
 {

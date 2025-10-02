@@ -1,11 +1,12 @@
-// /Users/jonasha/Repos/CSharp/dotnet-lambda-host/test/Lambda.Host.Tests/LambdaCancellationTokenSourceFactoryTest.cs:
+// /Users/jonasha/Repos/CSharp/dotnet-lambda-host/test/Lambda.Host.UnitTests/LambdaCancellationTokenSourceFactoryTest.cs:
 
 using Amazon.Lambda.Core;
 using AwesomeAssertions;
 using JetBrains.Annotations;
 using NSubstitute;
+using Xunit;
 
-namespace Lambda.Host.Tests;
+namespace Lambda.Host.UnitTests;
 
 [TestSubject(typeof(LambdaCancellationTokenSourceFactory))]
 public class LambdaCancellationTokenSourceFactoryTest

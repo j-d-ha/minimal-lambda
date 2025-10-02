@@ -37,9 +37,7 @@ public class {{ service }} : global::Microsoft.Extensions.Hosting.IHostedService
                 {
                     {{~ if cancellation_token_details.is_cancellation_token_requested ~}}
                     using var __cancellationTokenSource = _lambdaCancellationTokenSourceFactory.NewCancellationTokenSource({{ cancellation_token_details.lambda_context_parameter_name }});
-                    {{~ for cancellation_token_var_name in cancellation_token_details.cancellation_token_var_names ~}}
-                    var {{ cancellation_token_var_name }} = __cancellationTokenSource.Token;
-                    {{~ end ~}}
+                    var {{ cancellation_token_details.cancellation_token_var_name }} = __cancellationTokenSource.Token;
                     
                     {{~ end ~}}
                     using var __scope = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.CreateScope(this._serviceProvider);

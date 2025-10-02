@@ -2,13 +2,12 @@ using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using Basic.Reference.Assemblies;
-using Lambda.Host.SourceGenerators;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace Lambda.Host.Tests.SourceGenerators;
+namespace Lambda.Host.SourceGenerators.UnitTests;
 
 internal static class GeneratorTestHelpers
 {

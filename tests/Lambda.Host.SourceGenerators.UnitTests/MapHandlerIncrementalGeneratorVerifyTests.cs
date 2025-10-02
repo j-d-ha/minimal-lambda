@@ -1,7 +1,7 @@
 ﻿using AwesomeAssertions;
 using Microsoft.CodeAnalysis;
 
-namespace Lambda.Host.Tests.SourceGenerators;
+namespace Lambda.Host.SourceGenerators.UnitTests;
 
 public class MapHandlerIncrementalGeneratorVerifyTests
 {
