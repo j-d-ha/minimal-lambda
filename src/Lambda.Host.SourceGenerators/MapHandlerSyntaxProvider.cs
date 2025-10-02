@@ -1,3 +1,7 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using Lambda.Host.SourceGenerators.Extensions;
 using Lambda.Host.SourceGenerators.Models;
 using Microsoft.CodeAnalysis;

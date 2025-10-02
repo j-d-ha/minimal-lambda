@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+
 namespace Lambda.Host.SourceGenerators.Models;
 
 internal sealed class DelegateInfo

@@ -1,3 +1,5 @@
+using System;
+
 namespace Lambda.Host.SourceGenerators.Extensions;
 
 internal static class LinqExtensions

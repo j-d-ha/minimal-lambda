@@ -22,10 +22,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Lambda.Host\Lambda.Host.csproj"
-                      OutputItemType="Analyzer"
-                      ReferenceOutputAssembly="true"/>
+    <ProjectReference Include="..\..\src\Lambda.Host\Lambda.Host.csproj"/>
+
+    <ProjectReference Include="..\..\src\Lambda.Host.SourceGenerators\Lambda.Host.SourceGenerators.csproj"
+                      ReferenceOutputAssembly="false"
+                      OutputItemType="Analyzer"/>
   </ItemGroup>
+
 
   <ItemGroup>
     <Compile Include="obj/Generated/**/*.g.cs" Condition="'$(DesignTimeBuild)' == 'true'"/>
