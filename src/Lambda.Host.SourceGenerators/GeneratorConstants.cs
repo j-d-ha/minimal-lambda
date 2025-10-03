@@ -17,6 +17,8 @@ internal static class TypeConstants
     internal const string Action = "global::System.Action";
 
     internal const string Func = "global::System.Func";
+
+    internal const string Stream = "global::System.IO.Stream";
 }
 
 /// <summary>

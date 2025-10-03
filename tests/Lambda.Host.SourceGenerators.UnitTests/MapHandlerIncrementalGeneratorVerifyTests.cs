@@ -536,30 +536,29 @@ public class MapHandlerIncrementalGeneratorVerifyTests
             """
         );
 
-    // // THIS TEST REQUIRES THAT LAMBDA SERIALIZER IS NOT PASSED TO LambdaBootstrapBuilder.Create
-    //     [Fact]
-    //     public async Task Test_StaticMethodHandler_NoInput_NoOutput() =>
-    //         await Verify(
-    //             """
-    //             using System;
-    //             using Lambda.Host;
-    //             using Microsoft.Extensions.Hosting;
-    //
-    //             var builder = LambdaApplication.CreateBuilder();
-    //             var lambda = builder.Build();
-    //
-    //             lambda.MapHandler(Handler);
-    //
-    //             await lambda.RunAsync();
-    //
-    //             return;
-    //
-    //             static async void Handler()
-    //             {
-    //                 Console.WriteLine("Hello World!");
-    //             }
-    //             """
-    //         );
+    [Fact]
+    public async Task Test_StaticMethodHandler_NoInput_NoOutput() =>
+        await Verify(
+            """
+            using System;
+            using Lambda.Host;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
+            var lambda = builder.Build();
+
+            lambda.MapHandler(Handler);
+
+            await lambda.RunAsync();
+
+            return;
+
+            static void Handler()
+            {
+                Console.WriteLine("Hello World!");
+            }
+            """
+        );
 
     // Additional handler type not shown in the examples - generic handlers with complex custom types
     [Fact]
@@ -675,6 +674,42 @@ public class MapHandlerIncrementalGeneratorVerifyTests
             var lambda = builder.Build();
 
             lambda.MapHandler((CancellationToken ct, ILambdaContext ctx) => "hello world");
+
+            await lambda.RunAsync();
+            """
+        );
+
+    [Fact]
+    public async Task Test_ExpressionLambda_StreamRequest() =>
+        await Verify(
+            """
+            using System.IO;
+            using Lambda.Host;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
+
+            var lambda = builder.Build();
+
+            lambda.MapHandler(([Request] Stream input) => { });
+
+            await lambda.RunAsync();
+            """
+        );
+
+    [Fact]
+    public async Task Test_BlockLambda_StreamResponse() =>
+        await Verify(
+            """
+            using System.IO;
+            using Lambda.Host;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
+
+            var lambda = builder.Build();
+
+            lambda.MapHandler(Stream () => new FileStream("hello.txt", FileMode.Open));
 
             await lambda.RunAsync();
             """

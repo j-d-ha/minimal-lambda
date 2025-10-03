@@ -13,13 +13,11 @@ public class LambdaStartupService : global::Microsoft.Extensions.Hosting.IHosted
 {
     private readonly global::Lambda.Host.DelegateHolder _delegateHolder;
     private readonly global::System.IServiceProvider _serviceProvider;
-    private readonly global::Amazon.Lambda.Core.ILambdaSerializer _lambdaSerializer;
 
-    public LambdaStartupService(global::Lambda.Host.DelegateHolder delegateHolder, global::System.IServiceProvider serviceProvider, global::Amazon.Lambda.Core.ILambdaSerializer lambdaSerializer)
+    public LambdaStartupService(global::Lambda.Host.DelegateHolder delegateHolder, global::System.IServiceProvider serviceProvider)
     {
         this._delegateHolder = delegateHolder;
         this._serviceProvider = serviceProvider;
-        this._lambdaSerializer = lambdaSerializer;
     }
     
     public async global::System.Threading.Tasks.Task StartAsync(global::System.Threading.CancellationToken cancellationToken)
@@ -27,7 +25,7 @@ public class LambdaStartupService : global::Microsoft.Extensions.Hosting.IHosted
         if (!this._delegateHolder.IsHandlerSet)
             throw new global::System.InvalidOperationException("Handler is not set");
             
-        if (this._delegateHolder.Handler is not global::System.Func<string> lambdaHandler)
+        if (this._delegateHolder.Handler is not global::System.Func<global::System.IO.Stream> lambdaHandler)
             throw new global::System.InvalidOperationException("Invalid handler type.");
             
         await global::Amazon.Lambda.RuntimeSupport.LambdaBootstrapBuilder
@@ -39,8 +37,7 @@ public class LambdaStartupService : global::Microsoft.Extensions.Hosting.IHosted
                     var __response = lambdaHandler();
                     
                     return __response;
-                },
-                this._lambdaSerializer
+                }
             )
             .Build()
             .RunAsync(cancellationToken);

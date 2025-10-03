@@ -13,11 +13,13 @@ public class LambdaStartupService : global::Microsoft.Extensions.Hosting.IHosted
 {
     private readonly global::Lambda.Host.DelegateHolder _delegateHolder;
     private readonly global::System.IServiceProvider _serviceProvider;
+    private readonly global::Amazon.Lambda.Core.ILambdaSerializer _lambdaSerializer;
 
-    public LambdaStartupService(global::Lambda.Host.DelegateHolder delegateHolder, global::System.IServiceProvider serviceProvider)
+    public LambdaStartupService(global::Lambda.Host.DelegateHolder delegateHolder, global::System.IServiceProvider serviceProvider, global::Amazon.Lambda.Core.ILambdaSerializer lambdaSerializer)
     {
         this._delegateHolder = delegateHolder;
         this._serviceProvider = serviceProvider;
+        this._lambdaSerializer = lambdaSerializer;
     }
     
     public async global::System.Threading.Tasks.Task StartAsync(global::System.Threading.CancellationToken cancellationToken)
@@ -28,8 +30,6 @@ public class LambdaStartupService : global::Microsoft.Extensions.Hosting.IHosted
         if (this._delegateHolder.Handler is not global::System.Func<global::IService, string, string> lambdaHandler)
             throw new global::System.InvalidOperationException("Invalid handler type.");
             
-        var lambdaSerializer = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetService<global::Amazon.Lambda.Core.ILambdaSerializer>(this._serviceProvider) ?? new global::Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer();
-
         await global::Amazon.Lambda.RuntimeSupport.LambdaBootstrapBuilder
             .Create(
                 () => 
@@ -43,7 +43,7 @@ public class LambdaStartupService : global::Microsoft.Extensions.Hosting.IHosted
                     
                     return __response;
                 },
-                lambdaSerializer
+                this._lambdaSerializer
             )
             .Build()
             .RunAsync(cancellationToken);

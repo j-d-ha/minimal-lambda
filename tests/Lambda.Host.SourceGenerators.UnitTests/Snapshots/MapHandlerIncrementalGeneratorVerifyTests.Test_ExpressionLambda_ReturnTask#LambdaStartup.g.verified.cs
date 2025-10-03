@@ -28,8 +28,6 @@ public class LambdaStartupService : global::Microsoft.Extensions.Hosting.IHosted
         if (this._delegateHolder.Handler is not global::System.Func<global::System.Threading.Tasks.Task> lambdaHandler)
             throw new global::System.InvalidOperationException("Invalid handler type.");
             
-        var lambdaSerializer = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetService<global::Amazon.Lambda.Core.ILambdaSerializer>(this._serviceProvider) ?? new global::Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer();
-
         await global::Amazon.Lambda.RuntimeSupport.LambdaBootstrapBuilder
             .Create(
                 () => 
@@ -39,8 +37,7 @@ public class LambdaStartupService : global::Microsoft.Extensions.Hosting.IHosted
                     var __response = lambdaHandler();
                     
                     return __response;
-                },
-                lambdaSerializer
+                }
             )
             .Build()
             .RunAsync(cancellationToken);
