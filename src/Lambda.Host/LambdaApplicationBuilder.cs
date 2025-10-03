@@ -1,4 +1,6 @@
 using System.Reflection;
+using Amazon.Lambda.Core;
+using Amazon.Lambda.Serialization.SystemTextJson;
 using Lambda.Host.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -67,8 +69,7 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
             _ => new LambdaCancellationTokenSourceFactory(_defaultCancellationBuffer)
         );
 
-        // NOTE: we cannot provide a default for ILambdaSerializer as DefaultLambdaJsonSerializer from
-        // Amazon.Lambda.Serialization.SystemTextJson does not support netstandard2.1.
+        Services.TryAddSingleton<ILambdaSerializer>(_ => new DefaultLambdaJsonSerializer());
 
         var host = _hostBuilder.Build();
 

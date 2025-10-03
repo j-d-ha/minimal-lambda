@@ -29,8 +29,6 @@ public class {{ service }} : global::Microsoft.Extensions.Hosting.IHostedService
         if (this._delegateHolder.Handler is not {{ delegate_type }} {{~ if delegate_args.size > 0 ~}} <{{ delegate_args | array.join ", " }}> {{~ end }} lambdaHandler)
             throw new global::System.InvalidOperationException("Invalid handler type.");
             
-        var lambdaSerializer = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.GetService<global::Amazon.Lambda.Core.ILambdaSerializer>(this._serviceProvider) ?? new global::Amazon.Lambda.Serialization.SystemTextJson.DefaultLambdaJsonSerializer();
-
         await global::Amazon.Lambda.RuntimeSupport.LambdaBootstrapBuilder
             .Create(
                 {{ if is_lambda_async ~}} async {{ end ~}}({{ for lambda_param in lambda_params }}{{ lambda_param.type }} {{ lambda_param.name }}{{ if !for.last }}, {{ end }}{{ end }}) => 
@@ -57,8 +55,8 @@ public class {{ service }} : global::Microsoft.Extensions.Hosting.IHostedService
                     
                     return __response;
                     {{~ end ~}}
-                },
-                lambdaSerializer
+                }{{ if is_serializer_needed ~}},
+                this._lambdaSerializer{{~ end }}
             )
             .Build()
             .RunAsync(cancellationToken);

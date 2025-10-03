@@ -27,6 +27,12 @@ internal static class MapHandlerSourceOutput
         ParameterName = "lambdaCancellationTokenSourceFactory",
     };
 
+    private static readonly DependencyInfo ILambdaSerializerInfo = new()
+    {
+        Type = "global::Amazon.Lambda.Core.ILambdaSerializer",
+        ParameterName = "lambdaSerializer",
+    };
+
     private static readonly DependencyInfo ILambdaContextInfo = new()
     {
         Type = TypeConstants.ILambdaContext,
@@ -56,6 +62,8 @@ internal static class MapHandlerSourceOutput
 
         var delegateInfo = delegateInfos.First().DelegateInfo;
 
+        var isSerializerNeeded = IsSerializerNeeded(delegateInfo);
+
         // handle cancellation token
         //
         // ILambdaContext needs to be added to lambdaParams if a CancellationToken is requested and
@@ -72,6 +80,7 @@ internal static class MapHandlerSourceOutput
         var injectedDependencies = DefaultInjectedDependencies
             .ToList()
             .Concat(isCancellationTokenRequested ? [LambdaCancellationTokenSourceFactoryInfo] : [])
+            .Concat(isSerializerNeeded ? [ILambdaSerializerInfo] : [])
             .Select(di => new
             {
                 type = di.Type,
@@ -171,6 +180,7 @@ internal static class MapHandlerSourceOutput
             IsLambdaAsync = delegateInfo.IsAsync,
             HasReturnValue = hasReturnValue,
             CancellationTokenDetails = cancellationTokenDetails,
+            IsSerializerNeeded = isSerializerNeeded,
         };
 
         var template = TemplateHelper.LoadTemplate(
@@ -260,5 +270,28 @@ internal static class MapHandlerSourceOutput
     /// </remarks>
     /// <param name="delegateInfo">The information about the delegate being analyzed.</param>
     /// <returns>True if a serializer is needed; otherwise, false.</returns>
-    private static bool IsSerializerNeeded(MapHandlerInvocationInfo delegateInfo) => false;
+    private static bool IsSerializerNeeded(DelegateInfo delegateInfo)
+    {
+        // true if the handler has a custom input parameter requiring JSON deserialization
+        var inputType = delegateInfo
+            .Parameters.FirstOrDefault(p =>
+                p.Attributes.Any(a => a.Type == AttributeConstants.Request)
+            )
+            ?.Type;
+
+        if (inputType is not null and not TypeConstants.Stream)
+            return true;
+
+        // true if the handler returns a type not Stream, void, or Task
+        if (
+            delegateInfo.ResponseType
+            is not TypeConstants.Stream
+                and not TypeConstants.Void
+                and not TypeConstants.Task
+        )
+            return true;
+
+        // default is false
+        return false;
+    }
 }
