@@ -24,17 +24,8 @@ internal static class MapHandlerSyntaxProvider
     ///     method;
     ///     otherwise, <c>false</c>.
     /// </returns>
-    internal static bool Predicate(SyntaxNode node, CancellationToken cancellationToken)
-    {
-        if (node is not InvocationExpressionSyntax invocation)
-            return false;
-
-        return invocation.Expression
-            is MemberAccessExpressionSyntax
-            {
-                Name.Identifier.ValueText: GeneratorConstants.MapHandlerMethodName
-            };
-    }
+    internal static bool Predicate(SyntaxNode node, CancellationToken cancellationToken) =>
+        MapHandlerSyntaxHelper.IsMapHandlerInvocation(node, cancellationToken);
 
     /// <summary>
     ///     Extracts a <see cref="MapHandlerInvocationInfo" /> object from the given syntax context
@@ -52,19 +43,36 @@ internal static class MapHandlerSyntaxProvider
         CancellationToken token
     )
     {
-        // validate that the method is from the LambdaApplication type
         if (context.Node is not InvocationExpressionSyntax invocationExpr)
             return null;
 
-        var symbolInfo = ModelExtensions.GetSymbolInfo(context.SemanticModel, invocationExpr);
+        return MapHandlerSyntaxHelper.TryGetMapHandlerInfo(
+            invocationExpr,
+            context.SemanticModel,
+            token,
+            out var info
+        )
+            ? info
+            : null;
+    }
 
-        if (symbolInfo.Symbol is not IMethodSymbol methodSymbol)
-            return null;
-
-        // Check if it's from LambdaApplication
-        if (methodSymbol.ContainingType?.Name != GeneratorConstants.StartupClassName)
-            return null;
-
+    /// <summary>
+    ///     Extracts delegate information from a MapHandler invocation expression.
+    ///     This method is public to allow reuse by the analyzer.
+    /// </summary>
+    /// <param name="invocationExpr">The invocation expression to analyze.</param>
+    /// <param name="semanticModel">The semantic model for symbol resolution.</param>
+    /// <param name="cancellationToken">The cancellation token to observe cancellation requests.</param>
+    /// <returns>
+    ///     A <see cref="DelegateInfo" /> object containing delegate details if extraction succeeds;
+    ///     otherwise, <c>null</c>.
+    /// </returns>
+    internal static DelegateInfo? ExtractDelegateInfo(
+        InvocationExpressionSyntax invocationExpr,
+        SemanticModel semanticModel,
+        CancellationToken cancellationToken
+    )
+    {
         // setup list of mutator functions
         List<Updater> updaters = [];
 
@@ -77,17 +85,22 @@ internal static class MapHandlerSyntaxProvider
             if (handler is null)
                 return null;
 
-            updaters.Add(UpdateTypesFromCast(context, castExpression));
+            updaters.Add(UpdateTypesFromCast(semanticModel, castExpression));
         }
 
         var result = handler switch
         {
             IdentifierNameSyntax or MemberAccessExpressionSyntax => ExtractInfoFromDelegate(
-                context,
+                semanticModel,
+                invocationExpr,
                 handler
             ),
 
-            LambdaExpressionSyntax lambda => ExtractInfoFromLambda(context, lambda),
+            LambdaExpressionSyntax lambda => ExtractInfoFromLambda(
+                semanticModel,
+                invocationExpr,
+                lambda
+            ),
 
             _ => null,
         };
@@ -95,11 +108,7 @@ internal static class MapHandlerSyntaxProvider
         if (result is null)
             return null;
 
-        return new MapHandlerInvocationInfo
-        {
-            LocationInfo = LocationInfo.CreateFrom(context.Node),
-            DelegateInfo = updaters.Aggregate(result, (current, updater) => updater(current!)),
-        };
+        return updaters.Aggregate(result, (current, updater) => updater(current!));
     }
 
     private static ExpressionSyntax? GetDelegateFromCast(CastExpressionSyntax castExpression)
@@ -133,15 +142,12 @@ internal static class MapHandlerSyntaxProvider
     }
 
     private static Updater UpdateTypesFromCast(
-        GeneratorSyntaxContext context,
+        SemanticModel semanticModel,
         CastExpressionSyntax castExpression
     ) =>
         delegateInfo =>
         {
-            var castTypeInfo = ModelExtensions.GetTypeInfo(
-                context.SemanticModel,
-                castExpression.Type
-            );
+            var castTypeInfo = ModelExtensions.GetTypeInfo(semanticModel, castExpression.Type);
 
             if (castTypeInfo.Type is IErrorTypeSymbol)
                 throw new InvalidOperationException(
@@ -208,11 +214,12 @@ internal static class MapHandlerSyntaxProvider
     }
 
     private static DelegateInfo? ExtractInfoFromDelegate(
-        GeneratorSyntaxContext context,
+        SemanticModel semanticModel,
+        SyntaxNode contextNode,
         ExpressionSyntax delegateExpression
     )
     {
-        var symbolInfo = ModelExtensions.GetSymbolInfo(context.SemanticModel, delegateExpression);
+        var symbolInfo = ModelExtensions.GetSymbolInfo(semanticModel, delegateExpression);
 
         // if a symbol is not found, try to find a candidate symbol as backup
         var symbol = symbolInfo.Symbol ?? symbolInfo.CandidateSymbols.FirstOrDefault();
@@ -246,18 +253,19 @@ internal static class MapHandlerSyntaxProvider
         return new DelegateInfo
         {
             ResponseType = methodSymbol.ReturnType.GetAsGlobal(),
-            Namespace = GetFileNamespace(context.Node, context.SemanticModel),
+            Namespace = GetFileNamespace(contextNode, semanticModel),
             IsAsync = methodSymbol.IsAsync,
             Parameters = parameters,
         };
     }
 
     private static DelegateInfo ExtractInfoFromLambda(
-        GeneratorSyntaxContext context,
+        SemanticModel semanticModel,
+        SyntaxNode contextNode,
         LambdaExpressionSyntax lambdaExpression
     )
     {
-        var sematicModel = context.SemanticModel;
+        var sematicModel = semanticModel;
 
         var parameterSyntaxes = lambdaExpression switch
         {
@@ -345,7 +353,7 @@ internal static class MapHandlerSyntaxProvider
         return new DelegateInfo
         {
             ResponseType = returnTypeName,
-            Namespace = GetFileNamespace(context.Node, context.SemanticModel),
+            Namespace = GetFileNamespace(contextNode, semanticModel),
             IsAsync = isAsync,
             Parameters = parameters,
         };

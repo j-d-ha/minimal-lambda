@@ -11,8 +11,8 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <!-- Generate ready to run images during publishing to improve cold start time. -->
     <PublishReadyToRun>true</PublishReadyToRun>
-    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
-    <CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>
+    <!-- <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles> -->
+    <!-- <CompilerGeneratedFilesOutputPath>\obj\Generated</CompilerGeneratedFilesOutputPath> -->
   </PropertyGroup>
 
   <ItemGroup>
@@ -29,9 +29,9 @@
                       OutputItemType="Analyzer"/>
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="obj\Generated\**\"/>
-  </ItemGroup>
+  <!--  <ItemGroup>-->
+  <!--    <Folder Include="\obj\Generated\**\"/>-->
+  <!--  </ItemGroup>-->
 
 
 </Project>

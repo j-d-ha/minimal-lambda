@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
 using Lambda.Host.SourceGenerators.Extensions;
@@ -53,13 +52,7 @@ internal static class MapHandlerSourceOutput
         if (delegateInfos.Length == 0)
             return;
 
-        var diagnostics = ValidateGeneratorData(delegateInfos);
-        if (diagnostics.Any())
-        {
-            diagnostics.ForEach(context.ReportDiagnostic);
-            return;
-        }
-
+        // Take the first invocation (diagnostics are now handled by MapHandlerAnalyzer)
         var delegateInfo = delegateInfos.First().DelegateInfo;
 
         var isSerializerNeeded = IsSerializerNeeded(delegateInfo);
@@ -190,61 +183,6 @@ internal static class MapHandlerSourceOutput
         var outCode = template.Render(model);
 
         context.AddSource("LambdaStartup.g.cs", outCode);
-    }
-
-    private static List<Diagnostic> ValidateGeneratorData(
-        ImmutableArray<MapHandlerInvocationInfo> delegateInfos
-    )
-    {
-        var diagnostics = new List<Diagnostic>();
-
-        // check for multiple invocations of MapHandler
-        diagnostics.AddRange(
-            delegateInfos
-                .Skip(1)
-                .Select(invocationInfo =>
-                    Diagnostic.Create(
-                        Diagnostics.MultipleMethodCalls,
-                        invocationInfo?.LocationInfo?.ToLocation(),
-                        "LambdaApplication.MapHandler(Delegate)"
-                    )
-                )
-        );
-
-        // Validate parameters
-        foreach (var invocationInfo in delegateInfos)
-        {
-            // check for more than one ILambdaContext parameter or CancellationToken parameter
-            CheckForDuplicateTypeParameters(
-                invocationInfo.DelegateInfo.Parameters,
-                TypeConstants.CancellationToken
-            );
-
-            // check for more than one ILambdaContext parameter or CancellationToken parameter
-            CheckForDuplicateTypeParameters(
-                invocationInfo.DelegateInfo.Parameters,
-                TypeConstants.ILambdaContext
-            );
-        }
-
-        return diagnostics;
-
-        void CheckForDuplicateTypeParameters(
-            IEnumerable<ParameterInfo> parameterInfos,
-            string type
-        ) =>
-            diagnostics.AddRange(
-                parameterInfos
-                    .Where(p => p.Type == type)
-                    .Skip(1)
-                    .Select(p =>
-                        Diagnostic.Create(
-                            Diagnostics.MultipleParametersOfSameType,
-                            p.LocationInfo?.ToLocation(),
-                            type
-                        )
-                    )
-            );
     }
 
     /// <summary>

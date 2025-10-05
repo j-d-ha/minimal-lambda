@@ -1,4 +1,4 @@
-﻿using System.IO;
+﻿using Amazon.Lambda.Core;
 using Lambda.Host;
 using Microsoft.Extensions.Hosting;
 
@@ -6,6 +6,6 @@ var builder = LambdaApplication.CreateBuilder();
 
 var lambda = builder.Build();
 
-lambda.MapHandler(Stream () => new FileStream("hello.txt", FileMode.Open));
+lambda.MapHandler((ILambdaContext ctx, ILambdaContext ctx2) => "hello world");
 
 await lambda.RunAsync();
