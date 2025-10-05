@@ -109,6 +109,33 @@ public class MapHandlerIncrementalGeneratorDiagnosticTests
         }
     }
 
+    [Fact]
+    public void Test_ParameterNameUsesReservedPrefix()
+    {
+        var diagnostics = GenerateDiagnostics(
+            """
+            using Lambda.Host;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
+
+            var lambda = builder.Build();
+
+            lambda.MapHandler(([Request] string __input) => __input.ToUpper());
+
+            await lambda.RunAsync();
+            """
+        );
+
+        diagnostics.Length.Should().Be(1);
+
+        foreach (var diagnostic in diagnostics)
+        {
+            diagnostic.Id.Should().Be("LH0003");
+            diagnostic.Severity.Should().Be(DiagnosticSeverity.Error);
+        }
+    }
+
     private static ImmutableArray<Diagnostic> GenerateDiagnostics(string source)
     {
         var (driver, _) = GeneratorTestHelpers.GenerateFromSource(source);

@@ -225,6 +225,21 @@ internal static class MapHandlerSourceOutput
                 invocationInfo.DelegateInfo.Parameters,
                 TypeConstants.ILambdaContext
             );
+
+            // check for any parameter names using the reserved prefix `__`
+            const string reservedPrefix = "__";
+            diagnostics.AddRange(
+                invocationInfo
+                    .DelegateInfo.Parameters.Where(p => p.ParameterName.StartsWith(reservedPrefix))
+                    .Select(p =>
+                        Diagnostic.Create(
+                            Diagnostics.ParameterUsesReservedPrefix,
+                            p.LocationInfo?.ToLocation(),
+                            p.ParameterName,
+                            reservedPrefix
+                        )
+                    )
+            );
         }
 
         return diagnostics;
