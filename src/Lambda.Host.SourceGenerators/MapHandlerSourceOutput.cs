@@ -47,12 +47,20 @@ internal static class MapHandlerSourceOutput
 
     internal static void Generate(
         SourceProductionContext context,
-        ImmutableArray<MapHandlerInvocationInfo> delegateInfos
+        (ImmutableArray<MapHandlerInvocationInfo> delegateInfos, bool compilationHasErrors) combined
     )
     {
+        var (delegateInfos, compilationHasErrors) = combined;
+
+        // if any upstream errors are encountered, we will silently exit early.
+        if (compilationHasErrors)
+            return;
+
+        // if no MapHandler calls were found, we will silently exit early.
         if (delegateInfos.Length == 0)
             return;
 
+        // validate the generator data and report any diagnostics before exiting.
         var diagnostics = ValidateGeneratorData(delegateInfos);
         if (diagnostics.Any())
         {
