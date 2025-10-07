@@ -7,13 +7,8 @@ internal static class TypeExtractorExtensions
 {
     private const string Global = "global::";
 
-    internal static string? GetAsGlobal(this ITypeSymbol typeSymbol)
-    {
-        if (typeSymbol is IErrorTypeSymbol)
-            return null;
-
-        return typeSymbol.ShouldOmitGlobalPrefix() ? typeSymbol.ToString() : Global + typeSymbol;
-    }
+    internal static string GetAsGlobal(this ITypeSymbol typeSymbol) =>
+        typeSymbol.ShouldOmitGlobalPrefix() ? typeSymbol.ToString() : Global + typeSymbol;
 
     internal static string GetAsGlobal(this ITypeSymbol typeSymbol, TypeSyntax typeSyntax)
     {

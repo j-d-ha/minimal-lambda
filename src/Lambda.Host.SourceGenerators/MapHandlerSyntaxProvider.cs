@@ -306,18 +306,17 @@ internal static class MapHandlerSyntaxProvider
         var returnType = lambdaExpression switch
         {
             // check for explicit return type
-            ParenthesizedLambdaExpressionSyntax { ReturnType: var syntax }
-                when syntax is not null => ModelExtensions
+            ParenthesizedLambdaExpressionSyntax { ReturnType: { } syntax } => ModelExtensions
                 .GetTypeInfo(sematicModel, syntax)
                 .Type?.GetAsGlobal(syntax),
 
             // Handle implicit return type for expression lambda
-            { Body: var expression } when expression is ExpressionSyntax => sematicModel
+            { Body: var expression and ExpressionSyntax } => sematicModel
                 .GetTypeInfo(expression)
                 .Type?.GetAsGlobal(),
 
             // Handle implicit return type for block lambda
-            { Body: var block } when block is BlockSyntax => block
+            { Body: var block and BlockSyntax } => block
                 .DescendantNodes()
                 .OfType<ReturnStatementSyntax>()
                 .FirstOrDefault(syntax => syntax.Expression is not null)

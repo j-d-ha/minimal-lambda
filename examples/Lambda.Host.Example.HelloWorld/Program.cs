@@ -5,6 +5,6 @@ var builder = LambdaApplication.CreateBuilder();
 
 var lambda = builder.Build();
 
-lambda.MapHandler(([Request] string input1, [Request] string input2) => "hello world");
+lambda.MapHandler(([Request] string input) => "hello world");
 
 await lambda.RunAsync();

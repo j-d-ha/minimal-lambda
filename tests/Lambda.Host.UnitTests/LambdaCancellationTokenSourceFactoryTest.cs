@@ -18,7 +18,12 @@ public class LambdaCancellationTokenSourceFactoryTest
         var negativeBufferDuration = TimeSpan.FromSeconds(-1);
 
         // Act & Assert
-        Action act = () => new LambdaCancellationTokenSourceFactory(negativeBufferDuration);
+        var act = () =>
+        {
+            var lambdaCancellationTokenSourceFactory = new LambdaCancellationTokenSourceFactory(
+                negativeBufferDuration
+            );
+        };
         act.Should().Throw<ArgumentOutOfRangeException>();
     }
 

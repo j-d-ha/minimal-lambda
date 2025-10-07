@@ -7,7 +7,7 @@ internal static class LinqExtensions
     internal static T Apply<T>(this T obj, Action<T> action)
         where T : class
     {
-        action?.Invoke(obj);
+        action.Invoke(obj);
         return obj;
     }
 
