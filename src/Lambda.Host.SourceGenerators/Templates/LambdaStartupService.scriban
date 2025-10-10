@@ -10,7 +10,7 @@
 namespace {{ class_namespace }};
 
 {{~ end ~}}
-public partial class {{ service }}
+public partial class {{ service }} : global::Lambda.Host.LambdaHost
 {
     {{~ for dependency in injected_dependencies ~}}
     private readonly {{ dependency.type }} {{ dependency.field_name }};

@@ -76,7 +76,7 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
 
         // Check if it's public or internal
         var hasPublicOrInternal = classDeclaration.Modifiers.Any(m =>
-            m.IsKind(SyntaxKind.PublicKeyword) || m.IsKind(SyntaxKind.InternalKeyword)
+            m.IsKind(SyntaxKind.PublicKeyword)
         );
 
         if (!hasPublicOrInternal)

@@ -1,13 +1,14 @@
-﻿using Lambda.Host;
+﻿using Amazon.Lambda.Core;
+using Lambda.Host;
 using Microsoft.Extensions.Hosting;
 
-var builder = LambdaApplication.CreateBuilder<Host>();
+var builder = LambdaApplication.CreateBuilder<HostedService>();
 
 var lambda = builder.Build();
 
-lambda.MapHandler(() => "hello world");
+lambda.MapHandler((ILambdaContext context) => "hello world");
 
 await lambda.RunAsync();
 
-[StartupHost]
-public partial class Host : LambdaHost;
+[LambdaHost]
+public class HostedService : LambdaHostedService;

@@ -2,7 +2,7 @@ using Microsoft.Extensions.Hosting;
 
 namespace Lambda.Host;
 
-public abstract class LambdaHost : IHostedService
+public abstract class LambdaHostedService : IHostedService
 {
     public virtual Task StartAsync(CancellationToken cancellationToken) =>
         throw new NotImplementedException();

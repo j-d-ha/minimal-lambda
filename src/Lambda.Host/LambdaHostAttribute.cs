@@ -1,4 +1,4 @@
 namespace Lambda.Host;
 
 [AttributeUsage(AttributeTargets.Class)]
-public sealed class StartupHostAttribute : Attribute { }
+public sealed class LambdaHostAttribute : Attribute;

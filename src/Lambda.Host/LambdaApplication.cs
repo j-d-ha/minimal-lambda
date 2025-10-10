@@ -37,7 +37,7 @@ public sealed class LambdaApplication : IHost, IAsyncDisposable
     public static LambdaApplicationBuilder CreateBuilder() => new();
 
     public static LambdaApplicationBuilder CreateBuilder<T>()
-        where T : LambdaHost
+        where T : LambdaHostedService
     {
         var builder = new LambdaApplicationBuilder();
 
