@@ -50,4 +50,13 @@ internal static class Diagnostics
         DiagnosticSeverity.Error,
         true
     );
+
+    internal static readonly DiagnosticDescriptor GenerationMode = new(
+        "LH1001",
+        "Source generation mode",
+        "{0}",
+        UsageCategory,
+        DiagnosticSeverity.Info,
+        true
+    );
 }

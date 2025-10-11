@@ -62,6 +62,17 @@ internal static class MapHandlerSourceOutput
         var delegateInfo = compilationInfo.MapHandlerInvocationInfos.First().DelegateInfo;
         StartupClassInfo? startupClassInfo = compilationInfo.StartupClassInfos.FirstOrDefault();
 
+        // Report generation mode to the user
+        context.ReportDiagnostic(
+            Diagnostic.Create(
+                Diagnostics.GenerationMode,
+                null,
+                startupClassInfo is not null
+                    ? $"Generating partial class implementation for '{startupClassInfo?.ClassName}'"
+                    : $"Generating standalone '{GeneratorConstants.StartupClassName}' class"
+            )
+        );
+
         var isSerializerNeeded = IsSerializerNeeded(delegateInfo);
 
         // handle cancellation token
