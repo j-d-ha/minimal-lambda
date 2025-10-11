@@ -1,5 +1,10 @@
 # CLAUDE.md
 
+## GENERAL
+
+- Repo link: https://github.com/j-d-ha/dotnet-lambda-host
+- GitHub Project Name: Lambda.Host Development
+
 ## MANDATORY WORKFLOW
 
 ### Task Classification

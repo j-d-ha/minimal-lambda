@@ -6,9 +6,11 @@
 
 #nullable enable
 
-namespace {{ @namespace }};
+{{~ if !is_global_namespace ~}}
+namespace {{ class_namespace }};
 
-public class {{ service }} : global::Microsoft.Extensions.Hosting.IHostedService
+{{~ end ~}}
+{{ accessibility }} {{ if is_partial_class }}partial {{ end }}class {{ service }}{{ if !is_partial_class }} : global::Lambda.Host.LambdaHostedService{{ end }}
 {
     {{~ for dependency in injected_dependencies ~}}
     private readonly {{ dependency.type }} {{ dependency.field_name }};
@@ -21,7 +23,7 @@ public class {{ service }} : global::Microsoft.Extensions.Hosting.IHostedService
         {{~ end ~}}
     }
     
-    public global::System.Threading.Tasks.Task StartAsync(global::System.Threading.CancellationToken cancellationToken)
+    public override global::System.Threading.Tasks.Task StartAsync(global::System.Threading.CancellationToken cancellationToken)
     {
         if (!this._delegateHolder.IsHandlerSet)
             throw new global::System.InvalidOperationException("Handler is not set");
@@ -61,11 +63,6 @@ public class {{ service }} : global::Microsoft.Extensions.Hosting.IHostedService
             .Build()
             .RunAsync(cancellationToken);
         
-        return global::System.Threading.Tasks.Task.CompletedTask;
-    }
-
-    public global::System.Threading.Tasks.Task StopAsync(global::System.Threading.CancellationToken cancellationToken)
-    {
         return global::System.Threading.Tasks.Task.CompletedTask;
     }
 }

@@ -1,4 +1,4 @@
-using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace Lambda.Host.SourceGenerators.Models;
 
@@ -11,5 +11,5 @@ internal sealed class DelegateInfo
     internal string DelegateType =>
         ResponseType == TypeConstants.Void ? TypeConstants.Action : TypeConstants.Func;
 
-    internal List<ParameterInfo> Parameters { get; set; } = [];
+    internal ImmutableArray<ParameterInfo> Parameters { get; set; } = [];
 }

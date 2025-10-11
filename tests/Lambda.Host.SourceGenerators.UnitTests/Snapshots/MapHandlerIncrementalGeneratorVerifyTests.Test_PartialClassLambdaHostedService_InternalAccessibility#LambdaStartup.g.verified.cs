@@ -7,20 +7,16 @@
 
 #nullable enable
 
-namespace Tests;
-
-public class LambdaApplication : global::Lambda.Host.LambdaHostedService
+internal partial class MyHost
 {
     private readonly global::Lambda.Host.DelegateHolder _delegateHolder;
     private readonly global::System.IServiceProvider _serviceProvider;
-    private readonly global::Lambda.Host.Interfaces.ILambdaCancellationTokenSourceFactory _lambdaCancellationTokenSourceFactory;
     private readonly global::Amazon.Lambda.Core.ILambdaSerializer _lambdaSerializer;
 
-    public LambdaApplication(global::Lambda.Host.DelegateHolder delegateHolder, global::System.IServiceProvider serviceProvider, global::Lambda.Host.Interfaces.ILambdaCancellationTokenSourceFactory lambdaCancellationTokenSourceFactory, global::Amazon.Lambda.Core.ILambdaSerializer lambdaSerializer)
+    public MyHost(global::Lambda.Host.DelegateHolder delegateHolder, global::System.IServiceProvider serviceProvider, global::Amazon.Lambda.Core.ILambdaSerializer lambdaSerializer)
     {
         this._delegateHolder = delegateHolder;
         this._serviceProvider = serviceProvider;
-        this._lambdaCancellationTokenSourceFactory = lambdaCancellationTokenSourceFactory;
         this._lambdaSerializer = lambdaSerializer;
     }
     
@@ -29,17 +25,14 @@ public class LambdaApplication : global::Lambda.Host.LambdaHostedService
         if (!this._delegateHolder.IsHandlerSet)
             throw new global::System.InvalidOperationException("Handler is not set");
             
-        if (this._delegateHolder.Handler is not global::System.Func<global::System.Threading.CancellationToken, global::Amazon.Lambda.Core.ILambdaContext, string> lambdaHandler)
+        if (this._delegateHolder.Handler is not global::System.Func<string> lambdaHandler)
             throw new global::System.InvalidOperationException("Invalid handler type.");
             
         global::Amazon.Lambda.RuntimeSupport.LambdaBootstrapBuilder
             .Create(
-                (global::Amazon.Lambda.Core.ILambdaContext ctx) => 
+                () => 
                 {
-                    using var __cancellationTokenSource = _lambdaCancellationTokenSourceFactory.NewCancellationTokenSource(ctx);
-                    var ct = __cancellationTokenSource.Token;
-                    
-                    var __response = lambdaHandler(ct, ctx);
+                    var __response = lambdaHandler();
                     
                     return __response;
                 },

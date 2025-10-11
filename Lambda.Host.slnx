@@ -1,4 +1,7 @@
 ﻿<Solution>
+  <Project
+    Path="examples\Lambda.Host.Example.HelloWorldAot\Lambda.Host.Example.HelloWorldAot.csproj"
+    Type="Classic C#"/>
   <Project Path="examples\Lambda.Host.Example.HelloWorld\Lambda.Host.Example.HelloWorld.csproj"
            Type="Classic C#"/>
   <Project Path="src\Lambda.Host.SourceGenerators\Lambda.Host.SourceGenerators.csproj"

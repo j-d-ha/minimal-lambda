@@ -64,4 +64,4 @@ nunit-*.xml
 **/*.DotSettings.user
 
 /LocalPackages/
-/examples/Lambda.Host.Example.HelloWorld/Generated/
+**/Generated/

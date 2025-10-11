@@ -715,6 +715,70 @@ public class MapHandlerIncrementalGeneratorVerifyTests
             """
         );
 
+    [Fact]
+    public async Task Test_PartialClassLambdaHostedService() =>
+        await Verify(
+            """
+            using Lambda.Host;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder<MyHost>();
+
+            var lambda = builder.Build();
+
+            lambda.MapHandler(() => "hello world");
+
+            await lambda.RunAsync();
+
+            [LambdaHost]
+            public partial class MyHost : LambdaHostedService;
+            """
+        );
+
+    [Fact]
+    public async Task Test_PartialClassLambdaHostedService_DifferentNamespace() =>
+        await Verify(
+            """
+            using Lambda.Host;
+            using Microsoft.Extensions.Hosting;
+            using MyNamespace;
+
+            var builder = LambdaApplication.CreateBuilder<MyHost>();
+
+            var lambda = builder.Build();
+
+            lambda.MapHandler(() => "hello world");
+
+            await lambda.RunAsync();
+
+            namespace MyNamespace
+            {
+                [LambdaHost]
+                public partial class MyHost : LambdaHostedService;
+            }
+            """
+        );
+
+    [Fact]
+    public async Task Test_PartialClassLambdaHostedService_InternalAccessibility() =>
+        await Verify(
+            """
+            using Lambda.Host;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder<MyHost>();
+
+            var lambda = builder.Build();
+
+            lambda.MapHandler(() => "hello world");
+
+            await lambda.RunAsync();
+
+            [LambdaHost]
+            internal partial class MyHost : LambdaHostedService;
+            """
+        );
+
     private static Task Verify(string source)
     {
         var (driver, originalCompilation) = GeneratorTestHelpers.GenerateFromSource(source);

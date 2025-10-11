@@ -47,9 +47,13 @@ public class MapHandlerIncrementalGeneratorDiagnosticTests
             """
         );
 
-        diagnostics.Length.Should().Be(1);
-        diagnostics[0].Id.Should().Be("LH0001");
-        diagnostics[0].Severity.Should().Be(DiagnosticSeverity.Error);
+        diagnostics.Length.Should().Be(2);
+
+        foreach (var diagnostic in diagnostics)
+        {
+            diagnostic.Id.Should().Be("LH0001");
+            diagnostic.Severity.Should().Be(DiagnosticSeverity.Error);
+        }
     }
 
     [Fact]
@@ -71,7 +75,7 @@ public class MapHandlerIncrementalGeneratorDiagnosticTests
             """
         );
 
-        diagnostics.Length.Should().Be(1);
+        diagnostics.Length.Should().Be(2);
 
         foreach (var diagnostic in diagnostics)
         {
@@ -100,7 +104,7 @@ public class MapHandlerIncrementalGeneratorDiagnosticTests
             """
         );
 
-        diagnostics.Length.Should().Be(2);
+        diagnostics.Length.Should().Be(3);
 
         foreach (var diagnostic in diagnostics)
         {
@@ -154,11 +158,45 @@ public class MapHandlerIncrementalGeneratorDiagnosticTests
             """
         );
 
-        diagnostics.Length.Should().Be(1);
+        diagnostics.Length.Should().Be(2);
 
         foreach (var diagnostic in diagnostics)
         {
             diagnostic.Id.Should().Be("LH0004");
+            diagnostic.Severity.Should().Be(DiagnosticSeverity.Error);
+        }
+    }
+
+    [Fact]
+    public void Test_MultipleClassesWithLambdaHostAttribute()
+    {
+        var diagnostics = GenerateDiagnostics(
+            """
+            using Lambda.Host;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder<MyHost>();
+
+            var lambda = builder.Build();
+
+            lambda.MapHandler(() => "hello world");
+
+            await lambda.RunAsync();
+
+            [LambdaHost]
+            public partial class MyHost : LambdaHostedService;
+
+            [LambdaHost]
+            public partial class MyHost2 : LambdaHostedService;
+
+            """
+        );
+
+        diagnostics.Length.Should().Be(2);
+
+        foreach (var diagnostic in diagnostics)
+        {
+            diagnostic.Id.Should().Be("LH0005");
             diagnostic.Severity.Should().Be(DiagnosticSeverity.Error);
         }
     }

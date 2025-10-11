@@ -9,18 +9,18 @@
 
 namespace Tests;
 
-public class LambdaStartupService : global::Microsoft.Extensions.Hosting.IHostedService
+public class LambdaApplication : global::Lambda.Host.LambdaHostedService
 {
     private readonly global::Lambda.Host.DelegateHolder _delegateHolder;
     private readonly global::System.IServiceProvider _serviceProvider;
 
-    public LambdaStartupService(global::Lambda.Host.DelegateHolder delegateHolder, global::System.IServiceProvider serviceProvider)
+    public LambdaApplication(global::Lambda.Host.DelegateHolder delegateHolder, global::System.IServiceProvider serviceProvider)
     {
         this._delegateHolder = delegateHolder;
         this._serviceProvider = serviceProvider;
     }
     
-    public global::System.Threading.Tasks.Task StartAsync(global::System.Threading.CancellationToken cancellationToken)
+    public override global::System.Threading.Tasks.Task StartAsync(global::System.Threading.CancellationToken cancellationToken)
     {
         if (!this._delegateHolder.IsHandlerSet)
             throw new global::System.InvalidOperationException("Handler is not set");
@@ -40,11 +40,6 @@ public class LambdaStartupService : global::Microsoft.Extensions.Hosting.IHosted
             .Build()
             .RunAsync(cancellationToken);
         
-        return global::System.Threading.Tasks.Task.CompletedTask;
-    }
-
-    public global::System.Threading.Tasks.Task StopAsync(global::System.Threading.CancellationToken cancellationToken)
-    {
         return global::System.Threading.Tasks.Task.CompletedTask;
     }
 }
