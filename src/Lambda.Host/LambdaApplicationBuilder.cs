@@ -78,7 +78,7 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
             // LambdaHostedService has been registered.
             if (Services.All(x => x.ServiceType != typeof(LambdaHostedService)))
                 throw new InvalidOperationException(
-                    $"No {typeof(LambdaHostedService)} registered."
+                    $"No instances of {typeof(LambdaHostedService)} registered."
                 );
         }
 
