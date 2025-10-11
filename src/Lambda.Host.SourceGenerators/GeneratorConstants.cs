@@ -19,6 +19,8 @@ internal static class TypeConstants
     internal const string Func = "global::System.Func";
 
     internal const string Stream = "global::System.IO.Stream";
+
+    internal const string LambdaHostedService = "global::Lambda.Host.LambdaHostedService";
 }
 
 /// <summary>
@@ -26,7 +28,9 @@ internal static class TypeConstants
 /// </summary>
 internal static class AttributeConstants
 {
-    internal const string Request = "Lambda.Host.RequestAttribute";
+    internal const string RequestAttribute = "Lambda.Host.RequestAttribute";
+
+    internal const string LambdaHostAttribute = "Lambda.Host.LambdaHostAttribute";
 
     internal const string FromKeyedService =
         "Microsoft.Extensions.DependencyInjection.FromKeyedServicesAttribute";
@@ -35,7 +39,10 @@ internal static class AttributeConstants
 internal static class GeneratorConstants
 {
     internal const string StartupClassName = "LambdaApplication";
+
     internal const string MapHandlerMethodName = "MapHandler";
+
+    internal const string GlobalNamespace = "<global namespace>;";
 
     internal const string LambdaStartupServiceTemplateFile =
         "Templates/LambdaStartupService.scriban";

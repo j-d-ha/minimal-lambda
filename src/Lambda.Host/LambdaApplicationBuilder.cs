@@ -1,3 +1,4 @@
+using System.Reflection;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using Lambda.Host.Interfaces;
@@ -40,25 +41,44 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
 
     public LambdaApplication Build()
     {
-        // var hostedServiceTypes = Assembly
-        //     .GetCallingAssembly()
-        //     .GetTypes()
-        //     .Where(t => t.IsClass && !t.IsAbstract && typeof(IHostedService).IsAssignableFrom(t))
-        //     .ToArray();
-        //
-        // if (!hostedServiceTypes.Any())
-        //     throw new InvalidOperationException(
-        //         "No instances of IHostedService found for DI registration."
-        //     );
-        //
-        // foreach (var serviceType in hostedServiceTypes)
-        // {
-        //     Services.AddSingleton(serviceType);
-        //
-        //     Services.AddSingleton<IHostedService>(serviceProvider =>
-        //         (IHostedService)serviceProvider.GetRequiredService(serviceType)
-        //     );
-        // }
+#if !NATIVEAOT
+
+        if (Services.All(x => x.ServiceType != typeof(LambdaHostedService)))
+        {
+            var hostedServiceTypes = Assembly
+                .GetCallingAssembly()
+                .GetTypes()
+                .Where(t =>
+                    t is { IsClass: true, IsAbstract: false }
+                    && typeof(LambdaHostedService).IsAssignableFrom(t)
+                )
+                .ToArray();
+
+            switch (hostedServiceTypes.Length)
+            {
+                case 0:
+                    throw new InvalidOperationException(
+                        $"No instances of {typeof(LambdaHostedService)} found for DI registration."
+                    );
+                case > 1:
+                    throw new InvalidOperationException(
+                        $"Multiple instances of {typeof(LambdaHostedService)} found."
+                    );
+                default:
+                    Services.AddSingleton(hostedServiceTypes.First());
+                    break;
+            }
+        }
+
+#else
+        // check if an instance of LambdaHostedService registered
+        if (Services.All(x => x.ServiceType != typeof(LambdaHostedService)))
+            throw new InvalidOperationException($"No {typeof(LambdaHostedService)} registered.");
+
+#endif
+
+        // register LambdaHostedService as IHostedService
+        Services.AddSingleton<IHostedService>(sp => sp.GetRequiredService<LambdaHostedService>());
 
         Services.AddSingleton<DelegateHolder>();
 
@@ -68,7 +88,7 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
             _ => new LambdaCancellationTokenSourceFactory(_defaultCancellationBuffer)
         );
 
-        Services.TryAddSingleton<ILambdaSerializer>(_ => new DefaultLambdaJsonSerializer());
+        Services.TryAddSingleton<ILambdaSerializer, DefaultLambdaJsonSerializer>();
 
         var host = _hostBuilder.Build();
 

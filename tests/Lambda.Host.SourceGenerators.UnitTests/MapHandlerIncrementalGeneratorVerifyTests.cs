@@ -716,13 +716,13 @@ public class MapHandlerIncrementalGeneratorVerifyTests
         );
 
     [Fact]
-    public async Task Test_StartupHost() =>
+    public async Task Test_PartialClassLambdaHostedService() =>
         await Verify(
             """
             using Lambda.Host;
             using Microsoft.Extensions.Hosting;
 
-            var builder = LambdaApplication.CreateBuilder<Host>();
+            var builder = LambdaApplication.CreateBuilder<MyHost>();
 
             var lambda = builder.Build();
 
@@ -730,8 +730,8 @@ public class MapHandlerIncrementalGeneratorVerifyTests
 
             await lambda.RunAsync();
 
-            [StartupHost]
-            public partial class Host : LambdaHost;
+            [LambdaHost]
+            public class MyHost : LambdaHostedService;
             """
         );
 

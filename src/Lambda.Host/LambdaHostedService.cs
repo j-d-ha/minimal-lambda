@@ -8,4 +8,7 @@ public abstract class LambdaHostedService : IHostedService
         throw new NotImplementedException();
 
     public virtual Task StopAsync(CancellationToken cancellationToken) => Task.CompletedTask;
+
+    public static void OverrideLambdaLogger() =>
+        Console.SetOut(new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = true });
 }

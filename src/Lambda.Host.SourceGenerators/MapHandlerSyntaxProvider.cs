@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using Lambda.Host.SourceGenerators.Extensions;
@@ -163,10 +164,10 @@ internal static class MapHandlerSyntaxProvider
                     $"Cast type {namedType.ToDisplayString()} is not a valid delegate type (missing Invoke method)."
                 );
 
-            if (invokeMethod.Parameters.Length != delegateInfo.Parameters.Count)
+            if (invokeMethod.Parameters.Length != delegateInfo.Parameters.Length)
                 throw new InvalidOperationException(
                     $"Parameter count mismatch: cast delegate has {invokeMethod.Parameters.Length} parameters, "
-                        + $"but existing delegate has {delegateInfo.Parameters.Count} parameters."
+                        + $"but existing delegate has {delegateInfo.Parameters.Length} parameters."
                 );
 
             var updatedParameters = invokeMethod
@@ -181,7 +182,7 @@ internal static class MapHandlerSyntaxProvider
                             Attributes = originalParam.Attributes,
                         }
                 )
-                .ToList();
+                .ToImmutableArray();
 
             return new DelegateInfo
             {
@@ -241,7 +242,7 @@ internal static class MapHandlerSyntaxProvider
                         .ToList(),
                 };
             })
-            .ToList();
+            .ToImmutableArray();
 
         return new DelegateInfo
         {
@@ -292,7 +293,7 @@ internal static class MapHandlerSyntaxProvider
                         .ToList(),
                 };
             })
-            .ToList();
+            .ToImmutableArray();
 
         var isAsync = lambdaExpression.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword);
 

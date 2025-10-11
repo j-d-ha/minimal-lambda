@@ -41,7 +41,7 @@ public sealed class LambdaApplication : IHost, IAsyncDisposable
     {
         var builder = new LambdaApplicationBuilder();
 
-        builder.Services.AddSingleton<IHostedService, T>();
+        builder.Services.AddSingleton<LambdaHostedService, T>();
 
         return builder;
     }

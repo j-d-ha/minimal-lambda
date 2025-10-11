@@ -56,7 +56,7 @@ internal static class MapHandlerSourceOutput
             return;
 
         // validate the generator data and report any diagnostics before exiting.
-        var diagnostics = ValidateGeneratorData(compilationInfo.MapHandlerInvocationInfos);
+        var diagnostics = ValidateGeneratorData(compilationInfo);
         if (diagnostics.Any())
         {
             diagnostics.ForEach(context.ReportDiagnostic);
@@ -64,6 +64,7 @@ internal static class MapHandlerSourceOutput
         }
 
         var delegateInfo = compilationInfo.MapHandlerInvocationInfos.First().DelegateInfo;
+        StartupClassInfo? startupClassInfo = compilationInfo.StartupClassInfos.FirstOrDefault();
 
         var isSerializerNeeded = IsSerializerNeeded(delegateInfo);
 
@@ -101,7 +102,7 @@ internal static class MapHandlerSourceOutput
 
         var classFields = delegateInfo
             .Parameters.Where(p =>
-                p.Attributes.All(a => a.Type != AttributeConstants.Request)
+                p.Attributes.All(a => a.Type != AttributeConstants.RequestAttribute)
                 && p.Type != TypeConstants.ILambdaContext
                 && p.Type != TypeConstants.CancellationToken
             )
@@ -139,7 +140,7 @@ internal static class MapHandlerSourceOutput
                     : []
             )
             .Where(p =>
-                p.Attributes.Any(a => a.Type == AttributeConstants.Request)
+                p.Attributes.Any(a => a.Type == AttributeConstants.RequestAttribute)
                 || p.Type == TypeConstants.ILambdaContext
             )
             .OrderBy(p => p.Type == TypeConstants.ILambdaContext ? 1 : 0)
@@ -172,7 +173,7 @@ internal static class MapHandlerSourceOutput
 
         var model = new
         {
-            Service = compilationInfo.StartupClassInfo.ClassName,
+            Service = startupClassInfo?.ClassName ?? GeneratorConstants.StartupClassName,
             InjectedDependencies = injectedDependencies,
             ClassFields = classFields,
             delegateInfo.DelegateType,
@@ -183,8 +184,8 @@ internal static class MapHandlerSourceOutput
             HasReturnValue = hasReturnValue,
             CancellationTokenDetails = cancellationTokenDetails,
             IsSerializerNeeded = isSerializerNeeded,
-            IsGlobalNamespace = compilationInfo.StartupClassInfo.Namespace == "<global namespace>",
-            ClassNamespace = compilationInfo.StartupClassInfo.Namespace,
+            IsGlobalNamespace = startupClassInfo?.Namespace == GeneratorConstants.GlobalNamespace,
+            ClassNamespace = startupClassInfo?.Namespace ?? delegateInfo.Namespace,
         };
 
         var template = TemplateHelper.LoadTemplate(
@@ -196,24 +197,36 @@ internal static class MapHandlerSourceOutput
         context.AddSource("LambdaStartup.g.cs", outCode);
     }
 
-    private static List<Diagnostic> ValidateGeneratorData(
-        ImmutableArray<MapHandlerInvocationInfo> delegateInfos
-    )
+    private static List<Diagnostic> ValidateGeneratorData(CompilationInfo compilationInfo)
     {
         var diagnostics = new List<Diagnostic>();
 
+        var delegateInfos = compilationInfo.MapHandlerInvocationInfos;
+        var startupClassInfos = compilationInfo.StartupClassInfos;
+
         // check for multiple invocations of MapHandler
-        diagnostics.AddRange(
-            delegateInfos
-                .Skip(1)
-                .Select(invocationInfo =>
+        if (delegateInfos.Length > 1)
+            diagnostics.AddRange(
+                delegateInfos.Select(invocationInfo =>
                     Diagnostic.Create(
                         Diagnostics.MultipleMethodCalls,
                         invocationInfo?.LocationInfo?.ToLocation(),
                         "LambdaApplication.MapHandler(Delegate)"
                     )
                 )
-        );
+            );
+
+        // check for multiple classes decorated with LambdaStartup
+        if (startupClassInfos.Length > 1)
+            diagnostics.AddRange(
+                startupClassInfos.Select(startupClassInfo =>
+                    Diagnostic.Create(
+                        Diagnostics.MultipleClassesWithAttribute,
+                        startupClassInfo?.LocationInfo?.ToLocation(),
+                        "LambdaHostAttribute"
+                    )
+                )
+            );
 
         // Validate parameters
         foreach (var invocationInfo in delegateInfos)
@@ -246,40 +259,46 @@ internal static class MapHandlerSourceOutput
             );
 
             // check for multiple parameters that use the `[Request]` attribute
-            diagnostics.AddRange(
-                invocationInfo
-                    .DelegateInfo.Parameters.Where(p =>
-                        p.Attributes.Any(a => a.Type == AttributeConstants.Request)
-                    )
-                    .Skip(1)
-                    .Select(p =>
-                        Diagnostic.Create(
-                            Diagnostics.MultipleParametersUseAttribute,
-                            p.LocationInfo?.ToLocation(),
-                            AttributeConstants.Request
+            if (
+                invocationInfo.DelegateInfo.Parameters.Count(p =>
+                    p.Attributes.Any(a => a.Type == AttributeConstants.RequestAttribute)
+                ) > 1
+            )
+                diagnostics.AddRange(
+                    invocationInfo
+                        .DelegateInfo.Parameters.Where(p =>
+                            p.Attributes.Any(a => a.Type == AttributeConstants.RequestAttribute)
                         )
-                    )
-            );
+                        .Select(p =>
+                            Diagnostic.Create(
+                                Diagnostics.MultipleParametersUseAttribute,
+                                p.LocationInfo?.ToLocation(),
+                                AttributeConstants.RequestAttribute
+                            )
+                        )
+                );
         }
 
         return diagnostics;
 
         void CheckForDuplicateTypeParameters(
-            IEnumerable<ParameterInfo> parameterInfos,
+            ImmutableArray<ParameterInfo> parameterInfos,
             string type
-        ) =>
-            diagnostics.AddRange(
-                parameterInfos
-                    .Where(p => p.Type == type)
-                    .Skip(1)
-                    .Select(p =>
-                        Diagnostic.Create(
-                            Diagnostics.MultipleParametersOfSameType,
-                            p.LocationInfo?.ToLocation(),
-                            type
+        )
+        {
+            if (parameterInfos.Count(p => p.Type == type) > 1)
+                diagnostics.AddRange(
+                    parameterInfos
+                        .Where(p => p.Type == type)
+                        .Select(p =>
+                            Diagnostic.Create(
+                                Diagnostics.MultipleParametersOfSameType,
+                                p.LocationInfo?.ToLocation(),
+                                type
+                            )
                         )
-                    )
-            );
+                );
+        }
     }
 
     /// <summary>
@@ -310,7 +329,7 @@ internal static class MapHandlerSourceOutput
         // true if the handler has a custom input parameter requiring JSON deserialization
         var inputType = delegateInfo
             .Parameters.FirstOrDefault(p =>
-                p.Attributes.Any(a => a.Type == AttributeConstants.Request)
+                p.Attributes.Any(a => a.Type == AttributeConstants.RequestAttribute)
             )
             ?.Type;
 

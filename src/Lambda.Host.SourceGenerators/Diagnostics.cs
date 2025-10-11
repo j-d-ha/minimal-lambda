@@ -41,4 +41,13 @@ internal static class Diagnostics
         DiagnosticSeverity.Error,
         true
     );
+
+    internal static readonly DiagnosticDescriptor MultipleClassesWithAttribute = new(
+        "LH0005",
+        "Multiple classes with attribute detected",
+        "Multiple classes decorated with '{0}' attribute found in the project. Only one class can use this attribute.",
+        UsageCategory,
+        DiagnosticSeverity.Error,
+        true
+    );
 }
