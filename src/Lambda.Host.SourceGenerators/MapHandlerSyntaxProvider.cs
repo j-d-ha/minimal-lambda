@@ -33,7 +33,7 @@ internal static class MapHandlerSyntaxProvider
         return invocation.Expression
             is MemberAccessExpressionSyntax
             {
-                Name.Identifier.ValueText: GeneratorConstants.MapHandlerMethodName
+                Name.Identifier.ValueText: GeneratorConstants.MapHandlerMethodName,
             };
     }
 
