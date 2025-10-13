@@ -1,4 +1,5 @@
 using Lambda.Host.SourceGenerators.Models;
+using Lambda.Host.SourceGenerators.Types;
 using Microsoft.CodeAnalysis;
 
 namespace Lambda.Host.SourceGenerators;
@@ -8,13 +9,15 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
+        // Find all partial classes with LambdaHost attribute
         var startupClassInfo = context
             .SyntaxProvider.ForAttributeWithMetadataName(
                 AttributeConstants.LambdaHostAttribute,
                 LambdaHostSyntaxProvider.Predicate,
                 LambdaHostSyntaxProvider.Transformer
             )
-            .Where(static m => m is not null);
+            .Where(static m => m is not null)
+            .Select(static (m, _) => m!.Value);
 
         // Find all MapHandler method calls with lambda analysis
         var mapHandlerCalls = context
@@ -30,12 +33,7 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
             .Collect()
             .Combine(startupClassInfo.Collect())
             .Select(
-                (t, _) =>
-                    new CompilationInfo
-                    {
-                        MapHandlerInvocationInfos = t.Left,
-                        StartupClassInfos = t.Right,
-                    }
+                (t, _) => new CompilationInfo(t.Left.ToEquatableArray(), t.Right.ToEquatableArray())
             );
 
         // Generate source when calls are found

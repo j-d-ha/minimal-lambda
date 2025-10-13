@@ -1,4 +1,4 @@
-using System.Collections.Immutable;
+using Lambda.Host.SourceGenerators.Types;
 
 namespace Lambda.Host.SourceGenerators.Models;
 
@@ -6,5 +6,5 @@ internal readonly record struct ParameterInfo(
     string ParameterName,
     string Type,
     LocationInfo? LocationInfo,
-    ImmutableArray<AttributeInfo> Attributes
+    EquatableArray<AttributeInfo> Attributes
 );

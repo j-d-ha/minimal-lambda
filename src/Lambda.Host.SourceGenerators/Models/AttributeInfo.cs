@@ -1,5 +1,5 @@
-using System.Collections.Immutable;
+using Lambda.Host.SourceGenerators.Types;
 
 namespace Lambda.Host.SourceGenerators.Models;
 
-internal readonly record struct AttributeInfo(string Type, ImmutableArray<string> Arguments);
+internal readonly record struct AttributeInfo(string Type, EquatableArray<string> Arguments);

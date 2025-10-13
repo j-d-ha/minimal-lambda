@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
 using Lambda.Host.SourceGenerators.Extensions;
 using Lambda.Host.SourceGenerators.Models;
+using Lambda.Host.SourceGenerators.Types;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -164,10 +164,10 @@ internal static class MapHandlerSyntaxProvider
                     $"Cast type {namedType.ToDisplayString()} is not a valid delegate type (missing Invoke method)."
                 );
 
-            if (invokeMethod.Parameters.Length != delegateInfo.Parameters.Length)
+            if (invokeMethod.Parameters.Length != delegateInfo.Parameters.Count)
                 throw new InvalidOperationException(
                     $"Parameter count mismatch: cast delegate has {invokeMethod.Parameters.Length} parameters, "
-                        + $"but existing delegate has {delegateInfo.Parameters.Length} parameters."
+                        + $"but existing delegate has {delegateInfo.Parameters.Count} parameters."
                 );
 
             var updatedParameters = invokeMethod
@@ -180,7 +180,7 @@ internal static class MapHandlerSyntaxProvider
                             LocationInfo = LocationInfo.CreateFrom(castParam),
                         }
                 )
-                .ToImmutableArray();
+                .ToEquatableArray();
 
             return new DelegateInfo
             {
@@ -221,24 +221,21 @@ internal static class MapHandlerSyntaxProvider
 
         var parameters = methodSymbol
             .Parameters.AsEnumerable()
-            .Select(p =>
+            .Select(p => new ParameterInfo
             {
-                return new ParameterInfo
-                {
-                    ParameterName = p!.Name,
-                    Type = p.Type.GetAsGlobal(),
-                    LocationInfo = LocationInfo.CreateFrom(p),
-                    Attributes = p.GetAttributes()
-                        .Select(a => new AttributeInfo(
-                            a.ToString(),
-                            a.ConstructorArguments.Where(aa => aa.Value is not null)
-                                .Select(aa => aa.Value!.ToString())
-                                .ToImmutableArray()
-                        ))
-                        .ToImmutableArray(),
-                };
+                ParameterName = p!.Name,
+                Type = p.Type.GetAsGlobal(),
+                LocationInfo = LocationInfo.CreateFrom(p),
+                Attributes = p.GetAttributes()
+                    .Select(a => new AttributeInfo(
+                        a.ToString(),
+                        a.ConstructorArguments.Where(aa => aa.Value is not null)
+                            .Select(aa => aa.Value!.ToString())
+                            .ToEquatableArray()
+                    ))
+                    .ToEquatableArray(),
             })
-            .ToImmutableArray();
+            .ToEquatableArray();
 
         return new DelegateInfo
         {
@@ -268,35 +265,22 @@ internal static class MapHandlerSyntaxProvider
 
         // extract parameter information
         var parameters = parameterSyntaxes
-            .Select(p =>
-            {
-                return sematicModel.GetDeclaredSymbol(p);
-            })
-            .Where(p =>
-            {
-                return p is not null;
-            })
-            .Select(p =>
-            {
-                var atters = p.GetAttributes();
-                return new ParameterInfo(
-                    p!.Name,
-                    p.Type.GetAsGlobal(),
-                    LocationInfo.CreateFrom(p),
-                    p.GetAttributes()
-                        .Select(a =>
-                        {
-                            return new AttributeInfo(
-                                a.ToString(),
-                                a.ConstructorArguments.Where(aa => aa.Value is not null)
-                                    .Select(aa => aa.Value!.ToString())
-                                    .ToImmutableArray()
-                            );
-                        })
-                        .ToImmutableArray()
-                );
-            })
-            .ToImmutableArray();
+            .Select(p => sematicModel.GetDeclaredSymbol(p))
+            .Where(p => p is not null)
+            .Select(p => new ParameterInfo(
+                p!.Name,
+                p.Type.GetAsGlobal(),
+                LocationInfo.CreateFrom(p),
+                p.GetAttributes()
+                    .Select(a => new AttributeInfo(
+                        a.ToString(),
+                        a.ConstructorArguments.Where(aa => aa.Value is not null)
+                            .Select(aa => aa.Value!.ToString())
+                            .ToEquatableArray()
+                    ))
+                    .ToEquatableArray()
+            ))
+            .ToEquatableArray();
 
         var isAsync = lambdaExpression.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword);
 

@@ -1,4 +1,4 @@
-using System.Collections.Immutable;
+using Lambda.Host.SourceGenerators.Types;
 
 namespace Lambda.Host.SourceGenerators.Models;
 
@@ -6,7 +6,7 @@ internal readonly record struct DelegateInfo(
     string? Namespace,
     bool IsAsync,
     string? ResponseType = TypeConstants.Void,
-    ImmutableArray<ParameterInfo> Parameters = new()
+    EquatableArray<ParameterInfo> Parameters = new()
 )
 {
     internal string DelegateType =>

@@ -1,8 +1,8 @@
-using System.Collections.Immutable;
+using Lambda.Host.SourceGenerators.Types;
 
 namespace Lambda.Host.SourceGenerators.Models;
 
 internal readonly record struct CompilationInfo(
-    ImmutableArray<MapHandlerInvocationInfo> MapHandlerInvocationInfos,
-    ImmutableArray<StartupClassInfo?> StartupClassInfos
+    EquatableArray<MapHandlerInvocationInfo> MapHandlerInvocationInfos,
+    EquatableArray<StartupClassInfo> StartupClassInfos
 );
