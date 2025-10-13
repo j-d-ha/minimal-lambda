@@ -12,7 +12,8 @@ namespace Lambda.Host.SourceGenerators.UnitTests;
 internal static class GeneratorTestHelpers
 {
     internal static (GeneratorDriver driver, Compilation compilation) GenerateFromSource(
-        string source
+        string source,
+        Dictionary<string, ReportDiagnostic>? diagnosticsToSuppress = null
     )
     {
         var syntaxTree = CSharpSyntaxTree.ParseText(source);
@@ -33,6 +34,11 @@ internal static class GeneratorTestHelpers
             OutputKind.ConsoleApplication,
             nullableContextOptions: NullableContextOptions.Enable
         );
+
+        if (diagnosticsToSuppress is not null)
+            compilationOptions = compilationOptions.WithSpecificDiagnosticOptions(
+                diagnosticsToSuppress
+            );
 
         var compilation = CSharpCompilation.Create(
             "Tests",

@@ -23,7 +23,7 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
                 MapHandlerSyntaxProvider.Transformer
             )
             .Where(static m => m is not null)
-            .Select(static (m, _) => m!);
+            .Select(static (m, _) => m!.Value);
 
         // combine the compilation and map handler calls
         var combined = mapHandlerCalls

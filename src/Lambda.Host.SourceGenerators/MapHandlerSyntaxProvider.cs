@@ -99,7 +99,7 @@ internal static class MapHandlerSyntaxProvider
         return new MapHandlerInvocationInfo
         {
             LocationInfo = LocationInfo.CreateFrom(context.Node),
-            DelegateInfo = updaters.Aggregate(result, (current, updater) => updater(current!)),
+            DelegateInfo = updaters.Aggregate(result.Value, (current, updater) => updater(current)),
         };
     }
 
@@ -174,12 +174,10 @@ internal static class MapHandlerSyntaxProvider
                 .Parameters.Zip(
                     delegateInfo.Parameters,
                     (castParam, originalParam) =>
-                        new ParameterInfo
+                        originalParam with
                         {
-                            ParameterName = originalParam.ParameterName,
                             Type = castParam.Type.GetAsGlobal(),
                             LocationInfo = LocationInfo.CreateFrom(castParam),
-                            Attributes = originalParam.Attributes,
                         }
                 )
                 .ToImmutableArray();
@@ -231,15 +229,13 @@ internal static class MapHandlerSyntaxProvider
                     Type = p.Type.GetAsGlobal(),
                     LocationInfo = LocationInfo.CreateFrom(p),
                     Attributes = p.GetAttributes()
-                        .Select(a => new AttributeInfo
-                        {
-                            Type = a.ToString(),
-                            Arguments = a
-                                .ConstructorArguments.Select(aa => aa.Value?.ToString())
-                                .Where(aa => aa is not null)
-                                .ToList()!,
-                        })
-                        .ToList(),
+                        .Select(a => new AttributeInfo(
+                            a.ToString(),
+                            a.ConstructorArguments.Where(aa => aa.Value is not null)
+                                .Select(aa => aa.Value!.ToString())
+                                .ToImmutableArray()
+                        ))
+                        .ToImmutableArray(),
                 };
             })
             .ToImmutableArray();
@@ -272,26 +268,33 @@ internal static class MapHandlerSyntaxProvider
 
         // extract parameter information
         var parameters = parameterSyntaxes
-            .Select(p => sematicModel.GetDeclaredSymbol(p))
-            .Where(p => p is not null)
             .Select(p =>
             {
-                return new ParameterInfo
-                {
-                    ParameterName = p!.Name,
-                    Type = p.Type.GetAsGlobal(),
-                    LocationInfo = LocationInfo.CreateFrom(p),
-                    Attributes = p.GetAttributes()
-                        .Select(a => new AttributeInfo
+                return sematicModel.GetDeclaredSymbol(p);
+            })
+            .Where(p =>
+            {
+                return p is not null;
+            })
+            .Select(p =>
+            {
+                var atters = p.GetAttributes();
+                return new ParameterInfo(
+                    p!.Name,
+                    p.Type.GetAsGlobal(),
+                    LocationInfo.CreateFrom(p),
+                    p.GetAttributes()
+                        .Select(a =>
                         {
-                            Type = a.ToString(),
-                            Arguments = a
-                                .ConstructorArguments.Select(aa => aa.Value?.ToString())
-                                .Where(aa => aa is not null)
-                                .ToList()!,
+                            return new AttributeInfo(
+                                a.ToString(),
+                                a.ConstructorArguments.Where(aa => aa.Value is not null)
+                                    .Select(aa => aa.Value!.ToString())
+                                    .ToImmutableArray()
+                            );
                         })
-                        .ToList(),
-                };
+                        .ToImmutableArray()
+                );
             })
             .ToImmutableArray();
 
@@ -342,13 +345,12 @@ internal static class MapHandlerSyntaxProvider
             var (type, _) => type,
         };
 
-        return new DelegateInfo
-        {
-            ResponseType = returnTypeName,
-            Namespace = GetFileNamespace(context.Node, context.SemanticModel),
-            IsAsync = isAsync,
-            Parameters = parameters,
-        };
+        return new DelegateInfo(
+            GetFileNamespace(context.Node, context.SemanticModel),
+            isAsync,
+            returnTypeName,
+            parameters
+        );
     }
 
     private delegate DelegateInfo Updater(DelegateInfo delegateInfo);

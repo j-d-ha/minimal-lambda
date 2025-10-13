@@ -4,7 +4,11 @@ using Microsoft.CodeAnalysis.Text;
 
 namespace Lambda.Host.SourceGenerators.Models;
 
-internal record LocationInfo(string FilePath, TextSpan TextSpan, LinePositionSpan LineSpan)
+internal readonly record struct LocationInfo(
+    string FilePath,
+    TextSpan TextSpan,
+    LinePositionSpan LineSpan
+)
 {
     internal Location ToLocation() => Location.Create(FilePath, TextSpan, LineSpan);
 

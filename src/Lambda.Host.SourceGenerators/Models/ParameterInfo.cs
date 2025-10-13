@@ -1,11 +1,10 @@
-using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace Lambda.Host.SourceGenerators.Models;
 
-internal sealed class ParameterInfo
-{
-    internal required string ParameterName { get; set; }
-    internal required string Type { get; set; }
-    internal required LocationInfo? LocationInfo { get; set; }
-    internal List<AttributeInfo> Attributes { get; set; } = [];
-}
+internal readonly record struct ParameterInfo(
+    string ParameterName,
+    string Type,
+    LocationInfo? LocationInfo,
+    ImmutableArray<AttributeInfo> Attributes
+);

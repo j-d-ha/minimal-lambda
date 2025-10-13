@@ -1,9 +1,5 @@
-using System.Collections.Generic;
+using System.Collections.Immutable;
 
 namespace Lambda.Host.SourceGenerators.Models;
 
-internal sealed class AttributeInfo
-{
-    internal required string? Type { get; set; }
-    internal List<string> Arguments { get; set; } = [];
-}
+internal readonly record struct AttributeInfo(string Type, ImmutableArray<string> Arguments);

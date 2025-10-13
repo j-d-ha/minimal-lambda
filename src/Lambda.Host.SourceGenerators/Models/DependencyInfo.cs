@@ -1,9 +1,7 @@
 namespace Lambda.Host.SourceGenerators.Models;
 
-internal record DependencyInfo
+internal readonly record struct DependencyInfo(string Type, string ParameterName)
 {
-    internal required string Type { get; init; }
-    internal required string ParameterName { get; init; }
     internal string FieldName => "_" + ParameterName;
     internal string InternalVariableName => "__" + ParameterName;
 }

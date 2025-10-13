@@ -117,9 +117,7 @@ internal static class MapHandlerSourceOutput
             {
                 attributes = p.Attributes.Select(a => a.Type).ToList(),
                 keyed_service_key = p
-                    .Attributes.Where(a =>
-                        a?.Type?.StartsWith(AttributeConstants.FromKeyedService) ?? false
-                    )
+                    .Attributes.Where(a => a.Type.StartsWith(AttributeConstants.FromKeyedService))
                     .Select(a => a.Arguments.FirstOrDefault())
                     .FirstOrDefault(),
                 name = p.ParameterName.ToCamelCase(),
@@ -147,7 +145,10 @@ internal static class MapHandlerSourceOutput
                     : []
             )
             .Where(p =>
-                p.Attributes.Any(a => a.Type == AttributeConstants.RequestAttribute)
+                (
+                    !p.Attributes.IsDefaultOrEmpty
+                    && p.Attributes.Any(a => a.Type == AttributeConstants.RequestAttribute)
+                )
                 || p.Type == TypeConstants.ILambdaContext
             )
             .OrderBy(p => p.Type == TypeConstants.ILambdaContext ? 1 : 0)
@@ -219,7 +220,7 @@ internal static class MapHandlerSourceOutput
                 delegateInfos.Select(invocationInfo =>
                     Diagnostic.Create(
                         Diagnostics.MultipleMethodCalls,
-                        invocationInfo?.LocationInfo?.ToLocation(),
+                        invocationInfo.LocationInfo?.ToLocation(),
                         "LambdaApplication.MapHandler(Delegate)"
                     )
                 )
@@ -340,7 +341,7 @@ internal static class MapHandlerSourceOutput
             .Parameters.FirstOrDefault(p =>
                 p.Attributes.Any(a => a.Type == AttributeConstants.RequestAttribute)
             )
-            ?.Type;
+            .Type;
 
         if (inputType is not null and not TypeConstants.Stream)
             return true;
