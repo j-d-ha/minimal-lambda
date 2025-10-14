@@ -7,7 +7,7 @@ public sealed class LambdaApplication : IHost, IAsyncDisposable
 {
     private readonly IHost _host;
 
-    public LambdaApplication(IHost host) =>
+    internal LambdaApplication(IHost host) =>
         _host = host ?? throw new ArgumentNullException(nameof(host));
 
     public ValueTask DisposeAsync() => ((IAsyncDisposable)_host).DisposeAsync();
@@ -33,6 +33,10 @@ public sealed class LambdaApplication : IHost, IAsyncDisposable
 
         return this;
     }
+
+    //  ┌──────────────────────────────────────────────────────────┐
+    //  │                 Builder Factory Methods                  │
+    //  └──────────────────────────────────────────────────────────┘
 
     public static LambdaApplicationBuilder CreateBuilder() => new();
 

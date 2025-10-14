@@ -17,12 +17,12 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
     private readonly TimeSpan _defaultCancellationBuffer = TimeSpan.FromSeconds(3);
     private readonly HostApplicationBuilder _hostBuilder;
 
-    public LambdaApplicationBuilder() => _hostBuilder = new HostApplicationBuilder();
+    internal LambdaApplicationBuilder() => _hostBuilder = new HostApplicationBuilder();
 
-    public LambdaApplicationBuilder(string[] args) =>
+    internal LambdaApplicationBuilder(string[]? args) =>
         _hostBuilder = new HostApplicationBuilder(args);
 
-    public LambdaApplicationBuilder(HostApplicationBuilderSettings settings) =>
+    internal LambdaApplicationBuilder(HostApplicationBuilderSettings settings) =>
         _hostBuilder = new HostApplicationBuilder(settings);
 
     public void ConfigureContainer<TContainerBuilder>(

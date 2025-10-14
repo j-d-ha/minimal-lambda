@@ -739,7 +739,9 @@ public class MapHandlerIncrementalGeneratorVerifyTests
             using Lambda.Host;
             using Microsoft.Extensions.Hosting;
 
-            var builder = LambdaApplication.CreateBuilder<MyHost>();
+            var builder = LambdaApplication.CreateBuilder();
+
+            builder.UseLambdaHost<MyHost>();
 
             var lambda = builder.Build();
 
@@ -760,7 +762,9 @@ public class MapHandlerIncrementalGeneratorVerifyTests
             using Microsoft.Extensions.Hosting;
             using MyNamespace;
 
-            var builder = LambdaApplication.CreateBuilder<MyHost>();
+            var builder = LambdaApplication.CreateBuilder();
+
+            builder.UseLambdaHost<MyHost>();
 
             var lambda = builder.Build();
 
@@ -783,7 +787,9 @@ public class MapHandlerIncrementalGeneratorVerifyTests
             using Lambda.Host;
             using Microsoft.Extensions.Hosting;
 
-            var builder = LambdaApplication.CreateBuilder<MyHost>();
+            var builder = LambdaApplication.CreateBuilder();
+
+            builder.UseLambdaHost<MyHost>();
 
             var lambda = builder.Build();
 
