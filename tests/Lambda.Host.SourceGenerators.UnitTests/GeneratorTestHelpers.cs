@@ -6,6 +6,7 @@ using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Options;
 
 namespace Lambda.Host.SourceGenerators.UnitTests;
 
@@ -28,6 +29,7 @@ internal static class GeneratorTestHelpers
             MetadataReference.CreateFromFile(typeof(HostBuilder).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(DefaultLambdaJsonSerializer).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(LambdaBootstrapBuilder).Assembly.Location),
+            MetadataReference.CreateFromFile(typeof(IOptions<>).Assembly.Location),
         ];
 
         var compilationOptions = new CSharpCompilationOptions(
