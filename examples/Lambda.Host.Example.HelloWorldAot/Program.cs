@@ -1,4 +1,7 @@
-﻿using System.Text.Json.Serialization;
+﻿using System;
+using System.Text.Json.Serialization;
+using System.Threading;
+using Amazon.Lambda.Core;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using Lambda.Host;
 using Microsoft.Extensions.Hosting;
@@ -13,7 +16,13 @@ builder.Services.ConfigureLambdaHost(settings =>
 
 var lambda = builder.Build();
 
-lambda.MapHandler(() => "hello world");
+lambda.MapHandler(
+    (ILambdaContext context, CancellationToken cancellationToken) =>
+    {
+        Console.WriteLine("hello world from aot");
+        return "hello world from aot";
+    }
+);
 
 await lambda.RunAsync();
 

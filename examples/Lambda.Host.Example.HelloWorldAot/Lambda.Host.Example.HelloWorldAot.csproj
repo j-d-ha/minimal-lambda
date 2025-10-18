@@ -17,10 +17,8 @@
     <TrimMode>full</TrimMode>
     <AssemblyName>bootstrap</AssemblyName>
     <PublishTrimmed>true</PublishTrimmed>
-
-    <!--    <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>-->
-    <!--    <CompilerGeneratedFilesOutputPath>Generated</CompilerGeneratedFilesOutputPath>-->
   </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="Amazon.Lambda.RuntimeSupport" Version="1.13.4"/>
     <PackageReference Include="Amazon.Lambda.Core" Version="2.7.1"/>
@@ -34,9 +32,4 @@
                       ReferenceOutputAssembly="false"
                       OutputItemType="Analyzer"/>
   </ItemGroup>
-
-  <!--  <ItemGroup>-->
-  <!--    <Folder Include="Generated\**\"/>-->
-  <!--  </ItemGroup>-->
-
 </Project>
