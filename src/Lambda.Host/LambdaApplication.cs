@@ -13,7 +13,8 @@ public sealed class LambdaApplication : IHost, IAsyncDisposable
     internal LambdaApplication(IHost host)
     {
         _host = host ?? throw new ArgumentNullException(nameof(host));
-        _delegateHolder = Services.GetRequiredService<DelegateHolder>();
+        _delegateHolder =
+            Services.GetRequiredService<DelegateHolder>() ?? throw new InvalidOperationException();
     }
 
     public ValueTask DisposeAsync() => ((IAsyncDisposable)_host).DisposeAsync();

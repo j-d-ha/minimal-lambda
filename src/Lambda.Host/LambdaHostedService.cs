@@ -18,10 +18,14 @@ public abstract class LambdaHostedService : IHostedService
         ILambdaCancellationTokenSourceFactory lambdaCancellationTokenSourceFactory
     )
     {
-        LambdaHostSettings = lambdaHostSettings.Value;
-        DelegateHolder = delegateHolder;
-        ServiceProvider = serviceProvider;
-        LambdaCancellationTokenSourceFactory = lambdaCancellationTokenSourceFactory;
+        LambdaHostSettings =
+            lambdaHostSettings.Value ?? throw new ArgumentNullException(nameof(lambdaHostSettings));
+        DelegateHolder = delegateHolder ?? throw new ArgumentNullException(nameof(delegateHolder));
+        ServiceProvider =
+            serviceProvider ?? throw new ArgumentNullException(nameof(serviceProvider));
+        LambdaCancellationTokenSourceFactory =
+            lambdaCancellationTokenSourceFactory
+            ?? throw new ArgumentNullException(nameof(lambdaCancellationTokenSourceFactory));
     }
 
     public virtual Task StartAsync(CancellationToken cancellationToken) =>

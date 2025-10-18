@@ -20,7 +20,7 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
 
     private LambdaApplicationBuilder(HostApplicationBuilder hostBuilder)
     {
-        _hostBuilder = hostBuilder;
+        _hostBuilder = hostBuilder ?? throw new ArgumentNullException(nameof(hostBuilder));
 
         // Configure LambdaHostSettings from appsettings.json
         Services.Configure<LambdaHostSettings>(

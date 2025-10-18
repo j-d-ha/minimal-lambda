@@ -7,8 +7,8 @@ internal class LambdaHostContext : ILambdaHostContext, IAsyncDisposable
 {
     private readonly ILambdaContext _lambdaContext;
     private readonly IServiceScopeFactory _serviceScopeFactory;
-    private IServiceProvider? _instanceServiceProvider;
 
+    private IServiceProvider? _instanceServiceProvider;
     private IServiceScope? _instanceServicesScope;
 
     public LambdaHostContext(
@@ -17,8 +17,9 @@ internal class LambdaHostContext : ILambdaHostContext, IAsyncDisposable
         CancellationToken cancellationToken
     )
     {
-        _lambdaContext = lambdaContext;
-        _serviceScopeFactory = serviceScopeFactory;
+        _lambdaContext = lambdaContext ?? throw new ArgumentNullException(nameof(lambdaContext));
+        _serviceScopeFactory =
+            serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
 
         CancellationToken = cancellationToken;
     }
