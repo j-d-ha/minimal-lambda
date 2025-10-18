@@ -4,11 +4,10 @@ using Lambda.Host.Interfaces;
 namespace Lambda.Host;
 
 /// <summary>
-///     Provides functionality to create a <see cref="CancellationTokenSource" /> with respect to the
-///     remaining time
-///     from the AWS Lambda execution context. This factory ensures that cancellation tokens are
-///     created
-///     with a buffer duration to provide sufficient time before the Lambda execution timeout occurs.
+///     Provides functionality to create a <see cref="CancellationTokenSource" /> with respect to
+///     the remaining time from the AWS Lambda execution context. This factory ensures that
+///     cancellation tokens are created with a buffer duration to provide sufficient time before the
+///     Lambda execution timeout occurs.
 /// </summary>
 public class LambdaCancellationTokenSourceFactory : ILambdaCancellationTokenSourceFactory
 {

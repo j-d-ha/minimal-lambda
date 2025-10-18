@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Collections.Immutable;
 using System.Linq;
 using Lambda.Host.SourceGenerators.Extensions;
 using Lambda.Host.SourceGenerators.Models;
@@ -10,42 +9,6 @@ namespace Lambda.Host.SourceGenerators;
 
 internal static class MapHandlerSourceOutput
 {
-    private static readonly DependencyInfo DelegateHolderInfo = new()
-    {
-        Type = "global::Lambda.Host.DelegateHolder",
-        ParameterName = "delegateHolder",
-    };
-
-    private static readonly DependencyInfo ServiceProviderInfo = new()
-    {
-        Type = "global::System.IServiceProvider",
-        ParameterName = "serviceProvider",
-    };
-
-    private static readonly DependencyInfo LambdaCancellationTokenSourceFactoryInfo = new()
-    {
-        Type = "global::Lambda.Host.Interfaces.ILambdaCancellationTokenSourceFactory",
-        ParameterName = "lambdaCancellationTokenSourceFactory",
-    };
-
-    private static readonly DependencyInfo ILambdaSerializerInfo = new()
-    {
-        Type = "global::Amazon.Lambda.Core.ILambdaSerializer",
-        ParameterName = "lambdaSerializer",
-    };
-
-    private static readonly DependencyInfo ILambdaContextInfo = new()
-    {
-        Type = TypeConstants.ILambdaContext,
-        ParameterName = TypeConstants.ILambdaContextName,
-    };
-
-    private static readonly ImmutableList<DependencyInfo> DefaultInjectedDependencies =
-    [
-        DelegateHolderInfo,
-        ServiceProviderInfo,
-    ];
-
     internal static void Generate(SourceProductionContext context, CompilationInfo compilationInfo)
     {
         // validate the generator data and report any diagnostics before exiting.
@@ -92,18 +55,6 @@ internal static class MapHandlerSourceOutput
             p.Type == TypeConstants.CancellationToken
         );
 
-        var injectedDependencies = DefaultInjectedDependencies
-            .ToList()
-            .Concat(isCancellationTokenRequested ? [LambdaCancellationTokenSourceFactoryInfo] : [])
-            .Concat(isSerializerNeeded ? [ILambdaSerializerInfo] : [])
-            .Select(di => new
-            {
-                type = di.Type,
-                parameter_name = di.ParameterName,
-                field_name = di.FieldName,
-            })
-            .ToList();
-
         var delegateArguments = delegateInfo
             .Parameters.Select(p => p.Type)
             .Concat(
@@ -111,7 +62,7 @@ internal static class MapHandlerSourceOutput
             )
             .ToList();
 
-        var classFields = delegateInfo
+        var handlerDependencies = delegateInfo
             .Parameters.Where(p =>
                 p.Attributes.All(a => a.Type != AttributeConstants.RequestAttribute)
                 && p.Type != TypeConstants.ILambdaContext
@@ -141,9 +92,9 @@ internal static class MapHandlerSourceOutput
                     [
                         new ParameterInfo
                         {
-                            ParameterName = ILambdaContextInfo.InternalVariableName,
+                            ParameterName = TypeConstants.ILambdaContextName,
                             LocationInfo = null,
-                            Type = ILambdaContextInfo.Type,
+                            Type = TypeConstants.ILambdaContext,
                         },
                     ]
                     : []
@@ -187,9 +138,8 @@ internal static class MapHandlerSourceOutput
         {
             IsPartialClass = startupClassInfo is not null,
             Accessibility = startupClassInfo?.Accessibility ?? "public",
-            Service = startupClassInfo?.ClassName ?? GeneratorConstants.StartupClassName,
-            InjectedDependencies = injectedDependencies,
-            ClassFields = classFields,
+            ClassName = startupClassInfo?.ClassName ?? GeneratorConstants.StartupClassName,
+            HandlerDependencies = handlerDependencies,
             delegateInfo.DelegateType,
             DelegateArgs = delegateArguments,
             HandlerArgs = handlerArgs,

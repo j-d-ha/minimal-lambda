@@ -11,21 +11,25 @@ namespace Tests;
 
 public class LambdaApplication : global::Lambda.Host.LambdaHostedService
 {
-    private readonly global::Lambda.Host.DelegateHolder _delegateHolder;
-    private readonly global::System.IServiceProvider _serviceProvider;
-
-    public LambdaApplication(global::Lambda.Host.DelegateHolder delegateHolder, global::System.IServiceProvider serviceProvider)
-    {
-        this._delegateHolder = delegateHolder;
-        this._serviceProvider = serviceProvider;
-    }
+    public LambdaApplication(
+        global::Microsoft.Extensions.Options.IOptions<global::Lambda.Host.LambdaHostSettings> lambdaHostSettings,
+        global::Lambda.Host.DelegateHolder delegateHolder,
+        global::System.IServiceProvider serviceProvider,
+        global::Lambda.Host.Interfaces.ILambdaCancellationTokenSourceFactory lambdaCancellationTokenSourceFactory
+    )
+        : base(
+            lambdaHostSettings,
+            delegateHolder,
+            serviceProvider,
+            lambdaCancellationTokenSourceFactory
+        ) { }
     
     public override global::System.Threading.Tasks.Task StartAsync(global::System.Threading.CancellationToken cancellationToken)
     {
-        if (!this._delegateHolder.IsHandlerSet)
+        if (!this.DelegateHolder.IsHandlerSet)
             throw new global::System.InvalidOperationException("Handler is not set");
             
-        if (this._delegateHolder.Handler is not global::System.Func<global::System.IO.Stream> lambdaHandler)
+        if (this.DelegateHolder.Handler is not global::System.Func<global::System.IO.Stream> lambdaHandler)
             throw new global::System.InvalidOperationException("Invalid handler type.");
             
         global::Amazon.Lambda.RuntimeSupport.LambdaBootstrapBuilder

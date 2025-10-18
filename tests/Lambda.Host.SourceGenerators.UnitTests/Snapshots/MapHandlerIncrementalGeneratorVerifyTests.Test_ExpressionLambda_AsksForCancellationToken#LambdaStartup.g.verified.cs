@@ -11,39 +11,39 @@ namespace Tests;
 
 public class LambdaApplication : global::Lambda.Host.LambdaHostedService
 {
-    private readonly global::Lambda.Host.DelegateHolder _delegateHolder;
-    private readonly global::System.IServiceProvider _serviceProvider;
-    private readonly global::Lambda.Host.Interfaces.ILambdaCancellationTokenSourceFactory _lambdaCancellationTokenSourceFactory;
-    private readonly global::Amazon.Lambda.Core.ILambdaSerializer _lambdaSerializer;
-
-    public LambdaApplication(global::Lambda.Host.DelegateHolder delegateHolder, global::System.IServiceProvider serviceProvider, global::Lambda.Host.Interfaces.ILambdaCancellationTokenSourceFactory lambdaCancellationTokenSourceFactory, global::Amazon.Lambda.Core.ILambdaSerializer lambdaSerializer)
-    {
-        this._delegateHolder = delegateHolder;
-        this._serviceProvider = serviceProvider;
-        this._lambdaCancellationTokenSourceFactory = lambdaCancellationTokenSourceFactory;
-        this._lambdaSerializer = lambdaSerializer;
-    }
+    public LambdaApplication(
+        global::Microsoft.Extensions.Options.IOptions<global::Lambda.Host.LambdaHostSettings> lambdaHostSettings,
+        global::Lambda.Host.DelegateHolder delegateHolder,
+        global::System.IServiceProvider serviceProvider,
+        global::Lambda.Host.Interfaces.ILambdaCancellationTokenSourceFactory lambdaCancellationTokenSourceFactory
+    )
+        : base(
+            lambdaHostSettings,
+            delegateHolder,
+            serviceProvider,
+            lambdaCancellationTokenSourceFactory
+        ) { }
     
     public override global::System.Threading.Tasks.Task StartAsync(global::System.Threading.CancellationToken cancellationToken)
     {
-        if (!this._delegateHolder.IsHandlerSet)
+        if (!this.DelegateHolder.IsHandlerSet)
             throw new global::System.InvalidOperationException("Handler is not set");
             
-        if (this._delegateHolder.Handler is not global::System.Func<global::System.Threading.CancellationToken, string> lambdaHandler)
+        if (this.DelegateHolder.Handler is not global::System.Func<global::System.Threading.CancellationToken, string> lambdaHandler)
             throw new global::System.InvalidOperationException("Invalid handler type.");
             
         global::Amazon.Lambda.RuntimeSupport.LambdaBootstrapBuilder
             .Create(
-                (global::Amazon.Lambda.Core.ILambdaContext __lambdaContext) => 
+                (global::Amazon.Lambda.Core.ILambdaContext lambdaContext) => 
                 {
-                    using var __cancellationTokenSource = _lambdaCancellationTokenSourceFactory.NewCancellationTokenSource(__lambdaContext);
+                    using var __cancellationTokenSource = this.LambdaCancellationTokenSourceFactory.NewCancellationTokenSource(lambdaContext);
                     var cancellationToken = __cancellationTokenSource.Token;
                     
                     var __response = lambdaHandler(cancellationToken);
                     
                     return __response;
                 },
-                this._lambdaSerializer
+                this.LambdaHostSettings.LambdaSerializer
             )
             .Build()
             .RunAsync(cancellationToken);

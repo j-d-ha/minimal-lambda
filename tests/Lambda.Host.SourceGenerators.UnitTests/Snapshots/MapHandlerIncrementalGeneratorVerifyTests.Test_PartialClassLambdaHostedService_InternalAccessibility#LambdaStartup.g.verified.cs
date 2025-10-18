@@ -9,23 +9,25 @@
 
 internal partial class MyHost
 {
-    private readonly global::Lambda.Host.DelegateHolder _delegateHolder;
-    private readonly global::System.IServiceProvider _serviceProvider;
-    private readonly global::Amazon.Lambda.Core.ILambdaSerializer _lambdaSerializer;
-
-    public MyHost(global::Lambda.Host.DelegateHolder delegateHolder, global::System.IServiceProvider serviceProvider, global::Amazon.Lambda.Core.ILambdaSerializer lambdaSerializer)
-    {
-        this._delegateHolder = delegateHolder;
-        this._serviceProvider = serviceProvider;
-        this._lambdaSerializer = lambdaSerializer;
-    }
+    internal MyHost(
+        global::Microsoft.Extensions.Options.IOptions<global::Lambda.Host.LambdaHostSettings> lambdaHostSettings,
+        global::Lambda.Host.DelegateHolder delegateHolder,
+        global::System.IServiceProvider serviceProvider,
+        global::Lambda.Host.Interfaces.ILambdaCancellationTokenSourceFactory lambdaCancellationTokenSourceFactory
+    )
+        : base(
+            lambdaHostSettings,
+            delegateHolder,
+            serviceProvider,
+            lambdaCancellationTokenSourceFactory
+        ) { }
     
     public override global::System.Threading.Tasks.Task StartAsync(global::System.Threading.CancellationToken cancellationToken)
     {
-        if (!this._delegateHolder.IsHandlerSet)
+        if (!this.DelegateHolder.IsHandlerSet)
             throw new global::System.InvalidOperationException("Handler is not set");
             
-        if (this._delegateHolder.Handler is not global::System.Func<string> lambdaHandler)
+        if (this.DelegateHolder.Handler is not global::System.Func<string> lambdaHandler)
             throw new global::System.InvalidOperationException("Invalid handler type.");
             
         global::Amazon.Lambda.RuntimeSupport.LambdaBootstrapBuilder
@@ -36,7 +38,7 @@ internal partial class MyHost
                     
                     return __response;
                 },
-                this._lambdaSerializer
+                this.LambdaHostSettings.LambdaSerializer
             )
             .Build()
             .RunAsync(cancellationToken);

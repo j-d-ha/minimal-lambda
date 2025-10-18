@@ -10,25 +10,27 @@
 namespace {{ class_namespace }};
 
 {{~ end ~}}
-{{ accessibility }} {{ if is_partial_class }}partial {{ end }}class {{ service }}{{ if !is_partial_class }} : global::Lambda.Host.LambdaHostedService{{ end }}
+{{ accessibility }} {{ if is_partial_class }}partial {{ end }}class {{ class_name }}{{ if !is_partial_class }} : global::Lambda.Host.LambdaHostedService{{ end }}
 {
-    {{~ for dependency in injected_dependencies ~}}
-    private readonly {{ dependency.type }} {{ dependency.field_name }};
-    {{~ end ~}}
-
-    public {{ service }}({{ for dependency in injected_dependencies }}{{ dependency.type }} {{ dependency.parameter_name }}{{ if !for.last }}, {{ end }}{{ end }})
-    {
-        {{~ for dependency in injected_dependencies ~}}
-        this.{{ dependency.field_name }} = {{ dependency.parameter_name }};
-        {{~ end ~}}
-    }
+    {{ accessibility }} {{ class_name }}(
+        global::Microsoft.Extensions.Options.IOptions<global::Lambda.Host.LambdaHostSettings> lambdaHostSettings,
+        global::Lambda.Host.DelegateHolder delegateHolder,
+        global::System.IServiceProvider serviceProvider,
+        global::Lambda.Host.Interfaces.ILambdaCancellationTokenSourceFactory lambdaCancellationTokenSourceFactory
+    )
+        : base(
+            lambdaHostSettings,
+            delegateHolder,
+            serviceProvider,
+            lambdaCancellationTokenSourceFactory
+        ) { }
     
     public override global::System.Threading.Tasks.Task StartAsync(global::System.Threading.CancellationToken cancellationToken)
     {
-        if (!this._delegateHolder.IsHandlerSet)
+        if (!this.DelegateHolder.IsHandlerSet)
             throw new global::System.InvalidOperationException("Handler is not set");
             
-        if (this._delegateHolder.Handler is not {{ delegate_type }} {{~ if delegate_args.size > 0 ~}} <{{ delegate_args | array.join ", " }}> {{~ end }} lambdaHandler)
+        if (this.DelegateHolder.Handler is not {{ delegate_type }} {{~ if delegate_args.size > 0 ~}} <{{ delegate_args | array.join ", " }}> {{~ end }} lambdaHandler)
             throw new global::System.InvalidOperationException("Invalid handler type.");
             
         global::Amazon.Lambda.RuntimeSupport.LambdaBootstrapBuilder
@@ -36,14 +38,14 @@ namespace {{ class_namespace }};
                 {{ if is_lambda_async ~}} async {{ end ~}}({{ for lambda_param in lambda_params }}{{ lambda_param.type }} {{ lambda_param.name }}{{ if !for.last }}, {{ end }}{{ end }}) => 
                 {
                     {{~ if cancellation_token_details.is_cancellation_token_requested ~}}
-                    using var __cancellationTokenSource = _lambdaCancellationTokenSourceFactory.NewCancellationTokenSource({{ cancellation_token_details.lambda_context_parameter_name }});
+                    using var __cancellationTokenSource = this.LambdaCancellationTokenSourceFactory.NewCancellationTokenSource({{ cancellation_token_details.lambda_context_parameter_name }});
                     var {{ cancellation_token_details.cancellation_token_var_name }} = __cancellationTokenSource.Token;
                     
                     {{~ end ~}}
-                    {{~ if class_fields.size > 0 ~}}
-                    using var __scope = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.CreateScope(this._serviceProvider);
+                    {{~ if handler_dependencies.size > 0 ~}}
+                    using var __scope = global::Microsoft.Extensions.DependencyInjection.ServiceProviderServiceExtensions.CreateScope(this.ServiceProvider);
                     
-                        {{~ for field in class_fields ~}}
+                        {{~ for field in handler_dependencies ~}}
                             {{~ if field.keyed_service_key ~}}
                     var {{ field.name }} = global::Microsoft.Extensions.DependencyInjection.ServiceProviderKeyedServiceExtensions.GetRequiredKeyedService<{{ field.type }}>(__scope.ServiceProvider, "{{ field.keyed_service_key }}");
                             {{~ else ~}}
@@ -58,7 +60,7 @@ namespace {{ class_namespace }};
                     return __response;
                     {{~ end ~}}
                 }{{ if is_serializer_needed ~}},
-                this._lambdaSerializer{{~ end }}
+                this.LambdaHostSettings.LambdaSerializer{{~ end }}
             )
             .Build()
             .RunAsync(cancellationToken);

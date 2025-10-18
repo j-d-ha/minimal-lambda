@@ -9,27 +9,37 @@ using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.Metrics;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace Lambda.Host;
 
 public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
 {
-    private readonly TimeSpan _defaultCancellationBuffer = TimeSpan.FromSeconds(3);
+    private const string LambdaHostAppSettingsSectionName = "LambdaHost";
     private readonly HostApplicationBuilder _hostBuilder;
 
-    public LambdaApplicationBuilder() => _hostBuilder = new HostApplicationBuilder();
+    private LambdaApplicationBuilder(HostApplicationBuilder hostBuilder)
+    {
+        _hostBuilder = hostBuilder;
 
-    public LambdaApplicationBuilder(string[] args) =>
-        _hostBuilder = new HostApplicationBuilder(args);
+        // Configure LambdaHostSettings from appsettings.json
+        Services.Configure<LambdaHostSettings>(
+            Configuration.GetSection(LambdaHostAppSettingsSectionName)
+        );
+    }
 
-    public LambdaApplicationBuilder(HostApplicationBuilderSettings settings) =>
-        _hostBuilder = new HostApplicationBuilder(settings);
+    internal LambdaApplicationBuilder()
+        : this(new HostApplicationBuilder()) { }
 
-    public void ConfigureContainer<TContainerBuilder>(
-        IServiceProviderFactory<TContainerBuilder> factory,
-        Action<TContainerBuilder>? configure = null
-    )
-        where TContainerBuilder : notnull => _hostBuilder.ConfigureContainer(factory, configure);
+    internal LambdaApplicationBuilder(string[]? args)
+        : this(new HostApplicationBuilder(args)) { }
+
+    internal LambdaApplicationBuilder(HostApplicationBuilderSettings settings, bool empty = false)
+        : this(
+            empty
+                ? Microsoft.Extensions.Hosting.Host.CreateEmptyApplicationBuilder(settings)
+                : new HostApplicationBuilder(settings)
+        ) { }
 
     public IDictionary<object, object> Properties =>
         ((IHostApplicationBuilder)_hostBuilder).Properties;
@@ -40,15 +50,45 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
     public IMetricsBuilder Metrics => _hostBuilder.Metrics;
     public IServiceCollection Services => _hostBuilder.Services;
 
+    public void ConfigureContainer<TContainerBuilder>(
+        IServiceProviderFactory<TContainerBuilder> factory,
+        Action<TContainerBuilder>? configure = null
+    )
+        where TContainerBuilder : notnull => _hostBuilder.ConfigureContainer(factory, configure);
+
     public LambdaApplication Build()
+    {
+        // register LambdaHostedService as IHostedService
+        RegisterLambdaHostedService(Assembly.GetCallingAssembly());
+
+        // Register DelegateHolder to pass the handler delegate to the generated LambdaApplication
+        Services.AddSingleton<DelegateHolder>();
+
+        // Attempt to add a default cancellation token source factory if one is not already
+        // registered.
+        Services.TryAddSingleton<ILambdaCancellationTokenSourceFactory>(sp =>
+        {
+            var settings = sp.GetRequiredService<IOptions<LambdaHostSettings>>().Value;
+
+            return new LambdaCancellationTokenSourceFactory(settings.InvocationCancellationBuffer);
+        });
+
+        // Attempt to add a default serializer if one is not already registered.
+        Services.TryAddSingleton<ILambdaSerializer, DefaultLambdaJsonSerializer>();
+
+        var host = _hostBuilder.Build();
+
+        return new LambdaApplication(host);
+    }
+
+    private void RegisterLambdaHostedService(Assembly assembly)
     {
         if (RuntimeFeature.IsDynamicCodeSupported)
         {
             // Not AOT, so we can use assembly scanning to find LambdaHostedService
             if (Services.All(x => x.ServiceType != typeof(LambdaHostedService)))
             {
-                var hostedServiceTypes = Assembly
-                    .GetCallingAssembly()
+                var hostedServiceTypes = assembly
                     .GetTypes()
                     .Where(t =>
                         t is { IsClass: true, IsAbstract: false }
@@ -64,10 +104,13 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
                         );
                     case > 1:
                         throw new InvalidOperationException(
-                            $"Multiple instances of {typeof(LambdaHostedService)} found."
+                            $"Multiple instances of {typeof(LambdaHostedService)} found. Please remove all but one."
                         );
                     default:
-                        Services.AddSingleton(hostedServiceTypes.First());
+                        Services.AddSingleton(
+                            typeof(LambdaHostedService),
+                            hostedServiceTypes.First()
+                        );
                         break;
                 }
             }
@@ -84,28 +127,5 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
 
         // Register LambdaHostedService as IHostedService
         Services.AddSingleton<IHostedService>(sp => sp.GetRequiredService<LambdaHostedService>());
-
-        // Register DelegateHolder to pass the handler delegate to the generated LambdaApplication
-        Services.AddSingleton<DelegateHolder>();
-
-        // Attempt to add a default cancellation token source factory if one is not already
-        // registered.
-        Services.TryAddSingleton<ILambdaCancellationTokenSourceFactory>(
-            _ => new LambdaCancellationTokenSourceFactory(_defaultCancellationBuffer)
-        );
-
-        // Attempt to add a default serializer if one is not already registered.
-        Services.TryAddSingleton<ILambdaSerializer, DefaultLambdaJsonSerializer>();
-
-        var host = _hostBuilder.Build();
-
-        return new LambdaApplication(host);
     }
-
-    public static LambdaApplicationBuilder CreateBuilder() => new();
-
-    public static LambdaApplicationBuilder CreateBuilder(string[] args) => new(args);
-
-    public static LambdaApplicationBuilder CreateBuilder(HostApplicationBuilderSettings settings) =>
-        new(settings);
 }

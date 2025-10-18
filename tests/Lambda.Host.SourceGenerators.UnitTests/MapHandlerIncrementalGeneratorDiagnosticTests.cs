@@ -24,7 +24,12 @@ public class MapHandlerIncrementalGeneratorDiagnosticTests
             """
         );
 
-        diagnostics.Length.Should().Be(0);
+        diagnostics.Length.Should().Be(1);
+        foreach (var diagnostic in diagnostics)
+        {
+            diagnostic.Id.Should().Be("LH1001");
+            diagnostic.Severity.Should().Be(DiagnosticSeverity.Info);
+        }
     }
 
     [Fact]
