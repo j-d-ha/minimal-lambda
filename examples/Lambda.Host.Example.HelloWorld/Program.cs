@@ -11,7 +11,7 @@ builder.Services.AddSingleton<IService, Service>();
 var lambda = builder.Build();
 
 lambda.MapHandler(
-    async (IService service, CancellationToken cancellationToken) =>
+    async ([Event] string request, IService service, CancellationToken cancellationToken) =>
         await service.SayHello(cancellationToken)
 );
 

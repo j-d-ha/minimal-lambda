@@ -130,7 +130,7 @@ public class MapHandlerIncrementalGeneratorDiagnosticTests
 
             var lambda = builder.Build();
 
-            lambda.MapHandler(([Request] string __input) => __input.ToUpper());
+            lambda.MapHandler(([Event] string __input) => __input.ToUpper());
 
             await lambda.RunAsync();
             """
@@ -157,7 +157,7 @@ public class MapHandlerIncrementalGeneratorDiagnosticTests
 
             var lambda = builder.Build();
 
-            lambda.MapHandler(([Request] string input1, [Request] string input2) => "hello world");
+            lambda.MapHandler(([Event] string input1, [Event] string input2) => "hello world");
 
             await lambda.RunAsync();
             """

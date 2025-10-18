@@ -64,7 +64,7 @@ internal static class MapHandlerSourceOutput
 
         var handlerDependencies = delegateInfo
             .Parameters.Where(p =>
-                p.Attributes.All(a => a.Type != AttributeConstants.RequestAttribute)
+                p.Attributes.All(a => a.Type != AttributeConstants.EventAttribute)
                 && p.Type != TypeConstants.ILambdaContext
                 && p.Type != TypeConstants.CancellationToken
             )
@@ -102,7 +102,7 @@ internal static class MapHandlerSourceOutput
             .Where(p =>
                 (
                     p.Attributes.Count > 0
-                    && p.Attributes.Any(a => a.Type == AttributeConstants.RequestAttribute)
+                    && p.Attributes.Any(a => a.Type == AttributeConstants.EventAttribute)
                 )
                 || p.Type == TypeConstants.ILambdaContext
             )
@@ -222,22 +222,22 @@ internal static class MapHandlerSourceOutput
                     )
             );
 
-            // check for multiple parameters that use the `[Request]` attribute
+            // check for multiple parameters that use the `[Event]` attribute
             if (
                 invocationInfo.DelegateInfo.Parameters.Count(p =>
-                    p.Attributes.Any(a => a.Type == AttributeConstants.RequestAttribute)
+                    p.Attributes.Any(a => a.Type == AttributeConstants.EventAttribute)
                 ) > 1
             )
                 diagnostics.AddRange(
                     invocationInfo
                         .DelegateInfo.Parameters.Where(p =>
-                            p.Attributes.Any(a => a.Type == AttributeConstants.RequestAttribute)
+                            p.Attributes.Any(a => a.Type == AttributeConstants.EventAttribute)
                         )
                         .Select(p =>
                             Diagnostic.Create(
                                 Diagnostics.MultipleParametersUseAttribute,
                                 p.LocationInfo?.ToLocation(),
-                                AttributeConstants.RequestAttribute
+                                AttributeConstants.EventAttribute
                             )
                         )
                 );
@@ -293,7 +293,7 @@ internal static class MapHandlerSourceOutput
         // true if the handler has a custom input parameter requiring JSON deserialization
         var inputType = delegateInfo
             .Parameters.FirstOrDefault(p =>
-                p.Attributes.Any(a => a.Type == AttributeConstants.RequestAttribute)
+                p.Attributes.Any(a => a.Type == AttributeConstants.EventAttribute)
             )
             .Type;
 
