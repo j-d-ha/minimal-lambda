@@ -28,7 +28,7 @@ public interface ILambdaHostContext : ILambdaContext
     ///     Gets or sets a key/value collection that can be used to share data within the scope of this
     ///     invocation.
     /// </summary>
-    public IDictionary<object, object?> Items { get; set; }
+    IDictionary<object, object?> Items { get; set; }
 
     /// <summary>
     ///     Gets the <see cref="CancellationToken" /> that signals a Lambda invocation is being cancelled.
