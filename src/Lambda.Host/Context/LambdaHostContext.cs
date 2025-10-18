@@ -1,15 +1,40 @@
 using Amazon.Lambda.Core;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace Lambda.Host;
 
-internal class LambdaHostContext : ILambdaHostContext
+internal class LambdaHostContext : ILambdaHostContext, IAsyncDisposable
 {
     private readonly ILambdaContext _lambdaContext;
+    private readonly IServiceScopeFactory _serviceScopeFactory;
+    private IServiceProvider? _instanceServiceProvider;
 
-    public LambdaHostContext(ILambdaContext lambdaContext, IServiceProvider serviceProvider)
+    private IServiceScope? _instanceServicesScope;
+
+    public LambdaHostContext(
+        ILambdaContext lambdaContext,
+        IServiceScopeFactory serviceScopeFactory,
+        CancellationToken cancellationToken
+    )
     {
         _lambdaContext = lambdaContext;
-        ServiceProvider = serviceProvider;
+        _serviceScopeFactory = serviceScopeFactory;
+
+        CancellationToken = cancellationToken;
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        if (_instanceServicesScope is IAsyncDisposable instanceServicesScopeAsyncDisposable)
+            await instanceServicesScopeAsyncDisposable.DisposeAsync();
+
+        _instanceServicesScope?.Dispose();
+
+        _instanceServicesScope = null;
+        _instanceServiceProvider = null!;
+        Request = null;
+        Response = null;
+        Items.Clear();
     }
 
     public string AwsRequestId => _lambdaContext.AwsRequestId;
@@ -27,7 +52,22 @@ internal class LambdaHostContext : ILambdaHostContext
     public object? Request { get; set; }
     public object? Response { get; set; }
 
-    public IServiceProvider ServiceProvider { get; }
+    public IServiceProvider ServiceProvider
+    {
+        get
+        {
+            if (_instanceServicesScope == null)
+            {
+                _instanceServicesScope = _serviceScopeFactory.CreateScope();
+                _instanceServiceProvider = _instanceServicesScope.ServiceProvider;
+            }
+
+            return _instanceServiceProvider!;
+        }
+        set => _instanceServiceProvider = value;
+    }
+
+    public IDictionary<object, object?> Items { get; set; } = new Dictionary<object, object?>();
 
     public CancellationToken CancellationToken { get; }
 }

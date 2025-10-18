@@ -2,12 +2,40 @@ using Amazon.Lambda.Core;
 
 namespace Lambda.Host;
 
+/// <summary>
+///     Encapsulates the information about a Lambda invocation.
+///     It extends <see cref="ILambdaContext" /> with additional properties.
+/// </summary>
 public interface ILambdaHostContext : ILambdaContext
 {
+    /// <summary>
+    ///     Gets or sets the object representing the request data for the current Lambda invocation.
+    /// </summary>
     object? Request { get; set; }
+
+    /// <summary>
+    ///     Gets or sets the object representing the response data for the current Lambda invocation.
+    /// </summary>
     object? Response { get; set; }
 
-    IServiceProvider ServiceProvider { get; }
+    /// <summary>
+    ///     Gets or sets the <see cref="IServiceProvider" /> that provides access to the invocation's
+    ///     service container.
+    /// </summary>
+    IServiceProvider ServiceProvider { get; set; }
 
+    /// <summary>
+    ///     Gets or sets a key/value collection that can be used to share data within the scope of this
+    ///     invocation.
+    /// </summary>
+    public IDictionary<object, object?> Items { get; set; }
+
+    /// <summary>
+    ///     Gets the <see cref="CancellationToken" /> that signals a Lambda invocation is being cancelled.
+    /// </summary>
+    /// <remarks>
+    ///     The cancellation token will also be cancelled if a SIGTERM signal is received, indicting
+    ///     that the Lambda runtime is being terminated.
+    /// </remarks>
     CancellationToken CancellationToken { get; }
 }
