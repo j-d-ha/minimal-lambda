@@ -53,7 +53,7 @@ public class MapHandlerIncrementalGeneratorVerifyTests
             var lambda = builder.Build();
 
             lambda.MapHandler(
-                async ([Request] string input, IService service) => service.GetMessage().ToUpper()
+                async ([Event] string input, IService service) => service.GetMessage().ToUpper()
             );
 
             await lambda.RunAsync();
@@ -85,7 +85,7 @@ public class MapHandlerIncrementalGeneratorVerifyTests
             var lambda = builder.Build();
 
             lambda.MapHandler(
-                async ([Request] string input, IService service) => (await service.GetMessage()).ToUpper()
+                async ([Event] string input, IService service) => (await service.GetMessage()).ToUpper()
             );
 
             await lambda.RunAsync();
@@ -133,7 +133,7 @@ public class MapHandlerIncrementalGeneratorVerifyTests
             public static class HandlerFactory
             {
                 public static string Handler(
-                    [Request] string input,
+                    [Event] string input,
                     ILambdaContext context,
                     [FromKeyedServices("key")] IService service
                 )
@@ -158,7 +158,7 @@ public class MapHandlerIncrementalGeneratorVerifyTests
             var lambda = builder.Build();
 
             lambda.MapHandler(
-                IService ([Request] string input, IService service) =>
+                IService ([Event] string input, IService service) =>
                 {
                     if (input == "other")
                     {
@@ -199,7 +199,7 @@ public class MapHandlerIncrementalGeneratorVerifyTests
             var lambda = builder.Build();
 
             lambda.MapHandler(
-                ([Request] string input) =>
+                ([Event] string input) =>
                 {
                     return input;
                 }
@@ -221,7 +221,7 @@ public class MapHandlerIncrementalGeneratorVerifyTests
             var lambda = builder.Build();
 
             lambda.MapHandler(
-                IService ([Request] string input) => input == "other" ? new Service() : new OtherService()
+                IService ([Event] string input) => input == "other" ? new Service() : new OtherService()
             );
 
             await lambda.RunAsync();
@@ -443,7 +443,7 @@ public class MapHandlerIncrementalGeneratorVerifyTests
 
             lambda.MapHandler(
                 (Action<string, IService>)(
-                    ([Request] string input, IService service) =>
+                    ([Event] string input, IService service) =>
                     {
                         Console.WriteLine("hello world");
                     }
@@ -476,7 +476,7 @@ public class MapHandlerIncrementalGeneratorVerifyTests
             builder.Services.AddSingleton<IService, Service>();
             var lambda = builder.Build();
 
-            lambda.MapHandler(([Request] string? input, IService service) => service.GetMessage());
+            lambda.MapHandler(([Event] string? input, IService service) => service.GetMessage());
 
             await lambda.RunAsync();
 
@@ -504,7 +504,7 @@ public class MapHandlerIncrementalGeneratorVerifyTests
             builder.Services.AddSingleton<IService, Service>();
             var lambda = builder.Build();
 
-            lambda.MapHandler(string? ([Request] string? input, IService service) => service.GetMessage());
+            lambda.MapHandler(string? ([Event] string? input, IService service) => service.GetMessage());
 
             await lambda.RunAsync();
 
@@ -533,7 +533,7 @@ public class MapHandlerIncrementalGeneratorVerifyTests
             var lambda = builder.Build();
 
             lambda.MapHandler(
-                ([Request] string input, IService service) =>
+                ([Event] string input, IService service) =>
                 {
                     return service.GetMessage();
                 }
@@ -593,7 +593,7 @@ public class MapHandlerIncrementalGeneratorVerifyTests
             var lambda = builder.Build();
 
             lambda.MapHandler(
-                async ([Request] CustomRequest request, IService service, ILambdaContext context) =>
+                async ([Event] CustomRequest request, IService service, ILambdaContext context) =>
                     new CustomResponse { Result = await service.GetMessage(), Success = true }
             );
 
@@ -708,7 +708,7 @@ public class MapHandlerIncrementalGeneratorVerifyTests
 
             var lambda = builder.Build();
 
-            lambda.MapHandler(([Request] Stream input) => { });
+            lambda.MapHandler(([Event] Stream input) => { });
 
             await lambda.RunAsync();
             """

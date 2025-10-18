@@ -28,7 +28,7 @@ internal static class TypeConstants
 /// </summary>
 internal static class AttributeConstants
 {
-    internal const string RequestAttribute = "Lambda.Host.RequestAttribute";
+    internal const string EventAttribute = "Lambda.Host.EventAttribute";
 
     internal const string LambdaHostAttribute = "Lambda.Host.LambdaHostAttribute";
 
