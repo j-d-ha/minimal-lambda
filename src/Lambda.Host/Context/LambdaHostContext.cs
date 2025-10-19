@@ -14,14 +14,19 @@ internal class LambdaHostContext : ILambdaHostContext, IAsyncDisposable
     public LambdaHostContext(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        CancellationToken cancellationToken
+        CancellationToken cancellationToken,
+        Stream requestStream,
+        Stream responseStream,
+        ILambdaSerializer lambdaSerializer
     )
     {
         _lambdaContext = lambdaContext ?? throw new ArgumentNullException(nameof(lambdaContext));
         _serviceScopeFactory =
             serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
-
         CancellationToken = cancellationToken;
+        RequestStream = requestStream;
+        ResponseStream = responseStream;
+        LambdaSerializer = lambdaSerializer;
     }
 
     public async ValueTask DisposeAsync()
@@ -33,8 +38,6 @@ internal class LambdaHostContext : ILambdaHostContext, IAsyncDisposable
 
         _instanceServicesScope = null;
         _instanceServiceProvider = null!;
-        Request = null;
-        Response = null;
         Items.Clear();
     }
 
@@ -50,8 +53,8 @@ internal class LambdaHostContext : ILambdaHostContext, IAsyncDisposable
     public int MemoryLimitInMB => _lambdaContext.MemoryLimitInMB;
     public TimeSpan RemainingTime => _lambdaContext.RemainingTime;
 
-    public object? Request { get; set; }
-    public object? Response { get; set; }
+    public Stream RequestStream { get; }
+    public Stream ResponseStream { get; }
 
     public IServiceProvider ServiceProvider
     {
@@ -71,4 +74,6 @@ internal class LambdaHostContext : ILambdaHostContext, IAsyncDisposable
     public IDictionary<object, object?> Items { get; set; } = new Dictionary<object, object?>();
 
     public CancellationToken CancellationToken { get; }
+
+    public ILambdaSerializer LambdaSerializer { get; }
 }

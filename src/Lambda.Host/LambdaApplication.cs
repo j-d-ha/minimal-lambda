@@ -1,3 +1,4 @@
+using Lambda.Host.Middleware;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -5,7 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Lambda.Host;
 
-public sealed class LambdaApplication : IHost, IAsyncDisposable
+public sealed class LambdaApplication : IHost, ILambdaApplication, IAsyncDisposable
 {
     private readonly DelegateHolder _delegateHolder;
     private readonly IHost _host;
@@ -29,12 +30,23 @@ public sealed class LambdaApplication : IHost, IAsyncDisposable
 
     public IServiceProvider Services => _host.Services;
 
-    public LambdaApplication MapHandler(Delegate handler)
+    public ILambdaApplication MapHandler(LambdaInvocationDelegate handler)
     {
         if (_delegateHolder.IsHandlerSet)
             throw new InvalidOperationException("Handler is already set");
 
         _delegateHolder.Handler = handler ?? throw new ArgumentNullException(nameof(handler));
+
+        return this;
+    }
+
+    public ILambdaApplication Use(
+        Func<LambdaInvocationDelegate, LambdaInvocationDelegate> middleware
+    )
+    {
+        _delegateHolder.Middlewares.Add(
+            middleware ?? throw new ArgumentNullException(nameof(middleware))
+        );
 
         return this;
     }

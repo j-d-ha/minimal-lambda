@@ -4,7 +4,7 @@ namespace Lambda.Host;
 
 public interface ILambdaApplication
 {
-    ILambdaApplication MapHandler(Delegate handler);
+    ILambdaApplication MapHandler(LambdaInvocationDelegate handler);
 
     ILambdaApplication Use(Func<LambdaInvocationDelegate, LambdaInvocationDelegate> middleware);
 }
