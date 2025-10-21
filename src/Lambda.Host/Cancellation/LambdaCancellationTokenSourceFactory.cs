@@ -1,5 +1,4 @@
 using Amazon.Lambda.Core;
-using Lambda.Host.Interfaces;
 
 namespace Lambda.Host;
 

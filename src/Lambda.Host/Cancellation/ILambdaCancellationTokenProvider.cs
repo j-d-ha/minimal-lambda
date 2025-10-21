@@ -1,6 +1,6 @@
 using Amazon.Lambda.Core;
 
-namespace Lambda.Host.Interfaces;
+namespace Lambda.Host;
 
 public interface ILambdaCancellationTokenSourceFactory
 {

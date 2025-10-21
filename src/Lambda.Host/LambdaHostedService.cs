@@ -1,6 +1,5 @@
 using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
-using Lambda.Host.Interfaces;
 using Lambda.Host.Middleware;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
