@@ -36,10 +36,6 @@ internal class LambdaHostedService : IHostedService
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        // If a custom serializer is set, add it to the beginning of the pipeline.
-        if (_delegateHolder.SerializerMiddleware is not null)
-            _delegateHolder.Middlewares.Insert(0, _delegateHolder.SerializerMiddleware);
-
         // Build the middleware pipeline and wrap the handler.
         var handler = BuildMiddlewarePipeline(
             _delegateHolder.Middlewares,
@@ -56,13 +52,14 @@ internal class LambdaHostedService : IHostedService
                     lambdaContext,
                     _scopeFactory,
                     cancellationTokenSource.Token,
-                    inputStream,
                     _settings.LambdaSerializer
                 );
 
+                _delegateHolder.Deserializer?.Invoke(lambdaHostContext, inputStream);
+
                 await handler(lambdaHostContext);
 
-                return lambdaHostContext.OutputStream ?? new MemoryStream(0);
+                return _delegateHolder.Serializer?.Invoke(lambdaHostContext) ?? new MemoryStream(0);
             }
         );
 

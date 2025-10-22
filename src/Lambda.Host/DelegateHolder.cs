@@ -14,5 +14,9 @@ internal sealed class DelegateHolder
         LambdaInvocationDelegate
     >? SerializerMiddleware { get; set; }
 
+    internal Action<ILambdaHostContext, Stream>? Deserializer { get; set; }
+
+    internal Func<ILambdaHostContext, Stream>? Serializer { get; set; }
+
     internal bool IsHandlerSet => Handler != null;
 }

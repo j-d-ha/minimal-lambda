@@ -8,10 +8,6 @@ namespace Lambda.Host;
 /// </summary>
 public interface ILambdaHostContext : ILambdaContext
 {
-    Stream InputStream { get; set; }
-
-    Stream? OutputStream { get; set; }
-
     object? Event { get; set; }
 
     object? Response { get; set; }

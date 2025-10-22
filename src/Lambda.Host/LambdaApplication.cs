@@ -32,7 +32,8 @@ public sealed class LambdaApplication : IHost, ILambdaApplication, IAsyncDisposa
 
     public ILambdaApplication MapHandler(
         LambdaInvocationDelegate handler,
-        LambdaMiddlewareDelegate? serializer = null
+        Action<ILambdaHostContext, Stream>? deserializer = null,
+        Func<ILambdaHostContext, Stream>? serializer = null
     )
     {
         if (_delegateHolder.IsHandlerSet)
@@ -42,8 +43,8 @@ public sealed class LambdaApplication : IHost, ILambdaApplication, IAsyncDisposa
 
         _delegateHolder.Handler = handler ?? throw new ArgumentNullException(nameof(handler));
 
-        if (serializer is not null)
-            _delegateHolder.SerializerMiddleware = next => context => serializer(context, next);
+        _delegateHolder.Deserializer = deserializer;
+        _delegateHolder.Serializer = serializer;
 
         return this;
     }

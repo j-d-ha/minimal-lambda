@@ -41,32 +41,47 @@ namespace Lambda.Host
         {
             var castHandler = ({{ delegate_type }} {{~ if delegate_args.size > 0 ~}} <{{ delegate_args | array.join ", " }}> {{~ end }})handler;
 
-            {{ if should_await ~}} async {{ end ~}} Task InvocationDelegate(ILambdaHostContext context)
+            async Task InvocationDelegate(ILambdaHostContext context)
             {
                 {{~ for arg in handler_args ~}}
                 var {{ arg.var_name }} = {{ arg.assignment_statement }};
                 {{~ end ~}}
-                {{ if has_response ~}} var response = {{ end }}{{ if should_await ~}} await {{ end ~}} castHandler.Invoke({{ for arg in handler_args }}{{ arg.var_name }}{{ if !for.last }}, {{ end }}{{ end }});
-                {{~ if has_response ~}}
-                {{~ if response_is_stream ~}}
+                {{ if output_response != null; ~}} context.Response = {{ end }}{{ if should_await ~}} await {{ end ~}} castHandler.Invoke({{ for arg in handler_args }}{{ arg.var_name }}{{ if !for.last }}, {{ end }}{{ end }});
+            }
+            
+            void Deserializer(ILambdaHostContext context, Stream eventStream)
+            {
+                {{~ if input_event != null ~}}
+                {{~ if input_event.is_stream ~}}
+                context.Event = eventStream;
+                {{~ else ~}}
+                context.Event = context.LambdaSerializer.Deserialize<{{~ input_event.type ~}}>(eventStream);
+                {{~ end ~}}
+                {{~ end ~}}
+            }
+            
+            Stream Serializer(ILambdaHostContext context)
+            {
+                {{~ if output_response != null ~}}
+                {{~ if output_response.response_is_stream ~}}
                 // No need to serialize the response, as it is a stream.
-                context.OutputStream = response;
+                return context.Response;
                 {{~ else ~}}
                 // Creating a new stream and serializing the response to it.
-                context.OutputStream = new MemoryStream();
-                context.OutputStream.SetLength(0L);
-                context.LambdaSerializer.Serialize<{{ response_type }}>(response, context.OutputStream);
-                context.OutputStream.Position = 0L;
+                var response = context.GetResponse<{{ output_response.response_type }}>() {{~ if !output_response.response_type_is_nullable }} ?? throw new InvalidOperationException($"Lambda response of type '{typeof({{ output_response.response_type }}).FullName}' is not available in the context.") {{~ end ~}};
+                var outputStream = new MemoryStream();
+                outputStream.SetLength(0L);
+                context.LambdaSerializer.Serialize<{{ output_response.response_type }}>(response, outputStream);
+                outputStream.Position = 0L;
+                return outputStream;
                 {{~ end ~}}
                 {{~ else ~}}
-                // No response, so not setting a response stream.
-                {{~ end ~}}
-                {{~ if !should_await ~}}
-                return Task.CompletedTask;  
+                // No response, return empty stream.
+                return new MemoryStream(0);
                 {{~ end ~}}
             }
 
-            return application.MapHandler(InvocationDelegate);
+            return application.MapHandler(InvocationDelegate, Deserializer, Serializer);
         }
     }
 }

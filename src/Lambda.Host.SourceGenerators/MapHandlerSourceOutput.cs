@@ -31,18 +31,6 @@ internal static class MapHandlerSourceOutput
             )
             .ToList();
 
-        // 1. if Action -> no return
-        // 3. if Func + Task return type + async -> no return
-        // 2. if Func + Task return type -> return value
-        // 4. if Func + non-Task return type -> return value
-        var hasReturnValue = delegateInfo switch
-        {
-            { DelegateType: TypeConstants.Action } => false,
-            { DelegateType: TypeConstants.Func, IsAsync: true, ResponseType: TypeConstants.Task } =>
-                false,
-            _ => true,
-        };
-
         var handlerArgs = delegateInfo
             .Parameters.Select(
                 (param, index) =>
@@ -51,15 +39,15 @@ internal static class MapHandlerSourceOutput
                         VarName = $"arg{index}",
                         AssignmentStatement = param switch
                         {
-                            // Request + type is stream -> pass as stream
-                            { Type: TypeConstants.Stream, Attributes: var attrs }
-                                when attrs.Any(a => a.Type == AttributeConstants.EventAttribute) =>
-                                "context.InputStream",
-
                             // Request -> deserialize to type
                             { Attributes: var attrs }
                                 when attrs.Any(a => a.Type == AttributeConstants.EventAttribute) =>
-                                $"context.LambdaSerializer.Deserialize<{param.Type}>(context.InputStream)",
+                                $"context.GetEvent<{param.Type}>()"
+                                    + (
+                                        param.Type.EndsWith("?")
+                                            ? ""
+                                            : $" ?? throw new InvalidOperationException($\"Lambda event of type '{{typeof({param.Type}).FullName}}' is not available in the context.\")"
+                                    ),
 
                             // ILambdaContext OR ILambdaHostContext -> use context directly
                             {
@@ -88,8 +76,6 @@ internal static class MapHandlerSourceOutput
 
         var shouldAwait = delegateInfo.ResponseType.StartsWith(TypeConstants.Task);
 
-        var responseIsStream = delegateInfo.ResponseType == TypeConstants.Stream;
-
         // Unwrap Task<T>
         var responseType = delegateInfo.ResponseType;
         if (responseType.StartsWith(TypeConstants.Task + "<"))
@@ -99,6 +85,34 @@ internal static class MapHandlerSourceOutput
             responseType = responseType.Substring(startIndex, endIndex - startIndex);
         }
 
+        var inputEvent = delegateInfo
+            .Parameters.Where(p =>
+                p.Attributes.Any(a => a.Type == AttributeConstants.EventAttribute)
+            )
+            .Select(p => new { IsStream = p.Type == TypeConstants.Stream, Type = p.Type })
+            .FirstOrDefault();
+
+        // 1. if Action -> no return
+        // 3. if Func + Task return type + async -> no return
+        // 2. if Func + Task return type -> return value
+        // 4. if Func + non-Task return type -> return value
+        var hasReturnValue = delegateInfo switch
+        {
+            { DelegateType: TypeConstants.Action } => false,
+            { DelegateType: TypeConstants.Func, IsAsync: true, ResponseType: TypeConstants.Task } =>
+                false,
+            _ => true,
+        };
+
+        var outputResponse = hasReturnValue
+            ? new
+            {
+                ResponseIsStream = delegateInfo.ResponseType == TypeConstants.Stream,
+                ResponseType = responseType,
+                ResponseTypeIsNullable = responseType.EndsWith("?"),
+            }
+            : null;
+
         var model = new
         {
             Location = mapHandlerInvocationInfo.InterceptableLocationInfo,
@@ -106,9 +120,8 @@ internal static class MapHandlerSourceOutput
             DelegateArgs = delegateArguments,
             HandlerArgs = handlerArgs,
             ShouldAwait = shouldAwait,
-            HasResponse = hasReturnValue,
-            ResponseIsStream = responseIsStream,
-            ResponseType = responseType,
+            InputEvent = inputEvent,
+            OutputResponse = outputResponse,
         };
 
         var template = TemplateHelper.LoadTemplate(GeneratorConstants.LambdaHandlerTemplateFile);
