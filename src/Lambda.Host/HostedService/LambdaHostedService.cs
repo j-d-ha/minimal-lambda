@@ -14,7 +14,7 @@ internal class LambdaHostedService : IHostedService
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly LambdaHostSettings _settings;
 
-    internal LambdaHostedService(
+    public LambdaHostedService(
         IOptions<LambdaHostSettings> lambdaHostSettings,
         DelegateHolder delegateHolder,
         ILambdaCancellationTokenSourceFactory lambdaCancellationTokenSourceFactory,

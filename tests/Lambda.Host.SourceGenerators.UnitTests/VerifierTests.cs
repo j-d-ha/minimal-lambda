@@ -4,7 +4,7 @@ using Microsoft.CodeAnalysis.CSharp;
 
 namespace Lambda.Host.SourceGenerators.UnitTests;
 
-public class MapHandlerIncrementalGeneratorVerifyTests
+public class VerifyTests
 {
     [Fact]
     public async Task Test_ExpressionLambda_NoInputNoOutput() =>
@@ -99,6 +99,47 @@ public class MapHandlerIncrementalGeneratorVerifyTests
             public class Service : IService
             {
                 public Task<string> GetMessage() => Task.FromResult("hello world");
+            }
+            """
+        );
+
+    [Fact]
+    public async Task Test_ExpressionLambda_DiAndAsyncAndAwait_CustomEventAndResponseTypes() =>
+        await Verify(
+            """
+            using System.Threading.Tasks;
+            using Lambda.Host;
+            using Microsoft.Extensions.DependencyInjection;
+            using Microsoft.Extensions.Hosting;
+            using MyNamespace;
+
+            var builder = LambdaApplication.CreateBuilder();
+            builder.Services.AddSingleton<IService, Service>();
+
+            var lambda = builder.Build();
+
+            lambda.MapHandler(
+                async ([Event] Event input, IService service) =>
+                    new Response((await service.GetMessage()).ToUpper())
+            );
+
+            await lambda.RunAsync();
+
+            public interface IService
+            {
+                Task<string> GetMessage();
+            }
+
+            public class Service : IService
+            {
+                public Task<string> GetMessage() => Task.FromResult("hello world");
+            }
+
+            namespace MyNamespace
+            {
+                public record Event(string Input);
+
+                public record Response(string Message);
             }
             """
         );
@@ -805,14 +846,7 @@ public class MapHandlerIncrementalGeneratorVerifyTests
 
     private static Task Verify(string source)
     {
-        var (driver, originalCompilation) = GeneratorTestHelpers.GenerateFromSource(
-            source,
-            new Dictionary<string, ReportDiagnostic>
-            {
-                ["LH1001"] = ReportDiagnostic.Suppress,
-                ["CS9137"] = ReportDiagnostic.Suppress,
-            }
-        );
+        var (driver, originalCompilation) = GeneratorTestHelpers.GenerateFromSource(source);
 
         driver.Should().NotBeNull();
 

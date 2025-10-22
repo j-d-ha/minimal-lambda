@@ -235,7 +235,7 @@ internal static class MapHandlerSyntaxProvider
                 LocationInfo.CreateFrom(p),
                 p.GetAttributes()
                     .Select(a => new AttributeInfo(
-                        a.ToString(),
+                        a.AttributeClass?.ToString() ?? "UNKNOWN",
                         a.ConstructorArguments.Where(aa => aa.Value is not null)
                             .Select(aa => aa.Value!.ToString())
                             .ToEquatableArray()
@@ -278,12 +278,15 @@ internal static class MapHandlerSyntaxProvider
                 p.Type.GetAsGlobal(),
                 LocationInfo.CreateFrom(p),
                 p.GetAttributes()
-                    .Select(a => new AttributeInfo(
-                        a.ToString(),
-                        a.ConstructorArguments.Where(aa => aa.Value is not null)
-                            .Select(aa => aa.Value!.ToString())
-                            .ToEquatableArray()
-                    ))
+                    .Select(a =>
+                    {
+                        return new AttributeInfo(
+                            a.AttributeClass?.ToString() ?? "UNKNOWN",
+                            a.ConstructorArguments.Where(aa => aa.Value is not null)
+                                .Select(aa => aa.Value!.ToString())
+                                .ToEquatableArray()
+                        );
+                    })
                     .ToEquatableArray()
             ))
             .ToEquatableArray();
