@@ -1,7 +1,0 @@
-<Project InitialTargets="Lambda_Host">
-  <Target Name="Lambda_Host">
-    <PropertyGroup>
-      <InterceptorsNamespaces>$(InterceptorsPreviewNamespaces);Lambda.Host</InterceptorsNamespaces>
-    </PropertyGroup>
-  </Target>
-</Project>
