@@ -25,7 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <None Include="build\Lambda.Host.props" Pack="true" PackagePath="build\"/>
+    <None Include="build\Lambda.Host.targets" Pack="true" PackagePath="build\"/>
   </ItemGroup>
 
 </Project>
