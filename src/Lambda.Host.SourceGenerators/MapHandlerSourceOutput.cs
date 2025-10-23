@@ -42,12 +42,7 @@ internal static class MapHandlerSourceOutput
                             // Request -> deserialize to type
                             { Attributes: var attrs }
                                 when attrs.Any(a => a.Type == AttributeConstants.EventAttribute) =>
-                                $"context.GetEvent<{param.Type}>()"
-                                    + (
-                                        param.Type.EndsWith("?")
-                                            ? ""
-                                            : $" ?? throw new InvalidOperationException($\"Lambda event of type '{{typeof({param.Type}).FullName}}' is not available in the context.\")"
-                                    ),
+                                $"context.GetEventT<{param.Type}>()",
 
                             // ILambdaContext OR ILambdaHostContext -> use context directly
                             {
