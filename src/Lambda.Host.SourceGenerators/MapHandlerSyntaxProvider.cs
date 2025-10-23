@@ -63,8 +63,10 @@ internal static class MapHandlerSyntaxProvider
             return null;
 
         // Check if it's from LambdaApplication
-        if (methodSymbol.ContainingType?.Name != GeneratorConstants.StartupClassName)
-            return null;
+        // if (methodSymbol.ContainingType?.Name != GeneratorConstants.StartupClassName)
+        //     return null;
+
+        // TODO: make sure it's the right overload
 
         // setup list of mutator functions
         List<Updater> updaters = [];
@@ -96,9 +98,17 @@ internal static class MapHandlerSyntaxProvider
         if (result is null)
             return null;
 
+        // get interceptable location
+        var interceptableLocation = context.SemanticModel.GetInterceptableLocation(invocationExpr)!;
+
         return new MapHandlerInvocationInfo(
             LocationInfo: LocationInfo.CreateFrom(context.Node),
-            DelegateInfo: updaters.Aggregate(result.Value, (current, updater) => updater(current))
+            DelegateInfo: updaters.Aggregate(result.Value, (current, updater) => updater(current)),
+            InterceptableLocationInfo: new InterceptableLocationInfo(
+                interceptableLocation.Version,
+                interceptableLocation.Data,
+                interceptableLocation.GetDisplayLocation()
+            )
         );
     }
 
@@ -183,26 +193,9 @@ internal static class MapHandlerSyntaxProvider
 
             return new DelegateInfo(
                 ResponseType: invokeMethod.ReturnType.GetAsGlobal(),
-                Namespace: delegateInfo.Namespace,
-                IsAsync: invokeMethod.IsAsync,
                 Parameters: updatedParameters
             );
         };
-
-    private static string GetFileNamespace(SyntaxNode node, SemanticModel semanticModel)
-    {
-        // First try to find explicit namespace declaration
-        var namespaceDeclaration = node.Ancestors()
-            .OfType<BaseNamespaceDeclarationSyntax>()
-            .FirstOrDefault();
-
-        if (namespaceDeclaration != null)
-            return namespaceDeclaration.Name.ToString();
-
-        // For top-level statements, get the default namespace from compilation
-        var compilation = semanticModel.Compilation;
-        return compilation.Assembly.Name; // This will be "Lambda.Host.Example.HelloWorld"
-    }
 
     private static DelegateInfo? ExtractInfoFromDelegate(
         GeneratorSyntaxContext context,
@@ -220,12 +213,11 @@ internal static class MapHandlerSyntaxProvider
         var parameters = methodSymbol
             .Parameters.AsEnumerable()
             .Select(p => new ParameterInfo(
-                p!.Name,
                 p.Type.GetAsGlobal(),
                 LocationInfo.CreateFrom(p),
                 p.GetAttributes()
                     .Select(a => new AttributeInfo(
-                        a.ToString(),
+                        a.AttributeClass?.ToString() ?? "UNKNOWN",
                         a.ConstructorArguments.Where(aa => aa.Value is not null)
                             .Select(aa => aa.Value!.ToString())
                             .ToEquatableArray()
@@ -236,8 +228,6 @@ internal static class MapHandlerSyntaxProvider
 
         return new DelegateInfo(
             ResponseType: methodSymbol.ReturnType.GetAsGlobal(),
-            Namespace: GetFileNamespace(context.Node, context.SemanticModel),
-            IsAsync: methodSymbol.IsAsync,
             Parameters: parameters
         );
     }
@@ -264,16 +254,18 @@ internal static class MapHandlerSyntaxProvider
             .Select(p => sematicModel.GetDeclaredSymbol(p))
             .Where(p => p is not null)
             .Select(p => new ParameterInfo(
-                p!.Name,
                 p.Type.GetAsGlobal(),
                 LocationInfo.CreateFrom(p),
                 p.GetAttributes()
-                    .Select(a => new AttributeInfo(
-                        a.ToString(),
-                        a.ConstructorArguments.Where(aa => aa.Value is not null)
-                            .Select(aa => aa.Value!.ToString())
-                            .ToEquatableArray()
-                    ))
+                    .Select(a =>
+                    {
+                        return new AttributeInfo(
+                            a.AttributeClass?.ToString() ?? "UNKNOWN",
+                            a.ConstructorArguments.Where(aa => aa.Value is not null)
+                                .Select(aa => aa.Value!.ToString())
+                                .ToEquatableArray()
+                        );
+                    })
                     .ToEquatableArray()
             ))
             .ToEquatableArray();
@@ -290,8 +282,8 @@ internal static class MapHandlerSyntaxProvider
         var returnType = lambdaExpression switch
         {
             // check for explicit return type
-            ParenthesizedLambdaExpressionSyntax { ReturnType: { } syntax } => ModelExtensions
-                .GetTypeInfo(sematicModel, syntax)
+            ParenthesizedLambdaExpressionSyntax { ReturnType: { } syntax } => sematicModel
+                .GetTypeInfo(syntax)
                 .Type?.GetAsGlobal(syntax),
 
             // Handle implicit return type for expression lambda
@@ -325,12 +317,7 @@ internal static class MapHandlerSyntaxProvider
             var (type, _) => type,
         };
 
-        return new DelegateInfo(
-            GetFileNamespace(context.Node, context.SemanticModel),
-            isAsync,
-            returnTypeName,
-            parameters
-        );
+        return new DelegateInfo(returnTypeName, parameters);
     }
 
     private delegate DelegateInfo Updater(DelegateInfo delegateInfo);

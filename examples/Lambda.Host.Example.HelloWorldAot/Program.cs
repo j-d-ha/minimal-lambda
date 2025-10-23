@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Text.Json.Serialization;
-using System.Threading;
-using Amazon.Lambda.Core;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using Lambda.Host;
+using Lambda.Host.Middleware;
 using Microsoft.Extensions.Hosting;
 
 var builder = LambdaApplication.CreateBuilder();
-
-builder.Services.AddLambdaHostedService<MyHost>();
 
 builder.Services.ConfigureLambdaHost(settings =>
     settings.LambdaSerializer = new SourceGeneratorLambdaJsonSerializer<SerializerContext>()
@@ -16,18 +13,41 @@ builder.Services.ConfigureLambdaHost(settings =>
 
 var lambda = builder.Build();
 
-lambda.MapHandler(
-    (ILambdaContext context, CancellationToken cancellationToken) =>
+lambda.UseMiddleware(DefaultMiddleware.ClearLambdaOutputFormatting);
+
+lambda.UseMiddleware(
+    async (context, next) =>
     {
-        Console.WriteLine("hello world from aot");
-        return "hello world from aot";
+        Console.WriteLine("[Middleware 1] Before");
+        await next(context);
+        Console.WriteLine("[Middleware 1] After");
     }
 );
 
-await lambda.RunAsync();
+lambda.UseMiddleware(
+    async (context, next) =>
+    {
+        Console.WriteLine("[Middleware 2] Before");
+        await next(context);
+        Console.WriteLine("[Middleware 2] After");
+    }
+);
 
-[LambdaHost]
-public partial class MyHost : LambdaHostedService;
+lambda.MapHandler(() =>
+{
+    Console.WriteLine("hello world from aot");
+    return "hello world from aot";
+});
+
+// lambda.MapHandler(
+//     Stream (ILambdaContext context, CancellationToken cancellationToken) =>
+//     {
+//         Console.WriteLine("hello world from aot");
+//         return new MemoryStream();
+//     }
+// );
+
+await lambda.RunAsync();
 
 [JsonSerializable(typeof(string))]
 public partial class SerializerContext : JsonSerializerContext;

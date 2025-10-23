@@ -8,14 +8,8 @@ namespace Lambda.Host;
 /// </summary>
 public interface ILambdaHostContext : ILambdaContext
 {
-    /// <summary>
-    ///     Gets or sets the object representing the request data for the current Lambda invocation.
-    /// </summary>
-    object? Request { get; set; }
+    object? Event { get; set; }
 
-    /// <summary>
-    ///     Gets or sets the object representing the response data for the current Lambda invocation.
-    /// </summary>
     object? Response { get; set; }
 
     /// <summary>
@@ -38,4 +32,6 @@ public interface ILambdaHostContext : ILambdaContext
     ///     that the Lambda runtime is being terminated.
     /// </remarks>
     CancellationToken CancellationToken { get; }
+
+    ILambdaSerializer LambdaSerializer { get; }
 }

@@ -17,6 +17,8 @@
     <TrimMode>full</TrimMode>
     <AssemblyName>bootstrap</AssemblyName>
     <PublishTrimmed>true</PublishTrimmed>
+
+    <InterceptorsNamespaces>$(InterceptorsNamespaces);Lambda.Host</InterceptorsNamespaces>
   </PropertyGroup>
 
   <ItemGroup>

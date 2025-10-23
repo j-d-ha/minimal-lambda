@@ -11,6 +11,8 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <!-- Generate ready to run images during publishing to improve cold start time. -->
     <PublishReadyToRun>true</PublishReadyToRun>
+
+    <InterceptorsNamespaces>$(InterceptorsNamespaces);Lambda.Host</InterceptorsNamespaces>
   </PropertyGroup>
 
   <ItemGroup>

@@ -1,29 +1,30 @@
-﻿using System.Threading;
+﻿using System;
 using System.Threading.Tasks;
 using Lambda.Host;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var builder = LambdaApplication.CreateBuilder();
-
 builder.Services.AddSingleton<IService, Service>();
-
 var lambda = builder.Build();
 
 lambda.MapHandler(
-    async ([Event] string request, IService service, CancellationToken cancellationToken) =>
-        await service.SayHello(cancellationToken)
+    (Action<string, IService>)(
+        ([Event] string input, IService service) =>
+        {
+            Console.WriteLine("hello world");
+        }
+    )
 );
 
 await lambda.RunAsync();
 
-internal interface IService
+public interface IService
 {
-    Task<string> SayHello(CancellationToken cancellationToken);
+    Task<string> GetMessage();
 }
 
-internal class Service : IService
+public class Service : IService
 {
-    public Task<string> SayHello(CancellationToken cancellationToken) =>
-        Task.FromResult("hello world");
+    public Task<string> GetMessage() => Task.FromResult("hello world");
 }

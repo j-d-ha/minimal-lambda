@@ -34,6 +34,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Folder Include="Snapshots\"/>
     <Folder Include="\Snapshots\"/>
   </ItemGroup>
 
