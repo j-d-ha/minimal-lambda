@@ -21,6 +21,12 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
         Services.Configure<LambdaHostSettings>(
             Configuration.GetSection(LambdaHostAppSettingsSectionName)
         );
+
+        // register LambdaHostedService as IHostedService
+        Services.AddHostedService<LambdaHostedService>();
+
+        // Register DelegateHolder to pass the handler delegate to the generated LambdaApplication
+        Services.AddSingleton<DelegateHolder>();
     }
 
     internal LambdaApplicationBuilder()
@@ -53,12 +59,6 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
 
     public LambdaApplication Build()
     {
-        // register LambdaHostedService as IHostedService
-        Services.AddSingleton<IHostedService, LambdaHostedService>();
-
-        // Register DelegateHolder to pass the handler delegate to the generated LambdaApplication
-        Services.AddSingleton<DelegateHolder>();
-
         // Attempt to add a default cancellation token source factory if one is not already
         // registered.
         Services.TryAddSingleton<ILambdaCancellationTokenSourceFactory>(sp =>
