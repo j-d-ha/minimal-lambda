@@ -14,15 +14,13 @@ internal class LambdaHostContext : ILambdaHostContext, IAsyncDisposable
     public LambdaHostContext(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        CancellationToken cancellationToken,
-        ILambdaSerializer lambdaSerializer
+        CancellationToken cancellationToken
     )
     {
         _lambdaContext = lambdaContext ?? throw new ArgumentNullException(nameof(lambdaContext));
         _serviceScopeFactory =
             serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
         CancellationToken = cancellationToken;
-        LambdaSerializer = lambdaSerializer;
     }
 
     public async ValueTask DisposeAsync()
@@ -71,6 +69,4 @@ internal class LambdaHostContext : ILambdaHostContext, IAsyncDisposable
     public IDictionary<object, object?> Items { get; set; } = new Dictionary<object, object?>();
 
     public CancellationToken CancellationToken { get; }
-
-    public ILambdaSerializer LambdaSerializer { get; }
 }

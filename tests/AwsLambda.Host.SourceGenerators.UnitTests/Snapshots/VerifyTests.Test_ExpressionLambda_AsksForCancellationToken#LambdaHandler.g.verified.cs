@@ -29,6 +29,7 @@ namespace AwsLambda.Host
     using System.IO;
     using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
+    using Amazon.Lambda.Core;
     using Microsoft.Extensions.DependencyInjection;
 
     file static class LambdaHostMapHandlerExtensions
@@ -48,27 +49,25 @@ namespace AwsLambda.Host
                 context.Response = castHandler.Invoke(arg0);
             }
             
-            void Deserializer(ILambdaHostContext context, Stream eventStream)
+            Task Deserializer(ILambdaHostContext context, ILambdaSerializer serializer, Stream eventStream)
             {
+                return Task.CompletedTask;
             }
             
-            Stream Serializer(ILambdaHostContext context)
+            Task<Stream> Serializer(ILambdaHostContext context, ILambdaSerializer serializer)
             {
                 var response = context.GetResponseT<string>();
                 var outputStream = new MemoryStream();
                 outputStream.SetLength(0L);
-                context.LambdaSerializer.Serialize<string>(response, outputStream);
+                serializer.Serialize<string>(response, outputStream);
                 outputStream.Position = 0L;
-                return outputStream;
+                return Task.FromResult<Stream>(outputStream);
             }
 
-            return application.MapHandler(InvocationDelegate, Deserializer, Serializer);
+            return application.Map(InvocationDelegate, Deserializer, Serializer);
         }
-    }
-    
-    file static class HelperExtensions
-    {
-        public static T GetEventT<T>(this ILambdaHostContext context)
+
+        private static T GetEventT<T>(this ILambdaHostContext context)
         {
             if (!context.TryGetEvent<T>(out var eventT))
             {
@@ -78,7 +77,7 @@ namespace AwsLambda.Host
             return eventT!;
         }
 
-        public static T GetResponseT<T>(this ILambdaHostContext context)
+        private static T GetResponseT<T>(this ILambdaHostContext context)
         {
             if (!context.TryGetResponse<T>(out var responseT))
             {

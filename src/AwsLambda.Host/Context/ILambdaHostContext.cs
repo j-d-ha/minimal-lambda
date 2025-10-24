@@ -32,6 +32,4 @@ public interface ILambdaHostContext : ILambdaContext
     ///     that the Lambda runtime is being terminated.
     /// </remarks>
     CancellationToken CancellationToken { get; }
-
-    ILambdaSerializer LambdaSerializer { get; }
 }

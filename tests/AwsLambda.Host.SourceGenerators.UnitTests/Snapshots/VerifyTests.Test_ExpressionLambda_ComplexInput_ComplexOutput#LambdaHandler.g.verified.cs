@@ -29,6 +29,7 @@ namespace AwsLambda.Host
     using System.IO;
     using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
+    using Amazon.Lambda.Core;
     using Microsoft.Extensions.DependencyInjection;
 
     file static class LambdaHostMapHandlerExtensions
@@ -50,28 +51,26 @@ namespace AwsLambda.Host
                 context.Response = await castHandler.Invoke(arg0, arg1, arg2);
             }
             
-            void Deserializer(ILambdaHostContext context, Stream eventStream)
+            Task Deserializer(ILambdaHostContext context, ILambdaSerializer serializer, Stream eventStream)
             {
-                context.Event = context.LambdaSerializer.Deserialize<global::CustomRequest>(eventStream);
+                context.Event = serializer.Deserialize<global::CustomRequest>(eventStream);
+                return Task.CompletedTask;
             }
             
-            Stream Serializer(ILambdaHostContext context)
+            Task<Stream> Serializer(ILambdaHostContext context, ILambdaSerializer serializer)
             {
                 var response = context.GetResponseT<global::CustomResponse>();
                 var outputStream = new MemoryStream();
                 outputStream.SetLength(0L);
-                context.LambdaSerializer.Serialize<global::CustomResponse>(response, outputStream);
+                serializer.Serialize<global::CustomResponse>(response, outputStream);
                 outputStream.Position = 0L;
-                return outputStream;
+                return Task.FromResult<Stream>(outputStream);
             }
 
-            return application.MapHandler(InvocationDelegate, Deserializer, Serializer);
+            return application.Map(InvocationDelegate, Deserializer, Serializer);
         }
-    }
-    
-    file static class HelperExtensions
-    {
-        public static T GetEventT<T>(this ILambdaHostContext context)
+
+        private static T GetEventT<T>(this ILambdaHostContext context)
         {
             if (!context.TryGetEvent<T>(out var eventT))
             {
@@ -81,7 +80,7 @@ namespace AwsLambda.Host
             return eventT!;
         }
 
-        public static T GetResponseT<T>(this ILambdaHostContext context)
+        private static T GetResponseT<T>(this ILambdaHostContext context)
         {
             if (!context.TryGetResponse<T>(out var responseT))
             {

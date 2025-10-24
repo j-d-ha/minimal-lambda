@@ -51,15 +51,25 @@ internal class LambdaHostedService : IHostedService
                 await using var lambdaHostContext = new LambdaHostContext(
                     lambdaContext,
                     _scopeFactory,
-                    cancellationTokenSource.Token,
-                    _settings.LambdaSerializer
+                    cancellationTokenSource.Token
                 );
 
-                _delegateHolder.Deserializer?.Invoke(lambdaHostContext, inputStream);
+                if (_delegateHolder.Deserializer is not null)
+                    await _delegateHolder.Deserializer(
+                        lambdaHostContext,
+                        _settings.LambdaSerializer,
+                        inputStream
+                    );
 
                 await handler(lambdaHostContext);
 
-                return _delegateHolder.Serializer?.Invoke(lambdaHostContext) ?? new MemoryStream(0);
+                if (_delegateHolder.Serializer is not null)
+                    return await _delegateHolder.Serializer(
+                        lambdaHostContext,
+                        _settings.LambdaSerializer
+                    );
+
+                return new MemoryStream(0);
             }
         );
 

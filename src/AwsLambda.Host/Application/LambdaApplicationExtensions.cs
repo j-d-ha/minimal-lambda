@@ -15,7 +15,7 @@ public static class LambdaApplicationExtensions
                 nameof(handler)
             );
 
-        application.MapHandler(lambdaInvocationDelegate);
+        application.Map(lambdaInvocationDelegate, null, null);
 
         return application;
     }
