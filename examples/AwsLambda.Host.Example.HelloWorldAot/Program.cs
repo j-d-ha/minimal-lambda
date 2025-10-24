@@ -33,11 +33,13 @@ lambda.UseMiddleware(
     }
 );
 
-lambda.MapHandler(() =>
-{
-    Console.WriteLine("hello world from aot");
-    return "hello world from aot";
-});
+lambda.MapHandler(
+    ([Event] string input) =>
+    {
+        Console.WriteLine("hello world from aot");
+        return "hello world from aot";
+    }
+);
 
 // lambda.MapHandler(
 //     Stream (ILambdaContext context, CancellationToken cancellationToken) =>
