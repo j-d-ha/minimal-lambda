@@ -22,3 +22,8 @@ tasks:
     deps: [pack]
     cmds:
       - dotnet nuget push bin/Release/*.nupkg --source https://api.nuget.org/v3/index.json --api-key $NUGET_API_KEY
+
+  lambda-test:
+    desc: Start the AWS Lambda test tool
+    cmds:
+      - dotnet lambda-test-tool start --lambda-emulator-port 5050

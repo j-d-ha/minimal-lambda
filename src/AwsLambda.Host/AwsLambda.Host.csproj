@@ -7,10 +7,12 @@
     <Nullable>enable</Nullable>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <IncludeBuildOutput>true</IncludeBuildOutput>
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
 
     <!-- Package Metadata -->
     <PackageId>AwsLambda.Host</PackageId>
-    <Version>0.0.1-alpha.2</Version>
+    <Version>0.0.1-alpha.4</Version>
     <Authors>Jonas Ha</Authors>
     <Description>.NET Host for AWS Lambda</Description>
     <PackageTags>csharp;library;utility;aws;lambda</PackageTags>
@@ -31,15 +33,20 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\AwsLambda.Host.SourceGenerators\AwsLambda.Host.SourceGenerators.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer"/>
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="build\AwsLambda.Host.targets" Pack="true" PackagePath="build\"/>
   </ItemGroup>
 
   <ItemGroup>
     <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
+
+  <Target Name="IncludeSourceGenerator" BeforeTargets="_GetPackageFiles">
+    <ItemGroup>
+      <None Include="..\AwsLambda.Host.SourceGenerators\bin\$(Configuration)\netstandard2.0\AwsLambda.Host.SourceGenerators.dll"
+            Pack="true"
+            PackagePath="analyzers/dotnet/cs"
+            Visible="false"/>
+    </ItemGroup>
+  </Target>
 
 </Project>
