@@ -1,3 +1,4 @@
+using Amazon.Lambda.Core;
 using AwsLambda.Host.Middleware;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -30,10 +31,10 @@ public sealed class LambdaApplication : IHost, ILambdaApplication, IAsyncDisposa
 
     public IServiceProvider Services => _host.Services;
 
-    public ILambdaApplication MapHandler(
+    public ILambdaApplication Map(
         LambdaInvocationDelegate handler,
-        Action<ILambdaHostContext, Stream>? deserializer = null,
-        Func<ILambdaHostContext, Stream>? serializer = null
+        Func<ILambdaHostContext, ILambdaSerializer, Stream, Task>? deserializer,
+        Func<ILambdaHostContext, ILambdaSerializer, Task<Stream>>? serializer
     )
     {
         if (_delegateHolder.IsHandlerSet)

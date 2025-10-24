@@ -1,13 +1,14 @@
+using Amazon.Lambda.Core;
 using AwsLambda.Host.Middleware;
 
 namespace AwsLambda.Host;
 
 public interface ILambdaApplication
 {
-    ILambdaApplication MapHandler(
+    ILambdaApplication Map(
         LambdaInvocationDelegate handler,
-        Action<ILambdaHostContext, Stream>? deserializer = null,
-        Func<ILambdaHostContext, Stream>? serializer = null
+        Func<ILambdaHostContext, ILambdaSerializer, Stream, Task>? deserializer,
+        Func<ILambdaHostContext, ILambdaSerializer, Task<Stream>>? serializer
     );
 
     ILambdaApplication Use(Func<LambdaInvocationDelegate, LambdaInvocationDelegate> middleware);
