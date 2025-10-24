@@ -23,7 +23,7 @@ namespace System.Runtime.CompilerServices
     }
 }
 
-namespace Lambda.Host
+namespace AwsLambda.Host
 {
     using System;
     using System.IO;
@@ -34,13 +34,13 @@ namespace Lambda.Host
     file static class LambdaHostMapHandlerExtensions
     {
         // Location: InputFile.cs(9,8)
-        [InterceptsLocation(1, "zj8nsTjItYivtuY28H+GK8EAAABJbnB1dEZpbGUuY3M=")]
+        [InterceptsLocation(1, "EUYsV990+v7tTxW9ROkaW8QAAABJbnB1dEZpbGUuY3M=")]
         internal static ILambdaApplication MapHandlerInterceptor(
             this ILambdaApplication application,
             Delegate handler
         )
         {
-            var castHandler = (global::System.Func<global::System.Threading.CancellationToken, global::Lambda.Host.ILambdaHostContext, string>)handler;
+            var castHandler = (global::System.Func<global::System.Threading.CancellationToken, global::AwsLambda.Host.ILambdaHostContext, string>)handler;
 
             async Task InvocationDelegate(ILambdaHostContext context)
             {
