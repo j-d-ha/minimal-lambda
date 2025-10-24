@@ -1,20 +1,20 @@
 ﻿<Solution>
-  <Folder Name="/Solution Items/">
-    <File Path="README.md"/>
-    <File Path="Taskfile.yml"/>
-    <File Path=".editorconfig"/>
+  <Folder Name="/examples/">
+    <Project Path="examples\AwsLambda.Host.Example.HelloWorldAot\AwsLambda.Host.Example.HelloWorldAot.csproj" Type="Classic C#" />
+    <Project Path="examples\AwsLambda.Host.Example.HelloWorld\AwsLambda.Host.Example.HelloWorld.csproj" Type="Classic C#" />
   </Folder>
-  <Project
-    Path="examples\AwsLambda.Host.Example.HelloWorldAot\AwsLambda.Host.Example.HelloWorldAot.csproj"
-    Type="Classic C#"/>
-  <Project
-    Path="examples\AwsLambda.Host.Example.HelloWorld\AwsLambda.Host.Example.HelloWorld.csproj"
-    Type="Classic C#"/>
-  <Project Path="src\AwsLambda.Host.SourceGenerators\AwsLambda.Host.SourceGenerators.csproj"
-           Type="Classic C#"/>
-  <Project Path="src\AwsLambda.Host\AwsLambda.Host.csproj" Type="Classic C#"/>
-  <Project
-    Path="tests\AwsLambda.Host.SourceGenerators.UnitTests\AwsLambda.Host.SourceGenerators.UnitTests.csproj"
-    Type="Classic C#"/>
-  <Project Path="tests\Lambda.Host.UnitTests\Lambda.Host.UnitTests.csproj" Type="Classic C#"/>
+  <Folder Name="/Solution Items/">
+    <File Path="README.md" />
+    <File Path="Taskfile.yml" />
+    <File Path=".editorconfig" />
+    <File Path="LICENSE" />
+  </Folder>
+  <Folder Name="/src/">
+    <Project Path="src\AwsLambda.Host.SourceGenerators\AwsLambda.Host.SourceGenerators.csproj" Type="Classic C#" />
+    <Project Path="src\AwsLambda.Host\AwsLambda.Host.csproj" Type="Classic C#" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests\AwsLambda.Host.SourceGenerators.UnitTests\AwsLambda.Host.SourceGenerators.UnitTests.csproj" Type="Classic C#" />
+    <Project Path="tests\AwsLambda.Host.UnitTests\AwsLambda.Host.UnitTests.csproj" Type="Classic C#" />
+  </Folder>
 </Solution>
