@@ -12,7 +12,7 @@
 
     <!-- Package Metadata -->
     <PackageId>AwsLambda.Host</PackageId>
-    <Version>0.0.1-alpha.4</Version>
+    <Version>0.0.1-alpha.5</Version>
     <Authors>Jonas Ha</Authors>
     <Description>.NET Host for AWS Lambda</Description>
     <PackageTags>csharp;library;utility;aws;lambda</PackageTags>
@@ -38,6 +38,10 @@
 
   <ItemGroup>
     <None Include="..\..\README.md" Pack="true" PackagePath="\"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\AwsLambda.Host.Abstractions\AwsLambda.Host.Abstractions.csproj"/>
   </ItemGroup>
 
   <Target Name="IncludeSourceGenerator" BeforeTargets="_GetPackageFiles">

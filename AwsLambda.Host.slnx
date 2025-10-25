@@ -10,6 +10,10 @@
     <File Path="LICENSE" />
   </Folder>
   <Folder Name="/src/">
+    <Project Path="src\AwsLambda.Host.Abstractions\AwsLambda.Host.Abstractions.csproj"
+             Type="Classic C#"/>
+    <Project Path="src\AwsLambda.Host.OpenTelemetry\AwsLambda.Host.OpenTelemetry.csproj"
+             Type="Classic C#"/>
     <Project Path="src\AwsLambda.Host.SourceGenerators\AwsLambda.Host.SourceGenerators.csproj" Type="Classic C#" />
     <Project Path="src\AwsLambda.Host\AwsLambda.Host.csproj" Type="Classic C#" />
   </Folder>

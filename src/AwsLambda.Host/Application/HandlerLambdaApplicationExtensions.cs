@@ -2,7 +2,7 @@ using AwsLambda.Host.Middleware;
 
 namespace AwsLambda.Host;
 
-public static class LambdaApplicationExtensions
+public static class HandlerLambdaApplicationExtensions
 {
     public static ILambdaApplication MapHandler(
         this ILambdaApplication application,
@@ -19,9 +19,4 @@ public static class LambdaApplicationExtensions
 
         return application;
     }
-
-    public static ILambdaApplication UseMiddleware(
-        this ILambdaApplication application,
-        LambdaMiddlewareDelegate middleware
-    ) => application.Use(next => context => middleware(context, next));
 }
