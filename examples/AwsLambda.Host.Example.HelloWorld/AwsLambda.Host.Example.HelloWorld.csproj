@@ -21,9 +21,11 @@
     <PackageReference Include="Amazon.Lambda.RuntimeSupport" Version="1.13.4"/>
     <PackageReference Include="Amazon.Lambda.Core" Version="2.7.1"/>
     <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" Version="2.4.4"/>
+    <PackageReference Include="OpenTelemetry.Api" Version="1.14.0-rc.1"/>
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\AwsLambda.Host.OpenTelemetry\AwsLambda.Host.OpenTelemetry.csproj"/>
     <ProjectReference Include="..\..\src\AwsLambda.Host\AwsLambda.Host.csproj"/>
 
     <ProjectReference Include="..\..\src\AwsLambda.Host.SourceGenerators\AwsLambda.Host.SourceGenerators.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer"/>
