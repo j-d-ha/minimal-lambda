@@ -1,3 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
+
 namespace AwsLambda.Host;
 
 public static class LambdaHostContextExtensions
@@ -10,7 +12,10 @@ public static class LambdaHostContextExtensions
         return default;
     }
 
-    public static bool TryGetEvent<T>(this ILambdaHostContext context, out T? result)
+    public static bool TryGetEvent<T>(
+        this ILambdaHostContext context,
+        [NotNullWhen(true)] out T? result
+    )
     {
         if (context.Event is T eventT)
         {
@@ -32,7 +37,10 @@ public static class LambdaHostContextExtensions
         return x;
     }
 
-    public static bool TryGetResponse<T>(this ILambdaHostContext context, out T? result)
+    public static bool TryGetResponse<T>(
+        this ILambdaHostContext context,
+        [NotNullWhen(true)] out T? result
+    )
     {
         if (context.Response is T responseT)
         {
