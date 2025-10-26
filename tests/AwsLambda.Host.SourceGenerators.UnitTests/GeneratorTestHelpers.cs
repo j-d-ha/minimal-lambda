@@ -27,7 +27,7 @@ internal static class GeneratorTestHelpers
 
         List<MetadataReference> references =
         [
-            .. Net80.References.All.ToList(),
+            .. Net90.References.All.ToList(),
             MetadataReference.CreateFromFile(typeof(LambdaApplication).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(FromKeyedServicesAttribute).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(ILambdaContext).Assembly.Location),

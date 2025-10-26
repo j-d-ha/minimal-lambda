@@ -845,10 +845,70 @@ public class VerifyTests
 
             await lambda.RunAsync();
 
-            // {"Name":"jonas"}
             record Request(string Name);
 
             record Response(string Message);
+            """
+        );
+
+    [Fact]
+    public async Task Test_OtelEnabled_OnlyResponse() =>
+        await Verify(
+            """
+            using AwsLambda.Host;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
+
+            var lambda = builder.Build();
+
+            lambda.UseOpenTelemetryTracing();
+
+            lambda.MapHandler(() => new Response("Hello world!"));
+
+            await lambda.RunAsync();
+
+            record Response(string Message);
+            """
+        );
+
+    [Fact]
+    public async Task Test_OtelEnabled_OnlyEvent() =>
+        await Verify(
+            """
+            using AwsLambda.Host;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
+
+            var lambda = builder.Build();
+
+            lambda.UseOpenTelemetryTracing();
+
+            lambda.MapHandler(([Event] Request request) => { });
+
+            await lambda.RunAsync();
+
+            record Request(string Name);
+            """
+        );
+
+    [Fact]
+    public async Task Test_OtelEnabled_NoEventNoResponse() =>
+        await Verify(
+            """
+            using AwsLambda.Host;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
+
+            var lambda = builder.Build();
+
+            lambda.UseOpenTelemetryTracing();
+
+            lambda.MapHandler(() => { });
+
+            await lambda.RunAsync();
             """
         );
 
