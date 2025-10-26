@@ -133,7 +133,7 @@ internal static class MapHandlerSourceOutput
             OutputResponse = outputResponse,
             // OTEL related values
             IsOtelEnabled = isOtelEnabled,
-            UseOtelCalles = useOtelCalls,
+            UseOtelCalls = useOtelCalls,
         };
 
         var template = TemplateHelper.LoadTemplate(GeneratorConstants.LambdaHandlerTemplateFile);

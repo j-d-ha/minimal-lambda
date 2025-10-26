@@ -2,7 +2,6 @@
 using System.Text.Json.Serialization;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using AwsLambda.Host;
-using AwsLambda.Host.Middleware;
 using Microsoft.Extensions.Hosting;
 
 var builder = LambdaApplication.CreateBuilder();
@@ -13,7 +12,7 @@ builder.Services.ConfigureLambdaHost(settings =>
 
 var lambda = builder.Build();
 
-lambda.UseMiddleware(DefaultMiddleware.ClearLambdaOutputFormatting);
+lambda.UseMiddleware(DefaultMiddlewareExtensions.ClearLambdaOutputFormatting);
 
 lambda.UseMiddleware(
     async (context, next) =>
@@ -48,6 +47,11 @@ lambda.MapHandler(
 //         return new MemoryStream();
 //     }
 // );
+
+// lambda.MapHandler(() =>
+// {
+//     Console.WriteLine("hello world from aot");
+// });
 
 await lambda.RunAsync();
 

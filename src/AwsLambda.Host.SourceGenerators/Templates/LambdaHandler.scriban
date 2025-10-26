@@ -108,6 +108,8 @@ namespace AwsLambda.Host
 
 namespace AwsLambda.Host
 {
+    using System.Runtime.CompilerServices;
+    
     file static class LambdaHostUseOpenTelemetryTracingExtensions
     {
         {{~ for location in use_otel_calls ~}}
