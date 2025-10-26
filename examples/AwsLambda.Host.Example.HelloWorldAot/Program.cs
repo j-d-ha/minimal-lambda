@@ -12,7 +12,7 @@ builder.Services.ConfigureLambdaHost(settings =>
 
 var lambda = builder.Build();
 
-lambda.UseMiddleware(DefaultMiddlewareExtensions.ClearLambdaOutputFormatting);
+lambda.UseClearLambdaOutputFormatting();
 
 lambda.UseMiddleware(
     async (context, next) =>
