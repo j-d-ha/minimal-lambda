@@ -104,3 +104,24 @@ namespace AwsLambda.Host
         }
     }
 }
+{{~ if otel_enabled ~}}
+
+namespace AwsLambda.Host
+{
+    file static class LambdaHostUseOpenTelemetryTracingExtensions
+    {
+        internal static ILambdaApplication UseOpenTelemetryTracingInterceptor(
+            this ILambdaApplication application
+        )
+        {
+            {{~ if  ~}}
+            return application.Use(application.Services.GetTracer<object, object>());
+            {{~ else if  ~}}
+            return application.Use(application.Services.GetTracer<object, object>());
+            {{~ else ~}}
+            return application.Use(application.Services.GetTracerNoEventNoResponse());
+            {{~ end ~}}
+        }
+    }
+}
+{{~ end ~}}

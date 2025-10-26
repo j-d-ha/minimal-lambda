@@ -11,9 +11,9 @@ public static class LambdaOpenTelemetry
     public static Func<LambdaInvocationDelegate, LambdaInvocationDelegate> GetTracer<
         TEvent,
         TResponse
-    >(this ILambdaApplication application)
+    >(this IServiceProvider services)
     {
-        var tracerProvider = application.Services.GetRequiredService<TracerProvider>();
+        var tracerProvider = services.GetRequiredService<TracerProvider>();
 
         return next =>
         {
@@ -47,9 +47,9 @@ public static class LambdaOpenTelemetry
     public static Func<
         LambdaInvocationDelegate,
         LambdaInvocationDelegate
-    > GetTracerNoEvent<TResponse>(this ILambdaApplication application)
+    > GetTracerNoEvent<TResponse>(this IServiceProvider services)
     {
-        var tracerProvider = application.Services.GetRequiredService<TracerProvider>();
+        var tracerProvider = services.GetRequiredService<TracerProvider>();
 
         return next =>
         {
@@ -78,9 +78,9 @@ public static class LambdaOpenTelemetry
     public static Func<
         LambdaInvocationDelegate,
         LambdaInvocationDelegate
-    > GetTracerNoResponse<TEvent>(this ILambdaApplication application)
+    > GetTracerNoResponse<TEvent>(this IServiceProvider services)
     {
-        var tracerProvider = application.Services.GetRequiredService<TracerProvider>();
+        var tracerProvider = services.GetRequiredService<TracerProvider>();
 
         return next =>
         {
@@ -95,6 +95,27 @@ public static class LambdaOpenTelemetry
                     tracerProvider,
                     async Task (TEvent _, ILambdaContext _) => await next(context),
                     inputEvent,
+                    context
+                );
+            };
+        };
+    }
+
+    public static Func<
+        LambdaInvocationDelegate,
+        LambdaInvocationDelegate
+    > GetTracerNoEventNoResponse(this IServiceProvider services)
+    {
+        var tracerProvider = services.GetRequiredService<TracerProvider>();
+
+        return next =>
+        {
+            return async context =>
+            {
+                await AWSLambdaWrapper.TraceAsync(
+                    tracerProvider,
+                    async Task (object? _, ILambdaContext _) => await next(context),
+                    null,
                     context
                 );
             };
