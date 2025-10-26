@@ -78,7 +78,7 @@ public static class LambdaOpenTelemetryExtensions
     /// </para>
     /// <para>
     /// The generated interceptor adapts to various handler signatures by calling the appropriate
-    /// <see cref="LambdaOpenTelemetry"/> extension methods:
+    /// <see cref="LambdaOpenTelemetryServiceProviderExtensions"/> extension methods:
     /// <list type="bullet">
     ///   <item><description>Handlers with both input and output: <c>services.GetTracer&lt;TRequest, TResponse&gt;()</c></description></item>
     ///   <item><description>Handlers with input only (no response): <c>services.GetTracerNoResponse&lt;TRequest&gt;()</c></description></item>

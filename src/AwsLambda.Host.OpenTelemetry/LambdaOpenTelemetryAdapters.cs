@@ -1,12 +1,11 @@
 using Amazon.Lambda.Core;
 using AwsLambda.Host.Middleware;
-using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry.Instrumentation.AWSLambda;
 using OpenTelemetry.Trace;
 
-namespace AwsLambda.Host;
+namespace Microsoft.Extensions.DependencyInjection;
 
-public static class LambdaOpenTelemetry
+public static class LambdaOpenTelemetryServiceProviderExtensions
 {
     public static Func<LambdaInvocationDelegate, LambdaInvocationDelegate> GetTracer<
         TEvent,
