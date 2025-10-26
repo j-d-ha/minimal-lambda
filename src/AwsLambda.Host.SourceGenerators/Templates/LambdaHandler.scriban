@@ -118,7 +118,7 @@ namespace AwsLambda.Host
         )
         {
             {{~ if output_response != null && input_event != null ~}}
-            return application.Use(application.Services.GetTracer<{{ output_response.response_type }}, {{ input_event.type }}>());
+            return application.Use(application.Services.GetTracer<{{ input_event.type }}, {{ output_response.response_type }}>());
             {{~ else if output_response != null ~}}
             return application.Use(application.Services.GetTracerNoEvent<{{ output_response.response_type }}>());
             {{~ else if input_event != null ~}}

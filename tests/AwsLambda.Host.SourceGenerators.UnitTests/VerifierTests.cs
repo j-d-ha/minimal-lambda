@@ -828,6 +828,30 @@ public class VerifyTests
             """
         );
 
+    [Fact]
+    public async Task Test_OtelEnabled_EventAndResponse() =>
+        await Verify(
+            """
+            using AwsLambda.Host;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
+
+            var lambda = builder.Build();
+
+            lambda.UseOpenTelemetryTracing();
+
+            lambda.MapHandler(([Event] Request request) => new Response($"Hello {request.Name}!"));
+
+            await lambda.RunAsync();
+
+            // {"Name":"jonas"}
+            record Request(string Name);
+
+            record Response(string Message);
+            """
+        );
+
     private static Task Verify(string source)
     {
         var (driver, originalCompilation) = GeneratorTestHelpers.GenerateFromSource(source);
