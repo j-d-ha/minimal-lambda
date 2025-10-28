@@ -1,3 +1,3 @@
-namespace AwsLambda.Host.Middleware;
+namespace AwsLambda.Host;
 
 public delegate Task LambdaInvocationDelegate(ILambdaHostContext context);

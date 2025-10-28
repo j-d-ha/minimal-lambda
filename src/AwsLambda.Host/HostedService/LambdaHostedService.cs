@@ -1,6 +1,5 @@
 using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
-using AwsLambda.Host.Middleware;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -11,7 +10,6 @@ internal sealed class LambdaHostedService : BackgroundService
 {
     private readonly ILambdaCancellationTokenSourceFactory _cancellationTokenSourceFactory;
     private readonly DelegateHolder _delegateHolder;
-    private readonly IHostApplicationLifetime _lifetime;
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly LambdaHostSettings _settings;
 
@@ -36,7 +34,11 @@ internal sealed class LambdaHostedService : BackgroundService
         _delegateHolder = delegateHolder;
         _cancellationTokenSourceFactory = lambdaCancellationTokenSourceFactory;
         _scopeFactory = serviceScopeFactory;
-        _lifetime = lifetime;
+
+        lifetime.ApplicationStopped.Register(
+            state => RunShutdownHandlers((IServiceScopeFactory)state!),
+            _scopeFactory
+        );
     }
 
     protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -59,6 +61,12 @@ internal sealed class LambdaHostedService : BackgroundService
             );
 
         return bootstrap.RunAsync(stoppingToken);
+    }
+
+    private void RunShutdownHandlers(IServiceScopeFactory scopeFactory)
+    {
+        using var scope = scopeFactory.CreateScope();
+        var services = scope.ServiceProvider;
     }
 
     private Func<Stream, ILambdaContext, Task<Stream>> GetHandler(
