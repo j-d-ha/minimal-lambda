@@ -61,15 +61,7 @@ internal sealed class LambdaHostedService : BackgroundService
                 null
             );
 
-        try
-        {
-            return bootstrap.RunAsync(stoppingToken);
-        }
-        catch
-        {
-            _lifetime.StopApplication();
-            throw;
-        }
+        return bootstrap.RunAsync(stoppingToken);
     }
 
     public override async Task StopAsync(CancellationToken cancellationToken)
