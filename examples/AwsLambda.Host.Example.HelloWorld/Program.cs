@@ -1,25 +1,21 @@
-﻿using AwsLambda.Host;
+﻿using System;
+using AwsLambda.Host;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using OpenTelemetry.Instrumentation.AWSLambda;
-using OpenTelemetry.Trace;
 
 var builder = LambdaApplication.CreateBuilder();
 
-builder
-    .Services.AddOpenTelemetry()
-    .WithTracing(configure => configure.AddAWSLambdaConfigurations().AddConsoleExporter());
+builder.Services.Configure<HostOptions>(options =>
+{
+    options.ShutdownTimeout = TimeSpan.FromSeconds(2);
+});
 
 var lambda = builder.Build();
 
 lambda.UseClearLambdaOutputFormatting();
 
-lambda.UseOpenTelemetryTracing();
-
-lambda.MapHandler(([Event] Request request) => new Response($"Hello {request.Name}!"));
+lambda.MapHandler(() => new Response("Hello world"));
 
 await lambda.RunAsync();
 
-record Request(string Name);
-
-record Response(string Message);
+internal record Response(string Message);
