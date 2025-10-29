@@ -140,26 +140,38 @@ public class LambdaHostedServiceTest
         var handler = CreateMockHandler();
         handlerFactory.CreateHandler(Arg.Any<CancellationToken>()).Returns(handler);
 
-        var tcs = new TaskCompletionSource();
+        var executeTcs = new TaskCompletionSource();
         bootstrap
             .RunAsync(
                 Arg.Any<Func<Stream, ILambdaContext, Task<Stream>>>(),
                 Arg.Any<CancellationToken>()
             )
-            .Returns(tcs.Task);
+            .Returns(executeTcs.Task);
+
+        // Track when StopApplication is called
+        var stopApplicationCalled = new TaskCompletionSource();
+        lifetime
+            .WhenForAnyArgs(x => x.StopApplication())
+            .Do(_ => stopApplicationCalled.TrySetResult());
 
         var service = new LambdaHostedService(bootstrap, handlerFactory, lifetime);
         using var cts = new CancellationTokenSource();
 
-        // Act
-        await service.StartAsync(cts.Token);
+        // Act - Start the service which internally starts ExecuteAsync
+        var startTask = service.StartAsync(cts.Token);
 
-        // Complete the bootstrap task to verify it was stored
-        tcs.SetResult();
-        await Task.Delay(50); // Give time for finally block to execute
+        // Assert - StartAsync should return immediately (Task.CompletedTask) while ExecuteAsync runs
+        startTask.Should().Be(Task.CompletedTask);
 
-        // Assert - verify StopApplication was called, indicating the stored task executed
-        lifetime.Received(1).StopApplication();
+        // Complete the bootstrap to trigger the finally block
+        executeTcs.SetResult();
+
+        // Wait for StopApplication to be called (happens in the finally block)
+        var completedFirst = await Task.WhenAny(
+            stopApplicationCalled.Task,
+            Task.Delay(TimeSpan.FromSeconds(1))
+        );
+        completedFirst.Should().Be(stopApplicationCalled.Task);
     }
 
     [Fact]
