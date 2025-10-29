@@ -13,9 +13,7 @@ internal sealed class DelegateHolder
 
     internal Func<ILambdaHostContext, ILambdaSerializer, Task<Stream>>? Serializer { get; set; }
 
-    internal List<LambdaLifecycleDelegate> StartupHandlers { get; } = [];
-
-    internal List<LambdaLifecycleDelegate> ShutdownHandlers { get; } = [];
+    internal List<LambdaShutdownDelegate> ShutdownHandlers { get; } = [];
 
     internal bool IsHandlerSet => Handler != null;
 }

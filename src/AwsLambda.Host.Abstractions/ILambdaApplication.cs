@@ -13,4 +13,6 @@ public interface ILambdaApplication
     );
 
     ILambdaApplication Use(Func<LambdaInvocationDelegate, LambdaInvocationDelegate> middleware);
+
+    ILambdaApplication OnShutdown(LambdaShutdownDelegate handler);
 }
