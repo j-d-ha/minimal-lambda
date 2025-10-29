@@ -41,10 +41,10 @@ internal sealed class LambdaBootstrapAdapter : ILambdaBootstrapOrchestrator
     )
     {
         // Wrap the handler with HandlerWrapper to match Lambda runtime expectations.
-        var wrappedHandler = HandlerWrapper.GetHandlerWrapper(handler);
+        using var wrappedHandler = HandlerWrapper.GetHandlerWrapper(handler);
 
         // Create the bootstrap based on configuration.
-        var bootstrap = _settings.BootstrapHttpClient is null
+        using var bootstrap = _settings.BootstrapHttpClient is null
             ? new LambdaBootstrap(wrappedHandler, _settings.BootstrapOptions, null)
             : new LambdaBootstrap(
                 _settings.BootstrapHttpClient,
