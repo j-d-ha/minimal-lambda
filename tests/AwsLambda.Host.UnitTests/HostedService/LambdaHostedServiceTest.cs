@@ -11,6 +11,15 @@ namespace AwsLambda.Host.UnitTests.HostedService;
 [TestSubject(typeof(LambdaHostedService))]
 public class LambdaHostedServiceTest
 {
+    private readonly ILambdaBootstrapOrchestrator _bootstrap =
+        Substitute.For<ILambdaBootstrapOrchestrator>();
+
+    private readonly ILambdaHandlerFactory _handlerFactory =
+        Substitute.For<ILambdaHandlerFactory>();
+
+    private readonly IHostApplicationLifetime _lifetime =
+        Substitute.For<IHostApplicationLifetime>();
+
     // ============================================================================
     // Constructor Validation Tests (4 tests)
     // ============================================================================
@@ -18,12 +27,8 @@ public class LambdaHostedServiceTest
     [Fact]
     public void Constructor_WithNullBootstrap_ThrowsArgumentNullException()
     {
-        // Arrange
-        var handlerFactory = Substitute.For<ILambdaHandlerFactory>();
-        var lifetime = Substitute.For<IHostApplicationLifetime>();
-
         // Act
-        var action = () => new LambdaHostedService(null!, handlerFactory, lifetime);
+        var action = () => new LambdaHostedService(null!, _handlerFactory, _lifetime);
 
         // Assert
         action.Should().ThrowExactly<ArgumentNullException>().WithParameterName("bootstrap");
@@ -32,12 +37,8 @@ public class LambdaHostedServiceTest
     [Fact]
     public void Constructor_WithNullHandlerFactory_ThrowsArgumentNullException()
     {
-        // Arrange
-        var bootstrap = Substitute.For<ILambdaBootstrapOrchestrator>();
-        var lifetime = Substitute.For<IHostApplicationLifetime>();
-
         // Act
-        var action = () => new LambdaHostedService(bootstrap, null!, lifetime);
+        var action = () => new LambdaHostedService(_bootstrap, null!, _lifetime);
 
         // Assert
         action.Should().ThrowExactly<ArgumentNullException>().WithParameterName("handlerFactory");
@@ -46,12 +47,8 @@ public class LambdaHostedServiceTest
     [Fact]
     public void Constructor_WithNullLifetime_ThrowsArgumentNullException()
     {
-        // Arrange
-        var bootstrap = Substitute.For<ILambdaBootstrapOrchestrator>();
-        var handlerFactory = Substitute.For<ILambdaHandlerFactory>();
-
         // Act
-        var action = () => new LambdaHostedService(bootstrap, handlerFactory, null!);
+        var action = () => new LambdaHostedService(_bootstrap, _handlerFactory, null!);
 
         // Assert
         action.Should().ThrowExactly<ArgumentNullException>().WithParameterName("lifetime");
@@ -60,13 +57,8 @@ public class LambdaHostedServiceTest
     [Fact]
     public void Constructor_WithValidDependencies_CreatesInstanceSuccessfully()
     {
-        // Arrange
-        var bootstrap = Substitute.For<ILambdaBootstrapOrchestrator>();
-        var handlerFactory = Substitute.For<ILambdaHandlerFactory>();
-        var lifetime = Substitute.For<IHostApplicationLifetime>();
-
         // Act
-        var service = new LambdaHostedService(bootstrap, handlerFactory, lifetime);
+        var service = new LambdaHostedService(_bootstrap, _handlerFactory, _lifetime);
 
         // Assert
         service.Should().NotBeNull();
@@ -80,29 +72,15 @@ public class LambdaHostedServiceTest
     public async Task StartAsync_WithRunningTask_ReturnsCompletedTask()
     {
         // Arrange
-        var bootstrap = Substitute.For<ILambdaBootstrapOrchestrator>();
-        var handlerFactory = Substitute.For<ILambdaHandlerFactory>();
-        var lifetime = Substitute.For<IHostApplicationLifetime>();
-
-        var handler = CreateMockHandler();
-        handlerFactory.CreateHandler(Arg.Any<CancellationToken>()).Returns(handler);
-
-        var bootstrapTcs = new TaskCompletionSource();
-        bootstrap
-            .RunAsync(
-                Arg.Any<Func<Stream, ILambdaContext, Task<Stream>>>(),
-                Arg.Any<CancellationToken>()
-            )
-            .Returns(bootstrapTcs.Task);
-
-        var service = new LambdaHostedService(bootstrap, handlerFactory, lifetime);
+        SetupHandlerFactory();
+        var bootstrapTcs = SetupBootstrapRunAsync();
+        var service = new LambdaHostedService(_bootstrap, _handlerFactory, _lifetime);
         using var cts = new CancellationTokenSource();
 
         // Act
         var result = service.StartAsync(cts.Token);
 
         // Assert
-        // The StartAsync should return Task.CompletedTask when ExecuteAsync is still running
         result.Should().Be(Task.CompletedTask);
         bootstrapTcs.SetResult();
     }
@@ -111,20 +89,16 @@ public class LambdaHostedServiceTest
     public async Task StartAsync_WithAlreadyCompletedExecuteAsync_ReturnsFaultedTask()
     {
         // Arrange
-        var bootstrap = Substitute.For<ILambdaBootstrapOrchestrator>();
-        var handlerFactory = Substitute.For<ILambdaHandlerFactory>();
-        var lifetime = Substitute.For<IHostApplicationLifetime>();
-
         var testException = new InvalidOperationException("Test error");
-        handlerFactory.CreateHandler(Arg.Any<CancellationToken>()).Throws(testException);
+        _handlerFactory.CreateHandler(Arg.Any<CancellationToken>()).Throws(testException);
 
-        var service = new LambdaHostedService(bootstrap, handlerFactory, lifetime);
+        var service = new LambdaHostedService(_bootstrap, _handlerFactory, _lifetime);
         using var cts = new CancellationTokenSource();
 
         // Act
         var result = service.StartAsync(cts.Token);
 
-        // Assert - when ExecuteAsync completes immediately with exception, it should be returned
+        // Assert
         var act = async () => await result;
         await act.Should().ThrowAsync<InvalidOperationException>();
     }
@@ -133,44 +107,22 @@ public class LambdaHostedServiceTest
     public async Task StartAsync_StoresExecuteTaskForLaterUse()
     {
         // Arrange
-        var bootstrap = Substitute.For<ILambdaBootstrapOrchestrator>();
-        var handlerFactory = Substitute.For<ILambdaHandlerFactory>();
-        var lifetime = Substitute.For<IHostApplicationLifetime>();
+        SetupHandlerFactory();
+        var executeTcs = SetupBootstrapRunAsync();
+        var stopApplicationCalled = TrackStopApplicationCall();
 
-        var handler = CreateMockHandler();
-        handlerFactory.CreateHandler(Arg.Any<CancellationToken>()).Returns(handler);
-
-        var executeTcs = new TaskCompletionSource();
-        bootstrap
-            .RunAsync(
-                Arg.Any<Func<Stream, ILambdaContext, Task<Stream>>>(),
-                Arg.Any<CancellationToken>()
-            )
-            .Returns(executeTcs.Task);
-
-        // Track when StopApplication is called
-        var stopApplicationCalled = new TaskCompletionSource();
-        lifetime
-            .WhenForAnyArgs(x => x.StopApplication())
-            .Do(_ => stopApplicationCalled.TrySetResult());
-
-        var service = new LambdaHostedService(bootstrap, handlerFactory, lifetime);
+        var service = new LambdaHostedService(_bootstrap, _handlerFactory, _lifetime);
         using var cts = new CancellationTokenSource();
 
-        // Act - Start the service which internally starts ExecuteAsync
+        // Act
         var startTask = service.StartAsync(cts.Token);
 
-        // Assert - StartAsync should return immediately (Task.CompletedTask) while ExecuteAsync runs
+        // Assert
         startTask.Should().Be(Task.CompletedTask);
 
-        // Complete the bootstrap to trigger the finally block
         executeTcs.SetResult();
-
-        // Wait for StopApplication to be called (happens in the finally block)
-        var completedFirst = await Task.WhenAny(
-            stopApplicationCalled.Task,
-            Task.Delay(TimeSpan.FromSeconds(1))
-        );
+        var timeoutTcs = new TaskCompletionSource();
+        var completedFirst = await Task.WhenAny(stopApplicationCalled.Task, timeoutTcs.Task);
         completedFirst.Should().Be(stopApplicationCalled.Task);
     }
 
@@ -178,29 +130,16 @@ public class LambdaHostedServiceTest
     public async Task StartAsync_CallsHandlerFactoryWithCancellationToken()
     {
         // Arrange
-        var bootstrap = Substitute.For<ILambdaBootstrapOrchestrator>();
-        var handlerFactory = Substitute.For<ILambdaHandlerFactory>();
-        var lifetime = Substitute.For<IHostApplicationLifetime>();
-
-        var handler = CreateMockHandler();
-        handlerFactory.CreateHandler(Arg.Any<CancellationToken>()).Returns(handler);
-
-        var bootstrapTcs = new TaskCompletionSource();
-        bootstrap
-            .RunAsync(
-                Arg.Any<Func<Stream, ILambdaContext, Task<Stream>>>(),
-                Arg.Any<CancellationToken>()
-            )
-            .Returns(bootstrapTcs.Task);
-
-        var service = new LambdaHostedService(bootstrap, handlerFactory, lifetime);
+        SetupHandlerFactory();
+        var bootstrapTcs = SetupBootstrapRunAsync();
+        var service = new LambdaHostedService(_bootstrap, _handlerFactory, _lifetime);
         using var cts = new CancellationTokenSource();
 
         // Act
         await service.StartAsync(cts.Token);
 
         // Assert
-        handlerFactory.Received(1).CreateHandler(Arg.Any<CancellationToken>());
+        _handlerFactory.Received(1).CreateHandler(Arg.Any<CancellationToken>());
         bootstrapTcs.SetResult();
     }
 
@@ -212,17 +151,11 @@ public class LambdaHostedServiceTest
     public async Task StopAsync_WithoutStart_ReturnsSuccessfully()
     {
         // Arrange
-        var bootstrap = Substitute.For<ILambdaBootstrapOrchestrator>();
-        var handlerFactory = Substitute.For<ILambdaHandlerFactory>();
-        var lifetime = Substitute.For<IHostApplicationLifetime>();
-
-        var service = new LambdaHostedService(bootstrap, handlerFactory, lifetime);
+        var service = new LambdaHostedService(_bootstrap, _handlerFactory, _lifetime);
         using var cts = new CancellationTokenSource();
 
-        // Act
+        // Act & Assert
         var action = async () => await service.StopAsync(cts.Token);
-
-        // Assert - should not throw
         await action.Should().NotThrowAsync<Exception>();
     }
 
@@ -230,37 +163,20 @@ public class LambdaHostedServiceTest
     public async Task StopAsync_WaitsForExecuteTaskCompletion()
     {
         // Arrange
-        var bootstrap = Substitute.For<ILambdaBootstrapOrchestrator>();
-        var handlerFactory = Substitute.For<ILambdaHandlerFactory>();
-        var lifetime = Substitute.For<IHostApplicationLifetime>();
-
-        var handler = CreateMockHandler();
-        handlerFactory.CreateHandler(Arg.Any<CancellationToken>()).Returns(handler);
-
-        var bootstrapTcs = new TaskCompletionSource();
-        bootstrap
-            .RunAsync(
-                Arg.Any<Func<Stream, ILambdaContext, Task<Stream>>>(),
-                Arg.Any<CancellationToken>()
-            )
-            .Returns(bootstrapTcs.Task);
-
-        var service = new LambdaHostedService(bootstrap, handlerFactory, lifetime);
+        SetupHandlerFactory();
+        var bootstrapTcs = SetupBootstrapRunAsync();
+        var service = new LambdaHostedService(_bootstrap, _handlerFactory, _lifetime);
         using var startCts = new CancellationTokenSource();
 
         await service.StartAsync(startCts.Token);
 
-        // Act
         using var stopCts = new CancellationTokenSource();
         var stopTask = service.StopAsync(stopCts.Token);
 
-        // At this point, stopTask should be waiting for the bootstrap task to complete
+        // Act & Assert
         stopTask.IsCompleted.Should().BeFalse();
-
-        // Complete the bootstrap task
         bootstrapTcs.SetResult();
 
-        // Assert - StopAsync should now complete
         await stopTask;
         stopTask.IsCompletedSuccessfully.Should().BeTrue();
     }
@@ -269,31 +185,16 @@ public class LambdaHostedServiceTest
     public async Task StopAsync_WithTimeoutToken_ThrowsAggregateExceptionWithOperationCanceledException()
     {
         // Arrange
-        var bootstrap = Substitute.For<ILambdaBootstrapOrchestrator>();
-        var handlerFactory = Substitute.For<ILambdaHandlerFactory>();
-        var lifetime = Substitute.For<IHostApplicationLifetime>();
-
-        var handler = CreateMockHandler();
-        handlerFactory.CreateHandler(Arg.Any<CancellationToken>()).Returns(handler);
-
-        // Create a task that will never complete
-        var bootstrapTcs = new TaskCompletionSource();
-        bootstrap
-            .RunAsync(
-                Arg.Any<Func<Stream, ILambdaContext, Task<Stream>>>(),
-                Arg.Any<CancellationToken>()
-            )
-            .Returns(bootstrapTcs.Task);
-
-        var service = new LambdaHostedService(bootstrap, handlerFactory, lifetime);
+        SetupHandlerFactory();
+        var bootstrapTcs = SetupBootstrapRunAsync();
+        var service = new LambdaHostedService(_bootstrap, _handlerFactory, _lifetime);
         using var startCts = new CancellationTokenSource();
 
         await service.StartAsync(startCts.Token);
 
-        // Act - use a cancellation token with timeout
         using var stopCts = new CancellationTokenSource(TimeSpan.FromMilliseconds(50));
 
-        // Assert - StopAsync should throw AggregateException with OperationCanceledException
+        // Act & Assert
         var act = async () => await service.StopAsync(stopCts.Token);
         var ex = await act.Should().ThrowAsync<AggregateException>();
         ex.Which.InnerExceptions.Should().Contain(ie => ie is OperationCanceledException);
@@ -303,32 +204,18 @@ public class LambdaHostedServiceTest
     public async Task StopAsync_WhenBootstrapFails_ThrowsAggregateExceptionWithInnerException()
     {
         // Arrange
-        var bootstrap = Substitute.For<ILambdaBootstrapOrchestrator>();
-        var handlerFactory = Substitute.For<ILambdaHandlerFactory>();
-        var lifetime = Substitute.For<IHostApplicationLifetime>();
-
-        var handler = CreateMockHandler();
-        handlerFactory.CreateHandler(Arg.Any<CancellationToken>()).Returns(handler);
-
+        SetupHandlerFactory();
         var testException = new InvalidOperationException("Bootstrap error");
-        var bootstrapTcs = new TaskCompletionSource();
-        bootstrap
-            .RunAsync(
-                Arg.Any<Func<Stream, ILambdaContext, Task<Stream>>>(),
-                Arg.Any<CancellationToken>()
-            )
-            .Returns(bootstrapTcs.Task);
-
-        var service = new LambdaHostedService(bootstrap, handlerFactory, lifetime);
+        var bootstrapTcs = SetupBootstrapRunAsync();
+        var service = new LambdaHostedService(_bootstrap, _handlerFactory, _lifetime);
         using var startCts = new CancellationTokenSource();
 
         await service.StartAsync(startCts.Token);
 
-        // Act
         using var stopCts = new CancellationTokenSource();
         var stopTask = service.StopAsync(stopCts.Token);
 
-        // Complete the bootstrap with an exception
+        // Act
         bootstrapTcs.SetException(testException);
 
         // Assert
@@ -341,31 +228,17 @@ public class LambdaHostedServiceTest
     public async Task StopAsync_WhenBootstrapCompletesSuccessfully_CompletesWithoutException()
     {
         // Arrange
-        var bootstrap = Substitute.For<ILambdaBootstrapOrchestrator>();
-        var handlerFactory = Substitute.For<ILambdaHandlerFactory>();
-        var lifetime = Substitute.For<IHostApplicationLifetime>();
-
-        var handler = CreateMockHandler();
-        handlerFactory.CreateHandler(Arg.Any<CancellationToken>()).Returns(handler);
-
-        var bootstrapTcs = new TaskCompletionSource();
-        bootstrap
-            .RunAsync(
-                Arg.Any<Func<Stream, ILambdaContext, Task<Stream>>>(),
-                Arg.Any<CancellationToken>()
-            )
-            .Returns(bootstrapTcs.Task);
-
-        var service = new LambdaHostedService(bootstrap, handlerFactory, lifetime);
+        SetupHandlerFactory();
+        var bootstrapTcs = SetupBootstrapRunAsync();
+        var service = new LambdaHostedService(_bootstrap, _handlerFactory, _lifetime);
         using var startCts = new CancellationTokenSource();
 
         await service.StartAsync(startCts.Token);
 
-        // Act
         using var stopCts = new CancellationTokenSource();
         var stopTask = service.StopAsync(stopCts.Token);
 
-        // Complete the bootstrap task successfully
+        // Act
         bootstrapTcs.SetResult();
 
         // Assert
@@ -377,35 +250,18 @@ public class LambdaHostedServiceTest
     public async Task StopAsync_AfterDispose_HandlesGracefully()
     {
         // Arrange
-        var bootstrap = Substitute.For<ILambdaBootstrapOrchestrator>();
-        var handlerFactory = Substitute.For<ILambdaHandlerFactory>();
-        var lifetime = Substitute.For<IHostApplicationLifetime>();
-
-        var handler = CreateMockHandler();
-        handlerFactory.CreateHandler(Arg.Any<CancellationToken>()).Returns(handler);
-
-        var bootstrapTcs = new TaskCompletionSource();
-        bootstrap
-            .RunAsync(
-                Arg.Any<Func<Stream, ILambdaContext, Task<Stream>>>(),
-                Arg.Any<CancellationToken>()
-            )
-            .Returns(bootstrapTcs.Task);
-
-        var service = new LambdaHostedService(bootstrap, handlerFactory, lifetime);
+        SetupHandlerFactory();
+        var bootstrapTcs = SetupBootstrapRunAsync();
+        var service = new LambdaHostedService(_bootstrap, _handlerFactory, _lifetime);
         using var startCts = new CancellationTokenSource();
 
         await service.StartAsync(startCts.Token);
-
-        // Dispose to set _stoppingCts to null
         service.Dispose();
 
         using var stopCts = new CancellationTokenSource();
-
-        // Complete the bootstrap task
         bootstrapTcs.SetResult();
 
-        // Assert - StopAsync should handle the null _stoppingCts without throwing
+        // Act & Assert
         var action = async () => await service.StopAsync(stopCts.Token);
         await action.Should().NotThrowAsync<Exception>();
     }
@@ -418,22 +274,9 @@ public class LambdaHostedServiceTest
     public async Task Dispose_TriggersCancellationTokenSource()
     {
         // Arrange
-        var bootstrap = Substitute.For<ILambdaBootstrapOrchestrator>();
-        var handlerFactory = Substitute.For<ILambdaHandlerFactory>();
-        var lifetime = Substitute.For<IHostApplicationLifetime>();
-
-        var handler = CreateMockHandler();
-        handlerFactory.CreateHandler(Arg.Any<CancellationToken>()).Returns(handler);
-
-        var bootstrapTcs = new TaskCompletionSource();
-        bootstrap
-            .RunAsync(
-                Arg.Any<Func<Stream, ILambdaContext, Task<Stream>>>(),
-                Arg.Any<CancellationToken>()
-            )
-            .Returns(bootstrapTcs.Task);
-
-        var service = new LambdaHostedService(bootstrap, handlerFactory, lifetime);
+        SetupHandlerFactory();
+        var bootstrapTcs = SetupBootstrapRunAsync();
+        var service = new LambdaHostedService(_bootstrap, _handlerFactory, _lifetime);
         using var cts = new CancellationTokenSource();
 
         await service.StartAsync(cts.Token);
@@ -441,11 +284,9 @@ public class LambdaHostedServiceTest
         // Act
         service.Dispose();
 
-        // Assert - the internal CancellationTokenSource should be triggered
-        // (we can verify by checking that StopAsync can be called and doesn't throw)
+        // Assert
         using var stopCts = new CancellationTokenSource();
         var action = async () => await service.StopAsync(stopCts.Token);
-        // If dispose worked, the stop should complete or handle gracefully
         bootstrapTcs.SetResult();
         await action.Should().NotThrowAsync<Exception>();
     }
@@ -454,43 +295,24 @@ public class LambdaHostedServiceTest
     public void Dispose_WithoutStartAsync_DoesNotThrow()
     {
         // Arrange
-        var bootstrap = Substitute.For<ILambdaBootstrapOrchestrator>();
-        var handlerFactory = Substitute.For<ILambdaHandlerFactory>();
-        var lifetime = Substitute.For<IHostApplicationLifetime>();
+        var service = new LambdaHostedService(_bootstrap, _handlerFactory, _lifetime);
 
-        var service = new LambdaHostedService(bootstrap, handlerFactory, lifetime);
-
-        // Act
+        // Act & Assert
         var action = () => service.Dispose();
-
-        // Assert
         action.Should().NotThrow();
     }
 
     // ============================================================================
-    // Integration Tests (6 tests)
+    // Integration Tests (4 tests)
     // ============================================================================
 
     [Fact]
     public async Task StartAsync_And_StopAsync_FullLifecycle()
     {
         // Arrange
-        var bootstrap = Substitute.For<ILambdaBootstrapOrchestrator>();
-        var handlerFactory = Substitute.For<ILambdaHandlerFactory>();
-        var lifetime = Substitute.For<IHostApplicationLifetime>();
-
-        var handler = CreateMockHandler();
-        handlerFactory.CreateHandler(Arg.Any<CancellationToken>()).Returns(handler);
-
-        var bootstrapTcs = new TaskCompletionSource();
-        bootstrap
-            .RunAsync(
-                Arg.Any<Func<Stream, ILambdaContext, Task<Stream>>>(),
-                Arg.Any<CancellationToken>()
-            )
-            .Returns(bootstrapTcs.Task);
-
-        var service = new LambdaHostedService(bootstrap, handlerFactory, lifetime);
+        SetupHandlerFactory();
+        var bootstrapTcs = SetupBootstrapRunAsync();
+        var service = new LambdaHostedService(_bootstrap, _handlerFactory, _lifetime);
         using var startCts = new CancellationTokenSource();
 
         // Act
@@ -499,112 +321,59 @@ public class LambdaHostedServiceTest
         using var stopCts = new CancellationTokenSource();
         var stopTask = service.StopAsync(stopCts.Token);
 
-        // Complete the bootstrap task
         bootstrapTcs.SetResult();
 
         await stopTask;
 
         // Assert
-        lifetime.Received(1).StopApplication();
+        _lifetime.Received(1).StopApplication();
     }
 
     [Fact]
     public async Task StartAsync_CallsBootstrapRunAsyncWithCreatedHandler()
     {
         // Arrange
-        var bootstrap = Substitute.For<ILambdaBootstrapOrchestrator>();
-        var handlerFactory = Substitute.For<ILambdaHandlerFactory>();
-        var lifetime = Substitute.For<IHostApplicationLifetime>();
-
-        var handler = CreateMockHandler();
-        handlerFactory.CreateHandler(Arg.Any<CancellationToken>()).Returns(handler);
-
-        var bootstrapTcs = new TaskCompletionSource();
-        bootstrap
-            .RunAsync(
-                Arg.Any<Func<Stream, ILambdaContext, Task<Stream>>>(),
-                Arg.Any<CancellationToken>()
-            )
-            .Returns(bootstrapTcs.Task);
-
-        var service = new LambdaHostedService(bootstrap, handlerFactory, lifetime);
-        var cts = new CancellationTokenSource();
+        SetupHandlerFactory();
+        var bootstrapTcs = SetupBootstrapRunAsync();
+        var service = new LambdaHostedService(_bootstrap, _handlerFactory, _lifetime);
+        using var cts = new CancellationTokenSource();
 
         // Act
         await service.StartAsync(cts.Token);
 
         // Assert
-        bootstrap.Received(1).RunAsync(handler, Arg.Any<CancellationToken>());
-
+        await _bootstrap.Received(1).RunAsync(CreateMockHandler(), Arg.Any<CancellationToken>());
         bootstrapTcs.SetResult();
-        cts.Dispose();
     }
 
     [Fact]
     public async Task ExecuteAsync_CallsStopApplicationInFinallyBlock_EvenWhenBootstrapFails()
     {
         // Arrange
-        var bootstrap = Substitute.For<ILambdaBootstrapOrchestrator>();
-        var handlerFactory = Substitute.For<ILambdaHandlerFactory>();
-        var lifetime = Substitute.For<IHostApplicationLifetime>();
-
-        var handler = CreateMockHandler();
-        handlerFactory.CreateHandler(Arg.Any<CancellationToken>()).Returns(handler);
-
+        SetupHandlerFactory();
         var exceptionToThrow = new InvalidOperationException("Test error");
-        var bootstrapTcs = new TaskCompletionSource();
-        bootstrap
-            .RunAsync(
-                Arg.Any<Func<Stream, ILambdaContext, Task<Stream>>>(),
-                Arg.Any<CancellationToken>()
-            )
-            .Returns(bootstrapTcs.Task);
-
-        var service = new LambdaHostedService(bootstrap, handlerFactory, lifetime);
-        var cts = new CancellationTokenSource();
+        var bootstrapTcs = SetupBootstrapRunAsync();
+        var service = new LambdaHostedService(_bootstrap, _handlerFactory, _lifetime);
+        using var startCts = new CancellationTokenSource();
 
         // Act
-        var startTask = service.StartAsync(cts.Token);
-
-        // Complete the bootstrap with an exception
+        await service.StartAsync(startCts.Token);
         bootstrapTcs.SetException(exceptionToThrow);
 
-        // Wait for the task to process the exception
-        try
-        {
-            if (startTask.IsCompleted)
-                await startTask;
-        }
-        catch
-        {
-            /* expected */
-        }
-
-        // Assert - StopApplication should be called even when exception occurs
-        lifetime.Received(1).StopApplication();
-        cts.Dispose();
+        // Assert
+        using var stopCts = new CancellationTokenSource();
+        var act = async () => await service.StopAsync(stopCts.Token);
+        await act.Should().ThrowAsync<AggregateException>();
+        _lifetime.Received(1).StopApplication();
     }
 
     [Fact]
     public async Task StopAsync_CalledMultipleTimes_HandlesCorrectly()
     {
         // Arrange
-        var bootstrap = Substitute.For<ILambdaBootstrapOrchestrator>();
-        var handlerFactory = Substitute.For<ILambdaHandlerFactory>();
-        var lifetime = Substitute.For<IHostApplicationLifetime>();
-
-        var handler = CreateMockHandler();
-        handlerFactory.CreateHandler(Arg.Any<CancellationToken>()).Returns(handler);
-
-        var bootstrapTcs = new TaskCompletionSource();
-        bootstrap
-            .RunAsync(
-                Arg.Any<Func<Stream, ILambdaContext, Task<Stream>>>(),
-                Arg.Any<CancellationToken>()
-            )
-            .Returns(bootstrapTcs.Task);
-
-        var service = new LambdaHostedService(bootstrap, handlerFactory, lifetime);
+        SetupHandlerFactory();
+        var bootstrapTcs = SetupBootstrapRunAsync();
+        var service = new LambdaHostedService(_bootstrap, _handlerFactory, _lifetime);
         using var startCts = new CancellationTokenSource();
 
         await service.StartAsync(startCts.Token);
@@ -613,7 +382,6 @@ public class LambdaHostedServiceTest
         using var stopCts1 = new CancellationTokenSource();
         var stop1 = service.StopAsync(stopCts1.Token);
 
-        // Complete the bootstrap task
         bootstrapTcs.SetResult();
         await stop1;
 
@@ -621,7 +389,7 @@ public class LambdaHostedServiceTest
         using var stopCts2 = new CancellationTokenSource();
         var stop2 = service.StopAsync(stopCts2.Token);
 
-        // Assert - second StopAsync should return immediately without exception
+        // Assert
         var action = async () => await stop2;
         await action.Should().NotThrowAsync<Exception>();
     }
@@ -631,13 +399,51 @@ public class LambdaHostedServiceTest
     // ============================================================================
 
     /// <summary>
+    /// Sets up the handler factory to return a mock Lambda handler.
+    /// </summary>
+    private void SetupHandlerFactory()
+    {
+        var handler = CreateMockHandler();
+        _handlerFactory.CreateHandler(Arg.Any<CancellationToken>()).Returns(handler);
+    }
+
+    /// <summary>
+    /// Sets up the bootstrap orchestrator to run asynchronously.
+    /// Returns a TaskCompletionSource to control when the bootstrap completes.
+    /// </summary>
+    private TaskCompletionSource SetupBootstrapRunAsync()
+    {
+        var tcs = new TaskCompletionSource();
+        _bootstrap
+            .RunAsync(
+                Arg.Any<Func<Stream, ILambdaContext, Task<Stream>>>(),
+                Arg.Any<CancellationToken>()
+            )
+            .Returns(tcs.Task);
+        return tcs;
+    }
+
+    /// <summary>
+    /// Tracks when the lifetime's StopApplication method is called.
+    /// Returns a TaskCompletionSource that completes when StopApplication is invoked.
+    /// </summary>
+    private TaskCompletionSource TrackStopApplicationCall()
+    {
+        var stopApplicationCalled = new TaskCompletionSource();
+        _lifetime
+            .WhenForAnyArgs(x => x.StopApplication())
+            .Do(_ => stopApplicationCalled.TrySetResult());
+        return stopApplicationCalled;
+    }
+
+    /// <summary>
     /// Creates a mock Lambda handler delegate.
     /// </summary>
     private static Func<Stream, ILambdaContext, Task<Stream>> CreateMockHandler()
     {
         return async (stream, context) =>
         {
-            await Task.Delay(0);
+            await Task.CompletedTask;
             return new MemoryStream();
         };
     }
