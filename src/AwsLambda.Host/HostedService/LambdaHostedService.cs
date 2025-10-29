@@ -89,6 +89,17 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
         {
             await _executeTask.WaitAsync(cancellationToken);
         }
+        catch (TaskCanceledException)
+        {
+            // if the task completes due to the cancellation token triggering, then we need to tell
+            // the user that shutdown failed
+            _exceptions.Add(
+                new OperationCanceledException(
+                    "Graceful shutdown of the Lambda function failed: the bootstrap operation did "
+                        + "not complete within the allocated timeout period."
+                )
+            );
+        }
         catch (Exception ex)
         {
             _exceptions.Add(ex);
