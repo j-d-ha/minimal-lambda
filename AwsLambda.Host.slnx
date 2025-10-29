@@ -8,6 +8,7 @@
     <File Path="Taskfile.yml" />
     <File Path=".editorconfig" />
     <File Path="LICENSE" />
+    <File Path=".gitignore"/>
   </Folder>
   <Folder Name="/src/">
     <Project Path="src\AwsLambda.Host.Abstractions\AwsLambda.Host.Abstractions.csproj"

@@ -1,5 +1,4 @@
 using Amazon.Lambda.Core;
-using AwsLambda.Host.Middleware;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

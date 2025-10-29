@@ -1,5 +1,3 @@
-using AwsLambda.Host.Middleware;
-
 namespace AwsLambda.Host;
 
 public static class HandlerLambdaApplicationExtensions

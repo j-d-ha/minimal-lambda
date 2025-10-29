@@ -22,11 +22,15 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
             Configuration.GetSection(LambdaHostAppSettingsSectionName)
         );
 
-        // register LambdaHostedService as IHostedService
-        Services.AddHostedService<LambdaHostedService>();
-
         // Register DelegateHolder to pass the handler delegate to the generated LambdaApplication
         Services.AddSingleton<DelegateHolder>();
+
+        // Register Lambda execution components
+        Services.AddSingleton<ILambdaHandlerFactory, LambdaHandlerComposer>();
+        Services.AddSingleton<ILambdaBootstrapOrchestrator, LambdaBootstrapAdapter>();
+
+        // Register LambdaHostedService as IHostedService
+        Services.AddHostedService<LambdaHostedService>();
     }
 
     internal LambdaApplicationBuilder()

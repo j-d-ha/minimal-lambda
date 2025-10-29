@@ -66,3 +66,6 @@ nunit-*.xml
 /LocalPackages/
 **/Generated/
 /docs/claude/**
+
+# temp files used for dev
+**/Temp*.cs

@@ -1,5 +1,4 @@
 using Amazon.Lambda.Core;
-using AwsLambda.Host.Middleware;
 
 namespace AwsLambda.Host;
 
