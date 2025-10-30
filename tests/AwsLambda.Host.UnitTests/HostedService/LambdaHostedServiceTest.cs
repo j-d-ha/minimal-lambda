@@ -261,6 +261,69 @@ public class LambdaHostedServiceTest
         await action.Should().NotThrowAsync<Exception>();
     }
 
+    [Fact]
+    public async Task StopAsync_WhenOnShutdownReturnsSingleError_ThrowsAggregateExceptionWithShutdownError()
+    {
+        // Arrange
+        SetupHandlerFactory();
+        var shutdownException = new InvalidOperationException("Shutdown handler error");
+        _lifecycle
+            .OnShutdown(Arg.Any<CancellationToken>())
+            .Returns(Task.FromResult<IEnumerable<Exception>>([shutdownException]));
+
+        var bootstrapTcs = SetupBootstrapRunAsync();
+        var service = new LambdaHostedService(_bootstrap, _handlerFactory, _lifetime, _lifecycle);
+
+        await service.StartAsync(CancellationToken.None);
+
+        var stopTask = service.StopAsync(CancellationToken.None);
+
+        // Act
+        bootstrapTcs.SetResult();
+
+        // Assert
+        var act = async () => await stopTask;
+        var ex = await act.Should().ThrowAsync<AggregateException>();
+        ex.Which.InnerExceptions.Should()
+            .Contain(ie =>
+                ie is InvalidOperationException && ie.Message == "Shutdown handler error"
+            );
+    }
+
+    [Fact]
+    public async Task StopAsync_WhenOnShutdownReturnsMultipleErrors_ThrowsAggregateExceptionWithAllShutdownErrors()
+    {
+        // Arrange
+        SetupHandlerFactory();
+        var shutdownException1 = new InvalidOperationException("First shutdown error");
+        var shutdownException2 = new TimeoutException("Second shutdown error");
+
+        _lifecycle
+            .OnShutdown(Arg.Any<CancellationToken>())
+            .Returns(
+                Task.FromResult<IEnumerable<Exception>>([shutdownException1, shutdownException2])
+            );
+
+        var bootstrapTcs = SetupBootstrapRunAsync();
+        var service = new LambdaHostedService(_bootstrap, _handlerFactory, _lifetime, _lifecycle);
+
+        await service.StartAsync(CancellationToken.None);
+
+        var stopTask = service.StopAsync(CancellationToken.None);
+
+        // Act
+        bootstrapTcs.SetResult();
+
+        // Assert
+        var act = async () => await stopTask;
+        var ex = await act.Should().ThrowAsync<AggregateException>();
+        ex.Which.InnerExceptions.Should().HaveCount(2);
+        ex.Which.InnerExceptions.Should()
+            .Contain(ie => ie is InvalidOperationException && ie.Message == "First shutdown error");
+        ex.Which.InnerExceptions.Should()
+            .Contain(ie => ie is TimeoutException && ie.Message == "Second shutdown error");
+    }
+
     // ============================================================================
     // Dispose Tests (2 tests)
     // ============================================================================
