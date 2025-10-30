@@ -14,15 +14,13 @@ namespace AwsLambda.Host.SourceGenerators;
 internal static class DelegateInfoExtractorExtensions
 {
     internal static DelegateInfo? ExtractDelegateInfo(
-        this InvocationExpressionSyntax invocationExpr,
+        this ExpressionSyntax handler,
         GeneratorSyntaxContext context,
         CancellationToken cancellationToken
     )
     {
         // setup list of mutator functions
         List<Updater> updaters = [];
-
-        var handler = invocationExpr.ArgumentList.Arguments.ElementAtOrDefault(0)?.Expression;
 
         // if we are dealing with a cast expression, set up a mutator to update the delegate type
         if (handler is CastExpressionSyntax castExpression)

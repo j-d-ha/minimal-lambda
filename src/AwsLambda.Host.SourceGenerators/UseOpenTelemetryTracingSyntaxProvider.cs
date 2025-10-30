@@ -15,26 +15,29 @@ internal static class UseOpenTelemetryTracingSyntaxProvider
 
     internal static UseOpenTelemetryTracingInfo? Transformer(
         GeneratorSyntaxContext context,
-        CancellationToken token
+        CancellationToken cancellationToken
     )
     {
-        var operation = context.SemanticModel.GetOperation(context.Node, token);
+        var operation = context.SemanticModel.GetOperation(context.Node, cancellationToken);
 
         if (
-            operation is IInvocationOperation targetOperation
-            && targetOperation.TargetMethod.ContainingNamespace
-                is {
-                    Name: "Host",
-                    ContainingNamespace:
-                    { Name: "AwsLambda", ContainingNamespace.IsGlobalNamespace: true }
-                }
+            operation
+                is IInvocationOperation
+                {
+                    TargetMethod.ContainingNamespace:
+                    {
+                        Name: "Host",
+                        ContainingNamespace:
+                        { Name: "AwsLambda", ContainingNamespace.IsGlobalNamespace: true },
+                    },
+                } targetOperation
             && targetOperation.TargetMethod.ContainingAssembly.Name
                 == "AwsLambda.Host.OpenTelemetry"
         )
         {
             var interceptableLocation = context.SemanticModel.GetInterceptableLocation(
                 (InvocationExpressionSyntax)targetOperation.Syntax,
-                token
+                cancellationToken
             )!;
 
             return new UseOpenTelemetryTracingInfo(
