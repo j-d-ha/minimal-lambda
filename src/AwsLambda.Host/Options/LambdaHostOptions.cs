@@ -7,7 +7,7 @@ namespace AwsLambda.Host;
 /// <summary>
 ///     Options for configuring Lambda hosting behavior.
 /// </summary>
-public class LambdaHostSettings
+public class LambdaHostOptions
 {
     /// <summary>
     ///     Gets or sets the buffer duration subtracted from the Lambda function's remaining

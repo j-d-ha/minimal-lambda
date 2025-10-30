@@ -13,13 +13,13 @@ namespace AwsLambda.Host.UnitTests.HostedService;
 public class LambdaHandlerComposerTest
 {
     private readonly IServiceScopeFactory _mockScopeFactory;
-    private readonly IOptions<LambdaHostSettings> _mockSettings;
+    private readonly IOptions<LambdaHostOptions> _mockSettings;
     private readonly ILambdaCancellationTokenSourceFactory _mockTokenFactory;
 
     public LambdaHandlerComposerTest()
     {
-        _mockSettings = Substitute.For<IOptions<LambdaHostSettings>>();
-        _mockSettings.Value.Returns(new LambdaHostSettings());
+        _mockSettings = Substitute.For<IOptions<LambdaHostOptions>>();
+        _mockSettings.Value.Returns(new LambdaHostOptions());
 
         _mockTokenFactory = Substitute.For<ILambdaCancellationTokenSourceFactory>();
         _mockScopeFactory = Substitute.For<IServiceScopeFactory>();

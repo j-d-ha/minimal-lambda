@@ -10,14 +10,14 @@ namespace AwsLambda.Host;
 /// </summary>
 internal sealed class LambdaBootstrapAdapter : ILambdaBootstrapOrchestrator
 {
-    private readonly LambdaHostSettings _settings;
+    private readonly LambdaHostOptions _settings;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LambdaBootstrapAdapter"/> class.
     /// </summary>
     /// <param name="lambdaHostSettings">The options containing Lambda host bootstrap configuration.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="lambdaHostSettings"/> is null.</exception>
-    public LambdaBootstrapAdapter(IOptions<LambdaHostSettings> lambdaHostSettings)
+    public LambdaBootstrapAdapter(IOptions<LambdaHostOptions> lambdaHostSettings)
     {
         ArgumentNullException.ThrowIfNull(lambdaHostSettings);
 

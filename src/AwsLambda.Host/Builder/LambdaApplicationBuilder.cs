@@ -18,7 +18,7 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
         _hostBuilder = hostBuilder ?? throw new ArgumentNullException(nameof(hostBuilder));
 
         // Configure LambdaHostSettings from appsettings.json
-        Services.Configure<LambdaHostSettings>(
+        Services.Configure<LambdaHostOptions>(
             Configuration.GetSection(LambdaHostAppSettingsSectionName)
         );
 
@@ -68,7 +68,7 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
         // registered.
         Services.TryAddSingleton<ILambdaCancellationTokenSourceFactory>(sp =>
         {
-            var settings = sp.GetRequiredService<IOptions<LambdaHostSettings>>().Value;
+            var settings = sp.GetRequiredService<IOptions<LambdaHostOptions>>().Value;
 
             return new LambdaCancellationTokenSourceFactory(settings.InvocationCancellationBuffer);
         });
