@@ -9,6 +9,9 @@
     <IncludeBuildOutput>false</IncludeBuildOutput>
 
     <PackageScribanIncludeSource>true</PackageScribanIncludeSource>
+
+    <IsPackable>false</IsPackable>
+    <IncludeSymbols>false</IncludeSymbols>
   </PropertyGroup>
 
   <ItemGroup>
@@ -23,6 +26,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Compile Remove="Templates\*.scriban"/>
     <EmbeddedResource Include="Templates\*.scriban"/>
   </ItemGroup>
 
