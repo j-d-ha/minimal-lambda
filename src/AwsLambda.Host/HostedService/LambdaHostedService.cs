@@ -24,6 +24,7 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
     /// <param name="handlerFactory">The factory responsible for creating and composing the Lambda request
     ///     handler.</param>
     /// <param name="lifetime">The application lifetime.</param>
+    /// <param name="lifecycle">The orchestrator responsible for handling startup and shutdown callbacks.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="bootstrap" /> or
     ///     <paramref name="handlerFactory" /> is null.</exception>
     public LambdaHostedService(
@@ -109,8 +110,9 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
             _exceptions.Add(ex);
         }
 
-        // Run shutdown tasks
-        await _lifecycle.OnShutdown(_exceptions, cancellationToken);
+        // Run shutdown tasks and add any exceptions to the list of exceptions
+        var shutdownErrors = await _lifecycle.OnShutdown(cancellationToken);
+        _exceptions.AddRange(shutdownErrors);
 
         if (_exceptions.Count > 0)
             throw new AggregateException(
