@@ -6,6 +6,6 @@ public static class ServiceCollectionExtensions
 {
     public static IServiceCollection ConfigureLambdaHost(
         this IServiceCollection serviceCollection,
-        Action<LambdaHostSettings> configure
-    ) => serviceCollection.PostConfigure(configure);
+        Action<LambdaHostOptions> options
+    ) => serviceCollection.PostConfigure(options);
 }

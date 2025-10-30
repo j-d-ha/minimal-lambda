@@ -7,7 +7,7 @@ namespace AwsLambda.Host;
 /// <summary>
 ///     Options for configuring Lambda hosting behavior.
 /// </summary>
-public class LambdaHostSettings
+public class LambdaHostOptions
 {
     /// <summary>
     ///     Gets or sets the buffer duration subtracted from the Lambda function's remaining
@@ -15,6 +15,31 @@ public class LambdaHostSettings
     /// </summary>
     /// <remarks>Default is 3 seconds.</remarks>
     public TimeSpan InvocationCancellationBuffer { get; set; } = TimeSpan.FromSeconds(3);
+
+    /// <summary>
+    ///     Gets or sets the duration between when AWS sends SIGTERM and SIGKILL to the Lambda function.
+    /// </summary>
+    /// <remarks>
+    /// The <see cref="ShutdownDuration"/> class provides predetermined values for common scenarios:
+    /// <list type="bullet">
+    /// <item><description><see cref="ShutdownDuration.NoExtensions"/> (0ms) - No extension time available</description></item>
+    /// <item><description><see cref="ShutdownDuration.InternalExtensions"/> (300ms) - Internal extensions only</description></item>
+    /// <item><description><see cref="ShutdownDuration.ExternalExtensions"/> (500ms) - External extensions</description></item>
+    /// </list>
+    /// Default is <see cref="ShutdownDuration.ExternalExtensions"/>.
+    /// </remarks>
+    public TimeSpan RuntimeShutdownDuration { get; set; } = ShutdownDuration.ExternalExtensions;
+
+    /// <summary>
+    ///     Gets or sets the buffer duration subtracted from <see cref="RuntimeShutdownDuration"/> to ensure cleanup tasks complete.
+    /// </summary>
+    /// <remarks>
+    /// This buffer guarantees that cancellation tokens are fired before the Lambda container exits,
+    /// providing sufficient time for all cleanup tasks to execute. The actual timeout for graceful shutdown
+    /// is calculated as <see cref="RuntimeShutdownDuration"/> minus this buffer.
+    /// Default is 50 milliseconds.
+    /// </remarks>
+    public TimeSpan RuntimeShutdownDurationBuffer { get; set; } = TimeSpan.FromMilliseconds(50);
 
     /// <summary>
     /// Gets or sets the Lambda bootstrap options used to configure the AWS Lambda runtime.

@@ -40,19 +40,6 @@ lambda.MapHandler(
     }
 );
 
-// lambda.MapHandler(
-//     Stream (ILambdaContext context, CancellationToken cancellationToken) =>
-//     {
-//         Console.WriteLine("hello world from aot");
-//         return new MemoryStream();
-//     }
-// );
-
-// lambda.MapHandler(() =>
-// {
-//     Console.WriteLine("hello world from aot");
-// });
-
 await lambda.RunAsync();
 
 [JsonSerializable(typeof(string))]

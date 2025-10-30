@@ -60,6 +60,15 @@ public sealed class LambdaApplication : IHost, ILambdaApplication, IAsyncDisposa
         return this;
     }
 
+    public ILambdaApplication OnShutdown(LambdaShutdownDelegate handler)
+    {
+        ArgumentNullException.ThrowIfNull(handler);
+
+        _delegateHolder.ShutdownHandlers.Add(handler);
+
+        return this;
+    }
+
     //  ┌──────────────────────────────────────────────────────────┐
     //  │                 Builder Factory Methods                  │
     //  └──────────────────────────────────────────────────────────┘

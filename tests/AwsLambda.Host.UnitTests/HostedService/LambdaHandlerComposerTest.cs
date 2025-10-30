@@ -1,6 +1,5 @@
 using System.Text;
 using Amazon.Lambda.Core;
-using Amazon.Lambda.Serialization.SystemTextJson;
 using AwesomeAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
@@ -14,18 +13,16 @@ namespace AwsLambda.Host.UnitTests.HostedService;
 public class LambdaHandlerComposerTest
 {
     private readonly IServiceScopeFactory _mockScopeFactory;
-    private readonly ILambdaSerializer _mockSerializer;
-    private readonly IOptions<LambdaHostSettings> _mockSettings;
+    private readonly IOptions<LambdaHostOptions> _mockSettings;
     private readonly ILambdaCancellationTokenSourceFactory _mockTokenFactory;
 
     public LambdaHandlerComposerTest()
     {
-        _mockSettings = Substitute.For<IOptions<LambdaHostSettings>>();
-        _mockSettings.Value.Returns(new LambdaHostSettings());
+        _mockSettings = Substitute.For<IOptions<LambdaHostOptions>>();
+        _mockSettings.Value.Returns(new LambdaHostOptions());
 
         _mockTokenFactory = Substitute.For<ILambdaCancellationTokenSourceFactory>();
         _mockScopeFactory = Substitute.For<IServiceScopeFactory>();
-        _mockSerializer = new DefaultLambdaJsonSerializer();
 
         // Setup default service scope
         var mockScope = Substitute.For<IServiceScope>();
@@ -36,7 +33,7 @@ public class LambdaHandlerComposerTest
         // Setup cancellation token factory to return a new CancellationTokenSource each time
         _mockTokenFactory
             .NewCancellationTokenSource(Arg.Any<ILambdaContext>())
-            .Returns(x => new CancellationTokenSource());
+            .Returns(_ => new CancellationTokenSource());
     }
 
     // ============================================================================
@@ -137,10 +134,11 @@ public class LambdaHandlerComposerTest
     {
         var handlerInvoked = false;
 
-        async Task SimpleHandler(ILambdaHostContext context)
+        Task SimpleHandler(ILambdaHostContext context)
         {
             handlerInvoked = true;
             context.Response = "handled";
+            return Task.CompletedTask;
         }
 
         var delegateHolder = new DelegateHolder { Handler = SimpleHandler };
@@ -165,9 +163,10 @@ public class LambdaHandlerComposerTest
         var deserializerInvoked = false;
         var requestData = "test-request";
 
-        async Task Handler(ILambdaHostContext context)
+        Task Handler(ILambdaHostContext context)
         {
             context.Event.Should().Be(requestData);
+            return Task.CompletedTask;
         }
 
         Task Deserializer(
@@ -202,15 +201,16 @@ public class LambdaHandlerComposerTest
     {
         const string expectedResponse = "test-response";
 
-        async Task Handler(ILambdaHostContext context)
+        Task Handler(ILambdaHostContext context)
         {
             context.Response = expectedResponse;
+            return Task.CompletedTask;
         }
 
         Task<Stream> Serializer(ILambdaHostContext context, ILambdaSerializer serializer)
         {
             var responseStream = new MemoryStream();
-            responseStream.Write(Encoding.UTF8.GetBytes((string)context.Response));
+            responseStream.Write(Encoding.UTF8.GetBytes((string)context.Response!));
             responseStream.Position = 0;
             return Task.FromResult<Stream>(responseStream);
         }
@@ -237,9 +237,10 @@ public class LambdaHandlerComposerTest
     {
         var handlerInvoked = false;
 
-        async Task Handler(ILambdaHostContext context)
+        Task Handler(ILambdaHostContext context)
         {
             handlerInvoked = true;
+            return Task.CompletedTask;
         }
 
         var delegateHolder = new DelegateHolder { Handler = Handler, Deserializer = null };
@@ -261,9 +262,10 @@ public class LambdaHandlerComposerTest
     [Fact]
     public async Task CreateHandler_WithNoSerializer_ReturnsEmptyStream()
     {
-        async Task Handler(ILambdaHostContext context)
+        Task Handler(ILambdaHostContext context)
         {
             context.Response = "response";
+            return Task.CompletedTask;
         }
 
         var delegateHolder = new DelegateHolder { Handler = Handler, Serializer = null };
@@ -288,12 +290,12 @@ public class LambdaHandlerComposerTest
     public async Task CreateHandler_WithDeserializerAndSerializerFlow_Complete()
     {
         const string requestData = "input";
-        const string responseData = "output";
 
-        async Task Handler(ILambdaHostContext context)
+        Task Handler(ILambdaHostContext context)
         {
-            var request = (string)context.Event;
+            var request = (string)context.Event!;
             context.Response = $"processed-{request}";
+            return Task.CompletedTask;
         }
 
         Task Deserializer(
@@ -309,7 +311,7 @@ public class LambdaHandlerComposerTest
         Task<Stream> Serializer(ILambdaHostContext context, ILambdaSerializer serializer)
         {
             var outputStream = new MemoryStream();
-            var content = Encoding.UTF8.GetBytes((string)context.Response);
+            var content = Encoding.UTF8.GetBytes((string)context.Response!);
             outputStream.Write(content, 0, content.Length);
             outputStream.Position = 0;
             return Task.FromResult<Stream>(outputStream);
@@ -347,9 +349,10 @@ public class LambdaHandlerComposerTest
         var middlewareInvoked = false;
         var handlerInvoked = false;
 
-        async Task Handler(ILambdaHostContext context)
+        Task Handler(ILambdaHostContext context)
         {
             handlerInvoked = true;
+            return Task.CompletedTask;
         }
 
         Func<LambdaInvocationDelegate, LambdaInvocationDelegate> middleware = next =>
@@ -383,9 +386,10 @@ public class LambdaHandlerComposerTest
     {
         var executionOrder = new List<string>();
 
-        async Task Handler(ILambdaHostContext context)
+        Task Handler(ILambdaHostContext context)
         {
             executionOrder.Add("handler");
+            return Task.CompletedTask;
         }
 
         Func<LambdaInvocationDelegate, LambdaInvocationDelegate> middleware1 = next =>
@@ -445,11 +449,12 @@ public class LambdaHandlerComposerTest
         const string tracingId = "trace-123";
         var itemsVerified = false;
 
-        async Task Handler(ILambdaHostContext context)
+        Task Handler(ILambdaHostContext context)
         {
             itemsVerified =
                 context.Items.ContainsKey("TracingId")
-                && (string)context.Items["TracingId"] == tracingId;
+                && (string)context.Items["TracingId"]! == tracingId;
+            return Task.CompletedTask;
         }
 
         Func<LambdaInvocationDelegate, LambdaInvocationDelegate> middleware = next =>
@@ -483,7 +488,7 @@ public class LambdaHandlerComposerTest
         var exceptionCaught = false;
         var handlerInvoked = false;
 
-        async Task Handler(ILambdaHostContext context)
+        Task Handler(ILambdaHostContext context)
         {
             handlerInvoked = true;
             throw new InvalidOperationException("Handler error");
@@ -527,9 +532,10 @@ public class LambdaHandlerComposerTest
     {
         var executionOrder = new List<string>();
 
-        async Task Handler(ILambdaHostContext context)
+        Task Handler(ILambdaHostContext context)
         {
             executionOrder.Add("handler");
+            return Task.CompletedTask;
         }
 
         Task Deserializer(
@@ -577,16 +583,18 @@ public class LambdaHandlerComposerTest
     {
         var handlerInvoked = false;
 
-        async Task Handler(ILambdaHostContext context)
+        Task Handler(ILambdaHostContext context)
         {
             handlerInvoked = true;
+            return Task.CompletedTask;
         }
 
-        Func<LambdaInvocationDelegate, LambdaInvocationDelegate> shortCircuitMiddleware = next =>
-            async context =>
+        Func<LambdaInvocationDelegate, LambdaInvocationDelegate> shortCircuitMiddleware = _ =>
+            context =>
             {
                 // Skip calling next, short-circuit the handler
                 context.Response = "short-circuit";
+                return Task.CompletedTask;
             };
 
         var delegateHolder = new DelegateHolder { Handler = Handler };
@@ -614,7 +622,7 @@ public class LambdaHandlerComposerTest
     [Fact]
     public void CreateHandler_CreatesLinkedCancellationTokens_FromBothSources()
     {
-        async Task Handler(ILambdaHostContext context) { }
+        Task Handler(ILambdaHostContext context) => Task.CompletedTask;
 
         var delegateHolder = new DelegateHolder { Handler = Handler };
         var composer = new LambdaHandlerComposer(
@@ -634,11 +642,12 @@ public class LambdaHandlerComposerTest
     [Fact]
     public async Task CreateHandler_ContextRecievesLinkedCancellationToken()
     {
-        ILambdaHostContext capturedContext = null;
+        ILambdaHostContext? capturedContext = null;
 
-        async Task Handler(ILambdaHostContext context)
+        Task Handler(ILambdaHostContext context)
         {
             capturedContext = context;
+            return Task.CompletedTask;
         }
 
         var delegateHolder = new DelegateHolder { Handler = Handler };
@@ -663,9 +672,10 @@ public class LambdaHandlerComposerTest
     {
         var operationCanceled = false;
 
-        async Task Handler(ILambdaHostContext context)
+        Task Handler(ILambdaHostContext context)
         {
             context.CancellationToken.ThrowIfCancellationRequested();
+            return Task.CompletedTask;
         }
 
         var delegateHolder = new DelegateHolder { Handler = Handler };
@@ -702,7 +712,7 @@ public class LambdaHandlerComposerTest
     {
         var disposed = false;
 
-        async Task Handler(ILambdaHostContext context) { }
+        Task Handler(ILambdaHostContext context) => Task.CompletedTask;
 
         var delegateHolder = new DelegateHolder { Handler = Handler };
         var composer = new LambdaHandlerComposer(
@@ -743,7 +753,7 @@ public class LambdaHandlerComposerTest
 
         protected override void Dispose(bool disposing)
         {
-            _onDispose?.Invoke();
+            _onDispose.Invoke();
             base.Dispose(disposing);
         }
     }

@@ -13,26 +13,21 @@ tasks:
 
   clean:
     desc: Clean NuGet packages from Release folder
-    dir: '{{.DIR}}'
     silent: true
     cmds:
-      - echo "🧹 Cleaning {{.DIR}}"
-      - rm -f bin/Release/*.nupkg
-      - rm -f bin/Release/*.snupkg
+      - echo "🧹 Cleaning"
+      - dotnet clean --configuration Release
 
   pack:
     desc: Build the NuGet package
-    dir: '{{.DIR}}'
     silent: true
     cmds:
       - task: clean
-        vars:
-          DIR: '{{.DIR}}'
       - echo "📦 Packing {{.DIR}}"
       - dotnet restore
       - dotnet build --configuration Release --no-restore
       - dotnet pack --configuration Release --no-build
-      - echo "✅ Packed {{.DIR}}"
+      - echo "✅ Packed"
 
   publish:
     desc: Publish the NuGet package to NuGet.org
@@ -56,14 +51,6 @@ tasks:
       - echo "🔄 Starting publish-all workflow"
       # Pack all packages
       - task: pack
-        vars:
-          DIR: src/AwsLambda.Host
-      - task: pack
-        vars:
-          DIR: src/AwsLambda.Host.Abstractions
-      - task: pack
-        vars:
-          DIR: src/AwsLambda.Host.OpenTelemetry
       # Validate all versions
       - echo "🔍 Validating all versions"
       - task: validate_version

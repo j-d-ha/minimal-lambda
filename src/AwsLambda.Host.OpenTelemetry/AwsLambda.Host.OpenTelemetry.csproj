@@ -13,6 +13,7 @@
     <!-- Package Metadata -->
     <PackageId>AwsLambda.Host.OpenTelemetry</PackageId>
     <Description>OpenTelemetry for .NET Host for AWS Lambda</Description>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
 
   <ItemGroup>

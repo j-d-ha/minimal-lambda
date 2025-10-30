@@ -14,7 +14,7 @@ internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory
     private readonly ILambdaCancellationTokenSourceFactory _cancellationTokenSourceFactory;
     private readonly DelegateHolder _delegateHolder;
     private readonly IServiceScopeFactory _scopeFactory;
-    private readonly LambdaHostSettings _settings;
+    private readonly LambdaHostOptions _settings;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="LambdaHandlerComposer"/> class.
@@ -30,7 +30,7 @@ internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory
     /// Thrown when the handler is not set in the <paramref name="delegateHolder"/>.
     /// </exception>
     public LambdaHandlerComposer(
-        IOptions<LambdaHostSettings> lambdaHostSettings,
+        IOptions<LambdaHostOptions> lambdaHostSettings,
         DelegateHolder delegateHolder,
         ILambdaCancellationTokenSourceFactory cancellationTokenSourceFactory,
         IServiceScopeFactory serviceScopeFactory

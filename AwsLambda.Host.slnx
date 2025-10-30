@@ -2,6 +2,9 @@
   <Folder Name="/examples/">
     <Project Path="examples\AwsLambda.Host.Example.HelloWorldAot\AwsLambda.Host.Example.HelloWorldAot.csproj" Type="Classic C#" />
     <Project Path="examples\AwsLambda.Host.Example.HelloWorld\AwsLambda.Host.Example.HelloWorld.csproj" Type="Classic C#" />
+    <Project
+      Path="examples\AwsLambda.Host.Example.Lifecycle\AwsLambda.Host.Example.Lifecycle.csproj"
+      Type="Classic C#"/>
   </Folder>
   <Folder Name="/Solution Items/">
     <File Path="README.md" />
@@ -9,6 +12,7 @@
     <File Path=".editorconfig" />
     <File Path="LICENSE" />
     <File Path=".gitignore"/>
+    <File Path="Directory.Build.props"/>
   </Folder>
   <Folder Name="/src/">
     <Project Path="src\AwsLambda.Host.Abstractions\AwsLambda.Host.Abstractions.csproj"

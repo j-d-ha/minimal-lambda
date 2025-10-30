@@ -1,18 +1,14 @@
 <Project>
   <PropertyGroup>
-    <VersionPrefix>0.0.1-alpha.7</VersionPrefix>
+    <VersionPrefix>0.0.2-alpha.10</VersionPrefix>
     <!-- SPDX license identifier for MIT -->
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
-
-    <PackageReadmeFile>README.md</PackageReadmeFile>
-
     <!-- Other useful metadata -->
     <Authors>Jonas Ha</Authors>
     <PackageTags>csharp;library;utility;aws;lambda</PackageTags>
     <RepositoryUrl>https://github.com/j-d-ha/aws-lambda-host</RepositoryUrl>
     <Copyright>Copyright © 2025 Jonas Ha</Copyright>
     <PackageProjectUrl>https://github.com/j-d-ha/aws-lambda-host</PackageProjectUrl>
-
     <!-- NuGet.org specific -->
     <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
     <IsPackable>true</IsPackable>
@@ -21,13 +17,10 @@
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
   </PropertyGroup>
-
   <ItemGroup>
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
   </ItemGroup>
-
 </Project>
-

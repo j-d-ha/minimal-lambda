@@ -11,6 +11,7 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
     private readonly ILambdaBootstrapOrchestrator _bootstrap;
     private readonly List<Exception> _exceptions = [];
     private readonly ILambdaHandlerFactory _handlerFactory;
+    private readonly ILambdaLifecycleOrchestrator _lifecycle;
     private readonly IHostApplicationLifetime _lifetime;
 
     private Task? _executeTask;
@@ -23,21 +24,25 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
     /// <param name="handlerFactory">The factory responsible for creating and composing the Lambda request
     ///     handler.</param>
     /// <param name="lifetime">The application lifetime.</param>
+    /// <param name="lifecycle">The orchestrator responsible for handling startup and shutdown callbacks.</param>
     /// <exception cref="ArgumentNullException">Thrown when <paramref name="bootstrap" /> or
     ///     <paramref name="handlerFactory" /> is null.</exception>
     public LambdaHostedService(
         ILambdaBootstrapOrchestrator bootstrap,
         ILambdaHandlerFactory handlerFactory,
-        IHostApplicationLifetime lifetime
+        IHostApplicationLifetime lifetime,
+        ILambdaLifecycleOrchestrator lifecycle
     )
     {
         ArgumentNullException.ThrowIfNull(bootstrap);
         ArgumentNullException.ThrowIfNull(handlerFactory);
         ArgumentNullException.ThrowIfNull(lifetime);
+        ArgumentNullException.ThrowIfNull(lifecycle);
 
         _bootstrap = bootstrap;
         _handlerFactory = handlerFactory;
         _lifetime = lifetime;
+        _lifecycle = lifecycle;
     }
 
     /// <inheritdoc />
@@ -104,6 +109,10 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
         {
             _exceptions.Add(ex);
         }
+
+        // Run shutdown tasks and add any exceptions to the list of exceptions
+        var shutdownErrors = await _lifecycle.OnShutdown(cancellationToken);
+        _exceptions.AddRange(shutdownErrors);
 
         if (_exceptions.Count > 0)
             throw new AggregateException(

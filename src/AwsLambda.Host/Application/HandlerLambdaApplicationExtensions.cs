@@ -9,7 +9,7 @@ public static class HandlerLambdaApplicationExtensions
     {
         if (handler is not LambdaInvocationDelegate lambdaInvocationDelegate)
             throw new ArgumentException(
-                "Handler must be a LambdaInvocationDelegate",
+                $"Handler must be a {typeof(LambdaInvocationDelegate).FullName}",
                 nameof(handler)
             );
 

@@ -1,0 +1,14 @@
+{
+  "$schema": "http://json.schemastore.org/launchsettings.json",
+  "profiles": {
+    "Lambda.Host.Example.Lifecycle": {
+      "commandName": "Project",
+      "environmentVariables": {
+        "AWS_LAMBDA_RUNTIME_API": "localhost:5050",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "AWS_LAMBDA_LOG_FORMAT": "JSON",
+        "AWS_LAMBDA_LOG_LEVEL": "DEBUG"
+      }
+    }
+  }
+}

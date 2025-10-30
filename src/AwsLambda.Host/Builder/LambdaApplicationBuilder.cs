@@ -18,7 +18,7 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
         _hostBuilder = hostBuilder ?? throw new ArgumentNullException(nameof(hostBuilder));
 
         // Configure LambdaHostSettings from appsettings.json
-        Services.Configure<LambdaHostSettings>(
+        Services.Configure<LambdaHostOptions>(
             Configuration.GetSection(LambdaHostAppSettingsSectionName)
         );
 
@@ -28,6 +28,7 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
         // Register Lambda execution components
         Services.AddSingleton<ILambdaHandlerFactory, LambdaHandlerComposer>();
         Services.AddSingleton<ILambdaBootstrapOrchestrator, LambdaBootstrapAdapter>();
+        Services.AddSingleton<ILambdaLifecycleOrchestrator, LambdaLifecycleOrchestrator>();
 
         // Register LambdaHostedService as IHostedService
         Services.AddHostedService<LambdaHostedService>();
@@ -67,10 +68,25 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
         // registered.
         Services.TryAddSingleton<ILambdaCancellationTokenSourceFactory>(sp =>
         {
-            var settings = sp.GetRequiredService<IOptions<LambdaHostSettings>>().Value;
+            var settings = sp.GetRequiredService<IOptions<LambdaHostOptions>>().Value;
 
             return new LambdaCancellationTokenSourceFactory(settings.InvocationCancellationBuffer);
         });
+
+        // Set the shutdown timeout to the configured value minus the buffer.
+        var lambdaHostOptions = Services
+            .BuildServiceProvider()
+            .GetRequiredService<IOptions<LambdaHostOptions>>()
+            .Value;
+
+        var shutdownTimeout =
+            lambdaHostOptions.RuntimeShutdownDuration
+            - lambdaHostOptions.RuntimeShutdownDurationBuffer;
+
+        Services.PostConfigure<HostOptions>(options =>
+            options.ShutdownTimeout =
+                shutdownTimeout >= TimeSpan.Zero ? shutdownTimeout : TimeSpan.Zero
+        );
 
         var host = _hostBuilder.Build();
 
