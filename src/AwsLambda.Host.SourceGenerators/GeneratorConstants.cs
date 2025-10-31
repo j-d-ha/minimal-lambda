@@ -39,5 +39,14 @@ internal static class GeneratorConstants
 
     internal const string UseOpenTelemetryTracingMethodName = "UseOpenTelemetryTracing";
 
-    internal const string LambdaHandlerTemplateFile = "Templates/LambdaHandler.scriban";
+    // internal const string LambdaHandlerTemplateFile = "Templates/LambdaHandler.scriban";
+
+    internal const string InterceptsLocationAttributeTemplateFile =
+        "Templates/InterceptsLocationAttribute.scriban";
+
+    internal const string LambdaHostMapHandlerExtensionsTemplateFile =
+        "Templates/LambdaHostMapHandlerExtensions.scriban";
+
+    internal const string LambdaHostUseOpenTelemetryTracingExtensionsTemplateFile =
+        "Templates/LambdaHostUseOpenTelemetryTracingExtensions.scriban";
 }

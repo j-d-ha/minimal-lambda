@@ -11,7 +11,7 @@ internal readonly record struct DelegateInfo(
     internal string DelegateType =>
         ResponseType == TypeConstants.Void ? TypeConstants.Action : TypeConstants.Func;
 
-    internal bool HasReturnValue => ResponseType is not (TypeConstants.Void or TypeConstants.Task);
+    internal bool HasResponse => ResponseType is not (TypeConstants.Void or TypeConstants.Task);
 
     internal ParameterInfo? EventParameter =>
         Parameters

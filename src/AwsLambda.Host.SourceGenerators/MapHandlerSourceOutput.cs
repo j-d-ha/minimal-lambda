@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using AwsLambda.Host.SourceGenerators.Models;
+using AwsLambda.Host.SourceGenerators.Types;
 using Microsoft.CodeAnalysis;
 
 namespace AwsLambda.Host.SourceGenerators;
@@ -17,11 +18,44 @@ internal static class MapHandlerSourceOutput
             return;
         }
 
-        // if no MapHandler calls were found, we will silently exit early.
-        if (compilationInfo.MapHandlerInvocationInfos.Count == 0)
-            return;
+        List<string?> outputs = [GenerateInterceptsLocationAttribute()];
 
-        var mapHandlerInvocationInfo = compilationInfo.MapHandlerInvocationInfos.First();
+        // if MapHandler calls found, generate the source code. Will always be 0 or 1 at this point.
+        // Anything that needs to know types from the handler must be generated here.
+        if (compilationInfo.MapHandlerInvocationInfos.Count == 1)
+        {
+            var mapHandlerInvocationInfo = compilationInfo.MapHandlerInvocationInfos.First();
+
+            outputs.Add(GenerateLambdaHostMapHandlerExtensions(mapHandlerInvocationInfo));
+
+            // if UseOpenTelemetryTracing calls found, generate the source code.
+            if (compilationInfo.UseOpenTelemetryTracingInfos.Count >= 1)
+                outputs.Add(
+                    GenerateLambdaHostUseOpenTelemetryTracingExtensions(
+                        compilationInfo.UseOpenTelemetryTracingInfos,
+                        mapHandlerInvocationInfo.DelegateInfo
+                    )
+                );
+        }
+
+        var outCode = string.Join("\n", outputs.Where(s => s != null));
+
+        context.AddSource("LambdaHandler.g.cs", outCode);
+    }
+
+    private static string? GenerateInterceptsLocationAttribute()
+    {
+        var template = TemplateHelper.LoadTemplate(
+            GeneratorConstants.InterceptsLocationAttributeTemplateFile
+        );
+
+        return template.Render();
+    }
+
+    private static string? GenerateLambdaHostMapHandlerExtensions(
+        MapHandlerInvocationInfo mapHandlerInvocationInfo
+    )
+    {
         var delegateInfo = mapHandlerInvocationInfo.DelegateInfo;
 
         var delegateArguments = delegateInfo
@@ -94,21 +128,6 @@ internal static class MapHandlerSourceOutput
             }
             : null;
 
-        // OTEL related values
-
-        // is UseOpenTelemetryTracing called
-        var isOtelEnabled = compilationInfo.UseOpenTelemetryTracingInfos.Count >= 1;
-
-        // UseOpenTelemetryTracing location invocations
-        var useOtelCalls = compilationInfo
-            .UseOpenTelemetryTracingInfos.Select(u => new
-            {
-                Version = u.InterceptableLocationInfo.Version,
-                Data = u.InterceptableLocationInfo.Data,
-                DisplayLocation = u.InterceptableLocationInfo.DisplayLocation,
-            })
-            .ToList();
-
         var model = new
         {
             Location = mapHandlerInvocationInfo.InterceptableLocationInfo,
@@ -118,16 +137,41 @@ internal static class MapHandlerSourceOutput
             ShouldAwait = shouldAwait,
             InputEvent = inputEvent,
             OutputResponse = outputResponse,
-            // OTEL related values
-            IsOtelEnabled = isOtelEnabled,
-            UseOtelCalls = useOtelCalls,
         };
 
-        var template = TemplateHelper.LoadTemplate(GeneratorConstants.LambdaHandlerTemplateFile);
+        var template = TemplateHelper.LoadTemplate(
+            GeneratorConstants.LambdaHostMapHandlerExtensionsTemplateFile
+        );
 
-        var outCode = template.Render(model);
+        return template.Render(model);
+    }
 
-        context.AddSource("LambdaHandler.g.cs", outCode);
+    private static string? GenerateLambdaHostUseOpenTelemetryTracingExtensions(
+        EquatableArray<UseOpenTelemetryTracingInfo> useOpenTelemetryTracingInfos,
+        DelegateInfo delegateInfo
+    )
+    {
+        // get the handler input event type
+        var eventType = delegateInfo.EventParameter is { } p ? p.Type : null;
+
+        // get the handler output return type
+        var responseType = delegateInfo.HasResponse ? delegateInfo.ResponseType : null;
+
+        // interceptable locations
+        var locations = useOpenTelemetryTracingInfos.Select(u => u.InterceptableLocationInfo);
+
+        var model = new
+        {
+            Locations = locations,
+            EventType = eventType,
+            ResponseType = responseType,
+        };
+
+        var template = TemplateHelper.LoadTemplate(
+            GeneratorConstants.LambdaHostUseOpenTelemetryTracingExtensionsTemplateFile
+        );
+
+        return template.Render(model);
     }
 
     private static List<Diagnostic> ValidateGeneratorData(CompilationInfo compilationInfo)
