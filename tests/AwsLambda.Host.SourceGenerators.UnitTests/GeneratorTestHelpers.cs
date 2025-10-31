@@ -62,7 +62,7 @@ internal static class GeneratorTestHelpers
         var generator = new MapHandlerIncrementalGenerator().AsSourceGenerator();
 
         var driver = CSharpGeneratorDriver.Create(generator);
-        var updatedDriver = driver.RunGenerators(compilation);
+        var updatedDriver = driver.RunGenerators(compilation, CancellationToken.None);
 
         return (updatedDriver, compilation);
     }

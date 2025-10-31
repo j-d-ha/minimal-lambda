@@ -14,7 +14,10 @@ internal readonly record struct DelegateInfo(
     internal bool HasReturnValue => ResponseType is not (TypeConstants.Void or TypeConstants.Task);
 
     internal ParameterInfo? EventParameter =>
-        Parameters.FirstOrDefault(p => p.Source == ParameterSource.Event);
+        Parameters
+            .Where(p => p.Source == ParameterSource.Event)
+            .Select(p => (ParameterInfo?)p)
+            .FirstOrDefault();
 
     internal bool HasEventParameter => EventParameter is not null;
 }
