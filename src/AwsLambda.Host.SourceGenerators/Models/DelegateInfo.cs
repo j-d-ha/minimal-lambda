@@ -1,3 +1,4 @@
+using System.Linq;
 using AwsLambda.Host.SourceGenerators.Types;
 
 namespace AwsLambda.Host.SourceGenerators.Models;
@@ -9,4 +10,11 @@ internal readonly record struct DelegateInfo(
 {
     internal string DelegateType =>
         ResponseType == TypeConstants.Void ? TypeConstants.Action : TypeConstants.Func;
+
+    internal bool HasReturnValue => ResponseType is not (TypeConstants.Void or TypeConstants.Task);
+
+    internal ParameterInfo? EventParameter =>
+        Parameters.FirstOrDefault(p => p.Source == ParameterSource.Event);
+
+    internal bool HasEventParameter => EventParameter is not null;
 }

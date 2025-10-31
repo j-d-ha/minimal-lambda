@@ -37,30 +37,20 @@ internal static class MapHandlerSourceOutput
                     new
                     {
                         VarName = $"arg{index}",
-                        AssignmentStatement = param switch
+                        AssignmentStatement = param.Source switch
                         {
-                            // Request -> deserialize to type
-                            { Attributes: var attrs }
-                                when attrs.Any(a => a.Type == AttributeConstants.EventAttribute) =>
-                                $"context.GetEventT<{param.Type}>()",
+                            // Event -> deserialize to type
+                            ParameterSource.Event => $"context.GetEventT<{param.Type}>()",
 
                             // ILambdaContext OR ILambdaHostContext -> use context directly
-                            {
-                                Type: TypeConstants.ILambdaContext
-                                    or TypeConstants.ILambdaHostContext
-                            } => "context",
+                            ParameterSource.Context => "context",
 
                             // CancellationToken -> get from context
-                            { Type: TypeConstants.CancellationToken } =>
-                                "context.CancellationToken",
+                            ParameterSource.ContextCancellation => "context.CancellationToken",
 
                             // inject keyed service from the DI container
-                            { Attributes: var attrs }
-                                when attrs.FirstOrDefault(a =>
-                                    a.Type == AttributeConstants.FromKeyedService
-                                )
-                                    is { Arguments: { Count: > 0 } args } =>
-                                $"context.ServiceProvider.GetRequiredKeyedService<{param.Type}>(\"{args.First()}\")",
+                            ParameterSource.KeyedService =>
+                                $"context.ServiceProvider.GetRequiredKeyedService<{param.Type}>(\"{param.KeyedServiceKey}\")",
 
                             // default: inject service from the DI container
                             _ => $"context.ServiceProvider.GetRequiredService<{param.Type}>()",
@@ -80,12 +70,9 @@ internal static class MapHandlerSourceOutput
             responseType = responseType.Substring(startIndex, endIndex - startIndex);
         }
 
-        var inputEvent = delegateInfo
-            .Parameters.Where(p =>
-                p.Attributes.Any(a => a.Type == AttributeConstants.EventAttribute)
-            )
-            .Select(p => new { IsStream = p.Type == TypeConstants.Stream, Type = p.Type })
-            .FirstOrDefault();
+        var inputEvent = delegateInfo.EventParameter is { } p
+            ? new { IsStream = p.Type == TypeConstants.Stream, Type = p.Type }
+            : null;
 
         // 1. if Action -> no return
         // 3. if Func + Task return type + async -> no return
@@ -166,15 +153,12 @@ internal static class MapHandlerSourceOutput
         {
             // check for multiple parameters that use the `[Event]` attribute
             if (
-                invocationInfo.DelegateInfo.Parameters.Count(p =>
-                    p.Attributes.Any(a => a.Type == AttributeConstants.EventAttribute)
-                ) > 1
+                invocationInfo.DelegateInfo.Parameters.Count(p => p.Source == ParameterSource.Event)
+                > 1
             )
                 diagnostics.AddRange(
                     invocationInfo
-                        .DelegateInfo.Parameters.Where(p =>
-                            p.Attributes.Any(a => a.Type == AttributeConstants.EventAttribute)
-                        )
+                        .DelegateInfo.Parameters.Where(p => p.Source == ParameterSource.Event)
                         .Select(p =>
                             Diagnostic.Create(
                                 Diagnostics.MultipleParametersUseAttribute,
