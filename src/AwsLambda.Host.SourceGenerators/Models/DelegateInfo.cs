@@ -4,35 +4,27 @@ using AwsLambda.Host.SourceGenerators.Types;
 namespace AwsLambda.Host.SourceGenerators.Models;
 
 internal readonly record struct DelegateInfo(
-    string ResponseType = TypeConstants.Void,
-    EquatableArray<ParameterInfo> Parameters = new()
+    string FullResponseType,
+    string? UnwrappedResponseType,
+    EquatableArray<ParameterInfo> Parameters,
+    bool IsAwaitable,
+    bool IsAsync
 )
 {
-    internal readonly string UnwrappedResponseType = GetUnwrappedResponseType(ResponseType);
+    internal readonly ParameterInfo? EventParameter = GetEventParameter(Parameters);
 
     internal string DelegateType =>
-        ResponseType == TypeConstants.Void ? TypeConstants.Action : TypeConstants.Func;
+        FullResponseType == TypeConstants.Void ? TypeConstants.Action : TypeConstants.Func;
 
-    internal bool HasResponse => ResponseType is not (TypeConstants.Void or TypeConstants.Task);
-
-    internal ParameterInfo? EventParameter =>
-        Parameters
-            .Where(p => p.Source == ParameterSource.Event)
-            .Select(p => (ParameterInfo?)p)
-            .FirstOrDefault();
+    internal bool HasResponse =>
+        FullResponseType
+            is not (TypeConstants.Void or TypeConstants.Task or TypeConstants.ValueTask);
 
     internal bool HasEventParameter => EventParameter is not null;
 
-    private static string GetUnwrappedResponseType(string responseType)
-    {
-        // Unwrap Task<T>
-        if (responseType.StartsWith(TypeConstants.Task + "<"))
-        {
-            var startIndex = responseType.IndexOf('<') + 1;
-            var endIndex = responseType.LastIndexOf('>');
-            responseType = responseType.Substring(startIndex, endIndex - startIndex);
-        }
-
-        return responseType;
-    }
+    private static ParameterInfo? GetEventParameter(EquatableArray<ParameterInfo> parameters) =>
+        parameters
+            .Where(p => p.Source == ParameterSource.Event)
+            .Select(p => (ParameterInfo?)p)
+            .FirstOrDefault();
 }

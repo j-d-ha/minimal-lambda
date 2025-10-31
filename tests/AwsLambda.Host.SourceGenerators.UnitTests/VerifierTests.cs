@@ -362,6 +362,43 @@ public class VerifyTests
         );
 
     [Fact]
+    public async Task Test_BlockLambda_TypeCast_ReturnsTask() =>
+        await Verify(
+            """
+            using System;
+            using System.Threading.Tasks;
+            using AwsLambda.Host;
+
+            var builder = LambdaApplication.CreateBuilder();
+            var lambda = builder.Build();
+
+            lambda.MapHandler(
+                (Func<Task>)(
+                    () =>
+                    {
+                        return Task.CompletedTask;
+                    }
+                )
+            );
+            """
+        );
+
+    [Fact]
+    public async Task Test_BlockLambda_TypeCast_AsyncReturnsTaskWithString() =>
+        await Verify(
+            """
+            using System;
+            using System.Threading.Tasks;
+            using AwsLambda.Host;
+
+            var builder = LambdaApplication.CreateBuilder();
+            var lambda = builder.Build();
+
+            lambda.MapHandler((Func<Task<string>>)(async () => "hello world"));
+            """
+        );
+
+    [Fact]
     public async Task Test_BlockLambda_SimpleLambdaTypeCast() =>
         await Verify(
             """
@@ -649,6 +686,102 @@ public class VerifyTests
             return;
 
             static void Handler()
+            {
+                Console.WriteLine("Hello World!");
+            }
+            """
+        );
+
+    [Fact]
+    public async Task Test_StaticMethodHandler_ReturnTask() =>
+        await Verify(
+            """
+            using System.Threading.Tasks;
+            using AwsLambda.Host;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
+            var lambda = builder.Build();
+
+            lambda.MapHandler(Handler);
+
+            await lambda.RunAsync();
+
+            return;
+
+            static Task Handler()
+            {
+                return Task.CompletedTask;
+            }
+            """
+        );
+
+    [Fact]
+    public async Task Test_StaticMethodHandler_ReturnTaskString() =>
+        await Verify(
+            """
+            using System.Threading.Tasks;
+            using AwsLambda.Host;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
+            var lambda = builder.Build();
+
+            lambda.MapHandler(Handler);
+
+            await lambda.RunAsync();
+
+            return;
+
+            static Task<string> Handler()
+            {
+                return Task.FromResult("Hello World!");
+            }
+            """
+        );
+
+    [Fact]
+    public async Task Test_StaticMethodHandler_ReturnAsyncTaskString() =>
+        await Verify(
+            """
+            using System.Threading.Tasks;
+            using AwsLambda.Host;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
+            var lambda = builder.Build();
+
+            lambda.MapHandler(Handler);
+
+            await lambda.RunAsync();
+
+            return;
+
+            static async Task<string> Handler()
+            {
+                return "Hello World!";
+            }
+            """
+        );
+
+    [Fact]
+    public async Task Test_StaticMethodHandler_AsyncVoid() =>
+        await Verify(
+            """
+            using System;
+            using AwsLambda.Host;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
+            var lambda = builder.Build();
+
+            lambda.MapHandler(Handler);
+
+            await lambda.RunAsync();
+
+            return;
+
+            static async void Handler()
             {
                 Console.WriteLine("Hello World!");
             }

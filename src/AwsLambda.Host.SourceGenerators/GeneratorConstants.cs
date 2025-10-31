@@ -13,6 +13,8 @@ internal static class TypeConstants
 
     internal const string Task = "global::System.Threading.Tasks.Task";
 
+    internal const string ValueTask = "global::System.Threading.Tasks.ValueTask";
+
     internal const string Void = "void";
 
     internal const string Action = "global::System.Action";
