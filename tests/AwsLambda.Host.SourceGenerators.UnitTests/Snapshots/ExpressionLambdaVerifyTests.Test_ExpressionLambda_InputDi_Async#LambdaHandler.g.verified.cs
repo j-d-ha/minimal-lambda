@@ -34,34 +34,34 @@ namespace AwsLambda.Host
 
     file static class LambdaHostMapHandlerExtensions
     {
-        // Location: InputFile.cs(12,8)
-        [InterceptsLocation(1, "1awD7bIVfROLXs75ZzVZcigBAABJbnB1dEZpbGUuY3M=")]
+        // Location: InputFile.cs(8,8)
+        [InterceptsLocation(1, "D9DZO68KrHoAQodeo8rJTZMAAABJbnB1dEZpbGUuY3M=")]
         internal static ILambdaApplication MapHandlerInterceptor(
             this ILambdaApplication application,
             Delegate handler
         )
         {
-            var castHandler = (global::System.Func<global::MyNamespace.Event, global::IService, global::System.Threading.Tasks.Task<global::MyNamespace.Response>>)handler;
+            var castHandler = (global::System.Func<string, global::IService, global::System.Threading.Tasks.Task<string>>)handler;
 
             async Task InvocationDelegate(ILambdaHostContext context)
             {
-                var arg0 = context.GetEventT<global::MyNamespace.Event>();
+                var arg0 = context.GetEventT<string>();
                 var arg1 = context.ServiceProvider.GetRequiredService<global::IService>();
                 context.Response = await castHandler.Invoke(arg0, arg1);
             }
             
             Task Deserializer(ILambdaHostContext context, ILambdaSerializer serializer, Stream eventStream)
             {
-                context.Event = serializer.Deserialize<global::MyNamespace.Event>(eventStream);
+                context.Event = serializer.Deserialize<string>(eventStream);
                 return Task.CompletedTask;
             }
             
             Task<Stream> Serializer(ILambdaHostContext context, ILambdaSerializer serializer)
             {
-                var response = context.GetResponseT<global::MyNamespace.Response>();
+                var response = context.GetResponseT<string>();
                 var outputStream = new MemoryStream();
                 outputStream.SetLength(0L);
-                serializer.Serialize<global::MyNamespace.Response>(response, outputStream);
+                serializer.Serialize<string>(response, outputStream);
                 outputStream.Position = 0L;
                 return Task.FromResult<Stream>(outputStream);
             }

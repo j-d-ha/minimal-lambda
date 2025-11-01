@@ -34,34 +34,32 @@ namespace AwsLambda.Host
 
     file static class LambdaHostMapHandlerExtensions
     {
-        // Location: InputFile.cs(10,8)
-        [InterceptsLocation(1, "UglwKRN9x8XnEY3UE3WxhRQBAABJbnB1dEZpbGUuY3M=")]
+        // Location: InputFile.cs(8,8)
+        [InterceptsLocation(1, "73F5Ak9ldQM3D0PYENiO4KAAAABJbnB1dEZpbGUuY3M=")]
         internal static ILambdaApplication MapHandlerInterceptor(
             this ILambdaApplication application,
             Delegate handler
         )
         {
-            var castHandler = (global::System.Func<string, global::IService, global::IService>)handler;
+            var castHandler = (global::System.Func<global::IService, string>)handler;
 
             async Task InvocationDelegate(ILambdaHostContext context)
             {
-                var arg0 = context.GetEventT<string>();
-                var arg1 = context.ServiceProvider.GetRequiredService<global::IService>();
-                context.Response = castHandler.Invoke(arg0, arg1);
+                var arg0 = context.ServiceProvider.GetRequiredService<global::IService>();
+                context.Response = castHandler.Invoke(arg0);
             }
             
             Task Deserializer(ILambdaHostContext context, ILambdaSerializer serializer, Stream eventStream)
             {
-                context.Event = serializer.Deserialize<string>(eventStream);
                 return Task.CompletedTask;
             }
             
             Task<Stream> Serializer(ILambdaHostContext context, ILambdaSerializer serializer)
             {
-                var response = context.GetResponseT<global::IService>();
+                var response = context.GetResponseT<string>();
                 var outputStream = new MemoryStream();
                 outputStream.SetLength(0L);
-                serializer.Serialize<global::IService>(response, outputStream);
+                serializer.Serialize<string>(response, outputStream);
                 outputStream.Position = 0L;
                 return Task.FromResult<Stream>(outputStream);
             }

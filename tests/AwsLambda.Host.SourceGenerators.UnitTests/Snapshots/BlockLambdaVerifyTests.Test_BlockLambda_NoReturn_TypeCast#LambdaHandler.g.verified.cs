@@ -34,35 +34,31 @@ namespace AwsLambda.Host
 
     file static class LambdaHostMapHandlerExtensions
     {
-        // Location: InputFile.cs(10,8)
-        [InterceptsLocation(1, "7+riwMLZ7fUZMkW1yKAybAQBAABJbnB1dEZpbGUuY3M=")]
+        // Location: InputFile.cs(9,8)
+        [InterceptsLocation(1, "NzqSbOGKJo+Tth5rfZuYJb4AAABJbnB1dEZpbGUuY3M=")]
         internal static ILambdaApplication MapHandlerInterceptor(
             this ILambdaApplication application,
             Delegate handler
         )
         {
-            var castHandler = (global::System.Func<global::IService, string, string>)handler;
+            var castHandler = (global::System.Action<string, global::IService>)handler;
 
             async Task InvocationDelegate(ILambdaHostContext context)
             {
-                var arg0 = context.ServiceProvider.GetRequiredService<global::IService>();
-                var arg1 = context.ServiceProvider.GetRequiredService<string>();
-                context.Response = castHandler.Invoke(arg0, arg1);
+                var arg0 = context.GetEventT<string>();
+                var arg1 = context.ServiceProvider.GetRequiredService<global::IService>();
+                castHandler.Invoke(arg0, arg1);
             }
             
             Task Deserializer(ILambdaHostContext context, ILambdaSerializer serializer, Stream eventStream)
             {
+                context.Event = serializer.Deserialize<string>(eventStream);
                 return Task.CompletedTask;
             }
             
             Task<Stream> Serializer(ILambdaHostContext context, ILambdaSerializer serializer)
             {
-                var response = context.GetResponseT<string>();
-                var outputStream = new MemoryStream();
-                outputStream.SetLength(0L);
-                serializer.Serialize<string>(response, outputStream);
-                outputStream.Position = 0L;
-                return Task.FromResult<Stream>(outputStream);
+                return Task.FromResult<Stream>(new MemoryStream(0));
             }
 
             return application.Map(InvocationDelegate, Deserializer, Serializer);

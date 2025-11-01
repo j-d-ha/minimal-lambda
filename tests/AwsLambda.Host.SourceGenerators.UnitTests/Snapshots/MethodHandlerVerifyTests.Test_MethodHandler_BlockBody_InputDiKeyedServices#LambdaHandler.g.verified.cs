@@ -34,20 +34,21 @@ namespace AwsLambda.Host
 
     file static class LambdaHostMapHandlerExtensions
     {
-        // Location: InputFile.cs(11,8)
-        [InterceptsLocation(1, "NeBQOBqnLqWkQuSj+EBUqSIBAABJbnB1dEZpbGUuY3M=")]
+        // Location: InputFile.cs(10,8)
+        [InterceptsLocation(1, "IqMG6GXKYzwtohgR+tzVZ90AAABJbnB1dEZpbGUuY3M=")]
         internal static ILambdaApplication MapHandlerInterceptor(
             this ILambdaApplication application,
             Delegate handler
         )
         {
-            var castHandler = (global::System.Action<string, global::IService>)handler;
+            var castHandler = (global::System.Func<string, global::Amazon.Lambda.Core.ILambdaContext, global::IService, string>)handler;
 
             async Task InvocationDelegate(ILambdaHostContext context)
             {
                 var arg0 = context.GetEventT<string>();
-                var arg1 = context.ServiceProvider.GetRequiredService<global::IService>();
-                castHandler.Invoke(arg0, arg1);
+                var arg1 = context;
+                var arg2 = context.ServiceProvider.GetRequiredKeyedService<global::IService>("key");
+                context.Response = castHandler.Invoke(arg0, arg1, arg2);
             }
             
             Task Deserializer(ILambdaHostContext context, ILambdaSerializer serializer, Stream eventStream)
@@ -58,7 +59,12 @@ namespace AwsLambda.Host
             
             Task<Stream> Serializer(ILambdaHostContext context, ILambdaSerializer serializer)
             {
-                return Task.FromResult<Stream>(new MemoryStream(0));
+                var response = context.GetResponseT<string>();
+                var outputStream = new MemoryStream();
+                outputStream.SetLength(0L);
+                serializer.Serialize<string>(response, outputStream);
+                outputStream.Position = 0L;
+                return Task.FromResult<Stream>(outputStream);
             }
 
             return application.Map(InvocationDelegate, Deserializer, Serializer);
