@@ -37,8 +37,14 @@ internal static class LambdaHostOutputGenerator
                 );
         }
 
+        // add OnShutdown interceptors
+        if (compilationInfo.OnShutdownInvocationInfos.Count >= 1)
+            outputs.Add(OnShutdownSources.Generate(compilationInfo.OnShutdownInvocationInfos));
+
+        // join all the source code together and add it to the compilation context.
         var outCode = string.Join("\n", outputs.Where(s => s != null));
 
+        // add the source code to the compilation context.
         context.AddSource("LambdaHandler.g.cs", outCode);
     }
 }

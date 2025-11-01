@@ -52,7 +52,7 @@ internal readonly record struct ParameterInfo(
         // fallback to get source from type
         return type switch
         {
-            TypeConstants.CancellationToken => (ParameterSource.ContextCancellation, null),
+            TypeConstants.CancellationToken => (ParameterSource.CancellationToken, null),
             TypeConstants.ILambdaContext => (ParameterSource.Context, null),
             TypeConstants.ILambdaHostContext => (ParameterSource.Context, null),
             _ => (ParameterSource.Service, null),

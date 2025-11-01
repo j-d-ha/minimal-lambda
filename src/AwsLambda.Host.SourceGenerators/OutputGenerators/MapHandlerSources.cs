@@ -97,7 +97,7 @@ internal static class MapHandlerSources
                     ParameterSource.Context => "context",
 
                     // CancellationToken -> get from context
-                    ParameterSource.ContextCancellation => "context.CancellationToken",
+                    ParameterSource.CancellationToken => "context.CancellationToken",
 
                     // inject keyed service from the DI container
                     ParameterSource.KeyedService =>

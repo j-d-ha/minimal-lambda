@@ -51,6 +51,9 @@ internal static class GeneratorConstants
     internal const string LambdaHostMapHandlerExtensionsTemplateFile =
         "Templates/LambdaHostMapHandlerExtensions.scriban";
 
+    internal const string LambdaHostOnShutdownExtensionsTemplateFile =
+        "Templates/LambdaHostOnShutdownExtensions.scriban";
+
     internal const string LambdaHostUseOpenTelemetryTracingExtensionsTemplateFile =
         "Templates/LambdaHostUseOpenTelemetryTracingExtensions.scriban";
 }
