@@ -23,7 +23,8 @@ namespace AwsLambda.Host
                 {{~ else ~}}
 #pragma warning disable CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
                 {{~ for handler_arg in call.handler_args ~}}
-                var arg{{ for.index }} = {{ handler_arg }};
+                // {{ handler_arg.string }}
+                var arg{{ for.index }} = {{ handler_arg.assignment }};
                 {{~ end ~}}
 #pragma warning restore CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
 #pragma warning disable CS8604 // Possible null reference argument.

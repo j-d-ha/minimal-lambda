@@ -69,32 +69,37 @@ internal static class OnShutdownSources
         return handlerSignature;
     }
 
-    private static string[] BuildHandlerParameterAssignment(this DelegateInfo delegateInfo)
+    private static HandlerArg[] BuildHandlerParameterAssignment(this DelegateInfo delegateInfo)
     {
         var handlerArgs = delegateInfo
             .Parameters.Select(
                 (param, i) =>
                 {
                     i++;
-                    return param.Source switch
+                    return new HandlerArg
                     {
-                        // CancellationToken -> get directly from arguments
-                        ParameterSource.CancellationToken =>
-                            $"Unsafe.As<CancellationToken, T{i}>(ref cancellationToken)",
+                        String = param.ToPublicString(),
+                        Assignment = param.Source switch
+                        {
+                            // CancellationToken -> get directly from arguments
+                            ParameterSource.CancellationToken =>
+                                $"Unsafe.As<CancellationToken, T{i}>(ref cancellationToken)",
 
-                        // inject keyed service from the DI container - required
-                        ParameterSource.KeyedService when param.IsRequired =>
-                            $"serviceProvider.GetRequiredKeyedService<T{i}>(\"{param.KeyedServiceKey}\")",
+                            // inject keyed service from the DI container - required
+                            ParameterSource.KeyedService when param.IsRequired =>
+                                $"serviceProvider.GetRequiredKeyedService<T{i}>(\"{param.KeyedServiceKey}\")",
 
-                        // inject keyed service from the DI container - optional
-                        ParameterSource.KeyedService =>
-                            $"serviceProvider.GetKeyedService<T{i}>(\"{param.KeyedServiceKey}\")",
+                            // inject keyed service from the DI container - optional
+                            ParameterSource.KeyedService =>
+                                $"serviceProvider.GetKeyedService<T{i}>(\"{param.KeyedServiceKey}\")",
 
-                        // default: inject service from the DI container - required
-                        _ when param.IsRequired => $"serviceProvider.GetRequiredService<T{i}>()",
+                            // default: inject service from the DI container - required
+                            _ when param.IsRequired =>
+                                $"serviceProvider.GetRequiredService<T{i}>()",
 
-                        // default: inject service from the DI container - optional
-                        _ => $"serviceProvider.GetService<T{i}>()",
+                            // default: inject service from the DI container - optional
+                            _ => $"serviceProvider.GetService<T{i}>()",
+                        },
                     };
                 }
             )
@@ -102,4 +107,6 @@ internal static class OnShutdownSources
 
         return handlerArgs;
     }
+
+    private readonly record struct HandlerArg(string String, string Assignment);
 }

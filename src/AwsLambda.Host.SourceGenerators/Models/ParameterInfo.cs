@@ -29,6 +29,15 @@ internal readonly record struct ParameterInfo(
         return new ParameterInfo(type, name, location, source, key, isNullable, isOptional);
     }
 
+    internal string ToPublicString() =>
+        $"{nameof(ParameterInfo)} {{ "
+        + $"{nameof(Type)} = {Type}, "
+        + $"{nameof(Name)} = {Name}, "
+        + $"{nameof(Source)} = {Source}, "
+        + $"{nameof(KeyedServiceKey)} = {KeyedServiceKey}, "
+        + $"{nameof(IsNullable)} = {IsNullable}, "
+        + $"{nameof(IsOptional)} = {IsOptional} }}";
+
     private static (ParameterSource Source, string? KeyedServiceKey) GetSourceFromAttribute(
         IEnumerable<AttributeData> attributes,
         string type
