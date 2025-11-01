@@ -34,6 +34,7 @@ internal static class OnShutdownSources
                     HandlerSignature = handlerSignature,
                     HandlerArgs = handlerArgs,
                     HasHandlerArgs = handlerArgs.Length > 0,
+                    higherOrderMethodInfo.DelegateInfo.HasAnyKeyedServiceParameter,
                 };
             })
             .ToArray();
