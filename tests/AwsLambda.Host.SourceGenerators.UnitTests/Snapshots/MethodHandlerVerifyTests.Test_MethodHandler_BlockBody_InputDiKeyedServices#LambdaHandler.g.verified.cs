@@ -45,6 +45,10 @@ namespace AwsLambda.Host
 
             async Task InvocationDelegate(ILambdaHostContext context)
             {
+                if (context.ServiceProvider.GetService<IServiceProviderIsService>() is not IServiceProviderIsKeyedService)
+                {
+                    throw new InvalidOperationException($"Unable to resolve service referenced by {nameof(FromKeyedServicesAttribute)}. The service provider doesn't support keyed services.");
+                }
                 var arg0 = context.GetEventT<string>();
                 var arg1 = context;
                 var arg2 = context.ServiceProvider.GetRequiredKeyedService<global::IService>("key");

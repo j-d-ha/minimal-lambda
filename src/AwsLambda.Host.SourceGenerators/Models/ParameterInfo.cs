@@ -15,14 +15,16 @@ internal readonly record struct ParameterInfo(
     bool IsOptional = false
 )
 {
-    internal static ParameterInfo Create(IParameterSymbol p)
+    internal bool IsRequired => !IsOptional && !IsNullable;
+
+    internal static ParameterInfo Create(IParameterSymbol parameter)
     {
-        var type = p.Type.GetAsGlobal();
-        var name = p.Name;
-        var location = Models.LocationInfo.CreateFrom(p);
-        var (source, key) = GetSourceFromAttribute(p.GetAttributes(), type);
-        var isNullable = p.NullableAnnotation == NullableAnnotation.Annotated;
-        var isOptional = p.IsOptional;
+        var type = parameter.Type.GetAsGlobal();
+        var name = parameter.Name;
+        var location = Models.LocationInfo.CreateFrom(parameter);
+        var (source, key) = GetSourceFromAttribute(parameter.GetAttributes(), type);
+        var isNullable = parameter.NullableAnnotation == NullableAnnotation.Annotated;
+        var isOptional = parameter.IsOptional;
 
         return new ParameterInfo(type, name, location, source, key, isNullable, isOptional);
     }
