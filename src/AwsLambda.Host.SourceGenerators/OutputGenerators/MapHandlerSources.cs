@@ -34,7 +34,6 @@ internal static class MapHandlerSources
         {
             Location = higherOrderMethodInfo.InterceptableLocationInfo,
             HandlerSignature = handlerSignature,
-            delegateInfo.HasAnyKeyedServiceParameter,
             HandlerArgs = handlerArgs,
             ShouldAwait = delegateInfo.IsAwaitable,
             InputEvent = inputEvent,
