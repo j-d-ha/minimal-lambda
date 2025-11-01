@@ -43,8 +43,7 @@ public class OnShutdownVerifyTests
             });
 
             await lambda.RunAsync();
-            """,
-            0
+            """
         );
 
     [Fact]
@@ -67,8 +66,7 @@ public class OnShutdownVerifyTests
             );
 
             await lambda.RunAsync();
-            """,
-            0
+            """
         );
 
     [Fact]
@@ -96,7 +94,82 @@ public class OnShutdownVerifyTests
             {
                 Task<string> GetMessage();
             }
-            """,
-            0
+            """
+        );
+
+    [Fact]
+    public async Task Test_OnShutdown_OneOfEachPossibleKindOfInput() =>
+        await GeneratorTestHelpers.Verify(
+            """
+            using System.Threading;
+            using System.Threading.Tasks;
+            using AwsLambda.Host;
+            using Microsoft.Extensions.DependencyInjection;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
+
+            var lambda = builder.Build();
+
+            lambda.OnShutdown(
+                Task (
+                    CancellationToken token,
+                    [FromKeyedServices("key1")] IService service1,
+                    [FromKeyedServices("key2")] IService? service2,
+                    IService service3,
+                    IService? service4
+                ) =>
+                {
+                    return Task.CompletedTask;
+                }
+            );
+
+            await lambda.RunAsync();
+
+            public interface IService
+            {
+                Task<string> GetMessage();
+            }
+            """
+        );
+
+    [Fact]
+    public async Task Test_OnShutdown_MultipleCalls() =>
+        await GeneratorTestHelpers.Verify(
+            """
+            using System.Threading.Tasks;
+            using AwsLambda.Host;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
+
+            var lambda = builder.Build();
+
+            lambda.OnShutdown(Task () =>
+            {
+                return Task.CompletedTask;
+            });
+
+            lambda.OnShutdown(
+                Task (string? x, IService? y) =>
+                {
+                    return Task.CompletedTask;
+                }
+            );
+
+            lambda.OnShutdown(
+                Task (string x, int y) =>
+                {
+                    return Task.CompletedTask;
+                }
+            );
+
+            await lambda.RunAsync();
+
+            public interface IService
+            {
+                Task<string> GetMessage();
+            }
+            """
         );
 }
