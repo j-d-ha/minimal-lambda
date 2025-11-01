@@ -1,18 +1,31 @@
-﻿using System.Threading.Tasks;
-using AwsLambda.Host;
+﻿using AwsLambda.Host;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var builder = LambdaApplication.CreateBuilder();
 
+builder.Services.AddSingleton<IService, Service>();
+
 var lambda = builder.Build();
 
+lambda.UseClearLambdaOutputFormatting();
+
 lambda.MapHandler(
-    async ([Event] string input, IService service) => (await service.GetMessage()).ToUpper()
+    ([Event] Request request, IService service) => new Response(service.GetMessage(request.Name))
 );
 
 await lambda.RunAsync();
 
-public interface IService
+internal record Response(string Message);
+
+internal record Request(string Name);
+
+internal interface IService
 {
-    Task<string> GetMessage();
+    string GetMessage(string name);
+}
+
+internal class Service : IService
+{
+    public string GetMessage(string name) => $"hello {name}";
 }
