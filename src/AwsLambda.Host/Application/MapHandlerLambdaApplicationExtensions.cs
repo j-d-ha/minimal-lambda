@@ -1,6 +1,6 @@
 namespace AwsLambda.Host;
 
-public static class HandlerLambdaApplicationExtensions
+public static class MapHandlerLambdaApplicationExtensions
 {
     public static ILambdaApplication MapHandler(
         this ILambdaApplication application,
