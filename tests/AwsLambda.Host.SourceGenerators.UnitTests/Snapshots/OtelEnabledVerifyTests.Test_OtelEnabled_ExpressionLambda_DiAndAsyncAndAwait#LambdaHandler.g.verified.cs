@@ -35,22 +35,24 @@ namespace AwsLambda.Host
     file static class LambdaHostMapHandlerExtensions
     {
         // Location: InputFile.cs(12,8)
-        [InterceptsLocation(1, "VXPAZlRLtjOlU7v86rkX1YUBAABJbnB1dEZpbGUuY3M=")]
+        [InterceptsLocation(1, "NO8BH5ccNgWMTtTeKT9P5QQBAABJbnB1dEZpbGUuY3M=")]
         internal static ILambdaApplication MapHandlerInterceptor(
             this ILambdaApplication application,
             Delegate handler
         )
         {
-            var castHandler = (global::System.Func<global::IService, string>)handler;
+            var castHandler = (global::System.Func<string, global::IService, global::System.Threading.Tasks.Task<string>>)handler;
 
             async Task InvocationDelegate(ILambdaHostContext context)
             {
-                var arg0 = context.ServiceProvider.GetRequiredKeyedService<global::IService>("key");
-                context.Response = castHandler.Invoke(arg0);
+                var arg0 = context.GetEventT<string>();
+                var arg1 = context.ServiceProvider.GetRequiredService<global::IService>();
+                context.Response = await castHandler.Invoke(arg0, arg1);
             }
             
             Task Deserializer(ILambdaHostContext context, ILambdaSerializer serializer, Stream eventStream)
             {
+                context.Event = serializer.Deserialize<string>(eventStream);
                 return Task.CompletedTask;
             }
             
@@ -85,6 +87,23 @@ namespace AwsLambda.Host
             }
             
             return responseT!;
+        }
+    }
+}
+
+namespace AwsLambda.Host
+{
+    using System.Runtime.CompilerServices;
+    using Microsoft.Extensions.DependencyInjection;
+    
+    file static class LambdaHostUseOpenTelemetryTracingExtensions
+    {
+        [InterceptsLocation(1, "NO8BH5ccNgWMTtTeKT9P5eEAAABJbnB1dEZpbGUuY3M=")] // Location: InputFile.cs(10,8)
+        internal static ILambdaApplication UseOpenTelemetryTracingInterceptor(
+            this ILambdaApplication application
+        )
+        {
+            return application.Use(application.Services.GetTracer<string, string>());
         }
     }
 }

@@ -34,20 +34,20 @@ namespace AwsLambda.Host
 
     file static class LambdaHostMapHandlerExtensions
     {
-        // Location: InputFile.cs(11,8)
-        [InterceptsLocation(1, "E/n4EOpAhsOxRqXW9xsSVRUBAABJbnB1dEZpbGUuY3M=")]
+        // Location: InputFile.cs(8,8)
+        [InterceptsLocation(1, "y3YjupFy8zlpGiubrrDYOrAAAABJbnB1dEZpbGUuY3M=")]
         internal static ILambdaApplication MapHandlerInterceptor(
             this ILambdaApplication application,
             Delegate handler
         )
         {
-            var castHandler = (global::System.Func<string, global::IService, global::System.Threading.Tasks.Task<string>>)handler;
+            var castHandler = (global::System.Func<string, global::IService, global::IService>)handler;
 
             async Task InvocationDelegate(ILambdaHostContext context)
             {
                 var arg0 = context.GetEventT<string>();
                 var arg1 = context.ServiceProvider.GetRequiredService<global::IService>();
-                context.Response = await castHandler.Invoke(arg0, arg1);
+                context.Response = castHandler.Invoke(arg0, arg1);
             }
             
             Task Deserializer(ILambdaHostContext context, ILambdaSerializer serializer, Stream eventStream)
@@ -58,10 +58,10 @@ namespace AwsLambda.Host
             
             Task<Stream> Serializer(ILambdaHostContext context, ILambdaSerializer serializer)
             {
-                var response = context.GetResponseT<string>();
+                var response = context.GetResponseT<global::IService>();
                 var outputStream = new MemoryStream();
                 outputStream.SetLength(0L);
-                serializer.Serialize<string>(response, outputStream);
+                serializer.Serialize<global::IService>(response, outputStream);
                 outputStream.Position = 0L;
                 return Task.FromResult<Stream>(outputStream);
             }

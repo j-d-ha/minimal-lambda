@@ -6,19 +6,16 @@ namespace AwsLambda.Host.SourceGenerators;
 
 internal static class SyntaxExtensions
 {
-    public static bool TryGetMethodName(
+    internal static bool TryGetMethodName(
         this SyntaxNode node,
         [NotNullWhen(true)] out string? methodName
     )
     {
-        methodName = default;
+        methodName = null;
         if (
             node is InvocationExpressionSyntax
             {
-                Expression: MemberAccessExpressionSyntax
-                {
-                    Name: { Identifier: { ValueText: var method } },
-                },
+                Expression: MemberAccessExpressionSyntax { Name.Identifier.ValueText: var method },
             }
         )
         {
@@ -28,4 +25,7 @@ internal static class SyntaxExtensions
 
         return false;
     }
+
+    internal static bool IsGeneratedFile(this SyntaxNode node) =>
+        node.SyntaxTree.FilePath.EndsWith(".g.cs");
 }

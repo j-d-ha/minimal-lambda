@@ -16,4 +16,4 @@ internal readonly record struct InterceptableLocationInfo(
             interceptableLocation.Data,
             interceptableLocation.GetDisplayLocation()
         );
-};
+}

@@ -21,8 +21,8 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
         // find any calls to `UseOpenTelemetryTracing` and extract the location
         var openTelemetryTracingCalls = context
             .SyntaxProvider.CreateSyntaxProvider(
-                predicate: UseOpenTelemetryTracingSyntaxProvider.Predicate,
-                transform: UseOpenTelemetryTracingSyntaxProvider.Transformer
+                UseOpenTelemetryTracingSyntaxProvider.Predicate,
+                UseOpenTelemetryTracingSyntaxProvider.Transformer
             )
             .Where(static m => m is not null)
             .Select(static (m, _) => m!.Value);
@@ -36,6 +36,6 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
             );
 
         // Generate source when calls are found
-        context.RegisterSourceOutput(combined, MapHandlerSourceOutput.Generate);
+        context.RegisterSourceOutput(combined, LambdaHostOutputGenerator.Generate);
     }
 }

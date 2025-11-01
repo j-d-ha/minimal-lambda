@@ -13,6 +13,8 @@ internal static class TypeConstants
 
     internal const string Task = "global::System.Threading.Tasks.Task";
 
+    internal const string ValueTask = "global::System.Threading.Tasks.ValueTask";
+
     internal const string Void = "void";
 
     internal const string Action = "global::System.Action";
@@ -39,5 +41,12 @@ internal static class GeneratorConstants
 
     internal const string UseOpenTelemetryTracingMethodName = "UseOpenTelemetryTracing";
 
-    internal const string LambdaHandlerTemplateFile = "Templates/LambdaHandler.scriban";
+    internal const string InterceptsLocationAttributeTemplateFile =
+        "Templates/InterceptsLocationAttribute.scriban";
+
+    internal const string LambdaHostMapHandlerExtensionsTemplateFile =
+        "Templates/LambdaHostMapHandlerExtensions.scriban";
+
+    internal const string LambdaHostUseOpenTelemetryTracingExtensionsTemplateFile =
+        "Templates/LambdaHostUseOpenTelemetryTracingExtensions.scriban";
 }

@@ -1,6 +1,7 @@
 using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.SystemTextJson;
+using AwesomeAssertions;
 using Basic.Reference.Assemblies;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -12,6 +13,48 @@ namespace AwsLambda.Host.SourceGenerators.UnitTests;
 
 internal static class GeneratorTestHelpers
 {
+    internal static Task Verify(string source)
+    {
+        var (driver, originalCompilation) = GenerateFromSource(source);
+
+        driver.Should().NotBeNull();
+
+        var result = driver.GetRunResult();
+
+        // result.Diagnostics.Length.Should().Be(0);s
+
+        // Reparse generated trees with the same parse options as the original compilation
+        // to ensure consistent syntax tree features (e.g., InterceptorsNamespaces)
+        var parseOptions = originalCompilation.SyntaxTrees.First().Options;
+        var reparsedTrees = result
+            .GeneratedTrees.Select(tree =>
+                CSharpSyntaxTree.ParseText(tree.GetText(), (CSharpParseOptions)parseOptions)
+            )
+            .ToArray();
+
+        // Add generated trees to original compilation
+        var outputCompilation = originalCompilation.AddSyntaxTrees(reparsedTrees);
+
+        var errors = outputCompilation
+            .GetDiagnostics()
+            .Where(d => d.Severity == DiagnosticSeverity.Error)
+            .ToList();
+
+        errors
+            .Should()
+            .BeEmpty(
+                "generated code should compile without errors, but found:\n"
+                    + string.Join(
+                        "\n",
+                        errors.Select(e => $"  - {e.Id}: {e.GetMessage()} at {e.Location}")
+                    )
+            );
+
+        result.GeneratedTrees.Length.Should().Be(1);
+
+        return Verifier.Verify(driver).UseDirectory("Snapshots").DisableDiff();
+    }
+
     internal static (GeneratorDriver driver, Compilation compilation) GenerateFromSource(
         string source,
         Dictionary<string, ReportDiagnostic>? diagnosticsToSuppress = null
@@ -62,7 +105,7 @@ internal static class GeneratorTestHelpers
         var generator = new MapHandlerIncrementalGenerator().AsSourceGenerator();
 
         var driver = CSharpGeneratorDriver.Create(generator);
-        var updatedDriver = driver.RunGenerators(compilation);
+        var updatedDriver = driver.RunGenerators(compilation, CancellationToken.None);
 
         return (updatedDriver, compilation);
     }
