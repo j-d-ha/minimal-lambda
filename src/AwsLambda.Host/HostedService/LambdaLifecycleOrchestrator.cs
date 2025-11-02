@@ -80,7 +80,7 @@ internal class LambdaLifecycleOrchestrator : ILambdaLifecycleOrchestrator
 
             if (errors.Count > 0)
                 throw new AggregateException(
-                    $"{nameof(LambdaHostedService)} encountered errors while running OnInit handlers:",
+                    $"{nameof(LambdaLifecycleOrchestrator)} encountered errors while running OnInit handlers:",
                     errors
                 );
 
