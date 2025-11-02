@@ -80,8 +80,7 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
             .Value;
 
         var shutdownTimeout =
-            lambdaHostOptions.RuntimeShutdownDuration
-            - lambdaHostOptions.RuntimeShutdownDurationBuffer;
+            lambdaHostOptions.ShutdownDuration - lambdaHostOptions.ShutdownDurationBuffer;
 
         Services.PostConfigure<HostOptions>(options =>
             options.ShutdownTimeout =

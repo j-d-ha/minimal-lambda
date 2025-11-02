@@ -5,18 +5,16 @@ using Microsoft.Extensions.Options;
 namespace AwsLambda.Host;
 
 /// <summary>
-/// Adapts AWS Lambda bootstrap configuration and execution.
-/// This class abstracts away AWS SDK complexity and bootstrap configuration details.
+///     Adapts AWS Lambda bootstrap configuration and execution. This class abstracts away AWS SDK
+///     complexity and bootstrap configuration details.
 /// </summary>
 internal sealed class LambdaBootstrapAdapter : ILambdaBootstrapOrchestrator
 {
     private readonly LambdaHostOptions _settings;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="LambdaBootstrapAdapter"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="LambdaBootstrapAdapter" /> class.</summary>
     /// <param name="lambdaHostSettings">The options containing Lambda host bootstrap configuration.</param>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="lambdaHostSettings"/> is null.</exception>
+    /// <exception cref="ArgumentNullException">Thrown when <paramref name="lambdaHostSettings" /> is null.</exception>
     public LambdaBootstrapAdapter(IOptions<LambdaHostOptions> lambdaHostSettings)
     {
         ArgumentNullException.ThrowIfNull(lambdaHostSettings);
@@ -24,7 +22,7 @@ internal sealed class LambdaBootstrapAdapter : ILambdaBootstrapOrchestrator
         _settings = lambdaHostSettings.Value;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public async Task RunAsync(
         Func<Stream, ILambdaContext, Task<Stream>> handler,
         LambdaBootstrapInitializer? initializer,

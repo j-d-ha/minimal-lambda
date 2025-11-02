@@ -1,48 +1,64 @@
 using System.Diagnostics;
 using Amazon.Lambda.RuntimeSupport;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 
 namespace AwsLambda.Host;
 
 /// <summary>
-/// Implements the Lambda lifecycle orchestrator, responsible for coordinating the execution of shutdown handlers
-/// when the Lambda runtime initiates shutdown.
+///     Implements the Lambda lifecycle orchestrator, responsible for coordinating the execution
+///     of shutdown handlers when the Lambda runtime initiates shutdown.
 /// </summary>
 internal class LambdaLifecycleOrchestrator : ILambdaLifecycleOrchestrator
 {
     private readonly DelegateHolder _delegateHolder;
     private readonly IServiceScopeFactory _scopeFactory;
+    private readonly LambdaHostOptions _settings;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="LambdaLifecycleOrchestrator"/> class.
-    /// </summary>
-    /// <param name="scopeFactory">The service scope factory used to create service scopes for shutdown handlers.</param>
+    /// <summary>Initializes a new instance of the <see cref="LambdaLifecycleOrchestrator" /> class.</summary>
+    /// <param name="scopeFactory">
+    ///     The service scope factory used to create service scopes for shutdown
+    ///     handlers.
+    /// </param>
     /// <param name="delegateHolder">The delegate holder containing the registered shutdown handlers.</param>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="scopeFactory"/> or <paramref name="delegateHolder"/> is null.</exception>
+    /// <param name="lambdaHostSettings">The Lambda host options used to configure lifecycle behavior.</param>
+    /// <exception cref="ArgumentNullException">
+    ///     Thrown when <paramref name="scopeFactory" />,
+    ///     <paramref name="delegateHolder" />, or <paramref name="lambdaHostSettings" /> is null.
+    /// </exception>
     public LambdaLifecycleOrchestrator(
         IServiceScopeFactory scopeFactory,
-        DelegateHolder delegateHolder
+        DelegateHolder delegateHolder,
+        IOptions<LambdaHostOptions> lambdaHostSettings
     )
     {
         ArgumentNullException.ThrowIfNull(scopeFactory);
         ArgumentNullException.ThrowIfNull(delegateHolder);
+        ArgumentNullException.ThrowIfNull(lambdaHostSettings);
 
         _scopeFactory = scopeFactory;
         _delegateHolder = delegateHolder;
+        _settings = lambdaHostSettings.Value;
     }
 
+    /// <inheritdoc />
     public LambdaBootstrapInitializer OnInit(CancellationToken stoppingToken)
     {
         return Initializer;
 
         async Task<bool> Initializer()
         {
+            if (_delegateHolder.InitHandlers.Count == 0)
+                return true;
+
             using var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
-            cts.CancelAfter(TimeSpan.FromMinutes(20));
+            cts.CancelAfter(_settings.InitTimeout);
 
             var tasks = _delegateHolder.InitHandlers.Select(h =>
             {
+                // ReSharper disable once AccessToDisposedClosure
                 Debug.Assert(cts != null, nameof(cts) + " != null");
+                // ReSharper disable once AccessToDisposedClosure
                 return RunInitHandler(h, cts.Token);
             });
 
@@ -72,12 +88,7 @@ internal class LambdaLifecycleOrchestrator : ILambdaLifecycleOrchestrator
         }
     }
 
-    /// <summary>
-    /// Executes the shutdown lifecycle, running all registered shutdown handlers concurrently
-    /// and collecting any exceptions that occur.
-    /// </summary>
-    /// <param name="cancellationToken">A cancellation token to signal shutdown handlers to stop processing.</param>
-    /// <returns>A task representing the asynchronous shutdown operation that returns any exceptions thrown by shutdown handlers.</returns>
+    /// <inheritdoc />
     public async Task<IEnumerable<Exception>> OnShutdown(CancellationToken cancellationToken)
     {
         var tasks = _delegateHolder.ShutdownHandlers.Select(h =>
