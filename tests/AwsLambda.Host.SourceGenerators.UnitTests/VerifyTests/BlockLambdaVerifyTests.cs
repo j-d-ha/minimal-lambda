@@ -267,4 +267,41 @@ public class BlockLambdaVerifyTests
             await lambda.RunAsync();
             """
         );
+
+    [Fact]
+    public async Task Test_BlockLambda_AllInputSources() =>
+        await GeneratorTestHelpers.Verify(
+            """
+            using System.Threading;
+            using Amazon.Lambda.Core;
+            using AwsLambda.Host;
+            using Microsoft.Extensions.DependencyInjection;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
+
+            var lambda = builder.Build();
+
+            lambda.UseClearLambdaOutputFormatting();
+
+            lambda.MapHandler(
+                (
+                    [Event] string request,
+                    ILambdaContext context,
+                    CancellationToken cancellationToken,
+                    [FromKeyedServices("key0")] IService service0,
+                    [FromKeyedServices("key1")] IService? service1,
+                    IService service2,
+                    IService? service3
+                ) => { }
+            );
+
+            await lambda.RunAsync();
+
+            internal interface IService
+            {
+                string GetMessage(string name);
+            }
+            """
+        );
 }
