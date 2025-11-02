@@ -716,25 +716,32 @@ public class LambdaLifecycleOrchestratorTest
     public async Task OnInit_ServiceScopesAreDisposed_AfterHandlerCompletes()
     {
         // Arrange
-        var scopeFactory = CreateMockServiceScopeFactory();
-        var delegateHolder = new DelegateHolder();
-        delegateHolder.InitHandlers.Add(
-            (_, _) =>
-            {
-                return Task.FromResult(true);
-            }
-        );
+        var scopeFactory = Substitute.For<IServiceScopeFactory>();
+        var scope1 = Substitute.For<IServiceScope>();
+        var scope2 = Substitute.For<IServiceScope>();
+        var provider1 = Substitute.For<IServiceProvider>();
+        var provider2 = Substitute.For<IServiceProvider>();
 
-        var orchestrator = CreateOrchestrator(delegateHolder);
+        scope1.ServiceProvider.Returns(provider1);
+        scope2.ServiceProvider.Returns(provider2);
+
+        scopeFactory.CreateScope().Returns(scope1, scope2);
+
+        var delegateHolder = new DelegateHolder();
+        delegateHolder.InitHandlers.Add((_, _) => Task.FromResult(true));
+        delegateHolder.InitHandlers.Add((_, _) => Task.FromResult(true));
+
+        var options = CreateMockLambdaHostOptions();
+        var orchestrator = new LambdaLifecycleOrchestrator(scopeFactory, delegateHolder, options);
 
         // Act
         var initializer = orchestrator.OnInit(CancellationToken.None);
         await initializer.Invoke();
 
         // Assert
-        // If scopes were not disposed, this would fail (no disposal disposal called)
-        // The OnInit implementation uses 'using' statements for scope management
-        orchestrator.Should().NotBeNull();
+        // Verify that Dispose was called on each scope (using statement worked)
+        scope1.Received(1).Dispose();
+        scope2.Received(1).Dispose();
     }
 
     // ============================================================================
