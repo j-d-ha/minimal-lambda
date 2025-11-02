@@ -1,7 +1,7 @@
 namespace AwsLambda.Host;
 
 /// <summary>
-///     A callback delegate invoked when the AWS Lambda runtime initiates shutdown.
+///     A callback delegate invoked during the AWS Lambda Function Shutdown phase.
 /// </summary>
 /// <param name="services">
 ///     A scoped <see cref="IServiceProvider"/> for resolving dependencies.
