@@ -1,3 +1,5 @@
+using Amazon.Lambda.RuntimeSupport;
+
 namespace AwsLambda.Host;
 
 /// <summary>
@@ -6,7 +8,7 @@ namespace AwsLambda.Host;
 /// </summary>
 internal interface ILambdaLifecycleOrchestrator
 {
-    Task<bool> OnInit();
+    LambdaBootstrapInitializer OnInit(CancellationToken cancellationToken);
 
     /// <summary>
     /// Executes the shutdown lifecycle, running all registered shutdown handlers concurrently

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using Amazon.Lambda.RuntimeSupport;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AwsLambda.Host;
@@ -30,39 +31,45 @@ internal class LambdaLifecycleOrchestrator : ILambdaLifecycleOrchestrator
         _delegateHolder = delegateHolder;
     }
 
-    public async Task<bool> OnInit()
+    public LambdaBootstrapInitializer OnInit(CancellationToken stoppingToken)
     {
-        using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(20));
+        return Initializer;
 
-        var tasks = _delegateHolder.InitHandlers.Select(h =>
+        async Task<bool> Initializer()
         {
-            Debug.Assert(cts != null, nameof(cts) + " != null");
-            return RunInitHandler(h, cts.Token);
-        });
+            using var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
+            cts.CancelAfter(TimeSpan.FromMinutes(20));
 
-        var results = await Task.WhenAll(tasks);
-
-        var (errors, shouldContinue) = results.Aggregate(
-            (errors: new List<Exception>(), shouldContinue: true),
-            (acc, result) =>
+            var tasks = _delegateHolder.InitHandlers.Select(h =>
             {
-                if (result.Error is not null)
+                Debug.Assert(cts != null, nameof(cts) + " != null");
+                return RunInitHandler(h, cts.Token);
+            });
+
+            var results = await Task.WhenAll(tasks);
+
+            var (errors, shouldContinue) = results.Aggregate(
+                (errors: new List<Exception>(), shouldContinue: true),
+                (acc, result) =>
                 {
-                    acc.errors.Add(result.Error);
-                    acc.shouldContinue = false;
+                    if (result.Error is not null)
+                    {
+                        acc.errors.Add(result.Error);
+                        acc.shouldContinue = false;
+                    }
+
+                    return acc;
                 }
-
-                return acc;
-            }
-        );
-
-        if (errors.Count > 0)
-            throw new AggregateException(
-                $"{nameof(LambdaHostedService)} encountered errors while running OnInit handlers:",
-                errors
             );
 
-        return shouldContinue;
+            if (errors.Count > 0)
+                throw new AggregateException(
+                    $"{nameof(LambdaHostedService)} encountered errors while running OnInit handlers:",
+                    errors
+                );
+
+            return shouldContinue;
+        }
     }
 
     /// <summary>

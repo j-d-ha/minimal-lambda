@@ -138,11 +138,13 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
         // throw new Exception("ExecuteAsync error");
         var requestHandler = _handlerFactory.CreateHandler(stoppingToken);
 
+        var onInitHandler = _lifecycle.OnInit(stoppingToken);
+
         // Run the bootstrap with the processed handler. Once the task completes, we will manually
         // trigger the stop of the application.
         try
         {
-            await _bootstrap.RunAsync(requestHandler, _lifecycle.OnInit, stoppingToken);
+            await _bootstrap.RunAsync(requestHandler, onInitHandler, stoppingToken);
         }
         finally
         {
