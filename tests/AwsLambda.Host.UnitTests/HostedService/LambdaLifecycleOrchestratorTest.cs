@@ -1,6 +1,7 @@
 using AwesomeAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using NSubstitute;
 using Xunit;
 
@@ -18,9 +19,10 @@ public class LambdaLifecycleOrchestratorTest
     {
         // Arrange
         var delegateHolder = new DelegateHolder();
+        var options = CreateMockLambdaHostOptions();
 
         // Act
-        var action = () => new LambdaLifecycleOrchestrator(null!, delegateHolder);
+        var action = () => new LambdaLifecycleOrchestrator(null!, delegateHolder, options);
 
         // Assert
         action.Should().ThrowExactly<ArgumentNullException>().WithParameterName("scopeFactory");
@@ -31,9 +33,10 @@ public class LambdaLifecycleOrchestratorTest
     {
         // Arrange
         var scopeFactory = Substitute.For<IServiceScopeFactory>();
+        var options = CreateMockLambdaHostOptions();
 
         // Act
-        var action = () => new LambdaLifecycleOrchestrator(scopeFactory, null!);
+        var action = () => new LambdaLifecycleOrchestrator(scopeFactory, null!, options);
 
         // Assert
         action.Should().ThrowExactly<ArgumentNullException>().WithParameterName("delegateHolder");
@@ -45,9 +48,10 @@ public class LambdaLifecycleOrchestratorTest
         // Arrange
         var scopeFactory = Substitute.For<IServiceScopeFactory>();
         var delegateHolder = new DelegateHolder();
+        var options = CreateMockLambdaHostOptions();
 
         // Act
-        var orchestrator = new LambdaLifecycleOrchestrator(scopeFactory, delegateHolder);
+        var orchestrator = new LambdaLifecycleOrchestrator(scopeFactory, delegateHolder, options);
 
         // Assert
         orchestrator.Should().NotBeNull();
@@ -249,7 +253,8 @@ public class LambdaLifecycleOrchestratorTest
             }
         );
 
-        var orchestrator = new LambdaLifecycleOrchestrator(scopeFactory, delegateHolder);
+        var options = CreateMockLambdaHostOptions();
+        var orchestrator = new LambdaLifecycleOrchestrator(scopeFactory, delegateHolder, options);
 
         // Act
         await orchestrator.OnShutdown(CancellationToken.None);
@@ -319,7 +324,8 @@ public class LambdaLifecycleOrchestratorTest
     private static LambdaLifecycleOrchestrator CreateOrchestrator(DelegateHolder delegateHolder)
     {
         var scopeFactory = CreateMockServiceScopeFactory();
-        return new LambdaLifecycleOrchestrator(scopeFactory, delegateHolder);
+        var options = CreateMockLambdaHostOptions();
+        return new LambdaLifecycleOrchestrator(scopeFactory, delegateHolder, options);
     }
 
     /// <summary>
@@ -335,6 +341,16 @@ public class LambdaLifecycleOrchestratorTest
         scopeFactory.CreateScope().Returns(scope);
 
         return scopeFactory;
+    }
+
+    /// <summary>
+    /// Creates a properly configured mock Lambda host options.
+    /// </summary>
+    private static IOptions<LambdaHostOptions> CreateMockLambdaHostOptions()
+    {
+        var options = Substitute.For<IOptions<LambdaHostOptions>>();
+        options.Value.Returns(new LambdaHostOptions());
+        return options;
     }
 
     /// <summary>
