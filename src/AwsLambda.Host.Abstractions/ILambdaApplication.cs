@@ -25,7 +25,7 @@ public interface ILambdaApplication
     ///     <para>
     ///         Each handler receives a scoped <see cref="IServiceProvider"/> for dependency resolution.
     ///         The <see cref="CancellationToken"/> expires before the Lambda runtime's hard timeout.
-    ///         See <see cref="ShutdownDuration"/> for timing details.
+    ///         See <c>LambdaHostOptions</c> for timing details and configuration options.
     ///     </para>
     ///     <para>
     ///         Overloads exist to accept generic handler functions with up to 16 dependencies,
@@ -40,6 +40,5 @@ public interface ILambdaApplication
     ///     The current <see cref="ILambdaApplication"/> instance for method chaining.
     /// </returns>
     /// <seealso cref="LambdaShutdownDelegate"/>
-    /// <seealso cref="ShutdownDuration"/>
     ILambdaApplication OnShutdown(LambdaShutdownDelegate handler);
 }
