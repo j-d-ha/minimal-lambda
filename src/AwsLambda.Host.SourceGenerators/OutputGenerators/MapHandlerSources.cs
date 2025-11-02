@@ -101,12 +101,20 @@ internal static class MapHandlerSources
                     // CancellationToken -> get from context
                     ParameterSource.CancellationToken => "context.CancellationToken",
 
-                    // inject keyed service from the DI container
-                    ParameterSource.KeyedService =>
+                    // inject keyed service from the DI container - required
+                    ParameterSource.KeyedService when param.IsRequired =>
                         $"context.ServiceProvider.GetRequiredKeyedService<{param.Type}>(\"{param.KeyedServiceKey}\")",
 
-                    // default: inject service from the DI container
-                    _ => $"context.ServiceProvider.GetRequiredService<{param.Type}>()",
+                    // inject keyed service from the DI container - optional
+                    ParameterSource.KeyedService =>
+                        $"context.ServiceProvider.GetKeyedService<{param.Type}>(\"{param.KeyedServiceKey}\")",
+
+                    // default: inject service from the DI container - required
+                    _ when param.IsRequired =>
+                        $"context.ServiceProvider.GetRequiredService<{param.Type}>()",
+
+                    // default: inject service from the DI container - optional
+                    _ => $"context.ServiceProvider.GetService<{param.Type}>()",
                 },
             })
             .ToArray();
