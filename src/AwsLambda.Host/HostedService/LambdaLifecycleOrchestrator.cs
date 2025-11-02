@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AwsLambda.Host;
@@ -27,6 +28,41 @@ internal class LambdaLifecycleOrchestrator : ILambdaLifecycleOrchestrator
 
         _scopeFactory = scopeFactory;
         _delegateHolder = delegateHolder;
+    }
+
+    public async Task<bool> OnInit()
+    {
+        using var cts = new CancellationTokenSource(TimeSpan.FromMinutes(20));
+
+        var tasks = _delegateHolder.InitHandlers.Select(h =>
+        {
+            Debug.Assert(cts != null, nameof(cts) + " != null");
+            return RunInitHandler(h, cts.Token);
+        });
+
+        var results = await Task.WhenAll(tasks);
+
+        var (errors, shouldContinue) = results.Aggregate(
+            (errors: new List<Exception>(), shouldContinue: true),
+            (acc, result) =>
+            {
+                if (result.Error is not null)
+                {
+                    acc.errors.Add(result.Error);
+                    acc.shouldContinue = false;
+                }
+
+                return acc;
+            }
+        );
+
+        if (errors.Count > 0)
+            throw new AggregateException(
+                $"{nameof(LambdaHostedService)} encountered errors while running OnInit handlers:",
+                errors
+            );
+
+        return shouldContinue;
     }
 
     /// <summary>
@@ -60,6 +96,23 @@ internal class LambdaLifecycleOrchestrator : ILambdaLifecycleOrchestrator
         catch (Exception ex)
         {
             return ex;
+        }
+    }
+
+    private async Task<(Exception? Error, bool ShouldContinue)> RunInitHandler(
+        LambdaInitDelegate handler,
+        CancellationToken cancellationToken
+    )
+    {
+        try
+        {
+            using var scope = _scopeFactory.CreateScope();
+            var result = await handler(scope.ServiceProvider, cancellationToken);
+            return (null, result);
+        }
+        catch (Exception ex)
+        {
+            return (ex, false);
         }
     }
 }

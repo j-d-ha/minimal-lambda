@@ -142,7 +142,7 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
         // trigger the stop of the application.
         try
         {
-            await _bootstrap.RunAsync(requestHandler, stoppingToken);
+            await _bootstrap.RunAsync(requestHandler, _lifecycle.OnInit, stoppingToken);
         }
         finally
         {
