@@ -45,7 +45,7 @@ namespace AwsLambda.Host
 
             Task InvocationDelegate(ILambdaHostContext context)
             {
-                // ParameterInfo { Type = global::System.Threading.CancellationToken, Name = cancellationToken, Source = CancellationToken, KeyedServiceKey = , IsNullable = False, IsOptional = False }
+                // ParameterInfo { Type = global::System.Threading.CancellationToken, Name = cancellationToken, Source = CancellationToken, IsNullable = False, IsOptional = False}
                 var arg0 = context.CancellationToken;
                 context.Response = castHandler.Invoke(arg0);
                 return Task.CompletedTask; 

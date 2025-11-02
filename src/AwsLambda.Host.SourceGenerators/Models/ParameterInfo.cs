@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using AwsLambda.Host.SourceGenerators.Extensions;
 using Microsoft.CodeAnalysis;
 
@@ -10,9 +9,9 @@ internal readonly record struct ParameterInfo(
     string Name,
     LocationInfo? LocationInfo,
     ParameterSource Source,
-    string? KeyedServiceKey,
-    bool IsNullable = false,
-    bool IsOptional = false
+    KeyedServiceKeyInfo? KeyedServiceKey,
+    bool IsNullable,
+    bool IsOptional
 )
 {
     internal bool IsRequired => !IsOptional && !IsNullable;
@@ -22,11 +21,19 @@ internal readonly record struct ParameterInfo(
         var type = parameter.Type.GetAsGlobal();
         var name = parameter.Name;
         var location = Models.LocationInfo.CreateFrom(parameter);
-        var (source, key) = GetSourceFromAttribute(parameter.GetAttributes(), type);
+        var (source, keyedService) = GetSourceFromAttribute(parameter.GetAttributes(), type);
         var isNullable = parameter.NullableAnnotation == NullableAnnotation.Annotated;
         var isOptional = parameter.IsOptional;
 
-        return new ParameterInfo(type, name, location, source, key, isNullable, isOptional);
+        return new ParameterInfo(
+            type,
+            name,
+            location,
+            source,
+            keyedService,
+            isNullable,
+            isOptional
+        );
     }
 
     internal string ToPublicString() =>
@@ -34,14 +41,14 @@ internal readonly record struct ParameterInfo(
         + $"{nameof(Type)} = {Type}, "
         + $"{nameof(Name)} = {Name}, "
         + $"{nameof(Source)} = {Source}, "
-        + $"{nameof(KeyedServiceKey)} = {KeyedServiceKey}, "
         + $"{nameof(IsNullable)} = {IsNullable}, "
-        + $"{nameof(IsOptional)} = {IsOptional} }}";
+        + $"{nameof(IsOptional)} = {IsOptional}"
+        + $"{(KeyedServiceKey.HasValue ? ", " + KeyedServiceKey.Value.ToPublicString() + " " : "")}}}";
 
-    private static (ParameterSource Source, string? KeyedServiceKey) GetSourceFromAttribute(
-        IEnumerable<AttributeData> attributes,
-        string type
-    )
+    private static (
+        ParameterSource Source,
+        KeyedServiceKeyInfo? KeyedServiceKey
+    ) GetSourceFromAttribute(IEnumerable<AttributeData> attributes, string type)
     {
         // try and extract source from attributes
         foreach (var attribute in attributes)
@@ -51,11 +58,8 @@ internal readonly record struct ParameterInfo(
                     return (ParameterSource.Event, null);
 
                 case AttributeConstants.FromKeyedService:
-                    var key = attribute
-                        .ConstructorArguments.Where(a => a.Value is not null)
-                        .Select(a => a.Value!.ToString())
-                        .SingleOrDefault();
-                    return (ParameterSource.KeyedService, key);
+                    var keyedServiceKey = KeyedServiceKeyInfo.Create(attribute);
+                    return (ParameterSource.KeyedService, keyedServiceKey);
             }
 
         // fallback to get source from type

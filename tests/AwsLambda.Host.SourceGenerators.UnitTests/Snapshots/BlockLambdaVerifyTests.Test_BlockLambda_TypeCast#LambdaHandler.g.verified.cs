@@ -45,7 +45,7 @@ namespace AwsLambda.Host
 
             Task InvocationDelegate(ILambdaHostContext context)
             {
-                // ParameterInfo { Type = global::IService, Name = service, Source = Service, KeyedServiceKey = , IsNullable = False, IsOptional = False }
+                // ParameterInfo { Type = global::IService, Name = service, Source = Service, IsNullable = False, IsOptional = False}
                 var arg0 = context.ServiceProvider.GetRequiredService<global::IService>();
                 context.Response = castHandler.Invoke(arg0);
                 return Task.CompletedTask; 

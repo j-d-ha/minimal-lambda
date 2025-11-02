@@ -103,11 +103,11 @@ internal static class MapHandlerSources
 
                     // inject keyed service from the DI container - required
                     ParameterSource.KeyedService when param.IsRequired =>
-                        $"context.ServiceProvider.GetRequiredKeyedService<{param.Type}>(\"{param.KeyedServiceKey}\")",
+                        $"context.ServiceProvider.GetRequiredKeyedService<{param.Type}>({param.KeyedServiceKey?.DisplayValue})",
 
                     // inject keyed service from the DI container - optional
                     ParameterSource.KeyedService =>
-                        $"context.ServiceProvider.GetKeyedService<{param.Type}>(\"{param.KeyedServiceKey}\")",
+                        $"context.ServiceProvider.GetKeyedService<{param.Type}>({param.KeyedServiceKey?.DisplayValue})",
 
                     // default: inject service from the DI container - required
                     _ when param.IsRequired =>

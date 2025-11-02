@@ -24,12 +24,12 @@ internal static class Diagnostics
         true
     );
 
-    internal static readonly DiagnosticDescriptor GenerationMode = new(
-        "LH1001",
-        "Source generation mode",
-        "{0}",
+    internal static readonly DiagnosticDescriptor InvalidAttributeArgument = new(
+        "LH0003",
+        "Invalid attribute argument",
+        "An argument of type '{0}' is not valid for this attribute. Please use a valid type.",
         UsageCategory,
-        DiagnosticSeverity.Info,
+        DiagnosticSeverity.Error,
         true
     );
 }

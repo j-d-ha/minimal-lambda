@@ -43,9 +43,9 @@ namespace AwsLambda.Host
             Task OnShutdown(IServiceProvider serviceProvider, CancellationToken cancellationToken)
             {
 #pragma warning disable CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
-                // ParameterInfo { Type = string, Name = x, Source = Service, KeyedServiceKey = , IsNullable = False, IsOptional = False }
+                // ParameterInfo { Type = string, Name = x, Source = Service, IsNullable = False, IsOptional = False}
                 var arg0 = serviceProvider.GetRequiredService<T1>();
-                // ParameterInfo { Type = int, Name = y, Source = Service, KeyedServiceKey = , IsNullable = False, IsOptional = False }
+                // ParameterInfo { Type = int, Name = y, Source = Service, IsNullable = False, IsOptional = False}
                 var arg1 = serviceProvider.GetRequiredService<T2>();
 #pragma warning restore CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
 #pragma warning disable CS8604 // Possible null reference argument.

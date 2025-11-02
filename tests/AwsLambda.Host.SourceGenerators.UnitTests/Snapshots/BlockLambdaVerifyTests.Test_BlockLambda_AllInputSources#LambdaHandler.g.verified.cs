@@ -49,19 +49,19 @@ namespace AwsLambda.Host
                 {
                     throw new InvalidOperationException($"Unable to resolve service referenced by {nameof(FromKeyedServicesAttribute)}. The service provider doesn't support keyed services.");
                 }
-                // ParameterInfo { Type = string, Name = request, Source = Event, KeyedServiceKey = , IsNullable = False, IsOptional = False }
+                // ParameterInfo { Type = string, Name = request, Source = Event, IsNullable = False, IsOptional = False}
                 var arg0 = context.GetEventT<string>();
-                // ParameterInfo { Type = global::Amazon.Lambda.Core.ILambdaContext, Name = context, Source = Context, KeyedServiceKey = , IsNullable = False, IsOptional = False }
+                // ParameterInfo { Type = global::Amazon.Lambda.Core.ILambdaContext, Name = context, Source = Context, IsNullable = False, IsOptional = False}
                 var arg1 = context;
-                // ParameterInfo { Type = global::System.Threading.CancellationToken, Name = cancellationToken, Source = CancellationToken, KeyedServiceKey = , IsNullable = False, IsOptional = False }
+                // ParameterInfo { Type = global::System.Threading.CancellationToken, Name = cancellationToken, Source = CancellationToken, IsNullable = False, IsOptional = False}
                 var arg2 = context.CancellationToken;
-                // ParameterInfo { Type = global::IService, Name = service0, Source = KeyedService, KeyedServiceKey = key0, IsNullable = False, IsOptional = False }
+                // ParameterInfo { Type = global::IService, Name = service0, Source = KeyedService, IsNullable = False, IsOptional = False, KeyedServiceKeyInfo { DisplayValue = "key0", Type = string, BaseType = object } }
                 var arg3 = context.ServiceProvider.GetRequiredKeyedService<global::IService>("key0");
-                // ParameterInfo { Type = global::IService?, Name = service1, Source = KeyedService, KeyedServiceKey = key1, IsNullable = True, IsOptional = False }
+                // ParameterInfo { Type = global::IService?, Name = service1, Source = KeyedService, IsNullable = True, IsOptional = False, KeyedServiceKeyInfo { DisplayValue = "key1", Type = string, BaseType = object } }
                 var arg4 = context.ServiceProvider.GetKeyedService<global::IService?>("key1");
-                // ParameterInfo { Type = global::IService, Name = service2, Source = Service, KeyedServiceKey = , IsNullable = False, IsOptional = False }
+                // ParameterInfo { Type = global::IService, Name = service2, Source = Service, IsNullable = False, IsOptional = False}
                 var arg5 = context.ServiceProvider.GetRequiredService<global::IService>();
-                // ParameterInfo { Type = global::IService?, Name = service3, Source = Service, KeyedServiceKey = , IsNullable = True, IsOptional = False }
+                // ParameterInfo { Type = global::IService?, Name = service3, Source = Service, IsNullable = True, IsOptional = False}
                 var arg6 = context.ServiceProvider.GetService<global::IService?>();
                 castHandler.Invoke(arg0, arg1, arg2, arg3, arg4, arg5, arg6);
                 return Task.CompletedTask; 

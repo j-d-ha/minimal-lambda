@@ -88,11 +88,11 @@ internal static class OnShutdownSources
 
                             // inject keyed service from the DI container - required
                             ParameterSource.KeyedService when param.IsRequired =>
-                                $"serviceProvider.GetRequiredKeyedService<T{i}>(\"{param.KeyedServiceKey}\")",
+                                $"serviceProvider.GetRequiredKeyedService<T{i}>({param.KeyedServiceKey?.DisplayValue})",
 
                             // inject keyed service from the DI container - optional
                             ParameterSource.KeyedService =>
-                                $"serviceProvider.GetKeyedService<T{i}>(\"{param.KeyedServiceKey}\")",
+                                $"serviceProvider.GetKeyedService<T{i}>({param.KeyedServiceKey?.DisplayValue})",
 
                             // default: inject service from the DI container - required
                             _ when param.IsRequired =>

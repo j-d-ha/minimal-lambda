@@ -34,37 +34,37 @@ namespace AwsLambda.Host
 
     file static class LambdaHostMapHandlerExtensions
     {
-        // Location: InputFile.cs(8,8)
-        [InterceptsLocation(1, "UPEWlbJjhBmIfE/4gdIJirAAAABJbnB1dEZpbGUuY3M=")]
+        // Location: InputFile.cs(11,8)
+        [InterceptsLocation(1, "u3QMKmsaQkO2Z61JJGU4FjoBAABJbnB1dEZpbGUuY3M=")]
         internal static ILambdaApplication MapHandlerInterceptor(
             this ILambdaApplication application,
             Delegate handler
         )
         {
-            var castHandler = (global::System.Func<string, global::IService>)handler;
+            var castHandler = (global::System.Action<global::IService, global::IService>)handler;
 
             Task InvocationDelegate(ILambdaHostContext context)
             {
-                // ParameterInfo { Type = string, Name = input, Source = Event, IsNullable = False, IsOptional = False}
-                var arg0 = context.GetEventT<string>();
-                context.Response = castHandler.Invoke(arg0);
+                if (context.ServiceProvider.GetService<IServiceProviderIsService>() is not IServiceProviderIsKeyedService)
+                {
+                    throw new InvalidOperationException($"Unable to resolve service referenced by {nameof(FromKeyedServicesAttribute)}. The service provider doesn't support keyed services.");
+                }
+                // ParameterInfo { Type = global::IService, Name = serviceA, Source = KeyedService, IsNullable = False, IsOptional = False, KeyedServiceKeyInfo { DisplayValue = (int)42, Type = int, BaseType = global::System.ValueType } }
+                var arg0 = context.ServiceProvider.GetRequiredKeyedService<global::IService>((int)42);
+                // ParameterInfo { Type = global::IService, Name = serviceB, Source = KeyedService, IsNullable = False, IsOptional = False, KeyedServiceKeyInfo { DisplayValue = (long)42, Type = long, BaseType = global::System.ValueType } }
+                var arg1 = context.ServiceProvider.GetRequiredKeyedService<global::IService>((long)42);
+                castHandler.Invoke(arg0, arg1);
                 return Task.CompletedTask; 
             }
             
             Task Deserializer(ILambdaHostContext context, ILambdaSerializer serializer, Stream eventStream)
             {
-                context.Event = serializer.Deserialize<string>(eventStream);
                 return Task.CompletedTask;
             }
             
             Task<Stream> Serializer(ILambdaHostContext context, ILambdaSerializer serializer)
             {
-                var response = context.GetResponseT<global::IService>();
-                var outputStream = new MemoryStream();
-                outputStream.SetLength(0L);
-                serializer.Serialize<global::IService>(response, outputStream);
-                outputStream.Position = 0L;
-                return Task.FromResult<Stream>(outputStream);
+                return Task.FromResult<Stream>(new MemoryStream(0));
             }
 
             return application.Map(InvocationDelegate, Deserializer, Serializer);

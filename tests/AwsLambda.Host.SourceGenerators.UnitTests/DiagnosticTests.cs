@@ -83,6 +83,46 @@ public class MapHandlerIncrementalGeneratorDiagnosticTests
         }
     }
 
+    [Fact]
+    public void Test_KeyedService_InvalidKey_Array()
+    {
+        var diagnostics = GenerateDiagnostics(
+            """
+            using AwsLambda.Host;
+            using Microsoft.Extensions.DependencyInjection;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
+            var key = new[] { "a", "b" };
+            builder.Services.AddKeyedSingleton<IService, Service>(key);
+
+            var lambda = builder.Build();
+
+            lambda.MapHandler(([FromKeyedServices(new[] { "a", "b" })] IService service) => { });
+
+            await lambda.RunAsync();
+
+            public interface IService
+            {
+                string GetMessage();
+            }
+
+            public class Service : IService
+            {
+                public string GetMessage() => "Hello";
+            }
+            """
+        );
+
+        diagnostics.Length.Should().Be(1);
+
+        foreach (var diagnostic in diagnostics)
+        {
+            diagnostic.Id.Should().Be("LH0003");
+            diagnostic.Severity.Should().Be(DiagnosticSeverity.Error);
+        }
+    }
+
     private static ImmutableArray<Diagnostic> GenerateDiagnostics(string source)
     {
         var (driver, _) = GeneratorTestHelpers.GenerateFromSource(source);
