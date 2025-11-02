@@ -32,7 +32,7 @@ lambda.OnShutdown(
 );
 
 lambda.OnShutdown(
-    Task (IService service = null) =>
+    Task (IService service) =>
     {
         Console.WriteLine(service?.GetMessage());
         return Task.CompletedTask;
