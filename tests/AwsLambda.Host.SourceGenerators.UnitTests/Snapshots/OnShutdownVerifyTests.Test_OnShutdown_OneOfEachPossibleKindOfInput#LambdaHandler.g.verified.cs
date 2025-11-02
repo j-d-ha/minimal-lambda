@@ -47,15 +47,15 @@ namespace AwsLambda.Host
                     throw new InvalidOperationException($"Unable to resolve service referenced by {nameof(FromKeyedServicesAttribute)}. The service provider doesn't support keyed services.");
                 }
 #pragma warning disable CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
-                // ParameterInfo { Type = global::System.Threading.CancellationToken, Name = token, Source = CancellationToken, KeyedServiceKey = , IsNullable = False, IsOptional = False }
+                // ParameterInfo { Type = global::System.Threading.CancellationToken, Name = token, Source = CancellationToken, IsNullable = False, IsOptional = False}
                 var arg0 = Unsafe.As<CancellationToken, T1>(ref cancellationToken);
-                // ParameterInfo { Type = global::IService, Name = service1, Source = KeyedService, KeyedServiceKey = key1, IsNullable = False, IsOptional = False }
+                // ParameterInfo { Type = global::IService, Name = service1, Source = KeyedService, IsNullable = False, IsOptional = False, KeyedServiceKeyInfo { DisplayValue = "key1", Type = string, BaseType = object } }
                 var arg1 = serviceProvider.GetRequiredKeyedService<T2>("key1");
-                // ParameterInfo { Type = global::IService?, Name = service2, Source = KeyedService, KeyedServiceKey = key2, IsNullable = True, IsOptional = False }
+                // ParameterInfo { Type = global::IService?, Name = service2, Source = KeyedService, IsNullable = True, IsOptional = False, KeyedServiceKeyInfo { DisplayValue = "key2", Type = string, BaseType = object } }
                 var arg2 = serviceProvider.GetKeyedService<T3>("key2");
-                // ParameterInfo { Type = global::IService, Name = service3, Source = Service, KeyedServiceKey = , IsNullable = False, IsOptional = False }
+                // ParameterInfo { Type = global::IService, Name = service3, Source = Service, IsNullable = False, IsOptional = False}
                 var arg3 = serviceProvider.GetRequiredService<T4>();
-                // ParameterInfo { Type = global::IService?, Name = service4, Source = Service, KeyedServiceKey = , IsNullable = True, IsOptional = False }
+                // ParameterInfo { Type = global::IService?, Name = service4, Source = Service, IsNullable = True, IsOptional = False}
                 var arg4 = serviceProvider.GetService<T5>();
 #pragma warning restore CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
 #pragma warning disable CS8604 // Possible null reference argument.

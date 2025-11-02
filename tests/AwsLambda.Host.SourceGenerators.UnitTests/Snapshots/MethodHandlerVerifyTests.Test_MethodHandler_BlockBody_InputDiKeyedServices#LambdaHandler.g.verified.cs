@@ -49,11 +49,11 @@ namespace AwsLambda.Host
                 {
                     throw new InvalidOperationException($"Unable to resolve service referenced by {nameof(FromKeyedServicesAttribute)}. The service provider doesn't support keyed services.");
                 }
-                // ParameterInfo { Type = string, Name = input, Source = Event, KeyedServiceKey = , IsNullable = False, IsOptional = False }
+                // ParameterInfo { Type = string, Name = input, Source = Event, IsNullable = False, IsOptional = False}
                 var arg0 = context.GetEventT<string>();
-                // ParameterInfo { Type = global::Amazon.Lambda.Core.ILambdaContext, Name = context, Source = Context, KeyedServiceKey = , IsNullable = False, IsOptional = False }
+                // ParameterInfo { Type = global::Amazon.Lambda.Core.ILambdaContext, Name = context, Source = Context, IsNullable = False, IsOptional = False}
                 var arg1 = context;
-                // ParameterInfo { Type = global::IService, Name = service, Source = KeyedService, KeyedServiceKey = key, IsNullable = False, IsOptional = False }
+                // ParameterInfo { Type = global::IService, Name = service, Source = KeyedService, IsNullable = False, IsOptional = False, KeyedServiceKeyInfo { DisplayValue = "key", Type = string, BaseType = object } }
                 var arg2 = context.ServiceProvider.GetRequiredKeyedService<global::IService>("key");
                 context.Response = castHandler.Invoke(arg0, arg1, arg2);
                 return Task.CompletedTask; 

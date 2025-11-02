@@ -45,9 +45,9 @@ namespace AwsLambda.Host
 
             async Task InvocationDelegate(ILambdaHostContext context)
             {
-                // ParameterInfo { Type = string, Name = input, Source = Event, KeyedServiceKey = , IsNullable = False, IsOptional = False }
+                // ParameterInfo { Type = string, Name = input, Source = Event, IsNullable = False, IsOptional = False}
                 var arg0 = context.GetEventT<string>();
-                // ParameterInfo { Type = global::IService, Name = service, Source = Service, KeyedServiceKey = , IsNullable = False, IsOptional = False }
+                // ParameterInfo { Type = global::IService, Name = service, Source = Service, IsNullable = False, IsOptional = False}
                 var arg1 = context.ServiceProvider.GetRequiredService<global::IService>();
                 context.Response = await castHandler.Invoke(arg0, arg1);
             }

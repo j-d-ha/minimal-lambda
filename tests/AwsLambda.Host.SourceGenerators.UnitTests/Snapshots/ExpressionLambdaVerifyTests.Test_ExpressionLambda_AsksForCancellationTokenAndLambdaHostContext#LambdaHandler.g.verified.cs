@@ -45,9 +45,9 @@ namespace AwsLambda.Host
 
             Task InvocationDelegate(ILambdaHostContext context)
             {
-                // ParameterInfo { Type = global::System.Threading.CancellationToken, Name = ct, Source = CancellationToken, KeyedServiceKey = , IsNullable = False, IsOptional = False }
+                // ParameterInfo { Type = global::System.Threading.CancellationToken, Name = ct, Source = CancellationToken, IsNullable = False, IsOptional = False}
                 var arg0 = context.CancellationToken;
-                // ParameterInfo { Type = global::AwsLambda.Host.ILambdaHostContext, Name = ctx, Source = Context, KeyedServiceKey = , IsNullable = False, IsOptional = False }
+                // ParameterInfo { Type = global::AwsLambda.Host.ILambdaHostContext, Name = ctx, Source = Context, IsNullable = False, IsOptional = False}
                 var arg1 = context;
                 context.Response = castHandler.Invoke(arg0, arg1);
                 return Task.CompletedTask; 

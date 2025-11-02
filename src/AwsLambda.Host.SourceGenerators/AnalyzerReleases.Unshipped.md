@@ -4,4 +4,4 @@
 ---------|----------------------|----------|-----------------------------------
  LH0001  | AwsLambda.Host.Usage | Error    | Multiple method calls detected    
  LH0002  | AwsLambda.Host.Usage | Error    | Multiple parameters use attribute 
- LH1001  | AwsLambda.Host.Usage | Info     | Source generation mode            
+ LH0003  | AwsLambda.Host.Usage | Error    | Invalid attribute argument        
