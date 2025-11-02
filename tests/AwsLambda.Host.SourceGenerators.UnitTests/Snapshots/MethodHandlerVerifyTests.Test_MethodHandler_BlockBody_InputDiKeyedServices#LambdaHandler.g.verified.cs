@@ -43,12 +43,20 @@ namespace AwsLambda.Host
         {
             var castHandler = (global::System.Func<string, global::Amazon.Lambda.Core.ILambdaContext, global::IService, string>)handler;
 
-            async Task InvocationDelegate(ILambdaHostContext context)
+            Task InvocationDelegate(ILambdaHostContext context)
             {
+                if (context.ServiceProvider.GetService<IServiceProviderIsService>() is not IServiceProviderIsKeyedService)
+                {
+                    throw new InvalidOperationException($"Unable to resolve service referenced by {nameof(FromKeyedServicesAttribute)}. The service provider doesn't support keyed services.");
+                }
+                // ParameterInfo { Type = string, Name = input, Source = Event, KeyedServiceKey = , IsNullable = False, IsOptional = False }
                 var arg0 = context.GetEventT<string>();
+                // ParameterInfo { Type = global::Amazon.Lambda.Core.ILambdaContext, Name = context, Source = Context, KeyedServiceKey = , IsNullable = False, IsOptional = False }
                 var arg1 = context;
+                // ParameterInfo { Type = global::IService, Name = service, Source = KeyedService, KeyedServiceKey = key, IsNullable = False, IsOptional = False }
                 var arg2 = context.ServiceProvider.GetRequiredKeyedService<global::IService>("key");
                 context.Response = castHandler.Invoke(arg0, arg1, arg2);
+                return Task.CompletedTask; 
             }
             
             Task Deserializer(ILambdaHostContext context, ILambdaSerializer serializer, Stream eventStream)

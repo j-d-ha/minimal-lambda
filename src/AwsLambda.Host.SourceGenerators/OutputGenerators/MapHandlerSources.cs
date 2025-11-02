@@ -6,9 +6,9 @@ namespace AwsLambda.Host.SourceGenerators;
 
 internal static class MapHandlerSources
 {
-    internal static string Generate(MapHandlerInvocationInfo mapHandlerInvocationInfo)
+    internal static string Generate(HigherOrderMethodInfo higherOrderMethodInfo)
     {
-        var delegateInfo = mapHandlerInvocationInfo.DelegateInfo;
+        var delegateInfo = higherOrderMethodInfo.DelegateInfo;
 
         // build handler function signature
         var handlerSignature = delegateInfo.BuildHandlerSignature();
@@ -32,8 +32,9 @@ internal static class MapHandlerSources
 
         var model = new
         {
-            Location = mapHandlerInvocationInfo.InterceptableLocationInfo,
+            Location = higherOrderMethodInfo.InterceptableLocationInfo,
             HandlerSignature = handlerSignature,
+            delegateInfo.HasAnyKeyedServiceParameter,
             HandlerArgs = handlerArgs,
             ShouldAwait = delegateInfo.IsAwaitable,
             InputEvent = inputEvent,
@@ -83,11 +84,13 @@ internal static class MapHandlerSources
         return handlerSignature;
     }
 
-    private static string[] BuildHandlerParameterAssignment(this DelegateInfo delegateInfo)
+    private static HandlerArg[] BuildHandlerParameterAssignment(this DelegateInfo delegateInfo)
     {
         var handlerArgs = delegateInfo
-            .Parameters.Select(param =>
-                param.Source switch
+            .Parameters.Select(param => new HandlerArg
+            {
+                String = param.ToPublicString(),
+                Assignment = param.Source switch
                 {
                     // Event -> deserialize to type
                     ParameterSource.Event => $"context.GetEventT<{param.Type}>()",
@@ -96,7 +99,7 @@ internal static class MapHandlerSources
                     ParameterSource.Context => "context",
 
                     // CancellationToken -> get from context
-                    ParameterSource.ContextCancellation => "context.CancellationToken",
+                    ParameterSource.CancellationToken => "context.CancellationToken",
 
                     // inject keyed service from the DI container
                     ParameterSource.KeyedService =>
@@ -104,10 +107,12 @@ internal static class MapHandlerSources
 
                     // default: inject service from the DI container
                     _ => $"context.ServiceProvider.GetRequiredService<{param.Type}>()",
-                }
-            )
+                },
+            })
             .ToArray();
 
         return handlerArgs;
     }
+
+    private readonly record struct HandlerArg(string String, string Assignment);
 }

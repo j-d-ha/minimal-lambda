@@ -13,7 +13,7 @@ namespace AwsLambda.Host.SourceGenerators.UnitTests;
 
 internal static class GeneratorTestHelpers
 {
-    internal static Task Verify(string source)
+    internal static Task Verify(string source, int expectedTrees = 1)
     {
         var (driver, originalCompilation) = GenerateFromSource(source);
 
@@ -50,7 +50,7 @@ internal static class GeneratorTestHelpers
                     )
             );
 
-        result.GeneratedTrees.Length.Should().Be(1);
+        result.GeneratedTrees.Length.Should().Be(expectedTrees);
 
         return Verifier.Verify(driver).UseDirectory("Snapshots").DisableDiff();
     }

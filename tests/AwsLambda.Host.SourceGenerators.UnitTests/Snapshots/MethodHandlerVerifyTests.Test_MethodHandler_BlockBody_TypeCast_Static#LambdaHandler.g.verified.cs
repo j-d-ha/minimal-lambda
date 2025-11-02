@@ -43,9 +43,10 @@ namespace AwsLambda.Host
         {
             var castHandler = (global::System.Func<int>)handler;
 
-            async Task InvocationDelegate(ILambdaHostContext context)
+            Task InvocationDelegate(ILambdaHostContext context)
             {
                 context.Response = castHandler.Invoke();
+                return Task.CompletedTask; 
             }
             
             Task Deserializer(ILambdaHostContext context, ILambdaSerializer serializer, Stream eventStream)

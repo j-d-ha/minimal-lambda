@@ -4,7 +4,7 @@ internal enum ParameterSource
 {
     Event,
     KeyedService,
-    ContextCancellation,
+    CancellationToken,
     Context,
     Service,
 }

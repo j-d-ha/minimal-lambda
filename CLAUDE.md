@@ -2,8 +2,16 @@
 
 ## GENERAL
 
-- Repo link: https://github.com/j-d-ha/dotnet-lambda-host
+- Repo link: https://github.com/j-d-ha/aws-lambda-host
 - GitHub Project Name: Lambda.Host Development
+- All code in this project is designed to run on AWS Lambda or generate code that will then be run
+  on AWS Lambda.
+
+## Code Style
+
+### C# XML Documentation
+
+- Only use XML tags that are supported by C#. As an example, do not use `<strong>`.
 
 ## MANDATORY WORKFLOW
 

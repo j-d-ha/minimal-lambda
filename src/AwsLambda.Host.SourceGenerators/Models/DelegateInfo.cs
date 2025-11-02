@@ -22,6 +22,9 @@ internal readonly record struct DelegateInfo(
 
     internal bool HasEventParameter => EventParameter is not null;
 
+    internal bool HasAnyKeyedServiceParameter =>
+        Parameters.Any(p => p.Source == ParameterSource.KeyedService);
+
     private static ParameterInfo? GetEventParameter(EquatableArray<ParameterInfo> parameters) =>
         parameters
             .Where(p => p.Source == ParameterSource.Event)

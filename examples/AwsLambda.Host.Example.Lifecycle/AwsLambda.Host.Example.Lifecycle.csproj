@@ -1,9 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
+    <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <AWSProjectType>Lambda</AWSProjectType>
@@ -11,19 +10,19 @@
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <!-- Generate ready to run images during publishing to improve cold start time. -->
     <PublishReadyToRun>true</PublishReadyToRun>
-
     <InterceptorsNamespaces>$(InterceptorsNamespaces);AwsLambda.Host</InterceptorsNamespaces>
   </PropertyGroup>
-
   <ItemGroup>
-    <ProjectReference Include="..\..\src\AwsLambda.Host\AwsLambda.Host.csproj"/>
-    <ProjectReference Include="..\..\src\AwsLambda.Host.SourceGenerators\AwsLambda.Host.SourceGenerators.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer"/>
+    <ProjectReference Include="..\..\src\AwsLambda.Host\AwsLambda.Host.csproj" />
+    <ProjectReference
+      Include="..\..\src\AwsLambda.Host.SourceGenerators\AwsLambda.Host.SourceGenerators.csproj"
+      ReferenceOutputAssembly="false"
+      OutputItemType="Analyzer"
+    />
   </ItemGroup>
-
   <ItemGroup>
     <None Update="appsettings.json">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-
 </Project>

@@ -1,5 +1,7 @@
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
+using AwsLambda.Host.SourceGenerators.Extensions;
 using AwsLambda.Host.SourceGenerators.Models;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -8,11 +10,11 @@ using Microsoft.CodeAnalysis.Operations;
 
 namespace AwsLambda.Host.SourceGenerators;
 
-internal static class MapHandlerSyntaxProvider
+internal static class OnShutdownSyntaxProvider
 {
     internal static bool Predicate(SyntaxNode node, CancellationToken cancellationToken) =>
         node.TryGetMethodName(out var name)
-        && name == GeneratorConstants.MapHandlerMethodName
+        && name == GeneratorConstants.OnShutdownMethodName
         && !node.IsGeneratedFile();
 
     internal static HigherOrderMethodInfo? Transformer(
@@ -46,6 +48,18 @@ internal static class MapHandlerSyntaxProvider
         if (delegateInfo is null)
             return null;
 
+        // filter out non-generic shutdown method calls
+        if (delegateInfo.Value.IsBaseOnShutdownCall())
+            return null;
+
+        // get generic type arguments
+        var typeArguments = targetOperation
+            .TargetMethod.TypeArguments.Zip(
+                targetOperation.TargetMethod.TypeParameters,
+                (argument, parameter) => new GenericInfo(argument.GetAsGlobal(), parameter.Name)
+            )
+            .ToImmutableArray();
+
         // get interceptable location
         var interceptableLocation = context.SemanticModel.GetInterceptableLocation(
             invocationExpr,
@@ -55,7 +69,21 @@ internal static class MapHandlerSyntaxProvider
         return new HigherOrderMethodInfo(
             LocationInfo: LocationInfo.CreateFrom(context.Node),
             DelegateInfo: delegateInfo.Value,
-            InterceptableLocationInfo: InterceptableLocationInfo.CreateFrom(interceptableLocation)
+            InterceptableLocationInfo: InterceptableLocationInfo.CreateFrom(interceptableLocation),
+            GenericTypeArguments: typeArguments
         );
     }
+
+    // we want to filter out the non-generic shutdown method calls that use the method signature
+    // defined in ILambdaApplication. this is LambdaShutdownDelegate.
+    // Func<IServiceProvider, CancellationToken, Task>
+    private static bool IsBaseOnShutdownCall(this DelegateInfo delegateInfo) =>
+        delegateInfo
+            is {
+                FullResponseType: TypeConstants.Task,
+                Parameters: [
+                    { Type: TypeConstants.IServiceProvider },
+                    { Type: TypeConstants.CancellationToken },
+                ],
+            };
 }

@@ -43,11 +43,14 @@ namespace AwsLambda.Host
         {
             var castHandler = (global::System.Func<global::System.Threading.CancellationToken, global::Amazon.Lambda.Core.ILambdaContext, string>)handler;
 
-            async Task InvocationDelegate(ILambdaHostContext context)
+            Task InvocationDelegate(ILambdaHostContext context)
             {
+                // ParameterInfo { Type = global::System.Threading.CancellationToken, Name = ct, Source = CancellationToken, KeyedServiceKey = , IsNullable = False, IsOptional = False }
                 var arg0 = context.CancellationToken;
+                // ParameterInfo { Type = global::Amazon.Lambda.Core.ILambdaContext, Name = ctx, Source = Context, KeyedServiceKey = , IsNullable = False, IsOptional = False }
                 var arg1 = context;
                 context.Response = castHandler.Invoke(arg0, arg1);
+                return Task.CompletedTask; 
             }
             
             Task Deserializer(ILambdaHostContext context, ILambdaSerializer serializer, Stream eventStream)

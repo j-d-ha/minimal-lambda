@@ -22,6 +22,8 @@ internal static class TypeConstants
     internal const string Func = "global::System.Func";
 
     internal const string Stream = "global::System.IO.Stream";
+
+    internal const string IServiceProvider = "global::System.IServiceProvider";
 }
 
 /// <summary>
@@ -39,6 +41,8 @@ internal static class GeneratorConstants
 {
     internal const string MapHandlerMethodName = "MapHandler";
 
+    internal const string OnShutdownMethodName = "OnShutdown";
+
     internal const string UseOpenTelemetryTracingMethodName = "UseOpenTelemetryTracing";
 
     internal const string InterceptsLocationAttributeTemplateFile =
@@ -46,6 +50,9 @@ internal static class GeneratorConstants
 
     internal const string LambdaHostMapHandlerExtensionsTemplateFile =
         "Templates/LambdaHostMapHandlerExtensions.scriban";
+
+    internal const string LambdaHostOnShutdownExtensionsTemplateFile =
+        "Templates/LambdaHostOnShutdownExtensions.scriban";
 
     internal const string LambdaHostUseOpenTelemetryTracingExtensionsTemplateFile =
         "Templates/LambdaHostUseOpenTelemetryTracingExtensions.scriban";

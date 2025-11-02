@@ -185,14 +185,7 @@ internal static class DelegateInfoExtractorExtensions
 
         var parameters = methodSymbol
             .Parameters.AsEnumerable()
-            .Select(p =>
-            {
-                var type = p.Type.GetAsGlobal();
-                var location = LocationInfo.CreateFrom(p);
-                var (source, key) = p.GetAttributes().GetSourceFromAttribute(type);
-
-                return new ParameterInfo(type, location, source, key);
-            })
+            .Select(ParameterInfo.Create)
             .ToEquatableArray();
 
         // get the fully qualified type that may be wrapped in Task or ValueTask.
@@ -229,36 +222,6 @@ internal static class DelegateInfoExtractorExtensions
         return typeSymbol.TypeArguments.First().GetAsGlobal();
     }
 
-    private static (ParameterSource Source, string? KeyedServiceKey) GetSourceFromAttribute(
-        this IEnumerable<AttributeData> attributes,
-        string type
-    )
-    {
-        // try and extract source from attributes
-        foreach (var attribute in attributes)
-            switch (attribute.AttributeClass?.ToString())
-            {
-                case AttributeConstants.EventAttribute:
-                    return (ParameterSource.Event, null);
-
-                case AttributeConstants.FromKeyedService:
-                    var key = attribute
-                        .ConstructorArguments.Where(a => a.Value is not null)
-                        .Select(a => a.Value!.ToString())
-                        .SingleOrDefault();
-                    return (ParameterSource.KeyedService, key);
-            }
-
-        // fallback to get source from type
-        return type switch
-        {
-            TypeConstants.CancellationToken => (ParameterSource.ContextCancellation, null),
-            TypeConstants.ILambdaContext => (ParameterSource.Context, null),
-            TypeConstants.ILambdaHostContext => (ParameterSource.Context, null),
-            _ => (ParameterSource.Service, null),
-        };
-    }
-
     private static DelegateInfo ExtractInfoFromLambda(
         GeneratorSyntaxContext context,
         LambdaExpressionSyntax lambdaExpression,
@@ -281,14 +244,7 @@ internal static class DelegateInfoExtractorExtensions
         var parameters = parameterSyntaxes
             .Select(p => sematicModel.GetDeclaredSymbol(p, cancellationToken))
             .Where(p => p is not null)
-            .Select(p =>
-            {
-                var type = p.Type.GetAsGlobal();
-                var location = LocationInfo.CreateFrom(p);
-                var (source, key) = p.GetAttributes().GetSourceFromAttribute(type);
-
-                return new ParameterInfo(type, location, source, key);
-            })
+            .Select(ParameterInfo.Create!)
             .ToEquatableArray();
 
         // Hierarchy for determining lambda return type.

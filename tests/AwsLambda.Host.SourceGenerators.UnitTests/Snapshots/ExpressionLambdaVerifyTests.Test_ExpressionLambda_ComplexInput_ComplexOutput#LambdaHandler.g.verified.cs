@@ -45,8 +45,11 @@ namespace AwsLambda.Host
 
             async Task InvocationDelegate(ILambdaHostContext context)
             {
+                // ParameterInfo { Type = global::CustomRequest, Name = request, Source = Event, KeyedServiceKey = , IsNullable = False, IsOptional = False }
                 var arg0 = context.GetEventT<global::CustomRequest>();
+                // ParameterInfo { Type = global::IService, Name = service, Source = Service, KeyedServiceKey = , IsNullable = False, IsOptional = False }
                 var arg1 = context.ServiceProvider.GetRequiredService<global::IService>();
+                // ParameterInfo { Type = global::Amazon.Lambda.Core.ILambdaContext, Name = context, Source = Context, KeyedServiceKey = , IsNullable = False, IsOptional = False }
                 var arg2 = context;
                 context.Response = await castHandler.Invoke(arg0, arg1, arg2);
             }
