@@ -42,6 +42,15 @@ internal class LambdaLifecycleOrchestrator : ILambdaLifecycleOrchestrator
     }
 
     /// <inheritdoc />
+    /// <remarks>
+    /// All initialization handlers are executed concurrently with a timeout specified by
+    /// <see cref="LambdaHostOptions.InitTimeout" />. If any handler throws an exception,
+    /// execution is prevented from continuing. Each handler is provided with its own service
+    /// scope, which is disposed after the handler completes. The boolean values returned by
+    /// each handler are aggregated, and any false value will result in false being returned
+    /// to the Lambda runtime. If no initialization handlers are registered, the initializer
+    /// returns true immediately.
+    /// </remarks>
     public LambdaBootstrapInitializer OnInit(CancellationToken stoppingToken)
     {
         return Initializer;
@@ -89,8 +98,18 @@ internal class LambdaLifecycleOrchestrator : ILambdaLifecycleOrchestrator
     }
 
     /// <inheritdoc />
+    /// <remarks>
+    /// All shutdown handlers are executed concurrently. Each handler is provided with its
+    /// own service scope, which is disposed after the handler completes. Exceptions thrown
+    /// by handlers are caught and collected rather than propagated, allowing all handlers
+    /// to run to completion even if some fail. If no shutdown handlers are registered, an
+    /// empty collection is returned immediately.
+    /// </remarks>
     public async Task<IEnumerable<Exception>> OnShutdown(CancellationToken cancellationToken)
     {
+        if (_delegateHolder.ShutdownHandlers.Count == 0)
+            return [];
+
         var tasks = _delegateHolder.ShutdownHandlers.Select(h =>
             RunShutdownHandler(h, cancellationToken)
         );
