@@ -70,6 +70,8 @@ public class LambdaHostOptions
     ///     These options control how the Lambda runtime bootstrap behaves and processes incoming
     ///     invocations.
     /// </remarks>
+    public bool ClearLambdaOutputFormatting { get; set; } = false;
+
     public LambdaBootstrapOptions BootstrapOptions { get; set; } = new();
 
     /// <summary>

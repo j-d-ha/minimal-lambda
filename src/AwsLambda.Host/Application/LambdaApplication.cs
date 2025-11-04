@@ -3,6 +3,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Options;
 
 namespace AwsLambda.Host;
 
@@ -13,9 +14,16 @@ public sealed class LambdaApplication : IHost, ILambdaApplication, IAsyncDisposa
 
     internal LambdaApplication(IHost host)
     {
-        _host = host ?? throw new ArgumentNullException(nameof(host));
+        ArgumentNullException.ThrowIfNull(host);
+
+        _host = host;
         _delegateHolder =
             Services.GetRequiredService<DelegateHolder>() ?? throw new InvalidOperationException();
+
+        var settings = Services.GetRequiredService<IOptions<LambdaHostOptions>>().Value;
+
+        if (settings.ClearLambdaOutputFormatting)
+            this.OnInitClearLambdaOutputFormatting();
     }
 
     /// <inheritdoc />
@@ -42,12 +50,14 @@ public sealed class LambdaApplication : IHost, ILambdaApplication, IAsyncDisposa
         Func<ILambdaHostContext, ILambdaSerializer, Task<Stream>>? serializer
     )
     {
+        ArgumentNullException.ThrowIfNull(handler);
+
         if (_delegateHolder.IsHandlerSet)
             throw new InvalidOperationException(
                 "Lambda Handler is already set. Only one is allowed."
             );
 
-        _delegateHolder.Handler = handler ?? throw new ArgumentNullException(nameof(handler));
+        _delegateHolder.Handler = handler;
 
         _delegateHolder.Deserializer = deserializer;
         _delegateHolder.Serializer = serializer;
@@ -60,9 +70,9 @@ public sealed class LambdaApplication : IHost, ILambdaApplication, IAsyncDisposa
         Func<LambdaInvocationDelegate, LambdaInvocationDelegate> middleware
     )
     {
-        _delegateHolder.Middlewares.Add(
-            middleware ?? throw new ArgumentNullException(nameof(middleware))
-        );
+        ArgumentNullException.ThrowIfNull(middleware);
+
+        _delegateHolder.Middlewares.Add(middleware);
 
         return this;
     }
