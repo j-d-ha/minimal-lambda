@@ -1,8 +1,6 @@
 namespace AwsLambda.Host.SourceGenerators;
 
-/// <summary>
-///     Constants for common .NET and AWS Lambda types used in source generation.
-/// </summary>
+/// <summary>Constants for common .NET and AWS Lambda types used in source generation.</summary>
 internal static class TypeConstants
 {
     internal const string ILambdaContext = "global::Amazon.Lambda.Core.ILambdaContext";
@@ -26,9 +24,7 @@ internal static class TypeConstants
     internal const string IServiceProvider = "global::System.IServiceProvider";
 }
 
-/// <summary>
-///     Constants for attribute names used in source generation.
-/// </summary>
+/// <summary>Constants for attribute names used in source generation.</summary>
 internal static class AttributeConstants
 {
     internal const string EventAttribute = "AwsLambda.Host.EventAttribute";

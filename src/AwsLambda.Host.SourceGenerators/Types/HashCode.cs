@@ -5,9 +5,7 @@ using System.Runtime.CompilerServices;
 
 namespace AwsLambda.Host.SourceGenerators.Types;
 
-/// <summary>
-///     Polyfill for .NET 6 HashCode
-/// </summary>
+/// <summary>Polyfill for .NET 6 HashCode</summary>
 internal struct HashCode
 {
     private static readonly uint s_seed = GenerateGlobalSeed();

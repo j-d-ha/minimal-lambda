@@ -4,17 +4,15 @@ using System.Diagnostics.CodeAnalysis;
 namespace AwsLambda.Host;
 
 /// <summary>
-///     Overloads for <see cref="ILambdaApplication.OnShutdown(LambdaShutdownDelegate)" /> that support
-///     automatic dependency injection
-///     for shutdown handlers with zero to sixteen parameters.
+///     Overloads for <see cref="ILambdaApplication.OnShutdown(LambdaShutdownDelegate)" /> that
+///     support automatic dependency injection for shutdown handlers with zero to sixteen parameters.
 /// </summary>
 /// <remarks>
-///     Source generation creates the wiring code to resolve handler dependencies, using compile-time
-///     interceptors to replace the calls. Instead of using the base delegate, declare handler
-///     parameters to be automatically injected
-///     from the dependency injection container. A scope is created for each handler invocation, and
-///     the container is disposed of
-///     after the handler returns.
+///     Source generation creates the wiring code to resolve handler dependencies, using
+///     compile-time interceptors to replace the calls. Instead of using the base delegate, declare
+///     handler parameters to be automatically injected from the dependency injection container. A
+///     scope is created for each handler invocation, and the container is disposed of after the
+///     handler returns.
 /// </remarks>
 /// <example>
 ///     <code>
@@ -28,23 +26,19 @@ namespace AwsLambda.Host;
 [ExcludeFromCodeCoverage]
 public static class OnShutdownLambdaApplicationExtensions
 {
-    /// <summary>
-    ///     Registers a shutdown handler that will be run when the Lambda runtime shuts down.
-    /// </summary>
+    /// <summary>Registers a shutdown handler that will be run when the Lambda runtime shuts down.</summary>
     /// <remarks>
-    ///     Source generation creates the wiring code to resolve handler dependencies, using compile-time
-    ///     interceptors to replace the calls. Dependencies are scoped per handler. If a CancellationToken
-    ///     is requested, it will be cancelled before the Lambda runtime forces shutdown.
+    ///     Source generation creates the wiring code to resolve handler dependencies, using
+    ///     compile-time interceptors to replace the calls. Dependencies are scoped per handler. If a
+    ///     CancellationToken is requested, it will be cancelled before the Lambda runtime forces shutdown.
     /// </remarks>
-    /// <note>
-    ///     Shutdown logic should execute quickly as time is minimal before forced termination.
-    /// </note>
+    /// <note>Shutdown logic should execute quickly as time is minimal before forced termination.</note>
     /// <param name="application">The Lambda application.</param>
     /// <param name="handler">An asynchronous handler function.</param>
     /// <returns>The current <see cref="ILambdaApplication" /> instance for method chaining.</returns>
     /// <exception cref="InvalidOperationException">
-    ///     Thrown if called at runtime; this exception is unreachable as this method is intercepted by the
-    ///     source generator code at compile time.
+    ///     Thrown if called at runtime; this exception is
+    ///     unreachable as this method is intercepted by the source generator code at compile time.
     /// </exception>
     public static ILambdaApplication OnShutdown(
         this ILambdaApplication application,
@@ -55,7 +49,7 @@ public static class OnShutdownLambdaApplicationExtensions
         throw new InvalidOperationException("This method is replaced at compile time.");
     }
 
-    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})"/>
+    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})" />
     /// <typeparam name="T1">The type of the first handler parameter.</typeparam>
     public static ILambdaApplication OnShutdown<T1>(
         this ILambdaApplication application,
@@ -66,7 +60,7 @@ public static class OnShutdownLambdaApplicationExtensions
         throw new InvalidOperationException("This method is replaced at compile time.");
     }
 
-    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})"/>
+    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})" />
     /// <typeparam name="T1">The type of the first handler parameter.</typeparam>
     /// <typeparam name="T2">The type of the second handler parameter.</typeparam>
     public static ILambdaApplication OnShutdown<T1, T2>(
@@ -78,7 +72,7 @@ public static class OnShutdownLambdaApplicationExtensions
         throw new InvalidOperationException("This method is replaced at compile time.");
     }
 
-    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})"/>
+    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})" />
     /// <typeparam name="T1">The type of the first handler parameter.</typeparam>
     /// <typeparam name="T2">The type of the second handler parameter.</typeparam>
     /// <typeparam name="T3">The type of the third handler parameter.</typeparam>
@@ -91,7 +85,7 @@ public static class OnShutdownLambdaApplicationExtensions
         throw new InvalidOperationException("This method is replaced at compile time.");
     }
 
-    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})"/>
+    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})" />
     /// <typeparam name="T1">The type of the first handler parameter.</typeparam>
     /// <typeparam name="T2">The type of the second handler parameter.</typeparam>
     /// <typeparam name="T3">The type of the third handler parameter.</typeparam>
@@ -105,7 +99,7 @@ public static class OnShutdownLambdaApplicationExtensions
         throw new InvalidOperationException("This method is replaced at compile time.");
     }
 
-    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})"/>
+    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})" />
     /// <typeparam name="T1">The type of the first handler parameter.</typeparam>
     /// <typeparam name="T2">The type of the second handler parameter.</typeparam>
     /// <typeparam name="T3">The type of the third handler parameter.</typeparam>
@@ -120,7 +114,7 @@ public static class OnShutdownLambdaApplicationExtensions
         throw new InvalidOperationException("This method is replaced at compile time.");
     }
 
-    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})"/>
+    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})" />
     /// <typeparam name="T1">The type of the first handler parameter.</typeparam>
     /// <typeparam name="T2">The type of the second handler parameter.</typeparam>
     /// <typeparam name="T3">The type of the third handler parameter.</typeparam>
@@ -136,7 +130,7 @@ public static class OnShutdownLambdaApplicationExtensions
         throw new InvalidOperationException("This method is replaced at compile time.");
     }
 
-    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})"/>
+    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})" />
     /// <typeparam name="T1">The type of the first handler parameter.</typeparam>
     /// <typeparam name="T2">The type of the second handler parameter.</typeparam>
     /// <typeparam name="T3">The type of the third handler parameter.</typeparam>
@@ -153,7 +147,7 @@ public static class OnShutdownLambdaApplicationExtensions
         throw new InvalidOperationException("This method is replaced at compile time.");
     }
 
-    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})"/>
+    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})" />
     /// <typeparam name="T1">The type of the first handler parameter.</typeparam>
     /// <typeparam name="T2">The type of the second handler parameter.</typeparam>
     /// <typeparam name="T3">The type of the third handler parameter.</typeparam>
@@ -171,7 +165,7 @@ public static class OnShutdownLambdaApplicationExtensions
         throw new InvalidOperationException("This method is replaced at compile time.");
     }
 
-    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})"/>
+    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})" />
     /// <typeparam name="T1">The type of the first handler parameter.</typeparam>
     /// <typeparam name="T2">The type of the second handler parameter.</typeparam>
     /// <typeparam name="T3">The type of the third handler parameter.</typeparam>
@@ -190,7 +184,7 @@ public static class OnShutdownLambdaApplicationExtensions
         throw new InvalidOperationException("This method is replaced at compile time.");
     }
 
-    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})"/>
+    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})" />
     /// <typeparam name="T1">The type of the first handler parameter.</typeparam>
     /// <typeparam name="T2">The type of the second handler parameter.</typeparam>
     /// <typeparam name="T3">The type of the third handler parameter.</typeparam>
@@ -210,7 +204,7 @@ public static class OnShutdownLambdaApplicationExtensions
         throw new InvalidOperationException("This method is replaced at compile time.");
     }
 
-    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})"/>
+    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})" />
     /// <typeparam name="T1">The type of the first handler parameter.</typeparam>
     /// <typeparam name="T2">The type of the second handler parameter.</typeparam>
     /// <typeparam name="T3">The type of the third handler parameter.</typeparam>
@@ -231,7 +225,7 @@ public static class OnShutdownLambdaApplicationExtensions
         throw new InvalidOperationException("This method is replaced at compile time.");
     }
 
-    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})"/>
+    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})" />
     /// <typeparam name="T1">The type of the first handler parameter.</typeparam>
     /// <typeparam name="T2">The type of the second handler parameter.</typeparam>
     /// <typeparam name="T3">The type of the third handler parameter.</typeparam>
@@ -253,7 +247,7 @@ public static class OnShutdownLambdaApplicationExtensions
         throw new InvalidOperationException("This method is replaced at compile time.");
     }
 
-    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})"/>
+    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})" />
     /// <typeparam name="T1">The type of the first handler parameter.</typeparam>
     /// <typeparam name="T2">The type of the second handler parameter.</typeparam>
     /// <typeparam name="T3">The type of the third handler parameter.</typeparam>
@@ -290,7 +284,7 @@ public static class OnShutdownLambdaApplicationExtensions
         throw new InvalidOperationException("This method is replaced at compile time.");
     }
 
-    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})"/>
+    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})" />
     /// <typeparam name="T1">The type of the first handler parameter.</typeparam>
     /// <typeparam name="T2">The type of the second handler parameter.</typeparam>
     /// <typeparam name="T3">The type of the third handler parameter.</typeparam>
@@ -329,7 +323,7 @@ public static class OnShutdownLambdaApplicationExtensions
         throw new InvalidOperationException("This method is replaced at compile time.");
     }
 
-    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})"/>
+    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})" />
     /// <typeparam name="T1">The type of the first handler parameter.</typeparam>
     /// <typeparam name="T2">The type of the second handler parameter.</typeparam>
     /// <typeparam name="T3">The type of the third handler parameter.</typeparam>
@@ -370,7 +364,7 @@ public static class OnShutdownLambdaApplicationExtensions
         throw new InvalidOperationException("This method is replaced at compile time.");
     }
 
-    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})"/>
+    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})" />
     /// <typeparam name="T1">The type of the first handler parameter.</typeparam>
     /// <typeparam name="T2">The type of the second handler parameter.</typeparam>
     /// <typeparam name="T3">The type of the third handler parameter.</typeparam>

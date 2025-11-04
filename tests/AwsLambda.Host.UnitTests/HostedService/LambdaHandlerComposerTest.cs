@@ -746,10 +746,7 @@ public class LambdaHandlerComposerTest
     {
         private readonly Action _onDispose;
 
-        public TrackableCancellationTokenSource(Action onDispose)
-        {
-            _onDispose = onDispose;
-        }
+        public TrackableCancellationTokenSource(Action onDispose) => _onDispose = onDispose;
 
         protected override void Dispose(bool disposing)
         {

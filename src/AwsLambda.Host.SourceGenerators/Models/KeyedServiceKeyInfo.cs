@@ -68,7 +68,7 @@ internal readonly record struct KeyedServiceKeyInfo(
         var keyLiteral = argument.Kind switch
         {
             TypedConstantKind.Primitive when value is string strValue =>
-                SymbolDisplay.FormatLiteral(strValue, quote: true),
+                SymbolDisplay.FormatLiteral(strValue, true),
 
             TypedConstantKind.Primitive when value is char charValue => $"'{charValue}'",
 
@@ -87,4 +87,4 @@ internal readonly record struct KeyedServiceKeyInfo(
 
         return (keyLiteral, keyType, keyBaseType);
     }
-};
+}

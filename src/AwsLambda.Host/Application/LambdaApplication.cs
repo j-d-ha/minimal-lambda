@@ -18,24 +18,24 @@ public sealed class LambdaApplication : IHost, ILambdaApplication, IAsyncDisposa
             Services.GetRequiredService<DelegateHolder>() ?? throw new InvalidOperationException();
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public ValueTask DisposeAsync() => ((IAsyncDisposable)_host).DisposeAsync();
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public void Dispose() => _host.Dispose();
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public Task StartAsync(CancellationToken cancellationToken = default) =>
         _host.StartAsync(cancellationToken);
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public Task StopAsync(CancellationToken cancellationToken = default) =>
         _host.StopAsync(cancellationToken);
 
     /// <inheritdoc cref="ILambdaApplication.Services" />
     public IServiceProvider Services => _host.Services;
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public ILambdaApplication Map(
         LambdaInvocationDelegate handler,
         Func<ILambdaHostContext, ILambdaSerializer, Stream, Task>? deserializer,
@@ -55,7 +55,7 @@ public sealed class LambdaApplication : IHost, ILambdaApplication, IAsyncDisposa
         return this;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public ILambdaApplication Use(
         Func<LambdaInvocationDelegate, LambdaInvocationDelegate> middleware
     )
@@ -67,7 +67,7 @@ public sealed class LambdaApplication : IHost, ILambdaApplication, IAsyncDisposa
         return this;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public ILambdaApplication OnInit(LambdaInitDelegate handler)
     {
         ArgumentNullException.ThrowIfNull(handler);
@@ -77,7 +77,7 @@ public sealed class LambdaApplication : IHost, ILambdaApplication, IAsyncDisposa
         return this;
     }
 
-    /// <inheritdoc/>
+    /// <inheritdoc />
     public ILambdaApplication OnShutdown(LambdaShutdownDelegate handler)
     {
         ArgumentNullException.ThrowIfNull(handler);
@@ -123,13 +123,11 @@ public sealed class LambdaApplication : IHost, ILambdaApplication, IAsyncDisposa
     ///                 assembly
     ///             </description>
     ///         </item>
-    ///         <item>
-    ///             <description>load app <see cref="IConfiguration" /> from environment variables</description>
-    ///         </item>
+    ///         <item><description>load app <see cref="IConfiguration" /> from environment variables</description></item>
     ///         <item>
     ///             <description>
-    ///                 configure the <see cref="ILoggerFactory" /> to log to the console, debug,
-    ///                 and event source output
+    ///                 configure the <see cref="ILoggerFactory" /> to log to the console,
+    ///                 debug, and event source output
     ///             </description>
     ///         </item>
     ///         <item>
@@ -162,9 +160,7 @@ public sealed class LambdaApplication : IHost, ILambdaApplication, IAsyncDisposa
     ///                 environment variables
     ///             </description>
     ///         </item>
-    ///         <item>
-    ///             <description>load host <see cref="IConfiguration" /> from supplied command line args</description>
-    ///         </item>
+    ///         <item><description>load host <see cref="IConfiguration" /> from supplied command line args</description></item>
     ///         <item>
     ///             <description>
     ///                 load app <see cref="IConfiguration" /> from 'appsettings.json' and
@@ -178,16 +174,12 @@ public sealed class LambdaApplication : IHost, ILambdaApplication, IAsyncDisposa
     ///                 assembly
     ///             </description>
     ///         </item>
-    ///         <item>
-    ///             <description>load app <see cref="IConfiguration" /> from environment variables</description>
-    ///         </item>
-    ///         <item>
-    ///             <description>load app <see cref="IConfiguration" /> from supplied command line args</description>
-    ///         </item>
+    ///         <item><description>load app <see cref="IConfiguration" /> from environment variables</description></item>
+    ///         <item><description>load app <see cref="IConfiguration" /> from supplied command line args</description></item>
     ///         <item>
     ///             <description>
-    ///                 configure the <see cref="ILoggerFactory" /> to log to the console, debug,
-    ///                 and event source output
+    ///                 configure the <see cref="ILoggerFactory" /> to log to the console,
+    ///                 debug, and event source output
     ///             </description>
     ///         </item>
     ///         <item>

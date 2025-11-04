@@ -458,28 +458,22 @@ public class LambdaHostedServiceTest
     // Helper Methods
     // ============================================================================
 
-    /// <summary>
-    /// Sets up the handler factory to return a mock Lambda handler.
-    /// </summary>
+    /// <summary>Sets up the handler factory to return a mock Lambda handler.</summary>
     private void SetupHandlerFactory()
     {
         var handler = CreateMockHandler();
         _handlerFactory.CreateHandler(Arg.Any<CancellationToken>()).Returns(handler);
     }
 
-    /// <summary>
-    /// Sets up the lifecycle orchestrator to return an empty exception list on shutdown.
-    /// </summary>
-    private void SetupLifecycle()
-    {
+    /// <summary>Sets up the lifecycle orchestrator to return an empty exception list on shutdown.</summary>
+    private void SetupLifecycle() =>
         _lifecycle
             .OnShutdown(Arg.Any<CancellationToken>())
             .Returns(Task.FromResult<IEnumerable<Exception>>([]));
-    }
 
     /// <summary>
-    /// Sets up the bootstrap orchestrator to run asynchronously.
-    /// Returns a TaskCompletionSource to control when the bootstrap completes.
+    ///     Sets up the bootstrap orchestrator to run asynchronously. Returns a TaskCompletionSource
+    ///     to control when the bootstrap completes.
     /// </summary>
     private TaskCompletionSource SetupBootstrapRunAsync()
     {
@@ -495,8 +489,8 @@ public class LambdaHostedServiceTest
     }
 
     /// <summary>
-    /// Tracks when the lifetime's StopApplication method is called.
-    /// Returns a TaskCompletionSource that completes when StopApplication is invoked.
+    ///     Tracks when the lifetime's StopApplication method is called. Returns a
+    ///     TaskCompletionSource that completes when StopApplication is invoked.
     /// </summary>
     private TaskCompletionSource TrackStopApplicationCall()
     {
@@ -507,15 +501,11 @@ public class LambdaHostedServiceTest
         return stopApplicationCalled;
     }
 
-    /// <summary>
-    /// Creates a mock Lambda handler delegate.
-    /// </summary>
-    private static Func<Stream, ILambdaContext, Task<Stream>> CreateMockHandler()
-    {
-        return async (stream, context) =>
+    /// <summary>Creates a mock Lambda handler delegate.</summary>
+    private static Func<Stream, ILambdaContext, Task<Stream>> CreateMockHandler() =>
+        async (stream, context) =>
         {
             await Task.CompletedTask;
             return new MemoryStream();
         };
-    }
 }

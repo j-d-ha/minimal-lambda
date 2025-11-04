@@ -907,9 +907,7 @@ public class LambdaLifecycleOrchestratorTest
     // Helper Methods
     // ============================================================================
 
-    /// <summary>
-    /// Creates an orchestrator instance with the default service scope factory mock.
-    /// </summary>
+    /// <summary>Creates an orchestrator instance with the default service scope factory mock.</summary>
     private static LambdaLifecycleOrchestrator CreateOrchestrator(DelegateHolder delegateHolder)
     {
         var scopeFactory = CreateMockServiceScopeFactory();
@@ -917,9 +915,7 @@ public class LambdaLifecycleOrchestratorTest
         return new LambdaLifecycleOrchestrator(scopeFactory, delegateHolder, options);
     }
 
-    /// <summary>
-    /// Creates a properly configured mock service scope factory.
-    /// </summary>
+    /// <summary>Creates a properly configured mock service scope factory.</summary>
     private static IServiceScopeFactory CreateMockServiceScopeFactory()
     {
         var scopeFactory = Substitute.For<IServiceScopeFactory>();
@@ -932,9 +928,7 @@ public class LambdaLifecycleOrchestratorTest
         return scopeFactory;
     }
 
-    /// <summary>
-    /// Creates a properly configured mock Lambda host options.
-    /// </summary>
+    /// <summary>Creates a properly configured mock Lambda host options.</summary>
     private static IOptions<LambdaHostOptions> CreateMockLambdaHostOptions()
     {
         var options = Substitute.For<IOptions<LambdaHostOptions>>();
@@ -952,9 +946,7 @@ public class LambdaLifecycleOrchestratorTest
         return options;
     }
 
-    /// <summary>
-    /// Creates a delayed shutdown handler that records its execution order.
-    /// </summary>
+    /// <summary>Creates a delayed shutdown handler that records its execution order.</summary>
     /// <param name="handlerId">Identifier for this handler</param>
     /// <param name="delayMs">Delay in milliseconds before completion</param>
     /// <param name="executionOrder">List to record execution order</param>

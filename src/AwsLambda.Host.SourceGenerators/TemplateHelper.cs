@@ -8,9 +8,7 @@ namespace AwsLambda.Host.SourceGenerators;
 
 internal static class TemplateHelper
 {
-    /// <summary>
-    ///     Loads a Scriban template from embedded resources
-    /// </summary>
+    /// <summary>Loads a Scriban template from embedded resources</summary>
     /// <param name="relativePath">Name of the template file (without .scriban extension)</param>
     /// <returns>Parsed Scriban template</returns>
     internal static Template LoadTemplate(string relativePath)

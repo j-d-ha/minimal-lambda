@@ -71,4 +71,4 @@ internal readonly record struct ParameterInfo(
             _ => (ParameterSource.Service, null),
         };
     }
-};
+}

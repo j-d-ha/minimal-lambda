@@ -66,7 +66,7 @@ internal static class GeneratorTestHelpers
                 [new KeyValuePair<string, string>("InterceptorsNamespaces", "AwsLambda.Host")]
             );
 
-        var syntaxTree = CSharpSyntaxTree.ParseText(source, parseOptions, path: "InputFile.cs");
+        var syntaxTree = CSharpSyntaxTree.ParseText(source, parseOptions, "InputFile.cs");
 
         List<MetadataReference> references =
         [

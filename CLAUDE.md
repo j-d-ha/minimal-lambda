@@ -18,22 +18,26 @@
 ## MANDATORY WORKFLOW
 
 ### Task Classification
+
 - **Simple tasks**: Single file edits <20 lines, docs, comments, formatting
 - **Complex tasks**: Multi-file changes, new features, architecture changes
 
 ### Required Process
 
 #### 1. Planning (MANDATORY)
+
 - **MUST create PLAN.md** before starting any task
 - Break down into numbered steps and sub-steps
 - No implementation until plan approved
 
 #### 2. Execution
+
 - **Simple tasks**: Execute with minimal check-ins
 - **Complex tasks**: Complete ONE step at a time, wait for user approval before proceeding
 - **NEVER** continue to next step without explicit user sign-off
 
 #### 3. Git Workflow
+
 - Commit only after user approval
 - Use clear commit messages
 - Create feature branches for substantial changes
@@ -48,6 +52,7 @@
   - Types: feat, fix, docs, refactor, test, chore
 
 #### 4. Plan Template
+
 ```markdown
 # Task: [Description]
 
