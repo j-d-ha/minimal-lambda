@@ -5,9 +5,9 @@ using Microsoft.Extensions.Options;
 namespace AwsLambda.Host;
 
 /// <summary>
-/// Composes the Lambda handler with middleware and handles request processing.
-/// Responsible for building middleware pipelines and creating request handlers
-/// with serialization, deserialization, and context management.
+///     Composes the Lambda handler with middleware and handles request processing. Responsible
+///     for building middleware pipelines and creating request handlers with serialization,
+///     deserialization, and context management.
 /// </summary>
 internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory
 {
@@ -16,18 +16,24 @@ internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory
     private readonly IServiceScopeFactory _scopeFactory;
     private readonly LambdaHostOptions _settings;
 
-    /// <summary>
-    /// Initializes a new instance of the <see cref="LambdaHandlerComposer"/> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="LambdaHandlerComposer" /> class.</summary>
     /// <param name="lambdaHostSettings">The options containing Lambda host configuration settings.</param>
-    /// <param name="delegateHolder">The holder containing the user-defined handler, middleware, and serialization delegates.</param>
-    /// <param name="cancellationTokenSourceFactory">The factory for creating cancellation token sources tied to Lambda invocation timeouts.</param>
-    /// <param name="serviceScopeFactory">The factory for creating dependency injection scopes for each Lambda invocation.</param>
-    /// <exception cref="ArgumentNullException">
-    /// Thrown when any of the parameters are null.
-    /// </exception>
+    /// <param name="delegateHolder">
+    ///     The holder containing the user-defined handler, middleware, and
+    ///     serialization delegates.
+    /// </param>
+    /// <param name="cancellationTokenSourceFactory">
+    ///     The factory for creating cancellation token sources
+    ///     tied to Lambda invocation timeouts.
+    /// </param>
+    /// <param name="serviceScopeFactory">
+    ///     The factory for creating dependency injection scopes for each
+    ///     Lambda invocation.
+    /// </param>
+    /// <exception cref="ArgumentNullException">Thrown when any of the parameters are null.</exception>
     /// <exception cref="InvalidOperationException">
-    /// Thrown when the handler is not set in the <paramref name="delegateHolder"/>.
+    ///     Thrown when the handler is not set in the
+    ///     <paramref name="delegateHolder" />.
     /// </exception>
     public LambdaHandlerComposer(
         IOptions<LambdaHostOptions> lambdaHostSettings,
@@ -51,9 +57,9 @@ internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory
     }
 
     /// <summary>
-    /// Creates a fully composed Lambda handler that includes middleware pipeline composition
-    /// and request processing. This composes BuildMiddlewarePipeline and CreateRequestHandler
-    /// into a single operation. The handler and middleware are obtained from the injected DelegateHolder.
+    ///     Creates a fully composed Lambda handler that includes middleware pipeline composition and
+    ///     request processing. This composes BuildMiddlewarePipeline and CreateRequestHandler into a
+    ///     single operation. The handler and middleware are obtained from the injected DelegateHolder.
     /// </summary>
     public Func<Stream, ILambdaContext, Task<Stream>> CreateHandler(CancellationToken stoppingToken)
     {
@@ -65,12 +71,12 @@ internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory
     }
 
     /// <summary>
-    /// Builds a middleware pipeline by reversing the middleware list and aggregating
-    /// them around the core handler.
+    ///     Builds a middleware pipeline by reversing the middleware list and aggregating them around
+    ///     the core handler.
     /// </summary>
     /// <remarks>
-    /// Middleware is applied in reverse order so that the first middleware in the list
-    /// is the outermost (first to execute), ensuring intuitive ordering.
+    ///     Middleware is applied in reverse order so that the first middleware in the list is the
+    ///     outermost (first to execute), ensuring intuitive ordering.
     /// </remarks>
     /// <param name="middlewares">Ordered list of middleware components to compose.</param>
     /// <param name="handler">The core handler to wrap with middleware.</param>
@@ -84,8 +90,8 @@ internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory
             .Aggregate(handler, (next, middleware) => middleware(next));
 
     /// <summary>
-    /// Creates a handler function that processes a single Lambda invocation.
-    /// Handles cancellation coordination, context creation, and serialization.
+    ///     Creates a handler function that processes a single Lambda invocation. Handles cancellation
+    ///     coordination, context creation, and serialization.
     /// </summary>
     /// <param name="handler">The handler to wrap with request processing logic.</param>
     /// <param name="stoppingToken">Cancellation token for service shutdown.</param>

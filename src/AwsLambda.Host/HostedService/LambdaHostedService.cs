@@ -3,8 +3,8 @@ using Microsoft.Extensions.Hosting;
 namespace AwsLambda.Host;
 
 /// <summary>
-///     Orchestrates the Lambda hosting environment lifecycle.
-///     Delegates specific concerns to specialized components.
+///     Orchestrates the Lambda hosting environment lifecycle. Delegates specific concerns to
+///     specialized components.
 /// </summary>
 internal sealed class LambdaHostedService : IHostedService, IDisposable
 {
@@ -17,16 +17,18 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
     private Task? _executeTask;
     private CancellationTokenSource? _stoppingCts;
 
-    /// <summary>
-    ///     Initializes a new instance of the <see cref="LambdaHostedService" /> class.
-    /// </summary>
+    /// <summary>Initializes a new instance of the <see cref="LambdaHostedService" /> class.</summary>
     /// <param name="bootstrap">The orchestrator responsible for managing the AWS Lambda bootstrap loop.</param>
-    /// <param name="handlerFactory">The factory responsible for creating and composing the Lambda request
-    ///     handler.</param>
+    /// <param name="handlerFactory">
+    ///     The factory responsible for creating and composing the Lambda request
+    ///     handler.
+    /// </param>
     /// <param name="lifetime">The application lifetime.</param>
     /// <param name="lifecycle">The orchestrator responsible for handling startup and shutdown callbacks.</param>
-    /// <exception cref="ArgumentNullException">Thrown when <paramref name="bootstrap" /> or
-    ///     <paramref name="handlerFactory" /> is null.</exception>
+    /// <exception cref="ArgumentNullException">
+    ///     Thrown when <paramref name="bootstrap" /> or
+    ///     <paramref name="handlerFactory" /> is null.
+    /// </exception>
     public LambdaHostedService(
         ILambdaBootstrapOrchestrator bootstrap,
         ILambdaHandlerFactory handlerFactory,
@@ -48,9 +50,7 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
     /// <inheritdoc />
     public void Dispose() => _stoppingCts?.Cancel();
 
-    /// <summary>
-    ///     Triggered when the application host is ready to start the service.
-    /// </summary>
+    /// <summary>Triggered when the application host is ready to start the service.</summary>
     /// <param name="cancellationToken">Indicates that the start process has been aborted.</param>
     /// <returns>A <see cref="Task" /> that represents the asynchronous Start operation.</returns>
     public Task StartAsync(CancellationToken cancellationToken)
@@ -66,11 +66,11 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
         return _executeTask.IsCompleted ? _executeTask : Task.CompletedTask;
     }
 
-    /// <summary>
-    ///     Triggered when the application host is performing a graceful shutdown.
-    /// </summary>
-    /// <param name="cancellationToken">A timeout token that limits how long the method will wait for the
-    ///     bootstrap operation to complete.</param>
+    /// <summary>Triggered when the application host is performing a graceful shutdown.</summary>
+    /// <param name="cancellationToken">
+    ///     A timeout token that limits how long the method will wait for the
+    ///     bootstrap operation to complete.
+    /// </param>
     /// <returns>A <see cref="Task" /> that represents the asynchronous Stop operation.</returns>
     public async Task StopAsync(CancellationToken cancellationToken)
     {
@@ -121,14 +121,12 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
             );
     }
 
-    /// <summary>
-    ///     Executes the Lambda hosting environment startup sequence.
-    /// </summary>
+    /// <summary>Executes the Lambda hosting environment startup sequence.</summary>
     /// <remarks>
-    ///     This method orchestrates the startup of the Lambda service by:
-    ///     1. Creating a fully composed handler with middleware pipeline and request processing
-    ///     2. Running the AWS Lambda bootstrap loop with the composed handler
-    ///     The bootstrap loop continues until the service is stopped or an exception occurs.
+    ///     This method orchestrates the startup of the Lambda service by: 1. Creating a fully
+    ///     composed handler with middleware pipeline and request processing 2. Running the AWS Lambda
+    ///     bootstrap loop with the composed handler The bootstrap loop continues until the service is
+    ///     stopped or an exception occurs.
     /// </remarks>
     /// <param name="stoppingToken">The cancellation token triggered when the service is shutting down.</param>
     /// <returns>A task representing the asynchronous bootstrap operation.</returns>
@@ -138,11 +136,13 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
         // throw new Exception("ExecuteAsync error");
         var requestHandler = _handlerFactory.CreateHandler(stoppingToken);
 
+        var onInitHandler = _lifecycle.OnInit(stoppingToken);
+
         // Run the bootstrap with the processed handler. Once the task completes, we will manually
         // trigger the stop of the application.
         try
         {
-            await _bootstrap.RunAsync(requestHandler, stoppingToken);
+            await _bootstrap.RunAsync(requestHandler, onInitHandler, stoppingToken);
         }
         finally
         {

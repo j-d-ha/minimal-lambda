@@ -18,18 +18,24 @@ public sealed class LambdaApplication : IHost, ILambdaApplication, IAsyncDisposa
             Services.GetRequiredService<DelegateHolder>() ?? throw new InvalidOperationException();
     }
 
+    /// <inheritdoc/>
     public ValueTask DisposeAsync() => ((IAsyncDisposable)_host).DisposeAsync();
 
+    /// <inheritdoc/>
     public void Dispose() => _host.Dispose();
 
+    /// <inheritdoc/>
     public Task StartAsync(CancellationToken cancellationToken = default) =>
         _host.StartAsync(cancellationToken);
 
+    /// <inheritdoc/>
     public Task StopAsync(CancellationToken cancellationToken = default) =>
         _host.StopAsync(cancellationToken);
 
+    /// <inheritdoc cref="ILambdaApplication.Services" />
     public IServiceProvider Services => _host.Services;
 
+    /// <inheritdoc/>
     public ILambdaApplication Map(
         LambdaInvocationDelegate handler,
         Func<ILambdaHostContext, ILambdaSerializer, Stream, Task>? deserializer,
@@ -49,6 +55,7 @@ public sealed class LambdaApplication : IHost, ILambdaApplication, IAsyncDisposa
         return this;
     }
 
+    /// <inheritdoc/>
     public ILambdaApplication Use(
         Func<LambdaInvocationDelegate, LambdaInvocationDelegate> middleware
     )
@@ -60,6 +67,17 @@ public sealed class LambdaApplication : IHost, ILambdaApplication, IAsyncDisposa
         return this;
     }
 
+    /// <inheritdoc/>
+    public ILambdaApplication OnInit(LambdaInitDelegate handler)
+    {
+        ArgumentNullException.ThrowIfNull(handler);
+
+        _delegateHolder.InitHandlers.Add(handler);
+
+        return this;
+    }
+
+    /// <inheritdoc/>
     public ILambdaApplication OnShutdown(LambdaShutdownDelegate handler)
     {
         ArgumentNullException.ThrowIfNull(handler);

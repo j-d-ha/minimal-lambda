@@ -1,4 +1,5 @@
 using Amazon.Lambda.Core;
+using Amazon.Lambda.RuntimeSupport;
 using AwesomeAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.Hosting;
@@ -399,7 +400,13 @@ public class LambdaHostedServiceTest
         await service.StartAsync(CancellationToken.None);
 
         // Assert
-        await _bootstrap.Received(1).RunAsync(CreateMockHandler(), Arg.Any<CancellationToken>());
+        await _bootstrap
+            .Received(1)
+            .RunAsync(
+                CreateMockHandler(),
+                Arg.Any<LambdaBootstrapInitializer?>(),
+                Arg.Any<CancellationToken>()
+            );
         bootstrapTcs.SetResult();
     }
 
@@ -480,6 +487,7 @@ public class LambdaHostedServiceTest
         _bootstrap
             .RunAsync(
                 Arg.Any<Func<Stream, ILambdaContext, Task<Stream>>>(),
+                Arg.Any<LambdaBootstrapInitializer?>(),
                 Arg.Any<CancellationToken>()
             )
             .Returns(tcs.Task);
