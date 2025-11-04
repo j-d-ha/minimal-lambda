@@ -8,7 +8,10 @@ namespace AwsLambda.Host.SourceGenerators;
 
 internal static class OnShutdownSources
 {
-    internal static string Generate(EquatableArray<HigherOrderMethodInfo> higherOrderMethodInfos)
+    internal static string Generate(
+        EquatableArray<HigherOrderMethodInfo> higherOrderMethodInfos,
+        string templatePath
+    )
     {
         var calls = higherOrderMethodInfos
             .Select(higherOrderMethodInfo =>
@@ -21,7 +24,9 @@ internal static class OnShutdownSources
 
                 // build handler function signature
                 var handlerSignature =
-                    higherOrderMethodInfo.GenericTypeArguments.BuildHandlerSignature();
+                    higherOrderMethodInfo.GenericTypeArguments.BuildHandlerSignature(
+                        higherOrderMethodInfo.DelegateInfo.FullResponseType
+                    );
 
                 // get arguments for handler
                 var handlerArgs =
@@ -41,15 +46,14 @@ internal static class OnShutdownSources
 
         var model = new { Calls = calls };
 
-        var template = TemplateHelper.LoadTemplate(
-            GeneratorConstants.LambdaHostOnShutdownExtensionsTemplateFile
-        );
+        var template = TemplateHelper.LoadTemplate(templatePath);
 
         return template.Render(model);
     }
 
     private static string BuildHandlerSignature(
-        this ImmutableArray<GenericInfo> genericTypeArguments
+        this ImmutableArray<GenericInfo> genericTypeArguments,
+        string returnType
     )
     {
         var signatureBuilder = new StringBuilder();
@@ -63,7 +67,8 @@ internal static class OnShutdownSources
             signatureBuilder.Append(", ");
         }
 
-        signatureBuilder.Append("Task>");
+        signatureBuilder.Append(returnType);
+        signatureBuilder.Append(">");
 
         var handlerSignature = signatureBuilder.ToString();
 
