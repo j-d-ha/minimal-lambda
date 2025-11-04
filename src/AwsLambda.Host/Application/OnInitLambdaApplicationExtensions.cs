@@ -1,31 +1,14 @@
+using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
+
 namespace AwsLambda.Host;
 
+[ExcludeFromCodeCoverage]
 public static class OnInitLambdaApplicationExtensions
 {
-    /// <summary>Clears Lambda runtime output formatting and resets console output to standard behavior.</summary>
-    /// <remarks>
-    ///     The AWS Lambda runtime applies custom formatting to console output. This method resets the
-    ///     console to use a standard <see cref="StreamWriter" /> with auto-flushing, which is essential
-    ///     for structured logging frameworks like Serilog to output JSON without corruption.
-    /// </remarks>
-    /// <param name="application">The Lambda application to configure.</param>
-    /// <returns>The configured <see cref="ILambdaApplication" /> for method chaining.</returns>
-    public static ILambdaApplication OnInitClearLambdaOutputFormatting(
-        this ILambdaApplication application
-    )
+    public static ILambdaApplication OnInit(this ILambdaApplication application, Delegate handler)
     {
-        ArgumentNullException.ThrowIfNull(application);
-
-        application.OnInit(
-            Task<bool> (_, _) =>
-            {
-                // This will clear the output formatting set by the Lambda runtime.
-                Console.SetOut(new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = true });
-
-                return Task.FromResult(true);
-            }
-        );
-
-        return application;
+        Debug.Fail("This method should have been intercepted at compile time!");
+        throw new InvalidOperationException("This method is replaced at compile time.");
     }
 }
