@@ -31,39 +31,38 @@ namespace AwsLambda.Host
     using System.Threading.Tasks;
     using Microsoft.Extensions.DependencyInjection;
     
-    file static class LambdaHostOnShutdownExtensions
+    file static class LambdaApplicationOnShutdownExtensions
     {
         // Location: InputFile.cs(11,8)
         [InterceptsLocation(1, "AQrJxIlrC5Au0bNAiyl5s/kAAABJbnB1dEZpbGUuY3M=")]
-        internal static ILambdaApplication OnShutdownInterceptor0<T1, T2, T3, T4, T5>(
+        internal static ILambdaApplication OnShutdownInterceptor0(
             this ILambdaApplication application,
-            Func<T1, T2, T3, T4, T5, Task> handler
+            Delegate handler
         )
         {
+            var castHandler = (global::System.Func<global::System.Threading.CancellationToken, global::IService, global::IService?, global::IService, global::IService?, global::System.Threading.Tasks.Task>)handler;
+            
+            return application.OnShutdown(OnShutdown);
+            
             Task OnShutdown(IServiceProvider serviceProvider, CancellationToken cancellationToken)
             {
                 if (serviceProvider.GetService<IServiceProviderIsService>() is not IServiceProviderIsKeyedService)
                 {
                     throw new InvalidOperationException($"Unable to resolve service referenced by {nameof(FromKeyedServicesAttribute)}. The service provider doesn't support keyed services.");
                 }
-#pragma warning disable CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
                 // ParameterInfo { Type = global::System.Threading.CancellationToken, Name = token, Source = CancellationToken, IsNullable = False, IsOptional = False}
-                var arg0 = Unsafe.As<CancellationToken, T1>(ref cancellationToken);
+                var arg0 = cancellationToken;
                 // ParameterInfo { Type = global::IService, Name = service1, Source = KeyedService, IsNullable = False, IsOptional = False, KeyedServiceKeyInfo { DisplayValue = "key1", Type = string, BaseType = object } }
-                var arg1 = serviceProvider.GetRequiredKeyedService<T2>("key1");
+                var arg1 = serviceProvider.GetRequiredKeyedService<global::IService>("key1");
                 // ParameterInfo { Type = global::IService?, Name = service2, Source = KeyedService, IsNullable = True, IsOptional = False, KeyedServiceKeyInfo { DisplayValue = "key2", Type = string, BaseType = object } }
-                var arg2 = serviceProvider.GetKeyedService<T3>("key2");
+                var arg2 = serviceProvider.GetKeyedService<global::IService?>("key2");
                 // ParameterInfo { Type = global::IService, Name = service3, Source = Service, IsNullable = False, IsOptional = False}
-                var arg3 = serviceProvider.GetRequiredService<T4>();
+                var arg3 = serviceProvider.GetRequiredService<global::IService>();
                 // ParameterInfo { Type = global::IService?, Name = service4, Source = Service, IsNullable = True, IsOptional = False}
-                var arg4 = serviceProvider.GetService<T5>();
-#pragma warning restore CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
-#pragma warning disable CS8604 // Possible null reference argument.
-                return handler(arg0, arg1, arg2, arg3, arg4);
-#pragma warning restore CS8604 // Possible null reference argument.
+                var arg4 = serviceProvider.GetService<global::IService?>();
+                var response = castHandler.Invoke(arg0, arg1, arg2, arg3, arg4);
+                return response;
             }
-            
-            return application.OnShutdown(OnShutdown);
         }
     }
 }

@@ -47,6 +47,69 @@ public class OnShutdownVerifyTests
         );
 
     [Fact]
+    public async Task Test_OnShutdown_NoInput_ReturnUnexpectedType() =>
+        await GeneratorTestHelpers.Verify(
+            """
+            using System.Threading.Tasks;
+            using AwsLambda.Host;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
+
+            var lambda = builder.Build();
+
+            lambda.OnShutdown(() =>
+            {
+                return "test"; 
+            });
+
+            await lambda.RunAsync();
+            """
+        );
+
+    [Fact]
+    public async Task Test_OnShutdown_NoInput_ReturnUnexpectedTypeTask() =>
+        await GeneratorTestHelpers.Verify(
+            """
+            using System.Threading.Tasks;
+            using AwsLambda.Host;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
+
+            var lambda = builder.Build();
+
+            lambda.OnShutdown(() =>
+            {
+                return Task.FromResult("test"); 
+            });
+
+            await lambda.RunAsync();
+            """
+        );
+
+    [Fact]
+    public async Task Test_OnShutdown_NoInput_ReturnUnexpectedTypeAsync() =>
+        await GeneratorTestHelpers.Verify(
+            """
+            using System.Threading.Tasks;
+            using AwsLambda.Host;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
+
+            var lambda = builder.Build();
+
+            lambda.OnShutdown(async () =>
+            {
+                return "test"; 
+            });
+
+            await lambda.RunAsync();
+            """
+        );
+
+    [Fact]
     public async Task Test_OnShutdown_PrimitiveInput() =>
         await GeneratorTestHelpers.Verify(
             """
