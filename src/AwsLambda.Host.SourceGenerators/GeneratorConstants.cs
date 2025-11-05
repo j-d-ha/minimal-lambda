@@ -24,6 +24,12 @@ internal static class TypeConstants
     internal const string Stream = "global::System.IO.Stream";
 
     internal const string IServiceProvider = "global::System.IServiceProvider";
+
+    internal const string MapHandlerDeserializer =
+        "global::System.Func<global::AwsLambda.Host.ILambdaHostContext, global::Amazon.Lambda.Core.ILambdaSerializer, global::System.IO.Stream, global::System.Threading.Tasks.Task>?";
+
+    internal const string MapHandlerSerializer =
+        "global::System.Func<global::AwsLambda.Host.ILambdaHostContext, global::Amazon.Lambda.Core.ILambdaSerializer, global::System.Threading.Tasks.Task<global::System.IO.Stream>>?";
 }
 
 /// <summary>Constants for attribute names used in source generation.</summary>

@@ -7,9 +7,7 @@ namespace AwsLambda.Host.SourceGenerators;
 internal static class MapHandlerSyntaxProvider
 {
     internal static bool Predicate(SyntaxNode node, CancellationToken cancellationToken) =>
-        node.TryGetMethodName(out var name)
-        && name == GeneratorConstants.MapHandlerMethodName
-        && !node.IsGeneratedFile();
+        GenericHandlerInfoExtractor.Predicate(node, GeneratorConstants.MapHandlerMethodName);
 
     internal static HigherOrderMethodInfo? Transformer(
         GeneratorSyntaxContext context,

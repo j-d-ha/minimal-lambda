@@ -7,5 +7,5 @@ internal readonly record struct HigherOrderMethodInfo(
     DelegateInfo DelegateInfo,
     LocationInfo? LocationInfo,
     InterceptableLocationInfo InterceptableLocationInfo,
-    ImmutableArray<GenericInfo> GenericTypeArguments = new()
+    ImmutableArray<ArgumentInfo> ArgumentsInfos
 );

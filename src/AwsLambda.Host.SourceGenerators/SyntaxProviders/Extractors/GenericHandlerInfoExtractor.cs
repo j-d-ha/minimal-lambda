@@ -53,12 +53,15 @@ internal static class GenericHandlerInfoExtractor
         if (delegateFilter(delegateInfo.Value))
             return null;
 
-        // get generic type arguments
-        var typeArguments = targetOperation
-            .TargetMethod.TypeArguments.Zip(
-                targetOperation.TargetMethod.TypeParameters,
-                (argument, parameter) => new GenericInfo(argument.GetAsGlobal(), parameter.Name)
-            )
+        // get method arguments
+        var argumentInfos = targetOperation
+            .Arguments.Select(argument =>
+            {
+                var typeAsGlobal = argument.Value.Type?.GetAsGlobal();
+                var parameterName = argument.Parameter?.Name;
+
+                return new ArgumentInfo(typeAsGlobal, parameterName);
+            })
             .ToImmutableArray();
 
         // get interceptable location
@@ -72,7 +75,7 @@ internal static class GenericHandlerInfoExtractor
             LocationInfo: LocationInfo.CreateFrom(context.Node),
             DelegateInfo: delegateInfo.Value,
             InterceptableLocationInfo: InterceptableLocationInfo.CreateFrom(interceptableLocation),
-            GenericTypeArguments: typeArguments
+            ArgumentsInfos: argumentInfos
         );
     }
 }
