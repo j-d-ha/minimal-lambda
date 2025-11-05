@@ -31,7 +31,7 @@ namespace AwsLambda.Host
     using System.Threading.Tasks;
     using Microsoft.Extensions.DependencyInjection;
     
-    file static class LambdaApplicationOnInitExtensions
+    file static class OnInitLambdaApplicationExtensions
     {
         // Location: InputFile.cs(9,8)
         [InterceptsLocation(1, "xynorwqVT9IVtLKgJv/X8LEAAABJbnB1dEZpbGUuY3M=")]
