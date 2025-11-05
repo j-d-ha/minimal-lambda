@@ -304,10 +304,10 @@ internal static class DelegateInfoExtractorExtensions
             (TypeConstants.Void, _) => TypeConstants.Void,
             (TypeConstants.Task, _) => TypeConstants.Task,
             (TypeConstants.ValueTask, _) => TypeConstants.ValueTask,
-            (var type, true) when type.StartsWith(TypeConstants.Task) => type,
-            (var type, true) when type.StartsWith(TypeConstants.ValueTask) => type,
+            var (type, _) when type.StartsWith(TypeConstants.Task) => type,
+            var (type, _) when type.StartsWith(TypeConstants.ValueTask) => type,
             (var type, true) => $"{TypeConstants.Task}<{type}>",
-            var (type, _) => type,
+            (_, _) => responseType,
         };
 
         // determine if the delegate is returning awaitable value
