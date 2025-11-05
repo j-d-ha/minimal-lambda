@@ -26,8 +26,22 @@ namespace AwsLambda.Host;
 [ExcludeFromCodeCoverage]
 public static class OnShutdownLambdaApplicationExtensions
 {
-    /// <inheritdoc cref="OnShutdown(ILambdaApplication, Func{Task})" />
-    /// <typeparam name="T1">The type of the first handler parameter.</typeparam>
+    /// <summary>Registers a shutdown handler that will be run when the Lambda runtime shuts down.</summary>
+    /// <remarks>
+    ///     Source generation creates the wiring code to resolve handler dependencies, using
+    ///     compile-time interceptors to replace the calls. Dependencies are scoped per handler. If a
+    ///     CancellationToken is requested, it will be cancelled before the Lambda runtime forces shutdown.
+    ///     The handler can be synchronous or asynchronous; async handlers are awaited before shutdown
+    ///     completes.
+    /// </remarks>
+    /// <note>Shutdown logic should execute quickly as time is minimal before forced termination.</note>
+    /// <param name="application">The Lambda application.</param>
+    /// <param name="handler">An asynchronous handler function.</param>
+    /// <returns>The current <see cref="ILambdaApplication" /> instance for method chaining.</returns>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown if called at runtime; this exception is
+    ///     unreachable as this method is intercepted by the source generator code at compile time.
+    /// </exception>
     public static ILambdaApplication OnShutdown(
         this ILambdaApplication application,
         Delegate handler
