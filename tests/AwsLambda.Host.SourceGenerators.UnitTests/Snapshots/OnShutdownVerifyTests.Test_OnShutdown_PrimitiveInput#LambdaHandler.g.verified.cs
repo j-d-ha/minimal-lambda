@@ -31,29 +31,28 @@ namespace AwsLambda.Host
     using System.Threading.Tasks;
     using Microsoft.Extensions.DependencyInjection;
     
-    file static class LambdaHostOnShutdownExtensions
+    file static class LambdaApplicationOnShutdownExtensions
     {
         // Location: InputFile.cs(9,8)
         [InterceptsLocation(1, "botbCluui5y2egOUzGpTZLEAAABJbnB1dEZpbGUuY3M=")]
-        internal static ILambdaApplication OnShutdownInterceptor0<T1, T2>(
+        internal static ILambdaApplication OnShutdownInterceptor0(
             this ILambdaApplication application,
-            Func<T1, T2, Task> handler
+            Delegate handler
         )
         {
-            Task OnShutdown(IServiceProvider serviceProvider, CancellationToken cancellationToken)
-            {
-#pragma warning disable CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
-                // ParameterInfo { Type = string, Name = x, Source = Service, IsNullable = False, IsOptional = False}
-                var arg0 = serviceProvider.GetRequiredService<T1>();
-                // ParameterInfo { Type = int, Name = y, Source = Service, IsNullable = False, IsOptional = False}
-                var arg1 = serviceProvider.GetRequiredService<T2>();
-#pragma warning restore CS8714 // The type cannot be used as type parameter in the generic type or method. Nullability of type argument doesn't match 'notnull' constraint.
-#pragma warning disable CS8604 // Possible null reference argument.
-                return handler(arg0, arg1);
-#pragma warning restore CS8604 // Possible null reference argument.
-            }
+            var castHandler = (global::System.Func<string, int, global::System.Threading.Tasks.Task>)handler;
             
             return application.OnShutdown(OnShutdown);
+            
+            Task OnShutdown(IServiceProvider serviceProvider, CancellationToken cancellationToken)
+            {
+                // ParameterInfo { Type = string, Name = x, Source = Service, IsNullable = False, IsOptional = False}
+                var arg0 = serviceProvider.GetRequiredService<string>();
+                // ParameterInfo { Type = int, Name = y, Source = Service, IsNullable = False, IsOptional = False}
+                var arg1 = serviceProvider.GetRequiredService<int>();
+                var response = castHandler.Invoke(arg0, arg1);
+                return response;
+            }
         }
     }
 }

@@ -1,5 +1,8 @@
+using System;
+using System.Collections.Immutable;
 using System.Linq;
 using System.Threading;
+using AwsLambda.Host.SourceGenerators.Extensions;
 using AwsLambda.Host.SourceGenerators.Models;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
@@ -8,15 +11,15 @@ using Microsoft.CodeAnalysis.Operations;
 
 namespace AwsLambda.Host.SourceGenerators;
 
-internal static class MapHandlerSyntaxProvider
+internal static class GenericHandlerInfoExtractor
 {
-    internal static bool Predicate(SyntaxNode node, CancellationToken cancellationToken) =>
-        node.TryGetMethodName(out var name)
-        && name == GeneratorConstants.MapHandlerMethodName
-        && !node.IsGeneratedFile();
+    internal static bool Predicate(SyntaxNode node, string methodName) =>
+        node.TryGetMethodName(out var name) && name == methodName && !node.IsGeneratedFile();
 
     internal static HigherOrderMethodInfo? Transformer(
         GeneratorSyntaxContext context,
+        string methodName,
+        Func<DelegateInfo, bool> delegateFilter,
         CancellationToken cancellationToken
     )
     {
@@ -46,6 +49,18 @@ internal static class MapHandlerSyntaxProvider
         if (delegateInfo is null)
             return null;
 
+        // filter out non-generic shutdown method calls
+        if (delegateFilter(delegateInfo.Value))
+            return null;
+
+        // get generic type arguments
+        var typeArguments = targetOperation
+            .TargetMethod.TypeArguments.Zip(
+                targetOperation.TargetMethod.TypeParameters,
+                (argument, parameter) => new GenericInfo(argument.GetAsGlobal(), parameter.Name)
+            )
+            .ToImmutableArray();
+
         // get interceptable location
         var interceptableLocation = context.SemanticModel.GetInterceptableLocation(
             invocationExpr,
@@ -53,10 +68,11 @@ internal static class MapHandlerSyntaxProvider
         )!;
 
         return new HigherOrderMethodInfo(
-            Name: "MapHandler",
+            Name: methodName,
             LocationInfo: LocationInfo.CreateFrom(context.Node),
             DelegateInfo: delegateInfo.Value,
-            InterceptableLocationInfo: InterceptableLocationInfo.CreateFrom(interceptableLocation)
+            InterceptableLocationInfo: InterceptableLocationInfo.CreateFrom(interceptableLocation),
+            GenericTypeArguments: typeArguments
         );
     }
 }

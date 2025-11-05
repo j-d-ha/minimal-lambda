@@ -39,7 +39,25 @@ internal static class LambdaHostOutputGenerator
 
         // add OnShutdown interceptors
         if (compilationInfo.OnShutdownInvocationInfos.Count >= 1)
-            outputs.Add(OnShutdownSources.Generate(compilationInfo.OnShutdownInvocationInfos));
+            outputs.Add(
+                GenericHandlerSources.Generate(
+                    compilationInfo.OnShutdownInvocationInfos,
+                    "OnShutdown",
+                    null,
+                    null
+                )
+            );
+
+        // add OnInit interceptors
+        if (compilationInfo.OnInitInvocationInfos.Count >= 1)
+            outputs.Add(
+                GenericHandlerSources.Generate(
+                    compilationInfo.OnInitInvocationInfos,
+                    "OnInit",
+                    "bool",
+                    "true"
+                )
+            );
 
         // join all the source code together and add it to the compilation context.
         var outCode = string.Join("\n", outputs.Where(s => s != null));

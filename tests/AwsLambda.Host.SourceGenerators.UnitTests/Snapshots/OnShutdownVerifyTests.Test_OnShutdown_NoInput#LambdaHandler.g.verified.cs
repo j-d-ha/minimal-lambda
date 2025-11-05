@@ -31,21 +31,24 @@ namespace AwsLambda.Host
     using System.Threading.Tasks;
     using Microsoft.Extensions.DependencyInjection;
     
-    file static class LambdaHostOnShutdownExtensions
+    file static class LambdaApplicationOnShutdownExtensions
     {
         // Location: InputFile.cs(9,8)
         [InterceptsLocation(1, "6iRWbYMpj+1241dkzhHucLEAAABJbnB1dEZpbGUuY3M=")]
         internal static ILambdaApplication OnShutdownInterceptor0(
             this ILambdaApplication application,
-            Func<Task> handler
+            Delegate handler
         )
         {
-            Task OnShutdown(IServiceProvider serviceProvider, CancellationToken cancellationToken)
-            {
-                return handler();
-            }
+            var castHandler = (global::System.Func<global::System.Threading.Tasks.Task>)handler;
             
             return application.OnShutdown(OnShutdown);
+            
+            Task OnShutdown(IServiceProvider serviceProvider, CancellationToken cancellationToken)
+            {
+                var response = castHandler.Invoke();
+                return response;
+            }
         }
     }
 }

@@ -31,20 +31,20 @@ namespace AwsLambda.Host
     using System.Threading.Tasks;
     using Microsoft.Extensions.DependencyInjection;
     
-    file static class LambdaApplicationOnShutdownExtensions
+    file static class LambdaApplicationOnInitExtensions
     {
         // Location: InputFile.cs(9,8)
-        [InterceptsLocation(1, "rpvuRFfg2zIIu7dmJu0Fs7EAAABJbnB1dEZpbGUuY3M=")]
-        internal static ILambdaApplication OnShutdownInterceptor0(
+        [InterceptsLocation(1, "xynorwqVT9IVtLKgJv/X8LEAAABJbnB1dEZpbGUuY3M=")]
+        internal static ILambdaApplication OnInitInterceptor0(
             this ILambdaApplication application,
             Delegate handler
         )
         {
-            var castHandler = (global::System.Func<string?, global::IService?, global::System.Threading.Tasks.Task>)handler;
+            var castHandler = (global::System.Func<string?, global::IService?, global::System.Threading.Tasks.Task<bool>>)handler;
             
-            return application.OnShutdown(OnShutdown);
+            return application.OnInit(OnInit);
             
-            Task OnShutdown(IServiceProvider serviceProvider, CancellationToken cancellationToken)
+            Task<bool> OnInit(IServiceProvider serviceProvider, CancellationToken cancellationToken)
             {
                 // ParameterInfo { Type = string?, Name = x, Source = Service, IsNullable = True, IsOptional = False}
                 var arg0 = serviceProvider.GetService<string?>();

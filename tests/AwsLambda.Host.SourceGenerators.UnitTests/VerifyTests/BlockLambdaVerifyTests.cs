@@ -304,4 +304,27 @@ public class BlockLambdaVerifyTests
             }
             """
         );
+
+    [Fact]
+    public async Task Test_BlockLambda_ReturnTaskString() =>
+        await GeneratorTestHelpers.Verify(
+            """
+            using System.Threading.Tasks;
+            using AwsLambda.Host;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
+
+            var lambda = builder.Build();
+
+            lambda.UseClearLambdaOutputFormatting();
+
+            lambda.MapHandler(() =>
+            {
+                return Task.FromResult("Hello World");
+            });
+
+            await lambda.RunAsync();
+            """
+        );
 }
