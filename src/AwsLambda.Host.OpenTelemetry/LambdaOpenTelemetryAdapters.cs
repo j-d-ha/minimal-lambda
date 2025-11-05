@@ -49,7 +49,7 @@ public static class LambdaOpenTelemetryServiceProviderExtensions
     ///     <typeparamref name="TResponse" />, or if a <see cref="TracerProvider" /> instance is not
     ///     registered in the dependency injection container.
     /// </exception>
-    public static Func<LambdaInvocationDelegate, LambdaInvocationDelegate> GetTracer<
+    public static Func<LambdaInvocationDelegate, LambdaInvocationDelegate> GetOpenTelemetryTracer<
         TEvent,
         TResponse
     >(this IServiceProvider services)
@@ -88,12 +88,12 @@ public static class LambdaOpenTelemetryServiceProviderExtensions
     /// <summary>Creates a middleware function that traces Lambda invocations with only a response type.</summary>
     /// <typeparam name="TResponse">The type of the Lambda response expected in the context.</typeparam>
     /// <param name="services">
-    ///     <inheritdoc cref="GetTracer{TEvent, TResponse}(IServiceProvider)"
+    ///     <inheritdoc cref="GetOpenTelemetryTracer{TEvent,TResponse}"
     ///                 path="/param[@name='services']" />
     /// </param>
-    /// <returns><inheritdoc cref="GetTracer{TEvent, TResponse}(IServiceProvider)" path="/returns" /></returns>
+    /// <returns><inheritdoc cref="GetOpenTelemetryTracer{TEvent,TResponse}" path="/returns" /></returns>
     /// <remarks>
-    ///     <inheritdoc cref="GetTracer{TEvent, TResponse}(IServiceProvider)" path="/remarks" /> The
+    ///     <inheritdoc cref="GetOpenTelemetryTracer{TEvent,TResponse}" path="/remarks" /> The
     ///     event type is not relevant or known when using this overload.
     /// </remarks>
     /// <exception cref="InvalidOperationException">
@@ -103,7 +103,7 @@ public static class LambdaOpenTelemetryServiceProviderExtensions
     public static Func<
         LambdaInvocationDelegate,
         LambdaInvocationDelegate
-    > GetTracerNoEvent<TResponse>(this IServiceProvider services)
+    > GetOpenTelemetryTracerNoEvent<TResponse>(this IServiceProvider services)
     {
         var tracerProvider = services.GetRequiredService<TracerProvider>();
 
@@ -134,12 +134,12 @@ public static class LambdaOpenTelemetryServiceProviderExtensions
     /// <summary>Creates a middleware function that traces Lambda invocations with only an event type.</summary>
     /// <typeparam name="TEvent">The type of the Lambda event expected in the context.</typeparam>
     /// <param name="services">
-    ///     <inheritdoc cref="GetTracer{TEvent, TResponse}(IServiceProvider)"
+    ///     <inheritdoc cref="GetOpenTelemetryTracer{TEvent,TResponse}"
     ///                 path="/param[@name='services']" />
     /// </param>
-    /// <returns><inheritdoc cref="GetTracer{TEvent, TResponse}(IServiceProvider)" path="/returns" /></returns>
+    /// <returns><inheritdoc cref="GetOpenTelemetryTracer{TEvent,TResponse}" path="/returns" /></returns>
     /// <remarks>
-    ///     <inheritdoc cref="GetTracer{TEvent, TResponse}(IServiceProvider)" path="/remarks" /> The
+    ///     <inheritdoc cref="GetOpenTelemetryTracer{TEvent,TResponse}" path="/remarks" /> The
     ///     response type is not relevant or known when using this overload.
     /// </remarks>
     /// <exception cref="InvalidOperationException">
@@ -149,7 +149,7 @@ public static class LambdaOpenTelemetryServiceProviderExtensions
     public static Func<
         LambdaInvocationDelegate,
         LambdaInvocationDelegate
-    > GetTracerNoResponse<TEvent>(this IServiceProvider services)
+    > GetOpenTelemetryTracerNoResponse<TEvent>(this IServiceProvider services)
     {
         var tracerProvider = services.GetRequiredService<TracerProvider>();
 
@@ -177,18 +177,18 @@ public static class LambdaOpenTelemetryServiceProviderExtensions
     ///     response types.
     /// </summary>
     /// <param name="services">
-    ///     <inheritdoc cref="GetTracer{TEvent, TResponse}(IServiceProvider)"
+    ///     <inheritdoc cref="GetOpenTelemetryTracer{TEvent,TResponse}"
     ///                 path="/param[@name='services']" />
     /// </param>
-    /// <returns><inheritdoc cref="GetTracer{TEvent, TResponse}(IServiceProvider)" path="/returns" /></returns>
+    /// <returns><inheritdoc cref="GetOpenTelemetryTracer{TEvent,TResponse}" path="/returns" /></returns>
     /// <remarks>
-    ///     <inheritdoc cref="GetTracer{TEvent, TResponse}(IServiceProvider)" path="/remarks" />
+    ///     <inheritdoc cref="GetOpenTelemetryTracer{TEvent,TResponse}" path="/remarks" />
     ///     Neither event nor response types are relevant or known when using this overload.
     /// </remarks>
     public static Func<
         LambdaInvocationDelegate,
         LambdaInvocationDelegate
-    > GetTracerNoEventNoResponse(this IServiceProvider services)
+    > GetOpenTelemetryTracerNoEventNoResponse(this IServiceProvider services)
     {
         var tracerProvider = services.GetRequiredService<TracerProvider>();
 

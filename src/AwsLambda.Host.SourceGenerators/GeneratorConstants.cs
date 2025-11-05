@@ -54,5 +54,5 @@ internal static class GeneratorConstants
     internal const string GenericHandlerTemplateFile = "Templates/GenericHandler.scriban";
 
     internal const string LambdaHostUseOpenTelemetryTracingExtensionsTemplateFile =
-        "Templates/LambdaHostUseOpenTelemetryTracingExtensions.scriban";
+        "Templates/OpenTelemetry.scriban";
 }

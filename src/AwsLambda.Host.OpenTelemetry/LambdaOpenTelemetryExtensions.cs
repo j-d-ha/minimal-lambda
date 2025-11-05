@@ -95,7 +95,7 @@ public static class LambdaOpenTelemetryExtensions
     ///     this ILambdaApplication application
     /// )
     /// {
-    ///     return application.Use(application.Services.GetTracer&lt;global::Request, global::Response&gt;());
+    ///     return application.Use(application.Services.GetOpenTelemetryTracer&lt;global::Request, global::Response&gt;());
     /// }
     /// </code>
     ///     <para>
@@ -111,25 +111,25 @@ public static class LambdaOpenTelemetryExtensions
     ///             <item>
     ///                 <description>
     ///                     Handlers with both input and output:
-    ///                     <c>services.GetTracer&lt;TRequest, TResponse&gt;()</c>
+    ///                     <c>services.GetOpenTelemetryTracer&lt;TRequest, TResponse&gt;()</c>
     ///                 </description>
     ///             </item>
     ///             <item>
     ///                 <description>
     ///                     Handlers with input only (no response):
-    ///                     <c>services.GetTracerNoResponse&lt;TRequest&gt;()</c>
+    ///                     <c>services.GetOpenTelemetryTracerNoResponse&lt;TRequest&gt;()</c>
     ///                 </description>
     ///             </item>
     ///             <item>
     ///                 <description>
     ///                     Handlers with no input (void event):
-    ///                     <c>services.GetTracerNoEvent&lt;TResponse&gt;()</c>
+    ///                     <c>services.GetOpenTelemetryTracerNoEvent&lt;TResponse&gt;()</c>
     ///                 </description>
     ///             </item>
     ///             <item>
     ///                 <description>
     ///                     Handlers with neither input nor output:
-    ///                     <c>services.GetTracerNoEventNoResponse()</c>
+    ///                     <c>services.GetOpenTelemetryTracerNoEventNoResponse()</c>
     ///                 </description>
     ///             </item>
     ///         </list>

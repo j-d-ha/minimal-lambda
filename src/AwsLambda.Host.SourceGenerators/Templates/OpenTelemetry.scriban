@@ -3,7 +3,7 @@ namespace AwsLambda.Host
     using System.Runtime.CompilerServices;
     using Microsoft.Extensions.DependencyInjection;
     
-    file static class LambdaHostUseOpenTelemetryTracingExtensions
+    file static class OpenTelemetryLambdaApplicationExtensions
     {
         {{~ for location in locations ~}}
         [InterceptsLocation({{ location.version }}, "{{ location.data }}")] // Location: {{ location.display_location }}
@@ -13,13 +13,13 @@ namespace AwsLambda.Host
         )
         {
             {{~ if response_type != null && event_type != null ~}}
-            return application.Use(application.Services.GetTracer<{{ event_type }}, {{ response_type }}>());
+            return application.Use(application.Services.GetOpenTelemetryTracer<{{ event_type }}, {{ response_type }}>());
             {{~ else if response_type != null ~}}
-            return application.Use(application.Services.GetTracerNoEvent<{{ response_type }}>());
+            return application.Use(application.Services.GetOpenTelemetryTracerNoEvent<{{ response_type }}>());
             {{~ else if event_type != null ~}}
-            return application.Use(application.Services.GetTracerNoResponse<{{ event_type }}>());
+            return application.Use(application.Services.GetOpenTelemetryTracerNoResponse<{{ event_type }}>());
             {{~ else ~}}
-            return application.Use(application.Services.GetTracerNoEventNoResponse());
+            return application.Use(application.Services.GetOpenTelemetryTracerNoEventNoResponse());
             {{~ end ~}}
         }
     }

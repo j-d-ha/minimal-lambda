@@ -92,14 +92,14 @@ namespace AwsLambda.Host
     using System.Runtime.CompilerServices;
     using Microsoft.Extensions.DependencyInjection;
     
-    file static class LambdaHostUseOpenTelemetryTracingExtensions
+    file static class OpenTelemetryLambdaApplicationExtensions
     {
         [InterceptsLocation(1, "m9Bv7gPXiaKnKJgvZIJmDJMAAABJbnB1dEZpbGUuY3M=")] // Location: InputFile.cs(8,8)
         internal static ILambdaApplication UseOpenTelemetryTracingInterceptor(
             this ILambdaApplication application
         )
         {
-            return application.Use(application.Services.GetTracerNoResponse<global::Request>());
+            return application.Use(application.Services.GetOpenTelemetryTracerNoResponse<global::Request>());
         }
     }
 }
