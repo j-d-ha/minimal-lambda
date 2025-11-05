@@ -210,16 +210,22 @@ internal static class DelegateInfoExtractorExtensions
         );
     }
 
-    private static string? UnwrapTypeFromTask(this INamedTypeSymbol typeSymbol)
+    private static string? UnwrapTypeFromTask(
+        this ITypeSymbol typeSymbol,
+        TypeSyntax? syntax = null
+    )
     {
-        if (!typeSymbol.IsTask() && !typeSymbol.IsValueTask())
-            return typeSymbol.GetAsGlobal();
+        if (typeSymbol is not INamedTypeSymbol namedTypeSymbol)
+            return typeSymbol.GetAsGlobal(syntax);
+
+        if (!namedTypeSymbol.IsTask() && !namedTypeSymbol.IsValueTask())
+            return typeSymbol.GetAsGlobal(syntax);
 
         // if not generic Task or ValueTask, return null as no wrapped return value
-        if (!typeSymbol.IsGenericType || typeSymbol.TypeArguments.Length == 0)
+        if (!namedTypeSymbol.IsGenericType || namedTypeSymbol.TypeArguments.Length == 0)
             return null;
 
-        return typeSymbol.TypeArguments.First().GetAsGlobal();
+        return namedTypeSymbol.TypeArguments.First().GetAsGlobal(syntax);
     }
 
     private static DelegateInfo ExtractInfoFromLambda(
@@ -254,19 +260,19 @@ internal static class DelegateInfoExtractorExtensions
         // 3. implicit return type in expression body
         // 4. implicit return type in block body
         // 5. default void (or Task if async)
-        var (returnType, unwrappedResponseType) = lambdaExpression switch
+        var (returnType, unwrappedResponseType, responseType) = lambdaExpression switch
         {
             // check for explicit return type
             ParenthesizedLambdaExpressionSyntax { ReturnType: { } syntax } => ModelExtensions
                 .GetTypeInfo(sematicModel, syntax, cancellationToken)
-                .Type?.Transform(t => (t, t.GetAsGlobal(syntax)))
-            ?? (null, null)!,
+                .Type?.Transform(t => (t, t.UnwrapTypeFromTask(syntax), t.GetAsGlobal(syntax)))
+            ?? (null, null, null)!,
 
             // Handle implicit return type for expression lambda
             { Body: var expression and ExpressionSyntax } => sematicModel
                 .GetTypeInfo(expression, cancellationToken)
-                .Type?.Transform(t => (t, t.GetAsGlobal()))
-            ?? (null, null)!,
+                .Type?.Transform(t => (t, t.UnwrapTypeFromTask(), t.GetAsGlobal()))
+            ?? (null, null, null)!,
 
             // Handle implicit return type for block lambda
             { Body: var block and BlockSyntax } => block
@@ -275,31 +281,33 @@ internal static class DelegateInfoExtractorExtensions
                 .FirstOrDefault(syntax => syntax.Expression is not null)
                 ?.Transform(syntax =>
                     syntax.Expression is null
-                        ? (null, null)
+                        ? (null, null, null)
                         : ModelExtensions
                             .GetTypeInfo(sematicModel, syntax.Expression, cancellationToken)
-                            .Type?.Transform(t => (t, t.GetAsGlobal()))
-                        ?? (null, null)!
+                            .Type?.Transform(t => (t, t.UnwrapTypeFromTask(), t.GetAsGlobal()))
+                        ?? (null, null, null)!
                 )
-            ?? (null, null),
+            ?? (null, null, null),
 
             // Default to void if no return type is found
-            _ => (null, null),
+            _ => (null, null, null),
         };
 
         // determine if the lambda is async by checking kind
         var isAsync = lambdaExpression.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword);
 
         // the full return type for use in function signatures.
-        var fullResponseType = (ReturnType: unwrappedResponseType, IsAsync: isAsync) switch
+        var fullResponseType = (ReturnType: responseType, IsAsync: isAsync) switch
         {
             (null, true) => TypeConstants.Task,
             (null, false) => TypeConstants.Void,
             (TypeConstants.Void, _) => TypeConstants.Void,
             (TypeConstants.Task, _) => TypeConstants.Task,
             (TypeConstants.ValueTask, _) => TypeConstants.ValueTask,
+            var (type, _) when type.StartsWith(TypeConstants.Task) => type,
+            var (type, _) when type.StartsWith(TypeConstants.ValueTask) => type,
             (var type, true) => $"{TypeConstants.Task}<{type}>",
-            var (type, _) => type,
+            (_, _) => responseType,
         };
 
         // determine if the delegate is returning awaitable value

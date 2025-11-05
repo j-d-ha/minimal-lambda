@@ -378,4 +378,23 @@ public class ExpressionLambdaVerifyTests
             await lambda.RunAsync();
             """
         );
+
+    [Fact]
+    public async Task Test_ExpressionLambda_ExplicitVoid() =>
+        await GeneratorTestHelpers.Verify(
+            """
+            using AwsLambda.Host;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
+
+            var lambda = builder.Build();
+
+            lambda.UseClearLambdaOutputFormatting();
+
+            lambda.MapHandler(void () => { });
+
+            await lambda.RunAsync();
+            """
+        );
 }

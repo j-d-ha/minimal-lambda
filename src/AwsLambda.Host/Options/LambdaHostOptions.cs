@@ -70,7 +70,7 @@ public class LambdaHostOptions
     /// </summary>
     /// <remarks>
     ///     When set to <c>true</c>, the
-    ///     <see cref="OnInitLambdaApplicationExtensions.OnInitClearLambdaOutputFormatting" /> extension
+    ///     <see cref="OutputFormattingLambdaApplicationExtensions.OnInitClearLambdaOutputFormatting" /> extension
     ///     method is automatically registered to run during application startup. This clears the custom
     ///     formatting applied by the Lambda runtime, allowing structured logging frameworks like Serilog
     ///     to output JSON without corruption. Default is <c>false</c>.
