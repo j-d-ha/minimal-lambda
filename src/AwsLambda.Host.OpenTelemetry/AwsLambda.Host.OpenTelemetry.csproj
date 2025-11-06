@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
-    <TargetFramework>net9.0</TargetFramework>
+    <TargetFrameworks>net9.0;net10.0</TargetFrameworks>
     <LangVersion>preview</LangVersion>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
@@ -9,23 +8,18 @@
     <IncludeBuildOutput>true</IncludeBuildOutput>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
-
     <!-- Package Metadata -->
     <PackageId>AwsLambda.Host.OpenTelemetry</PackageId>
     <Description>OpenTelemetry for .NET Host for AWS Lambda</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
-
   <ItemGroup>
-    <ProjectReference Include="..\AwsLambda.Host.Abstractions\AwsLambda.Host.Abstractions.csproj"/>
+    <ProjectReference Include="..\AwsLambda.Host.Abstractions\AwsLambda.Host.Abstractions.csproj" />
   </ItemGroup>
-
   <ItemGroup>
-    <PackageReference Include="OpenTelemetry.Instrumentation.AWSLambda" Version="1.12.1"/>
+    <PackageReference Include="OpenTelemetry.Instrumentation.AWSLambda" />
   </ItemGroup>
-
   <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="\"/>
+    <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
-
 </Project>

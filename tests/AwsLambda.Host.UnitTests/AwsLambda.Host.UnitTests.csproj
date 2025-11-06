@@ -1,5 +1,4 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
-
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -8,23 +7,21 @@
     <IsPackable>false</IsPackable>
     <IncludeSymbols>false</IncludeSymbols>
   </PropertyGroup>
-
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" Version="2025.2.2"/>
-    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1"/>
-    <PackageReference Include="NSubstitute" Version="5.3.0"/>
-    <PackageReference Include="AwesomeAssertions" Version="9.2.0"/>
-    <PackageReference Include="xunit.runner.visualstudio" Version="3.1.4">
+    <PackageReference Include="Amazon.Lambda.Core" />
+    <PackageReference Include="Amazon.Lambda.RuntimeSupport" />
+    <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" />
+    <PackageReference Include="JetBrains.Annotations" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NSubstitute" />
+    <PackageReference Include="AwesomeAssertions" />
+    <PackageReference Include="xunit.runner.visualstudio">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="xunit.v3" Version="3.1.0"/>
+    <PackageReference Include="xunit.v3" />
   </ItemGroup>
-
-
   <ItemGroup>
-    <ProjectReference Include="..\..\src\AwsLambda.Host\AwsLambda.Host.csproj"/>
+    <ProjectReference Include="..\..\src\AwsLambda.Host\AwsLambda.Host.csproj" />
   </ItemGroup>
-
-
 </Project>
