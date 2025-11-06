@@ -18,6 +18,10 @@ public static class OnShutdownOpenTelemetryExtensions
     ///     shutdown.
     /// </summary>
     /// <param name="application">The <see cref="ILambdaApplication" /> instance.</param>
+    /// <param name="timeoutMilliseconds">
+    ///     The timeout in milliseconds for flush operations. Defaults to
+    ///     <see cref="Timeout.Infinite" />.
+    /// </param>
     /// <returns>The same <see cref="ILambdaApplication" /> instance for method chaining.</returns>
     /// <remarks>
     ///     <para>
@@ -29,15 +33,16 @@ public static class OnShutdownOpenTelemetryExtensions
     ///         complete within the allocated shutdown time.
     ///     </para>
     /// </remarks>
-    public static ILambdaApplication OnShutdownOpenTelemetryForceFlush(
-        this ILambdaApplication application
+    public static ILambdaApplication OnShutdownFlushOpenTelemetry(
+        this ILambdaApplication application,
+        int timeoutMilliseconds = Timeout.Infinite
     )
     {
         ArgumentNullException.ThrowIfNull(application);
 
-        application.OnShutdownOpenTelemetryForceFlushMeter();
+        application.OnShutdownFlushMeter(timeoutMilliseconds);
 
-        application.OnShutdownOpenTelemetryForceFlushTracer();
+        application.OnShutdownFlushTracer(timeoutMilliseconds);
 
         return application;
     }
@@ -47,6 +52,10 @@ public static class OnShutdownOpenTelemetryExtensions
     ///     shutdown.
     /// </summary>
     /// <param name="application">The <see cref="ILambdaApplication" /> instance.</param>
+    /// <param name="timeoutMilliseconds">
+    ///     The timeout in milliseconds for the flush operation. Defaults to
+    ///     <see cref="Timeout.Infinite" />.
+    /// </param>
     /// <returns>The same <see cref="ILambdaApplication" /> instance for method chaining.</returns>
     /// <remarks>
     ///     <para>
@@ -58,8 +67,9 @@ public static class OnShutdownOpenTelemetryExtensions
     ///         this method safely returns without error.
     ///     </para>
     /// </remarks>
-    public static ILambdaApplication OnShutdownOpenTelemetryForceFlushTracer(
-        this ILambdaApplication application
+    public static ILambdaApplication OnShutdownFlushTracer(
+        this ILambdaApplication application,
+        int timeoutMilliseconds = Timeout.Infinite
     )
     {
         ArgumentNullException.ThrowIfNull(application);
@@ -73,14 +83,26 @@ public static class OnShutdownOpenTelemetryExtensions
 
                 var logger = services.GetService<ILoggerFactory>()?.CreateLogger(LogCategory);
 
-                var flusher = Task.Run(() => tracerProvider.ForceFlush(), cancellationToken);
+                var flusher = Task.Run(
+                    () => tracerProvider.ForceFlush(timeoutMilliseconds),
+                    cancellationToken
+                );
 
                 await Task.WhenAny(flusher, Task.Delay(Timeout.Infinite, cancellationToken));
 
                 if (flusher.Status != TaskStatus.RanToCompletion)
+                {
                     logger?.LogWarning(
                         "OpenTelemetry tracer provider force flush failed to complete within allocated time"
                     );
+
+                    return;
+                }
+
+                logger?.LogInformation(
+                    "OpenTelemetry tracer provider force flush {status}",
+                    flusher.Result ? "succeeded" : "failed"
+                );
             }
         );
 
@@ -92,6 +114,10 @@ public static class OnShutdownOpenTelemetryExtensions
     ///     shutdown.
     /// </summary>
     /// <param name="application">The <see cref="ILambdaApplication" /> instance.</param>
+    /// <param name="timeoutMilliseconds">
+    ///     The timeout in milliseconds for the flush operation. Defaults to
+    ///     <see cref="Timeout.Infinite" />.
+    /// </param>
     /// <returns>The same <see cref="ILambdaApplication" /> instance for method chaining.</returns>
     /// <remarks>
     ///     <para>
@@ -103,8 +129,9 @@ public static class OnShutdownOpenTelemetryExtensions
     ///         this method safely returns without error.
     ///     </para>
     /// </remarks>
-    public static ILambdaApplication OnShutdownOpenTelemetryForceFlushMeter(
-        this ILambdaApplication application
+    public static ILambdaApplication OnShutdownFlushMeter(
+        this ILambdaApplication application,
+        int timeoutMilliseconds = Timeout.Infinite
     )
     {
         ArgumentNullException.ThrowIfNull(application);
@@ -118,14 +145,26 @@ public static class OnShutdownOpenTelemetryExtensions
 
                 var logger = services.GetService<ILoggerFactory>()?.CreateLogger(LogCategory);
 
-                var flusher = Task.Run(() => meterProvider.ForceFlush(), cancellationToken);
+                var flusher = Task.Run(
+                    () => meterProvider.ForceFlush(timeoutMilliseconds),
+                    cancellationToken
+                );
 
                 await Task.WhenAny(flusher, Task.Delay(Timeout.Infinite, cancellationToken));
 
                 if (flusher.Status != TaskStatus.RanToCompletion)
+                {
                     logger?.LogWarning(
                         "OpenTelemetry meter provider force flush failed to complete within allocated time"
                     );
+
+                    return;
+                }
+
+                logger?.LogInformation(
+                    "OpenTelemetry meter provider force flush {status}",
+                    flusher.Result ? "succeeded" : "failed"
+                );
             }
         );
 
