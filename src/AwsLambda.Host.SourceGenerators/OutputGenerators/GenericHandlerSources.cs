@@ -62,8 +62,13 @@ internal static class GenericHandlerSources
 
                 // should return response
                 var shouldReturnResponse =
-                    wrapperReturnType == higherOrderMethodInfo.DelegateInfo.UnwrappedResponseType
-                    || fullWrapperReturnType == higherOrderMethodInfo.DelegateInfo.FullResponseType;
+                    higherOrderMethodInfo.DelegateInfo.FullResponseType != TypeConstants.Void
+                    && (
+                        wrapperReturnType
+                            == higherOrderMethodInfo.DelegateInfo.UnwrappedResponseType
+                        || fullWrapperReturnType
+                            == higherOrderMethodInfo.DelegateInfo.FullResponseType
+                    );
 
                 // should wrap the response in a Task
                 var shouldWrapResponse =

@@ -235,4 +235,28 @@ public class OnShutdownVerifyTests
             }
             """
         );
+
+    [Fact]
+    public async Task Test_OnShutdown_BlockLambda_ReturnsImplicitVoid() =>
+        await GeneratorTestHelpers.Verify(
+            """
+            using AwsLambda.Host;
+            using Microsoft.Extensions.Hosting;
+            using System;
+
+            var builder = LambdaApplication.CreateBuilder();
+
+            var lambda = builder.Build();
+
+            lambda.OnShutdown(
+                () =>
+                {
+                   Console.WriteLine("Shutting down");
+                }
+            );
+
+            await lambda.RunAsync();
+
+            """
+        );
 }
