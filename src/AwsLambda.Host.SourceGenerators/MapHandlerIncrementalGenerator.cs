@@ -10,7 +10,7 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
 {
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
-        // Language version gate - only generate source if C# 11 or higher is used
+        // Language version gate - only generate source if C# 11 or later is used
         var csharpSufficient = context.CompilationProvider.Select(
             static (compilation, _) =>
                 compilation
