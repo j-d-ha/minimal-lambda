@@ -22,6 +22,7 @@
     <File Path="Directory.Build.props" />
     <File Path="CLAUDE.md" />
     <File Path="CLAUDE.local.md" />
+    <File Path="Directory.Packages.props" />
   </Folder>
   <Folder Name="/src/">
     <Project
