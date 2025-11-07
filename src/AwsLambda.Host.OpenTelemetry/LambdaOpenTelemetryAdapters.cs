@@ -27,8 +27,7 @@ public static class LambdaOpenTelemetryServiceProviderExtensions
     ///     <para>
     ///         Uses the registered <see cref="TracerProvider" /> to wrap Lambda invocations with
     ///         distributed tracing capabilities through AWS Lambda instrumentation. This method is a
-    ///         wrapper around
-    ///         <see cref="OpenTelemetry.Instrumentation.AWSLambda.AWSLambdaWrapper.TraceAsync" /> from the
+    ///         wrapper around <see cref="OpenTelemetry.Instrumentation.AWSLambda.AWSLambdaWrapper" /> from the
     ///         <see href="https://www.nuget.org/packages/OpenTelemetry.Instrumentation.AWSLambda">OpenTelemetry.Instrumentation.AWSLambda</see>
     ///         NuGet package.
     ///     </para>
