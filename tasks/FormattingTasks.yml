@@ -19,7 +19,7 @@ tasks:
         dotnet jb cleanupcode  \
           AwsLambda.Host.sln \
           --settings="AwsLambda.Host.sln.DotSettings" \
-          --profile="Built-in: Reformat & Apply Syntax Style" \
+          --profile="Built-in: Full Cleanup" \
           --verbosity=WARN \
           --no-build
       - echo "✅ CleanupCode completed successfully!"
