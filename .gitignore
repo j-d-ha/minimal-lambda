@@ -69,3 +69,5 @@ nunit-*.xml
 
 # temp files used for dev
 **/Temp*.cs
+
+**/*.env
