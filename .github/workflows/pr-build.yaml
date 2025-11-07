@@ -87,8 +87,7 @@ jobs:
             git status --porcelain
             echo ""
             echo "Run the following commands locally to fix:"
-            echo "  jb cleanupcode YourSolution.sln"
-            echo "  dotnet csharpier ."
+            echo "  task format:all"
             exit 1
           else
             echo "✅ All code is properly formatted!"
