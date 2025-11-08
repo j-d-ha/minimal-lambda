@@ -13,10 +13,10 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
     private readonly ILambdaHandlerFactory _handlerFactory;
     private readonly ILambdaLifecycleOrchestrator _lifecycle;
     private readonly IHostApplicationLifetime _lifetime;
+    private bool _disposed;
 
     private Task? _executeTask;
     private CancellationTokenSource? _stoppingCts;
-    private bool _disposed = false;
 
     /// <summary>Initializes a new instance of the <see cref="LambdaHostedService" /> class.</summary>
     /// <param name="bootstrap">The orchestrator responsible for managing the AWS Lambda bootstrap loop.</param>

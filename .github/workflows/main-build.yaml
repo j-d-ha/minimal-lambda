@@ -1,10 +1,10 @@
-# This workflow will build a .NET project
+# This workflow will build a .NET project on push to main
 # For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-net
 
-name: .NET
+name: Main Build
 
 on:
-  pull_request:
+  push:
     branches: [ "main" ]
 
 jobs:
@@ -18,8 +18,6 @@ jobs:
         run: curl -fsSL https://deb.nodesource.com/setup_22.x | bash && apt install -y nodejs
 
       - uses: actions/checkout@v5
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
@@ -82,47 +80,3 @@ jobs:
           disable_search: true
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
-  
-  
-  code-format:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Act Workaround # https://github.com/nektos/act/issues/973
-        if: ${{ env.ACT }}
-        run: curl -fsSL https://deb.nodesource.com/setup_22.x | bash && apt install -y nodejs
-
-      - uses: actions/checkout@v5
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: 10.0.x
-
-      - name: Restore dependencies
-        run: dotnet restore
-
-      - name: Install dotnet tools
-        run: dotnet tool restore
-
-      - name: Install Task
-        uses: go-task/setup-task@v1
-
-      - name: Run formatting
-        run: task format
-
-      - name: Check for formatting changes
-        run: |
-          if [ -n "$(git status --porcelain)" ]; then
-            echo "❌ Code formatting issues detected!"
-            echo "The following files need formatting:"
-            git status --porcelain
-            echo ""
-            echo "Run the following commands locally to fix:"
-            echo "  task format:all"
-            exit 1
-          else
-            echo "✅ All code is properly formatted!"
-          fi
