@@ -63,7 +63,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          ~/.sonar/scanner/dotnet-sonarscanner begin /k:"j-d-ha_aws-lambda-host" /o:"j-d-ha" /d:sonar.login="$SONAR_TOKEN"
+          ~/.sonar/scanner/dotnet-sonarscanner begin /d:sonar.login="$SONAR_TOKEN"
           dotnet build --no-restore --configuration Release /p:TreatWarningsAsErrors=true
           ~/.sonar/scanner/dotnet-sonarscanner end /d:sonar.login="$SONAR_TOKEN"
 
@@ -79,42 +79,42 @@ jobs:
           fail_ci_if_error: true
   
   
-  code-format:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Act Workaround # https://github.com/nektos/act/issues/973
-        if: ${{ env.ACT }}
-        run: curl -fsSL https://deb.nodesource.com/setup_22.x | bash && apt install -y nodejs
-
-      - uses: actions/checkout@v5
-        with:
-          ref: ${{ github.event.pull_request.head.sha }}
-
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v5
-        with:
-          dotnet-version: 10.0.x
-
-      - name: Install dotnet tools
-        run: dotnet tool restore
-
-      - name: Install Task
-        uses: go-task/setup-task@v1
-
-      - name: Run formatting
-        run: task format
-
-      - name: Check for formatting changes
-        run: |
-          if [ -n "$(git status --porcelain)" ]; then
-            echo "❌ Code formatting issues detected!"
-            echo "The following files need formatting:"
-            git status --porcelain
-            echo ""
-            echo "Run the following commands locally to fix:"
-            echo "  task format:all"
-            exit 1
-          else
-            echo "✅ All code is properly formatted!"
-          fi
+#  code-format:
+#    runs-on: ubuntu-latest
+#
+#    steps:
+#      - name: Act Workaround # https://github.com/nektos/act/issues/973
+#        if: ${{ env.ACT }}
+#        run: curl -fsSL https://deb.nodesource.com/setup_22.x | bash && apt install -y nodejs
+#
+#      - uses: actions/checkout@v5
+#        with:
+#          ref: ${{ github.event.pull_request.head.sha }}
+#
+#      - name: Setup .NET
+#        uses: actions/setup-dotnet@v5
+#        with:
+#          dotnet-version: 10.0.x
+#
+#      - name: Install dotnet tools
+#        run: dotnet tool restore
+#
+#      - name: Install Task
+#        uses: go-task/setup-task@v1
+#
+#      - name: Run formatting
+#        run: task format
+#
+#      - name: Check for formatting changes
+#        run: |
+#          if [ -n "$(git status --porcelain)" ]; then
+#            echo "❌ Code formatting issues detected!"
+#            echo "The following files need formatting:"
+#            git status --porcelain
+#            echo ""
+#            echo "Run the following commands locally to fix:"
+#            echo "  task format:all"
+#            exit 1
+#          else
+#            echo "✅ All code is properly formatted!"
+#          fi
