@@ -14,24 +14,23 @@ internal static class TemplateHelper
     internal static Template LoadTemplate(string relativePath)
     {
         var baseName = Assembly.GetExecutingAssembly().GetName().Name;
-        var templateName = relativePath
-            .TrimStart('.')
-            .Replace(Path.DirectorySeparatorChar, '.')
-            .Replace(Path.AltDirectorySeparatorChar, '.');
+        var templateName =
+            relativePath.TrimStart('.')
+                .Replace(Path.DirectorySeparatorChar, '.')
+                .Replace(Path.AltDirectorySeparatorChar, '.');
 
-        var manifestTemplateName = Assembly
-            .GetExecutingAssembly()
-            .GetManifestResourceNames()
-            .FirstOrDefault(x => x!.EndsWith(templateName, StringComparison.InvariantCulture));
+        var manifestTemplateName =
+            Assembly.GetExecutingAssembly()
+                .GetManifestResourceNames()
+                .FirstOrDefault(x => x!.EndsWith(templateName, StringComparison.InvariantCulture));
 
         if (string.IsNullOrEmpty(manifestTemplateName))
             throw new InvalidOperationException(
                 $"Did not find required resource ending in '{templateName}' in assembly '{baseName}'."
             );
 
-        using var stream = Assembly
-            .GetExecutingAssembly()
-            .GetManifestResourceStream(manifestTemplateName);
+        using var stream =
+            Assembly.GetExecutingAssembly().GetManifestResourceStream(manifestTemplateName);
         if (stream == null)
             throw new FileNotFoundException(
                 $"Template '{relativePath}' not found in embedded resources."

@@ -27,8 +27,8 @@ public static class LambdaOpenTelemetryServiceProviderExtensions
     ///     <para>
     ///         Uses the registered <see cref="TracerProvider" /> to wrap Lambda invocations with
     ///         distributed tracing capabilities through AWS Lambda instrumentation. This method is a
-    ///         wrapper around
-    ///         <see cref="OpenTelemetry.Instrumentation.AWSLambda.AWSLambdaWrapper.TraceAsync" /> from the
+    ///         wrapper around <see cref="OpenTelemetry.Instrumentation.AWSLambda.AWSLambdaWrapper" /> from
+    ///         the
     ///         <see href="https://www.nuget.org/packages/OpenTelemetry.Instrumentation.AWSLambda">OpenTelemetry.Instrumentation.AWSLambda</see>
     ///         NuGet package.
     ///     </para>
@@ -93,8 +93,8 @@ public static class LambdaOpenTelemetryServiceProviderExtensions
     /// </param>
     /// <returns><inheritdoc cref="GetOpenTelemetryTracer{TEvent,TResponse}" path="/returns" /></returns>
     /// <remarks>
-    ///     <inheritdoc cref="GetOpenTelemetryTracer{TEvent,TResponse}" path="/remarks" /> The
-    ///     event type is not relevant or known when using this overload.
+    ///     <inheritdoc cref="GetOpenTelemetryTracer{TEvent,TResponse}" path="/remarks" /> The event
+    ///     type is not relevant or known when using this overload.
     /// </remarks>
     /// <exception cref="InvalidOperationException">
     ///     Thrown if the context response is not of type
@@ -182,8 +182,8 @@ public static class LambdaOpenTelemetryServiceProviderExtensions
     /// </param>
     /// <returns><inheritdoc cref="GetOpenTelemetryTracer{TEvent,TResponse}" path="/returns" /></returns>
     /// <remarks>
-    ///     <inheritdoc cref="GetOpenTelemetryTracer{TEvent,TResponse}" path="/remarks" />
-    ///     Neither event nor response types are relevant or known when using this overload.
+    ///     <inheritdoc cref="GetOpenTelemetryTracer{TEvent,TResponse}" path="/remarks" /> Neither
+    ///     event nor response types are relevant or known when using this overload.
     /// </remarks>
     public static Func<
         LambdaInvocationDelegate,

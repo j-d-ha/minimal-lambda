@@ -71,7 +71,7 @@ internal static class GenericHandlerInfoExtractor
         )!;
 
         return new HigherOrderMethodInfo(
-            Name: methodName,
+            methodName,
             LocationInfo: LocationInfo.CreateFrom(context.Node),
             DelegateInfo: delegateInfo.Value,
             InterceptableLocationInfo: InterceptableLocationInfo.CreateFrom(interceptableLocation),

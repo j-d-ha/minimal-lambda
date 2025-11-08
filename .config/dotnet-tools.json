@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "isRoot": true,
+  "tools": {
+    "csharpier": {
+      "version": "1.1.2",
+      "commands": [
+        "csharpier"
+      ],
+      "rollForward": false
+    },
+    "jetbrains.resharper.globaltools": {
+      "version": "2025.3.0-rc01",
+      "commands": [
+        "jb"
+      ],
+      "rollForward": false
+    }
+  }
+}
