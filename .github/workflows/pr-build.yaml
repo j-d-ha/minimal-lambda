@@ -63,7 +63,7 @@ jobs:
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
-          ~/.sonar/scanner/dotnet-sonarscanner begin 
+          ~/.sonar/scanner/dotnet-sonarscanner begin \
             /k:"j-d-ha_aws-lambda-host" \
             /o:"j-d-ha" \
             /d:sonar.exclusions="**/bin/**,**/obj/**,tests/AwsLambda.Host.SourceGenerators.UnitTests/Snapshots/**,**/coverage/**" \
