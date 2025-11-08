@@ -1,0 +1,19 @@
+#coverage:
+#  status:
+#    project:
+#      default:
+#        target: 80%  # Fail if coverage drops below 80%
+#        threshold: 2%  # Allow 2% drop
+#    patch:
+#      default:
+#        target: 80%  # New code should have 80% coverage
+
+comment:
+  layout: "reach,diff,flags,tree,footer"
+  behavior: default
+  require_changes: false
+
+ignore:
+  - "tests/**"
+  - "examples/**"
+  - "**/Program.cs"

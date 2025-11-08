@@ -1,0 +1,50 @@
+version: '3'
+
+tasks:
+  restore:
+    desc: Restore NuGet dependencies locally
+    silent: true
+    cmds:
+      - echo "📥 Restoring dependencies"
+      - dotnet restore
+      - echo "✅ Dependencies restored"
+
+  build-debug:
+    desc: Build solution in Debug configuration locally
+    silent: true
+    cmds:
+      - echo "🔨 Building Debug configuration"
+      - task: restore
+      - dotnet build --configuration Debug --no-restore
+      - echo "✅ Debug build complete"
+
+  tools:restore:
+    desc: Restore and reinstall local dotnet tools
+    silent: true
+    cmds:
+      - echo "🛠️ Restoring dotnet tools"
+      - dotnet tool restore
+      - echo "✅ Tools restored"
+
+  clean-all:
+    desc: Clean all build artifacts and packages
+    silent: true
+    cmds:
+      - echo "🧹 Cleaning all build artifacts"
+      - dotnet clean --configuration Release
+      - dotnet clean --configuration Debug
+      - echo "🗑️ Removing bin and obj directories"
+      - find . -type d -name "bin" -o -name "obj" | xargs rm -rf
+      - echo "✅ Complete cleanup finished"
+
+  test-watch:
+    desc: Run tests in watch mode for TDD
+    silent: true
+    cmds:
+      - task: test:watch
+
+  lambda-test:
+    desc: Start the AWS Lambda test tool
+    silent: true
+    cmds:
+      - dotnet lambda-test-tool start --lambda-emulator-port 5050

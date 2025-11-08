@@ -49,12 +49,14 @@ internal static class GenericHandlerSources
                     ? $"global::System.Threading.Tasks.Task<{wrapperReturnType}>"
                     : "global::System.Threading.Tasks.Task";
 
-                // get the return type of the wrapper function wrapped in a Task - shortened to just use Task
+                // get the return type of the wrapper function wrapped in a Task - shortened
+                // to just use Task
                 var shortFullWrapperReturnType = wrapperReturnType is not null
                     ? $"Task<{wrapperReturnType}>"
                     : "Task";
 
-                // should await determined by whether the delegate is awaitable and if the delegate
+                // should await determined by whether the delegate is awaitable and if the
+                // delegate
                 // return type matches the wrapper return type 1:1
                 var shouldAwait =
                     fullWrapperReturnType != higherOrderMethodInfo.DelegateInfo.FullResponseType
