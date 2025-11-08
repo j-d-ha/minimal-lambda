@@ -2,6 +2,7 @@ version: '3'
 
 includes:
   build: ./tasks/BuildTasks.yml
+  test: ./tasks/TestTasks.yml
   publish: ./tasks/PublishTasks.yml
   format: ./tasks/FormattingTasks.yml
   local: ./tasks/LocalDevTasks.yml

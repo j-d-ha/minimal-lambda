@@ -1,6 +1,30 @@
 version: '3'
 
 tasks:
+  restore:
+    desc: Restore NuGet dependencies
+    silent: true
+    cmds:
+      - echo "📥 Restoring dependencies"
+      - dotnet restore
+      - echo "✅ Dependencies restored"
+
+  build:
+    desc: Build solution in Release configuration
+    silent: true
+    cmds:
+      - echo "🔨 Building Release"
+      - dotnet build --configuration Release --no-restore
+      - echo "✅ Release build complete"
+
+  build-debug:
+    desc: Build solution in Debug configuration
+    silent: true
+    cmds:
+      - echo "🔨 Building Debug"
+      - dotnet build --configuration Debug --no-restore
+      - echo "✅ Debug build complete"
+
   clean:
     desc: Clean NuGet packages from Release folder
     silent: true
