@@ -1,0 +1,41 @@
+version: '3'
+
+tasks:
+  all:
+    desc: Run complete test suite
+    silent: true
+    cmds:
+      - echo "🧪 Running all tests"
+      - dotnet test --configuration Release --no-build
+      - echo "✅ All tests passed!"
+
+  unit:
+    desc: Run unit tests only
+    silent: true
+    cmds:
+      - echo "🧪 Running unit tests"
+      - dotnet test --configuration Release --filter "Category=Unit" --no-build
+      - echo "✅ Unit tests completed!"
+
+  coverage:
+    desc: Run tests with code coverage collection
+    silent: true
+    cmds:
+      - echo "📊 Running tests with coverage collection"
+      - dotnet test --configuration Release --collect:"XPlat Code Coverage" --no-build
+      - echo "✅ Coverage collection completed!"
+
+  watch:
+    desc: Run tests in watch mode for TDD
+    silent: true
+    cmds:
+      - echo "👀 Starting test watch mode"
+      - dotnet watch --project tests/AwsLambda.Host.Tests test --configuration Release
+
+  verbose:
+    desc: Run tests with detailed output for debugging
+    silent: true
+    cmds:
+      - echo "🔍 Running tests with verbose output"
+      - dotnet test --configuration Release --verbosity detailed --no-build
+      - echo "✅ Verbose test run completed!"

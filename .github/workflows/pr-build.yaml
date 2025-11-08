@@ -33,7 +33,7 @@ jobs:
         run: dotnet restore
 
       - name: Build
-        run: dotnet build --no-restore --configuration Release
+        run: dotnet build --no-restore --configuration Release /p:TreatWarningsAsErrors=true
 
       - name: Run tests
         run: dotnet test --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
@@ -92,6 +92,4 @@ jobs:
           else
             echo "✅ All code is properly formatted!"
           fi
-
-      - name: Run static analysis
-        run: dotnet build --no-restore /p:TreatWarningsAsErrors=true
+          
