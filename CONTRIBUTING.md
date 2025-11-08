@@ -7,6 +7,7 @@ Thank you for your interest in contributing to the AWS Lambda Host project! This
 - [Code of Conduct](#code-of-conduct)
 - [Getting Started](#getting-started)
 - [Development Setup](#development-setup)
+- [Code Formatting](#code-formatting)
 - [Making Changes](#making-changes)
 - [Commit Guidelines](#commit-guidelines)
 - [Pull Request Process](#pull-request-process)
@@ -66,6 +67,76 @@ task clean    # Clean NuGet packages
 task pack     # Build NuGet packages
 task lambda-test  # Start AWS Lambda test tool (port 5050)
 ```
+
+## Code Formatting
+
+Code formatting is automated using **CleanupCode** and **CSharpier**, ensuring consistent style across the project. All PRs are checked for formatting compliance in CI/CD.
+
+### Formatting Tools
+
+The project uses two complementary tools:
+
+1. **CleanupCode**: JetBrains code cleanup tool
+   - Applies code organization and style rules
+   - Uses the "Built-in: Full Cleanup" profile configured in `AwsLambda.Host.sln.DotSettings`
+   - Handles code structure and consistency
+
+2. **CSharpier**: Opinionated C# code formatter
+   - Enforces consistent formatting (similar to Prettier for C#)
+   - Handles spacing, line breaks, and code layout
+
+### Running Format Commands
+
+With [Task](https://taskfile.dev) installed:
+
+```bash
+# Format entire solution (both CleanupCode and CSharpier)
+task format:all
+
+# Run only CleanupCode
+task format:cleanupcode
+
+# Run only CSharpier
+task format:csharpier
+```
+
+Without Task (using dotnet directly):
+
+```bash
+# CleanupCode formatting
+dotnet jb cleanupcode \
+  AwsLambda.Host.sln \
+  --settings="AwsLambda.Host.sln.DotSettings" \
+  --profile="Built-in: Full Cleanup" \
+  --verbosity=WARN \
+  --no-build
+
+# CSharpier formatting
+dotnet csharpier format .
+```
+
+### Before Committing
+
+**Always format your code before committing**:
+
+```bash
+# Format your changes
+task format:all
+
+# Stage and commit the formatted files
+git add .
+git commit -m "style: format code with CleanupCode and CSharpier"
+```
+
+Failing to format code may cause CI/CD checks to fail, as the GitHub Actions workflow (`pr-build.yaml`) includes a code quality check that runs `task format:all` and validates no files were modified.
+
+### IDE Integration
+
+If you're using **JetBrains Rider** or **Visual Studio** with ReSharper:
+
+- The solution includes `AwsLambda.Host.sln.DotSettings` with formatting rules
+- Format on save can be configured in your IDE settings
+- This ensures consistency even before running Task commands
 
 ## Making Changes
 
