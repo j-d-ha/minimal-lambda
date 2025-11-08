@@ -77,7 +77,7 @@ jobs:
         uses: go-task/setup-task@v1
 
       - name: Run formatting
-        run: task format:all
+        run: task format
 
       - name: Check for formatting changes
         run: |

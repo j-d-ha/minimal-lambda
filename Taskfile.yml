@@ -1,74 +1,9 @@
 version: '3'
 
-vars:
-  NUGET_API: https://api.nuget.org/v3-flatcontainer
-
 includes:
+  build: ./tasks/BuildTasks.yml
+  publish: ./tasks/PublishTasks.yml
   format: ./tasks/FormattingTasks.yml
   local: ./tasks/LocalDevTasks.yml
 
 tasks:
-  validate_version:
-    desc: Check that package version does not already exist on NuGet
-    silent: true
-    cmds:
-      - echo "📋 Validating version for {{.DIR}}"
-      - bash ./scripts/validate-version.sh '{{.DIR}}'
-
-  clean:
-    desc: Clean NuGet packages from Release folder
-    silent: true
-    cmds:
-      - echo "🧹 Cleaning"
-      - dotnet clean --configuration Release
-
-  pack:
-    desc: Build the NuGet package
-    silent: true
-    cmds:
-      - task: clean
-      - echo "📦 Packing {{.DIR}}"
-      - dotnet restore
-      - dotnet build --configuration Release --no-restore
-      - dotnet pack --configuration Release --no-build
-      - echo "✅ Packed"
-
-  publish:
-    desc: Publish the NuGet package to NuGet.org
-    dir: '{{.DIR}}'
-    silent: true
-    cmds:
-      - echo "🚀 Publishing {{.DIR}}"
-      - dotnet nuget push bin/Release/*.nupkg --source https://api.nuget.org/v3/index.json --api-key $NUGET_API_KEY --skip-duplicate
-      - echo "✨ Published {{.DIR}}"
-
-  publish-all:
-    desc: Pack, validate versions, and publish all packages (Host, Abstractions, OpenTelemetry)
-    silent: true
-    cmds:
-      - echo "🔄 Starting publish-all workflow"
-      # Pack all packages
-      - task: pack
-      # Validate all versions
-      - echo "🔍 Validating all versions"
-      - task: validate_version
-        vars:
-          DIR: src/AwsLambda.Host
-      - task: validate_version
-        vars:
-          DIR: src/AwsLambda.Host.Abstractions
-      - task: validate_version
-        vars:
-          DIR: src/AwsLambda.Host.OpenTelemetry
-      # Publish all packages
-      - echo "🚀 Publishing all packages"
-      - task: publish
-        vars:
-          DIR: src/AwsLambda.Host
-      - task: publish
-        vars:
-          DIR: src/AwsLambda.Host.Abstractions
-      - task: publish
-        vars:
-          DIR: src/AwsLambda.Host.OpenTelemetry
-      - echo "✨ All packages published successfully!"

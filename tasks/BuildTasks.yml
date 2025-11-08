@@ -1,0 +1,20 @@
+version: '3'
+
+tasks:
+  clean:
+    desc: Clean NuGet packages from Release folder
+    silent: true
+    cmds:
+      - echo "🧹 Cleaning"
+      - dotnet clean --configuration Release
+
+  pack:
+    desc: Build the NuGet package
+    silent: true
+    cmds:
+      - task: clean
+      - echo "📦 Packing {{.DIR}}"
+      - dotnet restore
+      - dotnet build --configuration Release --no-restore
+      - dotnet pack --configuration Release --no-build
+      - echo "✅ Packed"
