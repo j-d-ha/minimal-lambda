@@ -45,6 +45,30 @@ public interface ILambdaApplication
         Func<ILambdaHostContext, ILambdaSerializer, Task<Stream>>? serializer
     );
 
+    /// <summary>Adds middleware to the Lambda invocation pipeline.</summary>
+    /// <remarks>
+    ///     <para>
+    ///         Middleware provides a way to intercept and process Lambda invocations before they reach
+    ///         the handler, or to process the response after the handler completes.
+    ///     </para>
+    ///     <para>
+    ///         Middleware components are applied in the order they are registered using the Use method.
+    ///         Each middleware receives the next middleware in the pipeline and can choose to call it,
+    ///         modify the request/response, or handle the invocation entirely.
+    ///     </para>
+    ///     <para>
+    ///         This is useful for implementing cross-cutting concerns such as logging, metrics, error
+    ///         handling, authentication, and request/response transformation.
+    ///     </para>
+    /// </remarks>
+    /// <param name="middleware">
+    ///     A function that receives the next <see cref="LambdaInvocationDelegate" />
+    ///     in the pipeline and returns a new <see cref="LambdaInvocationDelegate" /> that represents the
+    ///     middleware behavior.
+    /// </param>
+    /// <returns>The current <see cref="ILambdaApplication" /> instance for method chaining.</returns>
+    /// <seealso
+    ///     cref="MapHandler(LambdaInvocationDelegate, Func{ILambdaHostContext, ILambdaSerializer, Stream, Task}, Func{ILambdaHostContext, ILambdaSerializer, Task{Stream}})" />
     ILambdaApplication Use(Func<LambdaInvocationDelegate, LambdaInvocationDelegate> middleware);
 
     /// <summary>
