@@ -276,7 +276,8 @@ public class ExpressionLambdaVerifyTests
             """
         );
 
-    // Additional handler type not shown in the examples - generic handlers with complex custom types
+    // Additional handler type not shown in the examples - generic handlers with complex custom
+    // types
     [Fact]
     public async Task Test_ExpressionLambda_ComplexInput_ComplexOutput() =>
         await GeneratorTestHelpers.Verify(

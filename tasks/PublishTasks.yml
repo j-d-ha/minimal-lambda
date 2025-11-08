@@ -1,0 +1,49 @@
+version: '3'
+
+vars:
+  NUGET_API: https://api.nuget.org/v3-flatcontainer
+
+tasks:
+  validate_version:
+    desc: Check that package version does not already exist on NuGet
+    silent: true
+    cmds:
+      - echo "📋 Validating version for {{.DIR}}"
+      - bash ./scripts/validate-version.sh '{{.DIR}}'
+
+  publish:
+    desc: Publish the NuGet package to NuGet.org
+    dir: '{{.DIR}}'
+    silent: true
+    cmds:
+      - echo "🚀 Publishing {{.DIR}}"
+      - dotnet nuget push bin/Release/*.nupkg --source https://api.nuget.org/v3/index.json --api-key $NUGET_API_KEY --skip-duplicate
+      - echo "✨ Published {{.DIR}}"
+
+  publish-all:
+    desc: Pack, validate versions, and publish all packages (Host, Abstractions, OpenTelemetry)
+    silent: true
+    cmds:
+      - echo "🔄 Starting publish-all workflow"
+      - task: build:pack
+      - echo "🔍 Validating all versions"
+      - task: publish:validate_version
+        vars:
+          DIR: src/AwsLambda.Host
+      - task: publish:validate_version
+        vars:
+          DIR: src/AwsLambda.Host.Abstractions
+      - task: publish:validate_version
+        vars:
+          DIR: src/AwsLambda.Host.OpenTelemetry
+      - echo "🚀 Publishing all packages"
+      - task: publish:publish
+        vars:
+          DIR: src/AwsLambda.Host
+      - task: publish:publish
+        vars:
+          DIR: src/AwsLambda.Host.Abstractions
+      - task: publish:publish
+        vars:
+          DIR: src/AwsLambda.Host.OpenTelemetry
+      - echo "✨ All packages published successfully!"

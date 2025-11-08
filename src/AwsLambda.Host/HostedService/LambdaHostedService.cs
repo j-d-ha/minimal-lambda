@@ -16,6 +16,7 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
 
     private Task? _executeTask;
     private CancellationTokenSource? _stoppingCts;
+    private bool _disposed = false;
 
     /// <summary>Initializes a new instance of the <see cref="LambdaHostedService" /> class.</summary>
     /// <param name="bootstrap">The orchestrator responsible for managing the AWS Lambda bootstrap loop.</param>
@@ -48,7 +49,20 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
     }
 
     /// <inheritdoc />
-    public void Dispose() => _stoppingCts?.Cancel();
+    public void Dispose()
+    {
+        _stoppingCts?.Cancel();
+
+        if (_disposed)
+            return;
+
+        if (_executeTask?.IsCompleted == true)
+            _executeTask?.Dispose();
+
+        _stoppingCts?.Dispose();
+
+        _disposed = true;
+    }
 
     /// <summary>Triggered when the application host is ready to start the service.</summary>
     /// <param name="cancellationToken">Indicates that the start process has been aborted.</param>

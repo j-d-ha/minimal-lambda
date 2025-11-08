@@ -17,15 +17,15 @@
     <TrimMode>full</TrimMode>
     <AssemblyName>bootstrap</AssemblyName>
     <PublishTrimmed>true</PublishTrimmed>
-
     <InterceptorsNamespaces>$(InterceptorsNamespaces);AwsLambda.Host</InterceptorsNamespaces>
-
     <RootNamespace>Lambda.Host.Example.HelloWorldAot</RootNamespace>
   </PropertyGroup>
-
-
   <ItemGroup>
-    <ProjectReference Include="..\..\src\AwsLambda.Host\AwsLambda.Host.csproj"/>
-    <ProjectReference Include="..\..\src\AwsLambda.Host.SourceGenerators\AwsLambda.Host.SourceGenerators.csproj" ReferenceOutputAssembly="false" OutputItemType="Analyzer"/>
+    <ProjectReference Include="..\..\src\AwsLambda.Host\AwsLambda.Host.csproj" />
+    <ProjectReference
+      Include="..\..\src\AwsLambda.Host.SourceGenerators\AwsLambda.Host.SourceGenerators.csproj"
+      ReferenceOutputAssembly="false"
+      OutputItemType="Analyzer"
+    />
   </ItemGroup>
 </Project>
