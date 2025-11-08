@@ -8,6 +8,27 @@ using Microsoft.Extensions.Options;
 
 namespace AwsLambda.Host;
 
+/// <summary>A builder for configuring and constructing an AWS Lambda Host application.</summary>
+/// <remarks>
+///     <para>
+///         The <see cref="LambdaApplicationBuilder" /> is used to configure services, logging,
+///         configuration, and other aspects of a Lambda application before building it into a
+///         <see cref="LambdaApplication" /> instance.
+///     </para>
+///     <para>
+///         This builder implements the <see cref="IHostApplicationBuilder" /> interface, providing
+///         access to the standard .NET host builder APIs for dependency injection, configuration,
+///         logging, and metrics.
+///     </para>
+///     <para>
+///         Instances are created using factory methods on <see cref="LambdaApplication" />, such as
+///         <see cref="LambdaApplication.CreateBuilder()" />,
+///         <see cref="LambdaApplication.CreateBuilder(string[])" />, and
+///         <see cref="LambdaApplication.CreateBuilder(HostApplicationBuilderSettings)" />.
+///     </para>
+/// </remarks>
+/// <seealso cref="LambdaApplication.CreateBuilder()" />
+/// <seealso cref="IHostApplicationBuilder" />
 public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
 {
     private const string LambdaHostAppSettingsSectionName = "AwsLambdaHost";
@@ -47,21 +68,66 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
                 : new HostApplicationBuilder(settings)
         ) { }
 
+    /// <inheritdoc />
     public IDictionary<object, object> Properties =>
         ((IHostApplicationBuilder)_hostBuilder).Properties;
 
+    /// <inheritdoc />
     public IConfigurationManager Configuration => _hostBuilder.Configuration;
+
+    /// <inheritdoc />
     public IHostEnvironment Environment => _hostBuilder.Environment;
+
+    /// <inheritdoc />
     public ILoggingBuilder Logging => _hostBuilder.Logging;
+
+    /// <inheritdoc />
     public IMetricsBuilder Metrics => _hostBuilder.Metrics;
+
+    /// <inheritdoc />
     public IServiceCollection Services => _hostBuilder.Services;
 
+    /// <inheritdoc />
     public void ConfigureContainer<TContainerBuilder>(
         IServiceProviderFactory<TContainerBuilder> factory,
         Action<TContainerBuilder>? configure = null
     )
         where TContainerBuilder : notnull => _hostBuilder.ConfigureContainer(factory, configure);
 
+    /// <summary>Builds the Lambda application with the configured services and settings.</summary>
+    /// <remarks>
+    ///     <para>
+    ///         The <c>Build</c> method finalizes the configuration and creates a
+    ///         <see cref="LambdaApplication" /> instance that is ready to run. It performs the following
+    ///         operations:
+    ///     </para>
+    ///     <list type="bullet">
+    ///         <item>
+    ///             <description>
+    ///                 Registers a default <see cref="ILambdaCancellationTokenSourceFactory" />
+    ///                 if one is not already registered, which manages cancellation tokens for Lambda
+    ///                 invocations.
+    ///             </description>
+    ///         </item>
+    ///         <item>
+    ///             <description>
+    ///                 Applies shutdown timeout settings from <see cref="LambdaHostOptions" /> to
+    ///                 ensure proper graceful shutdown before the Lambda runtime timeout.
+    ///             </description>
+    ///         </item>
+    ///         <item>
+    ///             <description>
+    ///                 Constructs the underlying host and wraps it in a
+    ///                 <see cref="LambdaApplication" /> instance.
+    ///             </description>
+    ///         </item>
+    ///     </list>
+    /// </remarks>
+    /// <returns>A configured <see cref="LambdaApplication" /> ready to be started and run.</returns>
+    /// <exception cref="InvalidOperationException">
+    ///     Thrown when the build process fails due to service
+    ///     configuration issues.
+    /// </exception>
     public LambdaApplication Build()
     {
         // Attempt to add a default cancellation token source factory if one is not already
