@@ -66,7 +66,7 @@ jobs:
           ~/.sonar/scanner/dotnet-sonarscanner begin \
             /k:"j-d-ha_aws-lambda-host" \
             /o:"j-d-ha" \
-            /d:sonar.exclusions="**/bin/**,**/obj/**,tests/AwsLambda.Host.SourceGenerators.UnitTests/Snapshots/**,**/coverage/**" \
+            /d:sonar.exclusions="**/bin/**,**/obj/**,tests/AwsLambda.Host.SourceGenerators.UnitTests/Snapshots/**,**/coverage/**,**/.nuget/**" \
             /d:sonar.token="$SONAR_TOKEN"
           dotnet build --no-restore --configuration Release /p:TreatWarningsAsErrors=true
           ~/.sonar/scanner/dotnet-sonarscanner end /d:sonar.token="$SONAR_TOKEN"
