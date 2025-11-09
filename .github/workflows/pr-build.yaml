@@ -59,7 +59,7 @@ jobs:
           mkdir -p ~/.sonar/scanner
           dotnet tool update dotnet-sonarscanner --tool-path ~/.sonar/scanner
 
-      - name: Build and analyze with SonarQube
+      - name: Start SonarQube
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: |
@@ -69,11 +69,17 @@ jobs:
             /d:sonar.exclusions="**/bin/**,**/obj/**,tests/AwsLambda.Host.SourceGenerators.UnitTests/Snapshots/**,**/coverage/**,**/.nuget/**,**/packages/**" \
             /d:sonar.coverage.exclusions="**/*" \
             /d:sonar.token="$SONAR_TOKEN"
-          dotnet build --no-restore --configuration Release /p:TreatWarningsAsErrors=true
-          ~/.sonar/scanner/dotnet-sonarscanner end /d:sonar.token="$SONAR_TOKEN"
-
+          
+      - name: Build
+        run: dotnet build --no-restore --configuration Release /p:TreatWarningsAsErrors=true
+        
       - name: Run tests
         run: dotnet test --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
+        
+      - name: Stop SonarQube
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+        run: ~/.sonar/scanner/dotnet-sonarscanner end /d:sonar.token="$SONAR_TOKEN"
 
       - name: Upload coverage reports
         uses: codecov/codecov-action@v5
