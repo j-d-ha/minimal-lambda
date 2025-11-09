@@ -32,5 +32,31 @@ The Lambda Local Emulator is used to run the Lambda function locally.
 It can be started with the following command:
 
 ```bash
-dotnet lambda-test-tool start --lambda-emulator-port 5050
+dotnet lambda-test-tool start --lambda-emulator-port 5050 --config-storage-path "./events"
 ```
+
+### Running the Lambda function
+
+The Lambda function can be run with the following command:
+
+```bash
+dotnet run
+```
+
+### Invoking an event
+
+Once the Lambda Local Emulator and the function are running, you can invoke an event by opening the
+UI and pasting the following JSON into the "Function Input" box:
+
+```json
+{
+  "Name": "John"
+}
+```
+
+Instead, a sample event has been saved and should be available in the "Example Requests"
+dropdown menu.
+
+You should then be able to see the trace in Jaeger. If you don't, give it a few seconds to propagate
+or stop your lambda function with `ctrl+c`, this will trigger shutdown with includes a force flush
+of traces and metrics.

@@ -30,4 +30,7 @@
     <PackageReference Include="OpenTelemetry.Exporter.OpenTelemetryProtocol" />
     <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="events\" />
+  </ItemGroup>
 </Project>
