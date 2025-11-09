@@ -4,6 +4,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using OpenTelemetry.Exporter;
 using OpenTelemetry.Instrumentation.AWSLambda;
+using OpenTelemetry.Metrics;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Trace;
 
@@ -30,6 +31,23 @@ builder
             .AddOtlpExporter(options =>
             {
                 options.Endpoint = new Uri("http://localhost:4318/v1/traces");
+                options.Protocol = OtlpExportProtocol.HttpProtobuf;
+            })
+    )
+    .WithMetrics(configure =>
+        configure
+            .AddMeter(Instrumentation.ActivitySourceName)
+            .SetResourceBuilder(
+                ResourceBuilder
+                    .CreateDefault()
+                    .AddService(
+                        Instrumentation.ActivitySourceName,
+                        serviceVersion: Instrumentation.ActivitySourceVersion
+                    )
+            )
+            .AddOtlpExporter(options =>
+            {
+                options.Endpoint = new Uri("http://localhost:4318/v1/metrics");
                 options.Protocol = OtlpExportProtocol.HttpProtobuf;
             })
     );
