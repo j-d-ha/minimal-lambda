@@ -6,7 +6,7 @@ using Microsoft.Extensions.Hosting;
 
 var builder = LambdaApplication.CreateBuilder();
 
-builder.Services.ConfigureLambdaHost(settings =>
+builder.Services.ConfigureLambdaHostOptions(settings =>
     settings.LambdaSerializer = new SourceGeneratorLambdaJsonSerializer<SerializerContext>()
 );
 

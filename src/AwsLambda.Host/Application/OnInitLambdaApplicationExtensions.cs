@@ -7,31 +7,6 @@ namespace AwsLambda.Host;
 ///     Overloads for <see cref="ILambdaApplication.OnInit(LambdaInitDelegate)" /> that support
 ///     automatic dependency injection for initialization handlers.
 /// </summary>
-/// <remarks>
-///     Source generation creates the wiring code to resolve handler dependencies, using
-///     compile-time interceptors to replace the calls. Instead of using the base delegate, declare
-///     handler parameters to be automatically injected from the dependency injection container. A
-///     scope is created for each handler invocation, and the container is disposed of after the
-///     handler returns. If a boolean return value is returned, it will be used to determine whether
-///     the Function Init phase should continue, with <c>false</c> from any Init handler aborting the
-///     startup of the Function.
-/// </remarks>
-/// <example>
-///     <code>
-///     lambda.OnInit(
-///         async (ILogger logger, IService service, CancellationToken ct) =>
-///         {
-///             logger.LogInformation("Initializing");
-///             if (!await service.TryLoadDataIntoCache(ct))
-///             {
-///                 logger.LogError("Failed to load data into cache");
-///                 return false;
-///             }
-///             return true;
-///         }
-///     );
-///     </code>
-/// </example>
 [ExcludeFromCodeCoverage]
 public static class OnInitLambdaApplicationExtensions
 {

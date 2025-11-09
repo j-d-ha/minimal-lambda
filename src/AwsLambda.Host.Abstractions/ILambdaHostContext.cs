@@ -8,8 +8,23 @@ namespace AwsLambda.Host;
 /// </summary>
 public interface ILambdaHostContext : ILambdaContext
 {
+    /// <summary>Gets or sets the deserialized Lambda event object.</summary>
+    /// <remarks>
+    ///     <para>
+    ///         This property contains the event data passed to the Lambda handler, deserialized into an
+    ///         object instance. The type depends on the event source and the deserialization logic.
+    ///     </para>
+    /// </remarks>
     object? Event { get; set; }
 
+    /// <summary>Gets or sets the response object to be serialized back to the Lambda caller.</summary>
+    /// <remarks>
+    ///     <para>
+    ///         This property holds the value that will be serialized and returned as the result of the
+    ///         Lambda invocation. It is typically set by the handler function during invocation
+    ///         processing.
+    ///     </para>
+    /// </remarks>
     object? Response { get; set; }
 
     /// <summary>

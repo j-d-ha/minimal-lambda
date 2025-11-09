@@ -77,6 +77,13 @@ public class LambdaHostOptions
     /// </remarks>
     public bool ClearLambdaOutputFormatting { get; set; } = false;
 
+    /// <summary>Gets or sets the options for configuring the Lambda bootstrap behavior.</summary>
+    /// <remarks>
+    ///     <para>
+    ///         The <see cref="LambdaBootstrapOptions" /> contains settings that control how the Lambda
+    ///         runtime bootstrap process operates, including interaction with the Lambda runtime API.
+    ///     </para>
+    /// </remarks>
     public LambdaBootstrapOptions BootstrapOptions { get; set; } = new();
 
     /// <summary>

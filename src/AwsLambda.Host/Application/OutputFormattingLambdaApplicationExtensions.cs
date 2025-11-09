@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace AwsLambda.Host;
 
+/// <summary>Provides extension methods for managing Lambda runtime output formatting.</summary>
 public static class OutputFormattingLambdaApplicationExtensions
 {
     /// <summary>Clears Lambda runtime output formatting and resets console output to standard behavior.</summary>

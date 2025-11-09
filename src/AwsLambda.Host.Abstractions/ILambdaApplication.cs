@@ -2,17 +2,69 @@ using Amazon.Lambda.Core;
 
 namespace AwsLambda.Host;
 
+/// <summary>Provides the core API for building and configuring an AWS Lambda application.</summary>
 public interface ILambdaApplication
 {
     /// <summary>Gets the service provider for resolving dependencies.</summary>
     IServiceProvider Services { get; }
 
+    /// <summary>
+    ///     Registers a handler function to process Lambda invocations with custom deserialization and
+    ///     serialization.
+    /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         Only one handler can be registered. Attempting to register multiple handlers will result
+    ///         in an error.
+    ///     </para>
+    ///     <para>
+    ///         Extension method overloads exist to enable source generation to automatically handle
+    ///         serialization, deserialization, and dependency injection. These overloads provide a more
+    ///         convenient API for common scenarios and should be preferred when possible.
+    ///     </para>
+    /// </remarks>
+    /// <param name="handler">
+    ///     The <see cref="LambdaInvocationDelegate" /> handler function that processes
+    ///     the Lambda invocation.
+    /// </param>
+    /// <param name="deserializer">
+    ///     An optional function to deserialize the incoming Lambda event from a
+    ///     stream.
+    /// </param>
+    /// <param name="serializer">An optional function to serialize the handler response to a stream.</param>
+    /// <returns>The current <see cref="ILambdaApplication" /> instance for method chaining.</returns>
+    /// <seealso cref="LambdaInvocationDelegate" />
+    /// <seealso cref="Use(Func{LambdaInvocationDelegate, LambdaInvocationDelegate})" />
     ILambdaApplication MapHandler(
         LambdaInvocationDelegate handler,
         Func<ILambdaHostContext, ILambdaSerializer, Stream, Task>? deserializer,
         Func<ILambdaHostContext, ILambdaSerializer, Task<Stream>>? serializer
     );
 
+    /// <summary>Adds middleware to the Lambda invocation pipeline.</summary>
+    /// <remarks>
+    ///     <para>
+    ///         Middleware provides a way to intercept and process Lambda invocations before they reach
+    ///         the handler, or to process the response after the handler completes.
+    ///     </para>
+    ///     <para>
+    ///         Middleware components are applied in the order they are registered using the Use method.
+    ///         Each middleware receives the next middleware in the pipeline and can choose to call it,
+    ///         modify the request/response, or handle the invocation entirely.
+    ///     </para>
+    ///     <para>
+    ///         This is useful for implementing cross-cutting concerns such as logging, metrics, error
+    ///         handling, authentication, and request/response transformation.
+    ///     </para>
+    /// </remarks>
+    /// <param name="middleware">
+    ///     A function that receives the next <see cref="LambdaInvocationDelegate" />
+    ///     in the pipeline and returns a new <see cref="LambdaInvocationDelegate" /> that represents the
+    ///     middleware behavior.
+    /// </param>
+    /// <returns>The current <see cref="ILambdaApplication" /> instance for method chaining.</returns>
+    /// <seealso
+    ///     cref="MapHandler(LambdaInvocationDelegate, Func{ILambdaHostContext, ILambdaSerializer, Stream, Task}, Func{ILambdaHostContext, ILambdaSerializer, Task{Stream}})" />
     ILambdaApplication Use(Func<LambdaInvocationDelegate, LambdaInvocationDelegate> middleware);
 
     /// <summary>
