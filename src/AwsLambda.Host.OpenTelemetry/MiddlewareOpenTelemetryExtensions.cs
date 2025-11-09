@@ -4,6 +4,10 @@ using OpenTelemetry.Trace;
 
 namespace AwsLambda.Host;
 
+/// <summary>
+///     Provides extension methods for enabling OpenTelemetry tracing in the Lambda invocation
+///     pipeline.
+/// </summary>
 [ExcludeFromCodeCoverage]
 public static class MiddlewareOpenTelemetryExtensions
 {

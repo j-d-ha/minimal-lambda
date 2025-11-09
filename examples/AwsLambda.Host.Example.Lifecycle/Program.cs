@@ -6,7 +6,7 @@ using Microsoft.Extensions.Hosting;
 
 var builder = LambdaApplication.CreateBuilder();
 
-builder.Services.ConfigureLambdaHost(options =>
+builder.Services.ConfigureLambdaHostOptions(options =>
 {
     options.InitTimeout = TimeSpan.FromSeconds(5);
     options.ShutdownDuration = TimeSpan.FromSeconds(3);

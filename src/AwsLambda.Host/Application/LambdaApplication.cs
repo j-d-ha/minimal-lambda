@@ -7,6 +7,7 @@ using Microsoft.Extensions.Options;
 
 namespace AwsLambda.Host;
 
+/// <summary>A Lambda application that provides host functionality for running AWS Lambda handlers.</summary>
 public sealed class LambdaApplication : IHost, ILambdaApplication, IAsyncDisposable
 {
     private readonly DelegateHolder _delegateHolder;
