@@ -11,15 +11,21 @@ var builder = LambdaApplication.CreateBuilder();
 
 builder.Services.AddScoped<IService, Service>();
 builder.Services.AddSingleton<Instrumentation>();
+builder.Services.AddSingleton<NameMetrics>();
 
 builder
     .Services.AddOpenTelemetry()
     .WithTracing(configure =>
         configure
             .AddAWSLambdaConfigurations()
-            .AddSource("MyLambda")
+            .AddSource(Instrumentation.ActivitySourceName)
             .SetResourceBuilder(
-                ResourceBuilder.CreateDefault().AddService("MyLambda", serviceVersion: "1.0.0")
+                ResourceBuilder
+                    .CreateDefault()
+                    .AddService(
+                        Instrumentation.ActivitySourceName,
+                        serviceVersion: Instrumentation.ActivitySourceVersion
+                    )
             )
             .AddOtlpExporter(options =>
             {

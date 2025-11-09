@@ -2,7 +2,7 @@ using System.Diagnostics;
 
 namespace AwsLambda.Host.Example.OpenTelemetry;
 
-internal class Service(Instrumentation instrumentation) : IService
+internal class Service(Instrumentation instrumentation, NameMetrics nameMetrics) : IService
 {
     private readonly ActivitySource _activitySource = instrumentation.ActivitySource;
 
@@ -11,6 +11,8 @@ internal class Service(Instrumentation instrumentation) : IService
         using var activity = _activitySource.StartActivity();
 
         await Task.Delay(TimeSpan.FromSeconds(1), cancellationToken);
+
+        nameMetrics.ProcessName(name);
 
         return $"Hello {name}!";
     }
