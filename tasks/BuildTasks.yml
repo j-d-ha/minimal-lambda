@@ -30,6 +30,7 @@ tasks:
     silent: true
     cmds:
       - echo "🧹 Cleaning"
+      - find src -path "src/*/obj/Release/*.nuspec" -delete
       - dotnet clean --configuration Release
 
   pack:

@@ -2,6 +2,9 @@ version: '3'
 
 vars:
   NUGET_API: https://api.nuget.org/v3-flatcontainer
+  
+includes:
+  build: BuildTasks.yml
 
 tasks:
   validate_version:
@@ -27,23 +30,23 @@ tasks:
       - echo "🔄 Starting publish-all workflow"
       - task: build:pack
       - echo "🔍 Validating all versions"
-      - task: publish:validate_version
+      - task: validate_version
         vars:
           DIR: src/AwsLambda.Host
-      - task: publish:validate_version
+      - task: validate_version
         vars:
           DIR: src/AwsLambda.Host.Abstractions
-      - task: publish:validate_version
+      - task: validate_version
         vars:
           DIR: src/AwsLambda.Host.OpenTelemetry
       - echo "🚀 Publishing all packages"
-      - task: publish:publish
+      - task: publish
         vars:
           DIR: src/AwsLambda.Host
-      - task: publish:publish
+      - task: publish
         vars:
           DIR: src/AwsLambda.Host.Abstractions
-      - task: publish:publish
+      - task: publish
         vars:
           DIR: src/AwsLambda.Host.OpenTelemetry
       - echo "✨ All packages published successfully!"
