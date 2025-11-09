@@ -87,15 +87,6 @@ template: |
 
   $CHANGES
 
-  ## Packages
-
-  All 3 packages are included in this release:
-  - `AwsLambda.Host`
-  - `AwsLambda.Host.Abstractions`
-  - `AwsLambda.Host.OpenTelemetry`
-
-  These packages will be automatically published to NuGet.org upon release.
-
 include-labels:
   - 'type: feat'
   - 'type: fix'
