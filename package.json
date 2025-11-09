@@ -1,0 +1,14 @@
+{
+  "name": "aws-lambda-host",
+  "version": "0.0.7",
+  "description": "AWS Lambda Host - .NET library for running code on AWS Lambda",
+  "private": true,
+  "devDependencies": {
+    "@commitlint/cli": "^18.0.0",
+    "@commitlint/config-conventional": "^18.0.0",
+    "husky": "^8.0.0"
+  },
+  "scripts": {
+    "prepare": "husky install"
+  }
+}

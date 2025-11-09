@@ -1,0 +1,42 @@
+name: Validate PR Title
+
+on:
+  pull_request:
+    types: [opened, edited, synchronize]
+    branches:
+      - main
+
+permissions:
+  pull-requests: read
+
+jobs:
+  validate-pr-title:
+    runs-on: ubuntu-latest
+    name: Validate PR title format
+    # Skip validation for Dependabot PRs - they have their own naming convention
+    if: github.actor != 'dependabot[bot]'
+    steps:
+      - name: Validate PR title follows conventional commits
+        uses: amannn/action-semantic-pull-request@v5.4.0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          types: |
+            feat
+            fix
+            docs
+            refactor
+            test
+            chore
+            ci
+          scopes: |
+            host
+            abstractions
+            opentelemetry
+            deps
+            build
+            ci
+            github
+          requireScope: false
+          subjectPattern: ^[a-z].*
+          subjectPatternError: Subject must start with lowercase letter

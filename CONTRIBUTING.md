@@ -14,6 +14,7 @@ Thank you for your interest in contributing to the AWS Lambda Host project! This
 - [Code Style](#code-style)
 - [Testing](#testing)
 - [Documentation](#documentation)
+- [Release Process](#release-process)
 - [GitHub Actions](#github-actions)
 
 ## Code of Conduct
@@ -39,12 +40,16 @@ We are committed to providing a welcoming and inclusive environment for all cont
 ### Prerequisites
 
 - **.NET SDK 8.0+** (8.0, 9.0, or 10.0 RC)
+- **Node.js** (for commitlint & husky - local commit validation)
 - **Task** (optional, for running automated tasks) - see [Taskfile.yml](/Taskfile.yml)
 - **Git** with configured `user.name` and `user.email`
 
 ### Building the Project
 
 ```bash
+# Install Node dependencies (commitlint & husky for commit validation)
+npm install
+
 # Restore dependencies
 dotnet restore
 
@@ -241,7 +246,9 @@ when using extension method syntax.
    ```
 
 3. **Create a Pull Request** using the [PR template](/.github/pull_request_template.md):
-   - Use clear, descriptive title following Conventional Commits format
+   - **Title must follow Conventional Commits format** (validated by CI)
+   - Format: `<type>(scope): <description>`
+   - Valid types: `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `ci`, `style`
    - Reference related issues (e.g., `Closes #42`)
    - Complete the PR template checklist
    - Request review from maintainers
@@ -441,6 +448,18 @@ All pull requests run through automated checks:
 - **Code analysis**: StyleCop Analyzers, FxCop
 
 Ensure your changes pass all checks before requesting review.
+
+## Release Process
+
+The release process is fully automated using Release Drafter, GREN, and GitHub Actions:
+
+1. Changes merged to `main` are automatically included in draft releases
+2. Maintainers publish the draft release on GitHub
+3. Packages are automatically published to NuGet.org
+
+**For detailed information:** See [RELEASE_PROCESS.md](/docs/RELEASE_PROCESS.md)
+
+---
 
 ## GitHub Actions
 

@@ -72,3 +72,5 @@ nunit-*.xml
 **/Temp*.cs
 
 **/*.env
+
+**/node_modules/

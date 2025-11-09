@@ -1,0 +1,91 @@
+name-template: 'v$RESOLVED_VERSION'
+tag-template: 'v$RESOLVED_VERSION'
+
+categories:
+  - title: '🚀 Features'
+    labels:
+      - 'type: feat'
+      - 'feature'
+  - title: '🐛 Bug Fixes'
+    labels:
+      - 'type: fix'
+      - 'bug'
+      - 'bugfix'
+  - title: '📚 Documentation'
+    labels:
+      - 'type: docs'
+      - 'documentation'
+  - title: '⚡ Performance'
+    labels:
+      - 'type: perf'
+      - 'performance'
+  - title: '🔄 Refactoring'
+    labels:
+      - 'type: refactor'
+      - 'refactor'
+  - title: '✅ Tests'
+    labels:
+      - 'type: test'
+      - 'test'
+  - title: '🔧 Maintenance'
+    labels:
+      - 'type: chore'
+      - 'type: ci'
+      - 'chore'
+      - 'ci'
+  - title: '⚠️ Breaking Changes'
+    labels:
+      - 'breaking'
+      - 'breaking-change'
+
+version-resolver:
+  major:
+    labels:
+      - 'breaking'
+      - 'breaking-change'
+  minor:
+    labels:
+      - 'type: feat'
+      - 'feature'
+  patch:
+    labels:
+      - 'type: fix'
+      - 'type: docs'
+      - 'type: chore'
+      - 'type: ci'
+      - 'bug'
+
+template: |
+  ## Changes in this Release
+
+  $CHANGES
+
+  ## Packages
+
+  All 3 packages are included in this release:
+  - `AwsLambda.Host`
+  - `AwsLambda.Host.Abstractions`
+  - `AwsLambda.Host.OpenTelemetry`
+
+  These packages will be automatically published to NuGet.org upon release.
+
+include-labels:
+  - 'type: feat'
+  - 'type: fix'
+  - 'type: docs'
+  - 'type: refactor'
+  - 'type: test'
+  - 'type: chore'
+  - 'type: ci'
+  - 'feature'
+  - 'bug'
+  - 'breaking'
+  - 'breaking-change'
+
+exclude-labels:
+  - 'skip-changelog'
+  - 'internal'
+
+prerelease: false
+prerelease-identifier: 'alpha'
+commitish: 'main'
