@@ -2,6 +2,7 @@ using Amazon.Lambda.Core;
 
 namespace AwsLambda.Host;
 
+/// <summary>Provides the core API for building and configuring an AWS Lambda application.</summary>
 public interface ILambdaApplication
 {
     /// <summary>Gets the service provider for resolving dependencies.</summary>
@@ -28,14 +29,9 @@ public interface ILambdaApplication
     /// </param>
     /// <param name="deserializer">
     ///     An optional function to deserialize the incoming Lambda event from a
-    ///     stream. If <c>null</c>, the event in the context is expected to be a <see cref="Stream" /> and
-    ///     no deserialization is applied.
+    ///     stream.
     /// </param>
-    /// <param name="serializer">
-    ///     An optional function to serialize the handler response to a stream. If
-    ///     <c>null</c>, the response in the context is expected to be a <see cref="Stream" /> and no
-    ///     serialization is applied.
-    /// </param>
+    /// <param name="serializer">An optional function to serialize the handler response to a stream.</param>
     /// <returns>The current <see cref="ILambdaApplication" /> instance for method chaining.</returns>
     /// <seealso cref="LambdaInvocationDelegate" />
     /// <seealso cref="Use(Func{LambdaInvocationDelegate, LambdaInvocationDelegate})" />

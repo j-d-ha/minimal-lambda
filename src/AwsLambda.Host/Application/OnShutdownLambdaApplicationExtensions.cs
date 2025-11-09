@@ -7,22 +7,6 @@ namespace AwsLambda.Host;
 ///     Overloads for <see cref="ILambdaApplication.OnShutdown(LambdaShutdownDelegate)" /> that
 ///     support automatic dependency injection for shutdown handlers.
 /// </summary>
-/// <remarks>
-///     Source generation creates the wiring code to resolve handler dependencies, using
-///     compile-time interceptors to replace the calls. Instead of using the base delegate, declare
-///     handler parameters to be automatically injected from the dependency injection container. A
-///     scope is created for each handler invocation, and the container is disposed of after the
-///     handler returns.
-/// </remarks>
-/// <example>
-///     <code>
-///     lambda.OnShutdown(async (ILogger logger, DbContext database) =>
-///     {
-///         logger.LogInformation("Shutting down");
-///         await database.FlushAsync();
-///     });
-///     </code>
-/// </example>
 [ExcludeFromCodeCoverage]
 public static class OnShutdownLambdaApplicationExtensions
 {
