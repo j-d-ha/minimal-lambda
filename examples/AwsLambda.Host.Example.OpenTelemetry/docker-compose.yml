@@ -1,0 +1,11 @@
+services:
+  # Jaeger all-in-one (v2)
+  jaeger:
+    image: jaegertracing/jaeger:latest
+    container_name: jaeger
+    environment:
+      - COLLECTOR_OTLP_ENABLED=true
+    ports:
+      - "16686:16686"  # Jaeger UI - Open http://localhost:16686 in your browser
+      - "4317:4317"    # OTLP gRPC - Send traces here from your app
+      - "4318:4318"    # OTLP HTTP - Or use this endpoint
