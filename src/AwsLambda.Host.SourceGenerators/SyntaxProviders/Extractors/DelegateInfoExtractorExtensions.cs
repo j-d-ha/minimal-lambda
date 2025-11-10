@@ -156,12 +156,15 @@ internal static class DelegateInfoExtractorExtensions
                 fullResponseType != TypeConstants.Void
                 && (invokeMethod.IsAsync || invokeMethod.ReturnType.IsTypeAwaitable());
 
+            var isResponseILambdaResponse = invokeMethod.ReturnType.IsILambdaResponse();
+
             return new DelegateInfo(
                 fullResponseType,
                 unwrappedResponseType,
                 updatedParameters,
                 isAwaitable,
-                delegateInfo.IsAsync
+                delegateInfo.IsAsync,
+                isResponseILambdaResponse
             );
         };
 
@@ -201,12 +204,15 @@ internal static class DelegateInfoExtractorExtensions
             fullResponseType != TypeConstants.Void
             && (methodSymbol.IsAsync || methodSymbol.ReturnType.IsTypeAwaitable());
 
+        var isResponseILambdaResponse = methodSymbol.ReturnType.IsILambdaResponse();
+
         return new DelegateInfo(
             fullResponseType,
             unwrappedResponseType,
             parameters,
             isAwaitable,
-            methodSymbol.IsAsync
+            methodSymbol.IsAsync,
+            isResponseILambdaResponse
         );
     }
 
@@ -315,14 +321,22 @@ internal static class DelegateInfoExtractorExtensions
             fullResponseType != TypeConstants.Void
             && (isAsync || (returnType?.IsTypeAwaitable() ?? false));
 
+        var isResponseILambdaResponse = returnType.IsILambdaResponse();
+
         return new DelegateInfo(
             fullResponseType,
             unwrappedResponseType,
             parameters,
             isAwaitable,
-            isAsync
+            isAsync,
+            isResponseILambdaResponse
         );
     }
+
+    private static bool IsILambdaResponse(this ITypeSymbol? typeSymbol) =>
+        typeSymbol?.AllInterfaces.Any(i =>
+            i.OriginalDefinition.GetAsGlobal() == "global::AwsLambda.Host.ILambdaResponse<TSelf>"
+        ) ?? false;
 
     private static bool IsTypeAwaitable(this ITypeSymbol typeSymbol) =>
         typeSymbol.IsTask() || typeSymbol.IsValueTask();

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using AwsLambda.Host.SourceGenerators.Extensions;
 using Microsoft.CodeAnalysis;
 
@@ -11,7 +12,8 @@ internal readonly record struct ParameterInfo(
     ParameterSource Source,
     KeyedServiceKeyInfo? KeyedServiceKey,
     bool IsNullable,
-    bool IsOptional
+    bool IsOptional,
+    bool IsILambdaRequest
 )
 {
     internal bool IsRequired => !IsOptional && !IsNullable;
@@ -24,6 +26,11 @@ internal readonly record struct ParameterInfo(
         var (source, keyedService) = GetSourceFromAttribute(parameter.GetAttributes(), type);
         var isNullable = parameter.NullableAnnotation == NullableAnnotation.Annotated;
         var isOptional = parameter.IsOptional;
+        var isILambdaRequest =
+            source == ParameterSource.Event
+            && parameter.Type.AllInterfaces.Any(i =>
+                i.OriginalDefinition.GetAsGlobal() == "global::AwsLambda.Host.ILambdaRequest<TSelf>"
+            );
 
         return new ParameterInfo(
             type,
@@ -32,7 +39,8 @@ internal readonly record struct ParameterInfo(
             source,
             keyedService,
             isNullable,
-            isOptional
+            isOptional,
+            isILambdaRequest
         );
     }
 

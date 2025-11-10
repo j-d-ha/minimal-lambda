@@ -8,7 +8,8 @@ internal readonly record struct DelegateInfo(
     string? UnwrappedResponseType,
     EquatableArray<ParameterInfo> Parameters,
     bool IsAwaitable,
-    bool IsAsync
+    bool IsAsync,
+    bool IsResponseILambdaResponse
 )
 {
     internal readonly ParameterInfo? EventParameter = GetEventParameter(Parameters);
