@@ -39,6 +39,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.UnitTests", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Example.OpenTelemetry", "examples\AwsLambda.Host.Example.OpenTelemetry\AwsLambda.Host.Example.OpenTelemetry.csproj", "{BA5B805C-0187-4D3D-9F3F-297314F64B5B}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.APIGatewayEvents", "src\AwsLambda.Host.APIGatewayEvents\AwsLambda.Host.APIGatewayEvents.csproj", "{14006995-CB3D-4B76-B981-93BC7A7939AF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -85,6 +87,10 @@ Global
 		{BA5B805C-0187-4D3D-9F3F-297314F64B5B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BA5B805C-0187-4D3D-9F3F-297314F64B5B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BA5B805C-0187-4D3D-9F3F-297314F64B5B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{14006995-CB3D-4B76-B981-93BC7A7939AF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{14006995-CB3D-4B76-B981-93BC7A7939AF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{14006995-CB3D-4B76-B981-93BC7A7939AF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{14006995-CB3D-4B76-B981-93BC7A7939AF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{6B8CD8FF-832E-9F88-FB36-2173461F6678} = {B36A84DF-456D-A817-6EDD-3EC3E7F6E11F}
@@ -97,5 +103,6 @@ Global
 		{00F4BB08-2770-56A6-1F85-B916CA14340E} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{5A3B3343-1E90-46DB-DD4C-DB87FD583D69} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{BA5B805C-0187-4D3D-9F3F-297314F64B5B} = {B36A84DF-456D-A817-6EDD-3EC3E7F6E11F}
+		{14006995-CB3D-4B76-B981-93BC7A7939AF} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 	EndGlobalSection
 EndGlobal
