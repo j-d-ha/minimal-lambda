@@ -108,6 +108,7 @@ exclude-labels:
   - 'skip-changelog'
   - 'internal'
 
+include-pre-releases: false
 prerelease: false
 prerelease-identifier: 'alpha'
 commitish: 'main'

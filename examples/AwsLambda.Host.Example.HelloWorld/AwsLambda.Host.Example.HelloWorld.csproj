@@ -12,6 +12,7 @@
     <PublishReadyToRun>true</PublishReadyToRun>
     <InterceptorsNamespaces>$(InterceptorsNamespaces);AwsLambda.Host</InterceptorsNamespaces>
     <RootNamespace>Lambda.Host.Example.HelloWorld</RootNamespace>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup></ItemGroup>
   <ItemGroup>

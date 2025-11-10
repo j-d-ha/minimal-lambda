@@ -13,6 +13,7 @@
     <PublishReadyToRun>true</PublishReadyToRun>
     <!--  Needed since we are refffrencing AwsLambda.Host.SourceGenerators locally  -->
     <InterceptorsNamespaces>$(InterceptorsNamespaces);AwsLambda.Host</InterceptorsNamespaces>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\AwsLambda.Host.Abstractions\AwsLambda.Host.Abstractions.csproj" />
