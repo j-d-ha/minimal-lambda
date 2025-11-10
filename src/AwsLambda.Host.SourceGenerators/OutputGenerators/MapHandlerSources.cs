@@ -30,6 +30,15 @@ internal static class MapHandlerSources
             }
             : null;
 
+        // is the input request type ILambdaRequest?
+        var isILambdaRequest = delegateInfo.Parameters.Any(p => p.IsILambdaRequest);
+
+        // is the output response type ILambdaResponse?
+        var isILambdaResponse = delegateInfo.IsResponseILambdaResponse;
+
+        // JSON options are needed if the input or output is ILambdaRequest or ILambdaResponse
+        var isJsonOptionsNeeded = isILambdaRequest || isILambdaResponse;
+
         var model = new
         {
             Location = higherOrderMethodInfo.InterceptableLocationInfo,
@@ -39,6 +48,9 @@ internal static class MapHandlerSources
             ShouldAwait = delegateInfo.IsAwaitable,
             InputEvent = inputEvent,
             OutputResponse = outputResponse,
+            IsLambdaRequest = isILambdaRequest,
+            IsLambdaResponse = isILambdaResponse,
+            IsJsonOptionsNeeded = isJsonOptionsNeeded,
         };
 
         var template = TemplateHelper.LoadTemplate(
