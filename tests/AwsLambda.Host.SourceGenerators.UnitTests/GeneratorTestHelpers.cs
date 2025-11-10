@@ -63,9 +63,9 @@ internal static class GeneratorTestHelpers
     {
         var parseOptions = CSharpParseOptions
             .Default.WithLanguageVersion(languageVersion)
-            .WithFeatures(
-                [new KeyValuePair<string, string>("InterceptorsNamespaces", "AwsLambda.Host")]
-            );
+            .WithFeatures([
+                new KeyValuePair<string, string>("InterceptorsNamespaces", "AwsLambda.Host"),
+            ]);
 
         var syntaxTree = CSharpSyntaxTree.ParseText(source, parseOptions, "InputFile.cs");
 
