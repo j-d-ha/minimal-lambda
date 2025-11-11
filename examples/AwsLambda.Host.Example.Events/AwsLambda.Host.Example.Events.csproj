@@ -16,6 +16,7 @@
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\AwsLambda.Host.APIGatewayEvents\AwsLambda.Host.APIGatewayEvents.csproj" />
+    <ProjectReference Include="..\..\src\AwsLambda.Host.SQSEvent\AwsLambda.Host.SQSEvent.csproj" />
     <ProjectReference Include="..\..\src\AwsLambda.Host\AwsLambda.Host.csproj" />
     <ProjectReference
       Include="..\..\src\AwsLambda.Host.SourceGenerators\AwsLambda.Host.SourceGenerators.csproj"
