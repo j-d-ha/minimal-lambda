@@ -10,7 +10,7 @@ internal readonly record struct DelegateInfo(
     bool IsAwaitable,
     bool IsAsync,
     bool IsResponseILambdaResponse,
-    TypeInfo? ReturnTypeInfo = null
+    TypeInfo? ReturnTypeInfo
 )
 {
     internal readonly ParameterInfo? EventParameter = GetEventParameter(Parameters);

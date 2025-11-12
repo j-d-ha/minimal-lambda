@@ -8,6 +8,7 @@ using AwsLambda.Host.SourceGenerators.Types;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using TypeInfo = AwsLambda.Host.SourceGenerators.Models.TypeInfo;
 
 namespace AwsLambda.Host.SourceGenerators;
 
@@ -158,13 +159,17 @@ internal static class DelegateInfoExtractorExtensions
 
             var isResponseILambdaResponse = invokeMethod.ReturnType.IsILambdaResponse();
 
+            // get response type TypeInfo
+            var responseTypeInfo = TypeInfo.Create(invokeMethod.ReturnType);
+
             return new DelegateInfo(
                 fullResponseType,
                 unwrappedResponseType,
                 updatedParameters,
                 isAwaitable,
                 delegateInfo.IsAsync,
-                isResponseILambdaResponse
+                isResponseILambdaResponse,
+                responseTypeInfo
             );
         };
 
@@ -206,13 +211,17 @@ internal static class DelegateInfoExtractorExtensions
 
         var isResponseILambdaResponse = methodSymbol.ReturnType.IsILambdaResponse();
 
+        // get response type TypeInfo
+        var responseTypeInfo = TypeInfo.Create(methodSymbol.ReturnType);
+
         return new DelegateInfo(
             fullResponseType,
             unwrappedResponseType,
             parameters,
             isAwaitable,
             methodSymbol.IsAsync,
-            isResponseILambdaResponse
+            isResponseILambdaResponse,
+            responseTypeInfo
         );
     }
 
@@ -266,38 +275,38 @@ internal static class DelegateInfoExtractorExtensions
         // 3. implicit return type in expression body
         // 4. implicit return type in block body
         // 5. default void (or Task if async)
-        var (returnType, unwrappedResponseType, responseType) = lambdaExpression switch
+        var (returnType, returnTypeSyntax) = lambdaExpression switch
         {
             // check for explicit return type
             ParenthesizedLambdaExpressionSyntax { ReturnType: { } syntax } => ModelExtensions
                 .GetTypeInfo(sematicModel, syntax, cancellationToken)
-                .Type?.Transform(t => (t, t.UnwrapTypeFromTask(syntax), t.GetAsGlobal(syntax)))
-            ?? (null, null, null)!,
+                .Type
+                is { } type
+                ? (type, syntax)
+                : (null, null),
 
             // Handle implicit return type for expression lambda
-            { Body: var expression and ExpressionSyntax } => sematicModel
-                .GetTypeInfo(expression, cancellationToken)
-                .Type?.Transform(t => (t, t.UnwrapTypeFromTask(), t.GetAsGlobal()))
-            ?? (null, null, null)!,
+            { Body: var expression and ExpressionSyntax } => (
+                sematicModel.GetTypeInfo(expression, cancellationToken).Type,
+                null
+            ),
 
             // Handle implicit return type for block lambda
             { Body: var block and BlockSyntax } => block
                 .DescendantNodes()
                 .OfType<ReturnStatementSyntax>()
-                .FirstOrDefault(syntax => syntax.Expression is not null)
-                ?.Transform(syntax =>
-                    syntax.Expression is null
-                        ? (null, null, null)
-                        : ModelExtensions
-                            .GetTypeInfo(sematicModel, syntax.Expression, cancellationToken)
-                            .Type?.Transform(t => (t, t.UnwrapTypeFromTask(), t.GetAsGlobal()))
-                        ?? (null, null, null)!
-                )
-            ?? (null, null, null),
+                .FirstOrDefault(s => s.Expression is not null)
+                ?.Expression
+                is { } expr
+                ? (sematicModel.GetTypeInfo(expr, cancellationToken).Type, null)
+                : (null, null),
 
             // Default to void if no return type is found
-            _ => (null, null, null),
+            _ => (null, null),
         };
+
+        var unwrappedResponseType = returnType?.UnwrapTypeFromTask(returnTypeSyntax);
+        var responseType = returnType?.GetAsGlobal(returnTypeSyntax);
 
         // determine if the lambda is async by checking kind
         var isAsync = lambdaExpression.AsyncKeyword.IsKind(SyntaxKind.AsyncKeyword);
@@ -323,13 +332,19 @@ internal static class DelegateInfoExtractorExtensions
 
         var isResponseILambdaResponse = returnType.IsILambdaResponse();
 
+        // get response type TypeInfo
+        TypeInfo? responseTypeInfo = returnType is not null
+            ? TypeInfo.Create(returnType, returnTypeSyntax)
+            : null;
+
         return new DelegateInfo(
             fullResponseType,
             unwrappedResponseType,
             parameters,
             isAwaitable,
             isAsync,
-            isResponseILambdaResponse
+            isResponseILambdaResponse,
+            responseTypeInfo
         );
     }
 
