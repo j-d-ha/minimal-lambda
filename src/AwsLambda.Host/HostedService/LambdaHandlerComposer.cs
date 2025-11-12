@@ -1,6 +1,5 @@
 using Amazon.Lambda.Core;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 
 namespace AwsLambda.Host;
 
@@ -13,47 +12,45 @@ internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory
 {
     private readonly ILambdaCancellationTokenSourceFactory _cancellationTokenSourceFactory;
     private readonly DelegateHolder _delegateHolder;
+    private readonly ILambdaSerializer _lambdaSerializer;
     private readonly IServiceScopeFactory _scopeFactory;
-    private readonly LambdaHostOptions _settings;
 
     /// <summary>Initializes a new instance of the <see cref="LambdaHandlerComposer" /> class.</summary>
-    /// <param name="lambdaHostSettings">The options containing Lambda host configuration settings.</param>
     /// <param name="delegateHolder">
     ///     The holder containing the user-defined handler, middleware, and
     ///     serialization delegates.
     /// </param>
     /// <param name="cancellationTokenSourceFactory">
-    ///     The factory for creating cancellation token sources
-    ///     tied to Lambda invocation timeouts.
+    ///     The factory for creating cancellation token sources tied to Lambda invocation timeouts.
     /// </param>
     /// <param name="serviceScopeFactory">
-    ///     The factory for creating dependency injection scopes for each
-    ///     Lambda invocation.
+    ///     The factory for creating dependency injection scopes for each Lambda invocation.
     /// </param>
+    /// <param name="lambdaSerializer">The serializer for handling Lambda request and response serialization.</param>
     /// <exception cref="ArgumentNullException">Thrown when any of the parameters are null.</exception>
     /// <exception cref="InvalidOperationException">
     ///     Thrown when the handler is not set in the
     ///     <paramref name="delegateHolder" />.
     /// </exception>
     public LambdaHandlerComposer(
-        IOptions<LambdaHostOptions> lambdaHostSettings,
         DelegateHolder delegateHolder,
         ILambdaCancellationTokenSourceFactory cancellationTokenSourceFactory,
-        IServiceScopeFactory serviceScopeFactory
+        IServiceScopeFactory serviceScopeFactory,
+        ILambdaSerializer lambdaSerializer
     )
     {
-        ArgumentNullException.ThrowIfNull(lambdaHostSettings);
         ArgumentNullException.ThrowIfNull(delegateHolder);
         ArgumentNullException.ThrowIfNull(cancellationTokenSourceFactory);
         ArgumentNullException.ThrowIfNull(serviceScopeFactory);
+        ArgumentNullException.ThrowIfNull(lambdaSerializer);
 
         if (!delegateHolder.IsHandlerSet)
             throw new InvalidOperationException("Lambda Handler is not set");
 
-        _settings = lambdaHostSettings.Value;
         _delegateHolder = delegateHolder;
         _cancellationTokenSourceFactory = cancellationTokenSourceFactory;
         _scopeFactory = serviceScopeFactory;
+        _lambdaSerializer = lambdaSerializer;
     }
 
     /// <summary>
@@ -128,7 +125,7 @@ internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory
             if (_delegateHolder.Deserializer is not null)
                 await _delegateHolder.Deserializer(
                     lambdaHostContext,
-                    _settings.LambdaSerializer,
+                    _lambdaSerializer,
                     inputStream
                 );
 
@@ -137,10 +134,7 @@ internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory
 
             // Serialize the response if a serializer is provided.
             if (_delegateHolder.Serializer is not null)
-                return await _delegateHolder.Serializer(
-                    lambdaHostContext,
-                    _settings.LambdaSerializer
-                );
+                return await _delegateHolder.Serializer(lambdaHostContext, _lambdaSerializer);
 
             // If no serializer is provided, return an empty stream.
             return new MemoryStream(0);
