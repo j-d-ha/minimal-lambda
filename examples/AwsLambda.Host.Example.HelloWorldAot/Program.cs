@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Text.Json.Serialization;
-using Amazon.Lambda.Serialization.SystemTextJson;
 using AwsLambda.Host;
 using Microsoft.Extensions.Hosting;
 
 var builder = LambdaApplication.CreateBuilder();
 
-builder.Services.ConfigureLambdaHostOptions(settings =>
-    settings.LambdaSerializer = new SourceGeneratorLambdaJsonSerializer<SerializerContext>()
-);
+builder.Services.ConfigureLambdaHostOptions(options =>
+{
+    options.JsonSerializerOptions.TypeInfoResolverChain.Add(SerializerContext.Default);
+});
 
 var lambda = builder.Build();
 
