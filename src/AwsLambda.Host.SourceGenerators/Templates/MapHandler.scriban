@@ -17,9 +17,6 @@ namespace AwsLambda.Host
         )
         {
             var castHandler = ({{ handler_signature }})handler;
-            {{~ if is_json_options_needed ~}}
-            var jsonOptions = application.Services.GetService<IOptions<JsonSerializerOptions>>()?.Value;
-            {{~ end ~}}
 
             {{ if should_await ~}} async {{ end ~}}Task InvocationDelegate(ILambdaHostContext context)
             {
@@ -45,11 +42,7 @@ namespace AwsLambda.Host
                 {{~ if input_event.is_stream ~}}
                 context.Event = eventStream;
                 {{~ else ~}}
-                {{~ if is_lambda_request ~}}
-                context.Event = {{ input_event.type ~}}.Deserialize(eventStream, serializer, jsonOptions);
-                {{~ else ~}}
                 context.Event = serializer.Deserialize<{{~ input_event.type ~}}>(eventStream);
-                {{~ end ~}}
                 {{~ end ~}}
                 {{~ end ~}}
                 return Task.CompletedTask;
@@ -64,11 +57,7 @@ namespace AwsLambda.Host
                 {{~ else ~}}
                 var outputStream = new MemoryStream();
                 outputStream.SetLength(0L);
-                {{~ if is_lambda_response ~}}
-                response.Serialize(serializer, outputStream, jsonOptions);
-                {{~ else ~}}
                 serializer.Serialize<{{ output_response.response_type }}>(response, outputStream);
-                {{~ end ~}}
                 outputStream.Position = 0L;
                 return Task.FromResult<Stream>(outputStream);
                 {{~ end ~}}
