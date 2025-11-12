@@ -15,7 +15,7 @@ internal static class OnInitSyntaxProvider
     ) =>
         GenericHandlerInfoExtractor.Transformer(
             context,
-            "OnInit",
+            GeneratorConstants.OnInitMethodName,
             IsBaseOnShutdownCall,
             cancellationToken
         );

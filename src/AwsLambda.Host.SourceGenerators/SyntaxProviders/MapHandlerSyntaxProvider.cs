@@ -15,7 +15,7 @@ internal static class MapHandlerSyntaxProvider
     ) =>
         GenericHandlerInfoExtractor.Transformer(
             context,
-            "MapHandler",
+            GeneratorConstants.MapHandlerMethodName,
             IsBaseMapHandlerCall,
             cancellationToken
         );
