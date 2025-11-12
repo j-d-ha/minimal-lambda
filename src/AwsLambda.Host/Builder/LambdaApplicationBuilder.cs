@@ -1,3 +1,5 @@
+using Amazon.Lambda.Core;
+using Amazon.Lambda.Serialization.SystemTextJson;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
@@ -139,12 +141,23 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
             return new LambdaCancellationTokenSourceFactory(settings.InvocationCancellationBuffer);
         });
 
-        // Set the shutdown timeout to the configured value minus the buffer.
+        // Get LambdaHostOptions from DI for final configuration.
         var lambdaHostOptions = Services
             .BuildServiceProvider()
             .GetRequiredService<IOptions<LambdaHostOptions>>()
             .Value;
 
+        // Ensure that the property naming policy is set to AwsNamingPolicy or is wrapped in it.
+        if (
+            lambdaHostOptions.LambdaJsonSerializerOptions.PropertyNamingPolicy
+            is not AwsNamingPolicy
+        )
+            lambdaHostOptions.LambdaJsonSerializerOptions.PropertyNamingPolicy =
+                new AwsNamingPolicy(
+                    lambdaHostOptions.LambdaJsonSerializerOptions.PropertyNamingPolicy
+                );
+
+        // Set the shutdown timeout to the configured value minus the buffer.
         var shutdownTimeout =
             lambdaHostOptions.ShutdownDuration - lambdaHostOptions.ShutdownDurationBuffer;
 
@@ -152,6 +165,9 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
             options.ShutdownTimeout =
                 shutdownTimeout >= TimeSpan.Zero ? shutdownTimeout : TimeSpan.Zero
         );
+
+        // Try to register ILambdaSerializer if not already registered.
+        Services.TryAddSingleton<ILambdaSerializer, DefaultLambdaHostJsonSerializer>();
 
         var host = _hostBuilder.Build();
 
