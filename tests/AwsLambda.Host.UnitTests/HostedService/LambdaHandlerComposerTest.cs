@@ -3,7 +3,6 @@ using Amazon.Lambda.Core;
 using AwesomeAssertions;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Options;
 using NSubstitute;
 using Xunit;
 
@@ -13,16 +12,14 @@ namespace AwsLambda.Host.UnitTests.HostedService;
 public class LambdaHandlerComposerTest
 {
     private readonly IServiceScopeFactory _mockScopeFactory;
-    private readonly IOptions<LambdaHostOptions> _mockSettings;
+    private readonly ILambdaSerializer _mockSerializer;
     private readonly ILambdaCancellationTokenSourceFactory _mockTokenFactory;
 
     public LambdaHandlerComposerTest()
     {
-        _mockSettings = Substitute.For<IOptions<LambdaHostOptions>>();
-        _mockSettings.Value.Returns(new LambdaHostOptions());
-
         _mockTokenFactory = Substitute.For<ILambdaCancellationTokenSourceFactory>();
         _mockScopeFactory = Substitute.For<IServiceScopeFactory>();
+        _mockSerializer = Substitute.For<ILambdaSerializer>();
 
         // Setup default service scope
         var mockScope = Substitute.For<IServiceScope>();
@@ -41,24 +38,10 @@ public class LambdaHandlerComposerTest
     // ============================================================================
 
     [Fact]
-    public void Constructor_ThrowsArgumentNullException_WhenLambdaHostSettingsIsNull()
-    {
-        var delegateHolder = new DelegateHolder
-        {
-            Handler = Substitute.For<LambdaInvocationDelegate>(),
-        };
-
-        var act = () =>
-            new LambdaHandlerComposer(null!, delegateHolder, _mockTokenFactory, _mockScopeFactory);
-
-        act.Should().Throw<ArgumentNullException>();
-    }
-
-    [Fact]
     public void Constructor_ThrowsArgumentNullException_WhenDelegateHolderIsNull()
     {
         var act = () =>
-            new LambdaHandlerComposer(_mockSettings, null!, _mockTokenFactory, _mockScopeFactory);
+            new LambdaHandlerComposer(null!, _mockTokenFactory, _mockScopeFactory, _mockSerializer);
 
         act.Should().Throw<ArgumentNullException>();
     }
@@ -72,7 +55,7 @@ public class LambdaHandlerComposerTest
         };
 
         var act = () =>
-            new LambdaHandlerComposer(_mockSettings, delegateHolder, null!, _mockScopeFactory);
+            new LambdaHandlerComposer(delegateHolder, null!, _mockScopeFactory, _mockSerializer);
 
         act.Should().Throw<ArgumentNullException>();
     }
@@ -86,7 +69,21 @@ public class LambdaHandlerComposerTest
         };
 
         var act = () =>
-            new LambdaHandlerComposer(_mockSettings, delegateHolder, _mockTokenFactory, null!);
+            new LambdaHandlerComposer(delegateHolder, _mockTokenFactory, null!, _mockSerializer);
+
+        act.Should().Throw<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void Constructor_ThrowsArgumentNullException_WhenLambdaSerializerIsNull()
+    {
+        var delegateHolder = new DelegateHolder
+        {
+            Handler = Substitute.For<LambdaInvocationDelegate>(),
+        };
+
+        var act = () =>
+            new LambdaHandlerComposer(delegateHolder, _mockTokenFactory, _mockScopeFactory, null!);
 
         act.Should().Throw<ArgumentNullException>();
     }
@@ -98,10 +95,10 @@ public class LambdaHandlerComposerTest
 
         var act = () =>
             new LambdaHandlerComposer(
-                _mockSettings,
                 delegateHolder,
                 _mockTokenFactory,
-                _mockScopeFactory
+                _mockScopeFactory,
+                _mockSerializer
             );
 
         act.Should().Throw<InvalidOperationException>().WithMessage("Lambda Handler is not set");
@@ -116,10 +113,10 @@ public class LambdaHandlerComposerTest
         };
 
         var composer = new LambdaHandlerComposer(
-            _mockSettings,
             delegateHolder,
             _mockTokenFactory,
-            _mockScopeFactory
+            _mockScopeFactory,
+            _mockSerializer
         );
 
         composer.Should().NotBeNull();
@@ -143,10 +140,10 @@ public class LambdaHandlerComposerTest
 
         var delegateHolder = new DelegateHolder { Handler = SimpleHandler };
         var composer = new LambdaHandlerComposer(
-            _mockSettings,
             delegateHolder,
             _mockTokenFactory,
-            _mockScopeFactory
+            _mockScopeFactory,
+            _mockSerializer
         );
 
         var handler = composer.CreateHandler(CancellationToken.None);
@@ -182,10 +179,10 @@ public class LambdaHandlerComposerTest
 
         var delegateHolder = new DelegateHolder { Handler = Handler, Deserializer = Deserializer };
         var composer = new LambdaHandlerComposer(
-            _mockSettings,
             delegateHolder,
             _mockTokenFactory,
-            _mockScopeFactory
+            _mockScopeFactory,
+            _mockSerializer
         );
 
         var handler = composer.CreateHandler(CancellationToken.None);
@@ -217,10 +214,10 @@ public class LambdaHandlerComposerTest
 
         var delegateHolder = new DelegateHolder { Handler = Handler, Serializer = Serializer };
         var composer = new LambdaHandlerComposer(
-            _mockSettings,
             delegateHolder,
             _mockTokenFactory,
-            _mockScopeFactory
+            _mockScopeFactory,
+            _mockSerializer
         );
 
         var handler = composer.CreateHandler(CancellationToken.None);
@@ -245,10 +242,10 @@ public class LambdaHandlerComposerTest
 
         var delegateHolder = new DelegateHolder { Handler = Handler, Deserializer = null };
         var composer = new LambdaHandlerComposer(
-            _mockSettings,
             delegateHolder,
             _mockTokenFactory,
-            _mockScopeFactory
+            _mockScopeFactory,
+            _mockSerializer
         );
 
         var handler = composer.CreateHandler(CancellationToken.None);
@@ -270,10 +267,10 @@ public class LambdaHandlerComposerTest
 
         var delegateHolder = new DelegateHolder { Handler = Handler, Serializer = null };
         var composer = new LambdaHandlerComposer(
-            _mockSettings,
             delegateHolder,
             _mockTokenFactory,
-            _mockScopeFactory
+            _mockScopeFactory,
+            _mockSerializer
         );
 
         var handler = composer.CreateHandler(CancellationToken.None);
@@ -324,10 +321,10 @@ public class LambdaHandlerComposerTest
             Serializer = Serializer,
         };
         var composer = new LambdaHandlerComposer(
-            _mockSettings,
             delegateHolder,
             _mockTokenFactory,
-            _mockScopeFactory
+            _mockScopeFactory,
+            _mockSerializer
         );
 
         var handler = composer.CreateHandler(CancellationToken.None);
@@ -366,10 +363,10 @@ public class LambdaHandlerComposerTest
         delegateHolder.Middlewares.Add(middleware);
 
         var composer = new LambdaHandlerComposer(
-            _mockSettings,
             delegateHolder,
             _mockTokenFactory,
-            _mockScopeFactory
+            _mockScopeFactory,
+            _mockSerializer
         );
 
         var handler = composer.CreateHandler(CancellationToken.None);
@@ -422,10 +419,10 @@ public class LambdaHandlerComposerTest
         delegateHolder.Middlewares.Add(middleware3);
 
         var composer = new LambdaHandlerComposer(
-            _mockSettings,
             delegateHolder,
             _mockTokenFactory,
-            _mockScopeFactory
+            _mockScopeFactory,
+            _mockSerializer
         );
 
         var handler = composer.CreateHandler(CancellationToken.None);
@@ -468,10 +465,10 @@ public class LambdaHandlerComposerTest
         delegateHolder.Middlewares.Add(middleware);
 
         var composer = new LambdaHandlerComposer(
-            _mockSettings,
             delegateHolder,
             _mockTokenFactory,
-            _mockScopeFactory
+            _mockScopeFactory,
+            _mockSerializer
         );
 
         var handler = composer.CreateHandler(CancellationToken.None);
@@ -512,10 +509,10 @@ public class LambdaHandlerComposerTest
         delegateHolder.Middlewares.Add(errorHandlingMiddleware);
 
         var composer = new LambdaHandlerComposer(
-            _mockSettings,
             delegateHolder,
             _mockTokenFactory,
-            _mockScopeFactory
+            _mockScopeFactory,
+            _mockSerializer
         );
 
         var handler = composer.CreateHandler(CancellationToken.None);
@@ -560,10 +557,10 @@ public class LambdaHandlerComposerTest
         delegateHolder.Middlewares.Add(middleware);
 
         var composer = new LambdaHandlerComposer(
-            _mockSettings,
             delegateHolder,
             _mockTokenFactory,
-            _mockScopeFactory
+            _mockScopeFactory,
+            _mockSerializer
         );
 
         var handler = composer.CreateHandler(CancellationToken.None);
@@ -601,10 +598,10 @@ public class LambdaHandlerComposerTest
         delegateHolder.Middlewares.Add(shortCircuitMiddleware);
 
         var composer = new LambdaHandlerComposer(
-            _mockSettings,
             delegateHolder,
             _mockTokenFactory,
-            _mockScopeFactory
+            _mockScopeFactory,
+            _mockSerializer
         );
 
         var handler = composer.CreateHandler(CancellationToken.None);
@@ -626,10 +623,10 @@ public class LambdaHandlerComposerTest
 
         var delegateHolder = new DelegateHolder { Handler = Handler };
         var composer = new LambdaHandlerComposer(
-            _mockSettings,
             delegateHolder,
             _mockTokenFactory,
-            _mockScopeFactory
+            _mockScopeFactory,
+            _mockSerializer
         );
 
         var handler = composer.CreateHandler(CancellationToken.None);
@@ -652,10 +649,10 @@ public class LambdaHandlerComposerTest
 
         var delegateHolder = new DelegateHolder { Handler = Handler };
         var composer = new LambdaHandlerComposer(
-            _mockSettings,
             delegateHolder,
             _mockTokenFactory,
-            _mockScopeFactory
+            _mockScopeFactory,
+            _mockSerializer
         );
 
         var handler = composer.CreateHandler(CancellationToken.None);
@@ -682,10 +679,10 @@ public class LambdaHandlerComposerTest
         var stoppingTokenSource = new CancellationTokenSource();
 
         var composer = new LambdaHandlerComposer(
-            _mockSettings,
             delegateHolder,
             _mockTokenFactory,
-            _mockScopeFactory
+            _mockScopeFactory,
+            _mockSerializer
         );
 
         var handler = composer.CreateHandler(stoppingTokenSource.Token);
@@ -716,10 +713,10 @@ public class LambdaHandlerComposerTest
 
         var delegateHolder = new DelegateHolder { Handler = Handler };
         var composer = new LambdaHandlerComposer(
-            _mockSettings,
             delegateHolder,
             _mockTokenFactory,
-            _mockScopeFactory
+            _mockScopeFactory,
+            _mockSerializer
         );
 
         // Override factory to return a CancellationTokenSource we can track

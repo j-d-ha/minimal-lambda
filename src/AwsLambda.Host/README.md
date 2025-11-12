@@ -211,19 +211,24 @@ using System.Text.Json.Serialization;
 public partial class SerializerContext : JsonSerializerContext;
 ```
 
-Register it with `LambdaApplicationBuilder` using the `ConfigureLambdaHostOptions` extension method:
+Register it with `LambdaApplicationBuilder` by configuring the `JsonSerializerOptions`:
 
 ```csharp
-using Amazon.Lambda.Serialization.SystemTextJson;
+using System.Text.Json.Serialization.Metadata;
 using AwsLambda.Host;
 
 var builder = LambdaApplication.CreateBuilder();
 
-builder.Services.ConfigureLambdaHostOptions(settings =>
+builder.Services.ConfigureLambdaHostOptions(options =>
 {
-    settings.LambdaSerializer = new SourceGeneratorLambdaJsonSerializer<SerializerContext>();
+    options.JsonSerializerOptions.TypeInfoResolverChain.Add(SerializerContext.Default);
 });
+
+var lambda = builder.Build();
 ```
+
+The framework automatically registers `DefaultLambdaHostJsonSerializer` which uses the configured
+`JsonSerializerOptions` for all serialization operations.
 
 Enable AOT in your project file:
 
@@ -233,6 +238,7 @@ Enable AOT in your project file:
 <PublishTrimmed>true</PublishTrimmed>
 <TrimMode>full</TrimMode>
 <PublishTrimmed>true</PublishTrimmed>
+<JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
 ```
 
 See [AOT documentation](https://docs.microsoft.com/en-us/dotnet/fundamentals/aot/overview) for
@@ -247,11 +253,16 @@ builder.Services.ConfigureLambdaHostOptions(options =>
 {
     options.InitTimeout = TimeSpan.FromSeconds(10);
     options.InvocationCancellationBuffer = TimeSpan.FromSeconds(5);
+
+    // Customize JSON serialization
+    options.JsonSerializerOptions.Converters.Add(myCustomConverter);
+    options.JsonWriterOptions.Indented = true;
 });
 ```
 
-Available options include timeout control, shutdown duration, output formatting, and custom
-serializers. See
+Available options include timeout control, shutdown duration, output formatting, and JSON
+serialization customization. The framework automatically registers `DefaultLambdaHostJsonSerializer`
+which uses `JsonSerializerOptions` and `JsonWriterOptions` for all Lambda serialization. See
 the [configuration guide](https://github.com/j-d-ha/aws-lambda-host/wiki/Configuration) for details.
 
 ## Related Packages
