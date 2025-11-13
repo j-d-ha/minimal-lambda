@@ -4,36 +4,27 @@ using Amazon.Lambda.APIGatewayEvents;
 
 namespace AwsLambda.Host.Envelopes.APIGateway;
 
-/// <inheritdoc />
-public class ApiGatewayResponseJsonConverter<T> : JsonConverter<ApiGatewayResponseEnvelope<T>>
+/// <summary>JSON converter for AWS API Gateway response envelopes with typed body payloads.</summary>
+/// <typeparam name="T">The type of the deserialized body payload.</typeparam>
+/// <remarks>
+///     Handles serialization and deserialization of <see cref="ApiGatewayResponseEnvelope{T}" />
+///     instances, converting the body string to and from the specified type <typeparamref name="T" />.
+/// </remarks>
+public class ApiGatewayResponseJsonConverter<T>
+    : EnvelopeJsonConverter<ApiGatewayResponseEnvelope<T>>
 {
     /// <inheritdoc />
-    public override ApiGatewayResponseEnvelope<T>? Read(
-        ref Utf8JsonReader reader,
-        Type typeToConvert,
-        JsonSerializerOptions options
-    )
-    {
-        var baseEvent = JsonSerializer.Deserialize<APIGatewayProxyResponse>(ref reader, options);
-        if (baseEvent is null)
-            return null;
-
-        var outEvent = (ApiGatewayResponseEnvelope<T>)baseEvent;
-        outEvent.Body = JsonSerializer.Deserialize<T>(baseEvent.Body, options);
-
-        return outEvent;
-    }
-
-    /// <inheritdoc />
-    public override void Write(
-        Utf8JsonWriter writer,
+    protected override void ReadPayload(
         ApiGatewayResponseEnvelope<T> value,
         JsonSerializerOptions options
-    )
-    {
-        var body = JsonSerializer.Serialize(value.Body, options);
-        APIGatewayProxyResponse outEvent = value;
-        outEvent.Body = body;
-        JsonSerializer.Serialize(writer, outEvent, options);
-    }
+    ) => value.Body = JsonSerializer.Deserialize<T>(((APIGatewayProxyResponse)value).Body, options);
+
+    /// <inheritdoc />
+    protected override void WritePayload(
+        ApiGatewayResponseEnvelope<T> value,
+        JsonSerializerOptions options
+    ) => ((APIGatewayProxyResponse)value).Body = JsonSerializer.Serialize(value.Body, options);
+
+    /// <inheritdoc />
+    protected override JsonConverter GetConverterInstance() => this;
 }
