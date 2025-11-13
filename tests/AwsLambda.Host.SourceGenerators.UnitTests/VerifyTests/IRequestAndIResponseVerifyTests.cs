@@ -8,7 +8,7 @@ public class IRequestAndIResponseVerifyTests
             """
             using System.Collections.Generic;
             using AwsLambda.Host;
-            using AwsLambda.Host.APIGatewayEvents;
+            using AwsLambda.Host.Envelopes.APIGateway;
             using Microsoft.Extensions.DependencyInjection;
             using Microsoft.Extensions.Hosting;
 
@@ -18,11 +18,9 @@ public class IRequestAndIResponseVerifyTests
 
             var lambda = builder.Build();
 
-            lambda.UseClearLambdaOutputFormatting();
-
             lambda.MapHandler(
-                ([Event] APIGatewayProxyRequest<Request> request, IService service) =>
-                    new APIGatewayProxyResponse<Response>
+                ([Event] ApiGatewayResponseEnvelope<Request> request, IService service) =>
+                    new ApiGatewayResponseEnvelope<Response>
                     {
                         Body = new Response(service.GetMessage(request.Body!.Name)),
                         StatusCode = 200,
@@ -45,7 +43,6 @@ public class IRequestAndIResponseVerifyTests
             {
                 public string GetMessage(string name) => $"hello {name}";
             }
-
             """
         );
 }
