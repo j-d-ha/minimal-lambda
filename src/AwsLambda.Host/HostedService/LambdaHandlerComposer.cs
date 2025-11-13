@@ -21,12 +21,17 @@ internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory
     ///     serialization delegates.
     /// </param>
     /// <param name="cancellationTokenSourceFactory">
-    ///     The factory for creating cancellation token sources tied to Lambda invocation timeouts.
+    ///     The factory for creating cancellation token sources
+    ///     tied to Lambda invocation timeouts.
     /// </param>
     /// <param name="serviceScopeFactory">
-    ///     The factory for creating dependency injection scopes for each Lambda invocation.
+    ///     The factory for creating dependency injection scopes for each
+    ///     Lambda invocation.
     /// </param>
-    /// <param name="lambdaSerializer">The serializer for handling Lambda request and response serialization.</param>
+    /// <param name="lambdaSerializer">
+    ///     The serializer for handling Lambda request and response
+    ///     serialization.
+    /// </param>
     /// <exception cref="ArgumentNullException">Thrown when any of the parameters are null.</exception>
     /// <exception cref="InvalidOperationException">
     ///     Thrown when the handler is not set in the
