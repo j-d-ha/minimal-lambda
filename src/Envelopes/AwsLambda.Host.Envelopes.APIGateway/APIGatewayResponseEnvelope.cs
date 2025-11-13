@@ -4,7 +4,7 @@ using Amazon.Lambda.APIGatewayEvents;
 namespace AwsLambda.Host.Envelopes.APIGateway;
 
 /// <inheritdoc cref="Amazon.Lambda.APIGatewayEvents.APIGatewayProxyResponse" />
-public class ApiGatewayResponseEnvelope<T> : APIGatewayProxyResponse, IJsonSerializable
+public class APIGatewayResponseEnvelope<T> : APIGatewayProxyResponse, IJsonSerializable
 {
     /// <summary>The content of the response body</summary>
     [JsonIgnore]
@@ -12,5 +12,5 @@ public class ApiGatewayResponseEnvelope<T> : APIGatewayProxyResponse, IJsonSeria
 
     /// <inheritdoc />
     public static void RegisterConverter(IList<JsonConverter> converters) =>
-        converters.Add(new ApiGatewayResponseJsonConverter<T>());
+        converters.Add(new APIGatewayResponseJsonConverter<T>());
 }

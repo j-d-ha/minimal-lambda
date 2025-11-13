@@ -1,10 +1,10 @@
 ﻿using System.Text.Json.Serialization;
 using Amazon.Lambda.APIGatewayEvents;
 
-namespace AwsLambda.Host.APIGatewayEnvelops;
+namespace AwsLambda.Host.Envelopes.APIGateway;
 
 /// <inheritdoc cref="Amazon.Lambda.APIGatewayEvents.APIGatewayProxyRequest" />
-public class ApiGatewayRequestEnvelope<T> : APIGatewayProxyRequest, IJsonSerializable
+public class APIGatewayRequestEnvelope<T> : APIGatewayProxyRequest, IJsonSerializable
 {
     /// <summary>The deserialized content of the HTTP request body.</summary>
     [JsonIgnore]
@@ -12,5 +12,5 @@ public class ApiGatewayRequestEnvelope<T> : APIGatewayProxyRequest, IJsonSeriali
 
     /// <inheritdoc />
     public static void RegisterConverter(IList<JsonConverter> converters) =>
-        converters.Add(new ApiGatewayRequestEnvelopeJsonConverter<T>());
+        converters.Add(new APIGatewayRequestEnvelopeJsonConverter<T>());
 }
