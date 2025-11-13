@@ -25,6 +25,8 @@ internal static class TypeConstants
 
     internal const string IServiceProvider = "global::System.IServiceProvider";
 
+    internal const string IJsonSerializable = "global::AwsLambda.Host.IJsonSerializable";
+
     internal const string MapHandlerDeserializer =
         "global::System.Func<global::AwsLambda.Host.ILambdaHostContext, global::Amazon.Lambda.Core.ILambdaSerializer, global::System.IO.Stream, global::System.Threading.Tasks.Task>?";
 
