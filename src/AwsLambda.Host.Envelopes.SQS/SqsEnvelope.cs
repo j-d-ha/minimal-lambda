@@ -10,13 +10,14 @@ public class SqsEnvelope<T> : SQSEvent, IJsonSerializable
     public new required List<SqsMessageEnvelope> Records { get; set; }
 
     /// <inheritdoc />
-    public static void RegisterTypeInfo(IList<JsonConverter> converters) =>
+    public static void RegisterConverter(IList<JsonConverter> converters) =>
         converters.Add(new SqsEnvelopeJsonConverter<SqsEnvelope<T>>());
 
     /// <inheritdoc />
     public class SqsMessageEnvelope : SQSMessage
     {
         /// <summary>Get and sets the Body</summary>
-        public new required T Body { get; set; }
+        [JsonIgnore]
+        public new required T? Body { get; set; }
     }
 }
