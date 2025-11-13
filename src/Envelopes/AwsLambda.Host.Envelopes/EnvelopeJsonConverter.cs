@@ -1,7 +1,7 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
 
-namespace AwsLambda.Host;
+namespace AwsLambda.Host.Envelopes;
 
 /// <summary>Abstract base class for JSON converters that handle AWS Lambda event envelopes.</summary>
 /// <typeparam name="TEnvelope">The type of the Lambda event to convert.</typeparam>

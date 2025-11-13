@@ -47,6 +47,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Envelopes.SQ
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Envelopes.APIGateway", "src\Envelopes\AwsLambda.Host.Envelopes.APIGateway\AwsLambda.Host.Envelopes.APIGateway.csproj", "{83E4EBD0-EE1C-422D-A22C-BC6A1895A879}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Envelopes", "src\Envelopes\AwsLambda.Host.Envelopes\AwsLambda.Host.Envelopes.csproj", "{A72ED2B4-ABCD-4C98-9F59-6958BA5E7169}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -105,6 +107,10 @@ Global
 		{83E4EBD0-EE1C-422D-A22C-BC6A1895A879}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{83E4EBD0-EE1C-422D-A22C-BC6A1895A879}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{83E4EBD0-EE1C-422D-A22C-BC6A1895A879}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A72ED2B4-ABCD-4C98-9F59-6958BA5E7169}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A72ED2B4-ABCD-4C98-9F59-6958BA5E7169}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A72ED2B4-ABCD-4C98-9F59-6958BA5E7169}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A72ED2B4-ABCD-4C98-9F59-6958BA5E7169}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{6B8CD8FF-832E-9F88-FB36-2173461F6678} = {B36A84DF-456D-A817-6EDD-3EC3E7F6E11F}
@@ -121,5 +127,6 @@ Global
 		{1C3C52D9-2936-4A0C-A9C8-F330F22B8359} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 		{8E3037D3-BEB0-4A0B-A09A-CF31F50D0508} = {1C3C52D9-2936-4A0C-A9C8-F330F22B8359}
 		{83E4EBD0-EE1C-422D-A22C-BC6A1895A879} = {1C3C52D9-2936-4A0C-A9C8-F330F22B8359}
+		{A72ED2B4-ABCD-4C98-9F59-6958BA5E7169} = {1C3C52D9-2936-4A0C-A9C8-F330F22B8359}
 	EndGlobalSection
 EndGlobal
