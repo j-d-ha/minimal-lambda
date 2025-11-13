@@ -6,6 +6,7 @@ namespace AwsLambda.Host
     using System.Threading.Tasks;
     using Amazon.Lambda.Core;
     using Microsoft.Extensions.DependencyInjection;
+    using Microsoft.Extensions.Options;
 
     file static class MapHandlerLambdaApplicationExtensions
     {
@@ -17,6 +18,12 @@ namespace AwsLambda.Host
         )
         {
             var castHandler = ({{ handler_signature }})handler;
+            {{~ if serializable_items.size > 0 ~}}
+            var settings = application.Services.GetRequiredService<IOptions<LambdaHostOptions>>().Value;
+            {{~ end ~}}
+            {{~ for serializable in serializable_items ~}}
+            {{ serializable }}.RegisterConverter(settings.JsonSerializerOptions.Converters);
+            {{~ end ~}}
 
             {{ if should_await ~}} async {{ end ~}}Task InvocationDelegate(ILambdaHostContext context)
             {

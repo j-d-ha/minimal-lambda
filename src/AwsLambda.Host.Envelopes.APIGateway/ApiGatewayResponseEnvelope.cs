@@ -6,10 +6,11 @@ namespace AwsLambda.Host.Envelopes.APIGateway;
 /// <inheritdoc cref="Amazon.Lambda.APIGatewayEvents.APIGatewayProxyResponse" />
 public class ApiGatewayResponseEnvelope<T> : APIGatewayProxyResponse, IJsonSerializable
 {
-    /// <summary>The response body</summary>
-    public new required T? Body { get; set; }
+    /// <summary>The content of the response body</summary>
+    [JsonIgnore]
+    public new T? Body { get; set; }
 
     /// <inheritdoc />
-    public static void RegisterTypeInfo(IList<JsonConverter> converters) =>
-        converters.Add(new ApiGatewayResponseJsonConverter<ApiGatewayResponseEnvelope<T>>());
+    public static void RegisterConverter(IList<JsonConverter> converters) =>
+        converters.Add(new ApiGatewayResponseJsonConverter<T>());
 }
