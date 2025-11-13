@@ -15,14 +15,13 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\AwsLambda.Host.Envelopes.APIGateway\AwsLambda.Host.Envelopes.APIGateway.csproj" />
-    <ProjectReference Include="..\..\src\AwsLambda.Host.Envelopes.SQS\AwsLambda.Host.Envelopes.SQS.csproj" />
     <ProjectReference Include="..\..\src\AwsLambda.Host\AwsLambda.Host.csproj" />
     <ProjectReference
       Include="..\..\src\AwsLambda.Host.SourceGenerators\AwsLambda.Host.SourceGenerators.csproj"
       ReferenceOutputAssembly="false"
       OutputItemType="Analyzer"
     />
+    <ProjectReference Include="..\..\src\Envelopes\AwsLambda.Host.Envelopes.APIGateway\AwsLambda.Host.Envelopes.APIGateway.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="appsettings.json">

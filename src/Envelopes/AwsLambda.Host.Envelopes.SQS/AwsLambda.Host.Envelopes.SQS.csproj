@@ -17,5 +17,6 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\AwsLambda.Host.Abstractions\AwsLambda.Host.Abstractions.csproj" />
+    <ProjectReference Include="..\AwsLambda.Host.Envelopes\AwsLambda.Host.Envelopes.csproj" />
   </ItemGroup>
 </Project>

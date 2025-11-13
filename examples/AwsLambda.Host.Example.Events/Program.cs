@@ -4,7 +4,6 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Amazon.Lambda.APIGatewayEvents;
 using AwsLambda.Host;
-using AwsLambda.Host.APIGatewayEnvelops;
 using AwsLambda.Host.Envelopes.APIGateway;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -21,11 +20,11 @@ builder.Services.ConfigureLambdaHostOptions(options =>
 var lambda = builder.Build();
 
 lambda.MapHandler(
-    ([Event] ApiGatewayRequestEnvelope<Request> request, ILogger<Program> logger) =>
+    ([Event] APIGatewayRequestEnvelope<Request> request, ILogger<Program> logger) =>
     {
         logger.LogInformation("In Handler");
 
-        return new ApiGatewayResponseEnvelope<Response>
+        return new APIGatewayResponseEnvelope<Response>
         {
             Body = new Response($"Hello {request.Body?.Name}!", DateTime.UtcNow),
             StatusCode = 201,
@@ -37,7 +36,7 @@ lambda.MapHandler(
 
 // // this wont compile as we can only have a single handler per lambda function
 // lambda.MapHandler(
-//     ([Event] SqsEnvelope<Request> sqsEnvelope, ILogger<Program> logger) =>
+//     ([Event] SQSEnvelope<Request> sqsEnvelope, ILogger<Program> logger) =>
 //     {
 //         var responses = new SQSBatchResponse();
 //
@@ -67,8 +66,8 @@ internal record Response(string Message, DateTime TimestampUtc);
 
 internal record Request(string Name);
 
-[JsonSerializable(typeof(ApiGatewayRequestEnvelope<Request>))]
-[JsonSerializable(typeof(ApiGatewayResponseEnvelope<Response>))]
+[JsonSerializable(typeof(APIGatewayRequestEnvelope<Request>))]
+[JsonSerializable(typeof(APIGatewayResponseEnvelope<Response>))]
 [JsonSerializable(typeof(Request))]
 [JsonSerializable(typeof(Response))]
 [JsonSerializable(typeof(APIGatewayProxyRequest))]
