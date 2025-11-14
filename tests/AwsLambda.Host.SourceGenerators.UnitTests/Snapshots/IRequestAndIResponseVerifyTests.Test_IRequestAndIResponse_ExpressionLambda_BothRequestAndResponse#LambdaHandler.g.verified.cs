@@ -47,18 +47,18 @@ namespace AwsLambda.Host
 
             Task InvocationDelegate(ILambdaHostContext context)
             {
-                if (context.Event is IModelBinder eventBinder)
+                if (context.Event is IEnvelope eventEnvelope)
                 {
-                    eventBinder.BindModel(settings.JsonSerializerOptions);
+                    eventEnvelope.ExtractPayload(settings.JsonSerializerOptions);
                 } 
                 // ParameterInfo { Type = global::AwsLambda.Host.Envelopes.APIGateway.APIGatewayResponseEnvelope<global::Request>, Name = request, Source = Event, IsNullable = False, IsOptional = False}
                 var arg0 = context.GetEventT<global::AwsLambda.Host.Envelopes.APIGateway.APIGatewayResponseEnvelope<global::Request>>();
                 // ParameterInfo { Type = global::IService, Name = service, Source = Service, IsNullable = False, IsOptional = False}
                 var arg1 = context.ServiceProvider.GetRequiredService<global::IService>();
                 context.Response = castHandler.Invoke(arg0, arg1);
-                if (context.Response is IModelBinder responseBinder)
+                if (context.Response is IEnvelope responseEnvelope)
                 {
-                    responseBinder.UnbindModel(settings.JsonSerializerOptions);
+                    responseEnvelope.PackPayload(settings.JsonSerializerOptions);
                 } 
                 return Task.CompletedTask; 
             }
