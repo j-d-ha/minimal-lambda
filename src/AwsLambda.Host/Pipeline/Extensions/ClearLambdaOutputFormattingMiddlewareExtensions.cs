@@ -1,5 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
-
 namespace AwsLambda.Host;
 
 /// <summary>
@@ -26,7 +24,7 @@ public static class ClearLambdaOutputFormattingMiddlewareExtensions
         /// </remarks>
         /// <returns>The configured <see cref="ILambdaApplication" /> for method chaining.</returns>
         /// <exception cref="ArgumentNullException">
-        ///     Thrown when <see cref="IServiceCollection" /> is
+        ///     Thrown when <see cref="ILambdaApplication" /> is
         ///     <c>null</c>.
         /// </exception>
         public ILambdaApplication UseClearLambdaOutputFormatting()
