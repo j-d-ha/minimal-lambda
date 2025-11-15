@@ -2,6 +2,7 @@
   <PropertyGroup>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>preview</LangVersion>
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
@@ -13,6 +14,7 @@
     <InterceptorsNamespaces>$(InterceptorsNamespaces);AwsLambda.Host</InterceptorsNamespaces>
     <RootNamespace>Lambda.Host.Example.Events</RootNamespace>
     <IsPackable>false</IsPackable>
+    <JsonSerializerIsReflectionEnabledByDefault>false</JsonSerializerIsReflectionEnabledByDefault>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\AwsLambda.Host\AwsLambda.Host.csproj" />
@@ -22,6 +24,7 @@
       OutputItemType="Analyzer"
     />
     <ProjectReference Include="..\..\src\Envelopes\AwsLambda.Host.Envelopes.APIGateway\AwsLambda.Host.Envelopes.APIGateway.csproj" />
+    <ProjectReference Include="..\..\src\Envelopes\AwsLambda.Host.Envelopes.SQS\AwsLambda.Host.Envelopes.SQS.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="appsettings.json">

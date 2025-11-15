@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using Amazon.Lambda.APIGatewayEvents;
 using AwsLambda.Host;
 using AwsLambda.Host.Envelopes.APIGateway;
 using Microsoft.Extensions.Hosting;
@@ -13,23 +12,28 @@ var builder = LambdaApplication.CreateBuilder();
 builder.Services.ConfigureLambdaHostOptions(options =>
 {
     options.ClearLambdaOutputFormatting = true;
-    options.JsonSerializerOptions.TypeInfoResolverChain.Add(SerializerContext.Default);
-    options.JsonSerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
 });
+
+builder.Services.ConfigureEnvelopeOptions(options =>
+{
+    options.JsonOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+    options.JsonOptions.TypeInfoResolver = SerializerContext.Default;
+});
+
+builder.Services.AddLambdaSerializerWithContext<SerializerContext>();
 
 var lambda = builder.Build();
 
 lambda.MapHandler(
     ([Event] APIGatewayRequestEnvelope<Request> request, ILogger<Program> logger) =>
     {
-        logger.LogInformation("In Handler");
+        logger.LogInformation("In Handler. Payload: {payload}", request.Body);
 
         return new APIGatewayResponseEnvelope<Response>
         {
-            Body = new Response($"Hello {request.Body?.Name}!", DateTime.UtcNow),
+            BodyContent = new Response($"Hello {request.BodyContent?.Name}!", DateTime.UtcNow),
             StatusCode = 201,
             Headers = new Dictionary<string, string> { ["Content-Type"] = "application/json" },
-            IsBase64Encoded = true,
         };
     }
 );
@@ -43,7 +47,7 @@ lambda.MapHandler(
 //         foreach (var record in sqsEnvelope.Records)
 //         {
 //             // simulate failure if we get bad data
-//             if (record.Body?.Name is null or "John")
+//             if (record.BodyContent?.Name is null or "John")
 //             {
 //                 responses.BatchItemFailures.Add(
 //                     new SQSBatchResponse.BatchItemFailure { ItemIdentifier = record.MessageId }
@@ -53,7 +57,7 @@ lambda.MapHandler(
 //             }
 //
 //             // otherwise, log the message
-//             logger.LogInformation("Hello {name}!", record.Body.Name);
+//             logger.LogInformation("Hello {name}!", record.BodyContent.Name);
 //         }
 //
 //         return responses;
@@ -70,6 +74,4 @@ internal record Request(string Name);
 [JsonSerializable(typeof(APIGatewayResponseEnvelope<Response>))]
 [JsonSerializable(typeof(Request))]
 [JsonSerializable(typeof(Response))]
-[JsonSerializable(typeof(APIGatewayProxyRequest))]
-[JsonSerializable(typeof(APIGatewayProxyResponse))]
 internal partial class SerializerContext : JsonSerializerContext;
