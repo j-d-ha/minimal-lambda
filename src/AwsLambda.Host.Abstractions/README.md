@@ -88,6 +88,17 @@ Encapsulates a single Lambda invocation:
 - `Items` – Key/value collection for invocation-scoped data
 - `CancellationToken` – Cancellation signal from Lambda timeout
 
+### ILambdaCancellationTokenSourceFactory
+
+Provides a factory for creating cancellation token sources configured for AWS Lambda invocations:
+
+- `NewCancellationTokenSource(ILambdaContext)` – Creates a `CancellationTokenSource` that cancels
+  before the Lambda function timeout, allowing time for graceful shutdown
+
+This interface enables custom implementations for managing cancellation tokens with respect to
+Lambda's remaining execution time. The default implementation applies a configurable buffer duration
+to ensure operations complete before the Lambda runtime's hard timeout.
+
 ### Envelope Abstractions
 
 **IRequestEnvelope**
