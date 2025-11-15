@@ -1,10 +1,10 @@
-using System.Text.Json;
+using AwsLambda.Host.Options;
 
 namespace AwsLambda.Host;
 
 public interface IEnvelope
 {
-    void ExtractPayload(JsonSerializerOptions options);
+    void ExtractPayload(EnvelopeOptions options);
 
-    void PackPayload(JsonSerializerOptions options);
+    void PackPayload(EnvelopeOptions options);
 }
