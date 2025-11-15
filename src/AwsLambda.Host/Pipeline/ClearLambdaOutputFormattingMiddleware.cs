@@ -4,7 +4,7 @@ namespace AwsLambda.Host;
 ///     Provides extension methods for clearing Lambda runtime output formatting in the middleware
 ///     pipeline.
 /// </summary>
-public static class ClearLambdaOutputFormattingMiddlewareExtensions
+public static class ClearLambdaOutputFormattingMiddleware
 {
     extension(ILambdaApplication application)
     {
