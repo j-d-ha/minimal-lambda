@@ -18,14 +18,9 @@ namespace AwsLambda.Host
         )
         {
             var castHandler = ({{ handler_signature }})handler;
-            var settings = application.Services.GetRequiredService<IOptions<LambdaHostOptions>>().Value;
 
             {{ if should_await ~}} async {{ end ~}}Task InvocationDelegate(ILambdaHostContext context)
             {
-                if (context.Event is IEnvelope eventEnvelope)
-                {
-                    eventEnvelope.ExtractPayload(settings.JsonSerializerOptions);
-                } 
                 {{~ if has_any_keyed_service_parameter ~}}
                 if (context.ServiceProvider.GetService<IServiceProviderIsService>() is not IServiceProviderIsKeyedService)
                 {
@@ -37,10 +32,6 @@ namespace AwsLambda.Host
                 var arg{{ for.index }} = {{ handler_arg.assignment }};
                 {{~ end ~}}
                 {{ if output_response != null; ~}} context.Response = {{ end }}{{ if should_await ~}} await {{ end ~}} castHandler.Invoke({{ for arg in handler_args }}arg{{ for.index }}{{ if !for.last }}, {{ end }}{{ end }});
-                if (context.Response is IEnvelope responseEnvelope)
-                {
-                    responseEnvelope.PackPayload(settings.JsonSerializerOptions);
-                } 
                 {{~ if !should_await ~}}
                 return Task.CompletedTask; 
                 {{~ end ~}}
@@ -100,3 +91,4 @@ namespace AwsLambda.Host
         }
     }
 }
+
