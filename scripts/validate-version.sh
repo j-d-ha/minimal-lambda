@@ -14,7 +14,7 @@ PACKAGE_ID=$(grep -o '<PackageId>[^<]*</PackageId>' *.csproj | head -1 | sed 's/
 # Extract version from Directory.Build.props (BSD grep compatible)
 VERSION=$(grep -o '<VersionPrefix>[^<]*</VersionPrefix>' ../../Directory.Build.props | head -1 | sed 's/<VersionPrefix>\(.*\)<\/VersionPrefix>/\1/')
 
-if [ -z "$PACKAGE_ID" ] || [ -z "$VERSION" ]; then
+if [[ -z "$PACKAGE_ID" ]] || [[ -z "$VERSION" ]]; then
   echo "Error: Could not extract PackageId or VersionPrefix"
   exit 1
 fi
@@ -27,10 +27,10 @@ PACKAGE_ID_LOWER=$(echo "$PACKAGE_ID" | tr '[:upper:]' '[:lower:]')
 # Check if package version exists on NuGet
 STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://api.nuget.org/v3-flatcontainer/$PACKAGE_ID_LOWER/$VERSION/$PACKAGE_ID_LOWER.$VERSION.nupkg")
 
-if [ "$STATUS_CODE" = "200" ]; then
+if [[ "$STATUS_CODE" = "200" ]]; then
   echo "Error: $PACKAGE_ID v$VERSION already exists on NuGet.org"
   exit 1
-elif [ "$STATUS_CODE" = "404" ]; then
+elif [[ "$STATUS_CODE" = "404" ]]; then
   echo "✓ $PACKAGE_ID v$VERSION is available (not published yet)"
   exit 0
 else
