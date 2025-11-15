@@ -163,7 +163,7 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
         );
 
         // Try to register ILambdaSerializer if not already registered.
-        Services.TryAddSingleton<ILambdaSerializer, DefaultLambdaHostJsonSerializer>();
+        Services.TryAddSingleton<ILambdaSerializer, DefaultLambdaJsonSerializer>();
 
         var host = _hostBuilder.Build();
 
