@@ -59,7 +59,7 @@ internal static class GeneratorTestHelpers
     internal static (GeneratorDriver driver, Compilation compilation) GenerateFromSource(
         string source,
         Dictionary<string, ReportDiagnostic>? diagnosticsToSuppress = null,
-        LanguageVersion languageVersion = LanguageVersion.CSharp11
+        LanguageVersion languageVersion = LanguageVersion.CSharp14
     )
     {
         IEnumerable<KeyValuePair<string, string>> features =
