@@ -1,3 +1,4 @@
+using AwsLambda.Host.Options;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace AwsLambda.Host;
@@ -33,5 +34,16 @@ public static class ServiceCollectionExtensions
         ArgumentNullException.ThrowIfNull(options);
 
         return serviceCollection.PostConfigure(options);
+    }
+
+    extension(IServiceCollection serviceCollection)
+    {
+        public IServiceCollection ConfigureEnvelopeOptions(Action<EnvelopeOptions> options)
+        {
+            ArgumentNullException.ThrowIfNull(serviceCollection);
+            ArgumentNullException.ThrowIfNull(options);
+
+            return serviceCollection.PostConfigure(options);
+        }
     }
 }
