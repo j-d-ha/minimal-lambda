@@ -15,11 +15,11 @@ PACKAGE_ID=$(grep -o '<PackageId>[^<]*</PackageId>' *.csproj | head -1 | sed 's/
 VERSION=$(grep -o '<VersionPrefix>[^<]*</VersionPrefix>' ../../Directory.Build.props | head -1 | sed 's/<VersionPrefix>\(.*\)<\/VersionPrefix>/\1/')
 
 if [[ -z "$PACKAGE_ID" ]] || [[ -z "$VERSION" ]]; then
-  echo "Error: Could not extract PackageId or VersionPrefix"
+  echo "Error: Could not extract PackageId or VersionPrefix" >&2
   exit 1
 fi
 
-echo "Checking if $PACKAGE_ID v$VERSION already exists on NuGet..."
+echo "Checking if $PACKAGE_ID v$VERSION already exists on NuGet..." 
 
 # Convert package ID to lowercase (compatible with bash 3.2)
 PACKAGE_ID_LOWER=$(echo "$PACKAGE_ID" | tr '[:upper:]' '[:lower:]')
@@ -28,7 +28,7 @@ PACKAGE_ID_LOWER=$(echo "$PACKAGE_ID" | tr '[:upper:]' '[:lower:]')
 STATUS_CODE=$(curl -s -o /dev/null -w "%{http_code}" "https://api.nuget.org/v3-flatcontainer/$PACKAGE_ID_LOWER/$VERSION/$PACKAGE_ID_LOWER.$VERSION.nupkg")
 
 if [[ "$STATUS_CODE" = "200" ]]; then
-  echo "Error: $PACKAGE_ID v$VERSION already exists on NuGet.org"
+  echo "Error: $PACKAGE_ID v$VERSION already exists on NuGet.org" >&2
   exit 1
 elif [[ "$STATUS_CODE" = "404" ]]; then
   echo "✓ $PACKAGE_ID v$VERSION is available (not published yet)"
