@@ -36,4 +36,7 @@
     <Folder Include="Snapshots\" />
     <Folder Include="\Snapshots\" />
   </ItemGroup>
+  <PropertyGroup>
+    <ExcludeByFile>**/Scriban/**/*.cs</ExcludeByFile>
+  </PropertyGroup>
 </Project>
