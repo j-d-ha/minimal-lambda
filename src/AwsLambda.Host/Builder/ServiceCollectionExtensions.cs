@@ -1,3 +1,6 @@
+using System.Text.Json.Serialization;
+using Amazon.Lambda.Core;
+using Amazon.Lambda.Serialization.SystemTextJson;
 using AwsLambda.Host.Options;
 using Microsoft.Extensions.DependencyInjection;
 
@@ -44,6 +47,18 @@ public static class ServiceCollectionExtensions
             ArgumentNullException.ThrowIfNull(options);
 
             return serviceCollection.PostConfigure(options);
+        }
+
+        public IServiceCollection AddLambdaSerializerWithContext<TContext>()
+            where TContext : JsonSerializerContext
+        {
+            ArgumentNullException.ThrowIfNull(serviceCollection);
+
+            serviceCollection.AddSingleton<ILambdaSerializer>(
+                _ => new SourceGeneratorLambdaJsonSerializer<TContext>()
+            );
+
+            return serviceCollection;
         }
     }
 }
