@@ -6,6 +6,10 @@ using AwsLambda.Host.Options;
 namespace AwsLambda.Host.Envelopes.SQS;
 
 /// <inheritdoc cref="SQSEvent" />
+/// <remarks>
+/// This class extends <see cref="SQSEvent"/> and adds strongly typed <see cref="SQSMessageEnvelope"/>
+/// records for easier serialization and deserialization of SQS message payloads.
+/// </remarks>
 public class SQSEnvelope<T> : SQSEvent, IEnvelope
 {
     /// <summary>Get and sets the Records</summary>
@@ -26,7 +30,7 @@ public class SQSEnvelope<T> : SQSEvent, IEnvelope
     /// <inheritdoc />
     public class SQSMessageEnvelope : SQSMessage
     {
-        /// <summary>Get and sets the BodyContent</summary>
+        /// <summary>Get and sets the deserialized <see cref="SQSMessage.Body" /></summary>
         [JsonIgnore]
         public T? BodyContent { get; set; }
     }

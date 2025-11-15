@@ -13,7 +13,7 @@ namespace AwsLambda.Host.Envelopes.APIGateway;
 /// </remarks>
 public class APIGatewayResponseEnvelope<T> : APIGatewayProxyResponse, IEnvelope
 {
-    /// <summary>The unserialized content of the response body</summary>
+    /// <summary>The unserialized content of the <see cref="APIGatewayProxyResponse.Body" /></summary>
     [JsonIgnore]
     public T? BodyContent { get; set; }
 
