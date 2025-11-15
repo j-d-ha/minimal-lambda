@@ -18,6 +18,7 @@ provides:
 
 - **Handler Abstractions**: Interfaces for Lambda request and response handling across different
   event types
+- **Envelope Abstractions**: Contracts for extracting request payloads and packing response payloads
 - **Middleware Contracts**: Abstractions for building and composing middleware components
 - **Dependency Injection**: Service container and lifetime management interfaces
 - **Extension Points**: Contracts for custom integrations and framework extensions
@@ -86,6 +87,24 @@ Encapsulates a single Lambda invocation:
 - `ServiceProvider` – Access to the scoped DI container
 - `Items` – Key/value collection for invocation-scoped data
 - `CancellationToken` – Cancellation signal from Lambda timeout
+
+### Envelope Abstractions
+
+**IRequestEnvelope**
+
+Defines a contract for extracting and deserializing incoming Lambda event payloads. Implementations
+extract the inner payload from the outer Lambda event structure and deserialize it for handler
+processing.
+
+**IResponseEnvelope**
+
+Defines a contract for serializing and packing handler results into Lambda response structures.
+Implementations serialize the handler result and place it in the appropriate location within the
+outer response structure.
+
+These abstractions enable strongly-typed handling of AWS Lambda events (like API Gateway, SQS) with
+automatic payload extraction and response packing. See the envelope packages for concrete
+implementations.
 
 ### Handler Delegates
 
