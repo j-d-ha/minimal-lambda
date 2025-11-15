@@ -49,7 +49,7 @@ internal class LambdaLifecycleOrchestrator : ILambdaLifecycleOrchestrator
     ///     aggregated, and any false value will result in false being returned to the Lambda runtime. If
     ///     no initialization handlers are registered, the initializer returns true immediately.
     /// </remarks>
-    public LambdaBootstrapInitializer OnInit(CancellationToken stoppingToken)
+    public LambdaBootstrapInitializer OnInit(CancellationToken cancellationToken)
     {
         return Initializer;
 
@@ -58,7 +58,7 @@ internal class LambdaLifecycleOrchestrator : ILambdaLifecycleOrchestrator
             if (_delegateHolder.InitHandlers.Count == 0)
                 return true;
 
-            using var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
+            using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
             cts.CancelAfter(_settings.InitTimeout);
 
             var tasks = _delegateHolder.InitHandlers.Select(h => RunInitHandler(h, cts.Token));
