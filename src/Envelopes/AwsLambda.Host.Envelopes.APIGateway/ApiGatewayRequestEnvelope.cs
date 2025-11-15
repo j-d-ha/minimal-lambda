@@ -11,7 +11,7 @@ namespace AwsLambda.Host.Envelopes.APIGateway;
 ///     and adds a strongly typed <see cref="BodyContent" /> property for easier serialization and
 ///     deserialization of request payloads.
 /// </remarks>
-public class APIGatewayRequestEnvelope<T> : APIGatewayProxyRequest, IEnvelope
+public class ApiGatewayRequestEnvelope<T> : APIGatewayProxyRequest, IEnvelope
 {
     /// <summary>The deserialized content of the <see cref="APIGatewayProxyRequest.Body" /></summary>
     [JsonIgnore]

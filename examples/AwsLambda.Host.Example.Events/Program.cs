@@ -41,7 +41,7 @@ var lambda = builder.Build();
 
 // this wont compile as we can only have a single handler per lambda function
 lambda.MapHandler(
-    ([Event] SQSEnvelope<Request> sqsEnvelope, ILogger<Program> logger) =>
+    ([Event] SqsEnvelope<Request> sqsEnvelope, ILogger<Program> logger) =>
     {
         var responses = new SQSBatchResponse();
 
@@ -71,10 +71,10 @@ internal record Response(string Message, DateTime TimestampUtc);
 
 internal record Request(string Name);
 
-[JsonSerializable(typeof(APIGatewayRequestEnvelope<Request>))]
-[JsonSerializable(typeof(APIGatewayResponseEnvelope<Response>))]
+[JsonSerializable(typeof(ApiGatewayRequestEnvelope<Request>))]
+[JsonSerializable(typeof(ApiGatewayResponseEnvelope<Response>))]
 [JsonSerializable(typeof(Request))]
 [JsonSerializable(typeof(Response))]
-[JsonSerializable(typeof(SQSEnvelope<Request>))]
+[JsonSerializable(typeof(SqsEnvelope<Request>))]
 [JsonSerializable(typeof(SQSBatchResponse))]
 internal partial class SerializerContext : JsonSerializerContext;

@@ -7,13 +7,13 @@ namespace AwsLambda.Host.Envelopes.SQS;
 
 /// <inheritdoc cref="SQSEvent" />
 /// <remarks>
-/// This class extends <see cref="SQSEvent"/> and adds strongly typed <see cref="SQSMessageEnvelope"/>
+/// This class extends <see cref="SQSEvent"/> and adds strongly typed <see cref="SqsMessageEnvelope"/>
 /// records for easier serialization and deserialization of SQS message payloads.
 /// </remarks>
-public class SQSEnvelope<T> : SQSEvent, IEnvelope
+public class SqsEnvelope<T> : SQSEvent, IEnvelope
 {
     /// <summary>Get and sets the Records</summary>
-    public new required List<SQSMessageEnvelope> Records { get; set; }
+    public new required List<SqsMessageEnvelope> Records { get; set; }
 
     public void ExtractPayload(EnvelopeOptions options)
     {
@@ -28,7 +28,7 @@ public class SQSEnvelope<T> : SQSEvent, IEnvelope
     }
 
     /// <inheritdoc />
-    public class SQSMessageEnvelope : SQSMessage
+    public class SqsMessageEnvelope : SQSMessage
     {
         /// <summary>Get and sets the deserialized <see cref="SQSMessage.Body" /></summary>
         [JsonIgnore]
