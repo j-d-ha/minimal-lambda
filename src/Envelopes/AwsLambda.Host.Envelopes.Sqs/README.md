@@ -15,6 +15,10 @@ class with a generic `Records` collection that deserializes message bodies into 
 objects. Instead of manually parsing JSON from `record.Body`, you access deserialized payloads
 directly via `record.BodyContent`.
 
+| Envelope Class   | Base Class | Use Case                                   |
+|------------------|------------|--------------------------------------------|
+| `SqsEnvelope<T>` | `SQSEvent` | SQS event with deserialized message bodies |
+
 ## Quick Start
 
 Define your message type and handler:
