@@ -62,8 +62,7 @@ public class LambdaCancellationTokenSourceFactory : ILambdaCancellationTokenSour
     /// </exception>
     public CancellationTokenSource NewCancellationTokenSource(ILambdaContext context)
     {
-        if (context is null)
-            throw new ArgumentNullException(nameof(context));
+        ArgumentNullException.ThrowIfNull(context);
 
         if (context.RemainingTime <= TimeSpan.Zero)
             throw new InvalidOperationException("Lambda context has no remaining time");
