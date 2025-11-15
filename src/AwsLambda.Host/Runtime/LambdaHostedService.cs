@@ -57,7 +57,7 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
             return;
 
         if (_executeTask?.IsCompleted == true)
-            _executeTask?.Dispose();
+            _executeTask.Dispose();
 
         _stoppingCts?.Dispose();
 
