@@ -5,7 +5,7 @@ using Microsoft.Extensions.Options;
 namespace AwsLambda.Host;
 
 /// <summary>Provides middleware for processing Lambda event and response envelopes.</summary>
-public static class EnvelopeMiddleware
+public static class RequestEnvelopeMiddleware
 {
     extension(ILambdaApplication application)
     {

@@ -17,9 +17,11 @@ internal class LambdaHostContext : ILambdaHostContext, IAsyncDisposable
         CancellationToken cancellationToken
     )
     {
-        _lambdaContext = lambdaContext ?? throw new ArgumentNullException(nameof(lambdaContext));
-        _serviceScopeFactory =
-            serviceScopeFactory ?? throw new ArgumentNullException(nameof(serviceScopeFactory));
+        ArgumentNullException.ThrowIfNull(lambdaContext);
+        ArgumentNullException.ThrowIfNull(serviceScopeFactory);
+
+        _lambdaContext = lambdaContext;
+        _serviceScopeFactory = serviceScopeFactory;
         CancellationToken = cancellationToken;
     }
 

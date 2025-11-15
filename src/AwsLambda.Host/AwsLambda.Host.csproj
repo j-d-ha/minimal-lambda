@@ -7,7 +7,6 @@
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
     <IncludeBuildOutput>true</IncludeBuildOutput>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <NoWarn>$(NoWarn);CS1591</NoWarn>
     <!-- Package Metadata -->
     <PackageId>AwsLambda.Host</PackageId>
     <Description>.NET Host for AWS Lambda</Description>

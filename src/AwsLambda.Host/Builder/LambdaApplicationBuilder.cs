@@ -24,12 +24,14 @@ namespace AwsLambda.Host;
 ///     </para>
 ///     <para>
 ///         Instances are created using factory methods on <see cref="LambdaApplication" />, such as
-///         <see cref="LambdaApplication.CreateBuilder()" />,
-///         <see cref="LambdaApplication.CreateBuilder(string[])" />, and
-///         <see cref="LambdaApplication.CreateBuilder(HostApplicationBuilderSettings)" />.
+///         <see cref="BuilderLambdaApplicationExtensions.CreateBuilder()" />,
+///         <see cref="BuilderLambdaApplicationExtensions.CreateBuilder(string[])" />, and
+///         <see
+///             cref="BuilderLambdaApplicationExtensions.CreateBuilder(HostApplicationBuilderSettings)" />
+///         .
 ///     </para>
 /// </remarks>
-/// <seealso cref="LambdaApplication.CreateBuilder()" />
+/// <seealso cref="BuilderLambdaApplicationExtensions.CreateBuilder()" />
 /// <seealso cref="IHostApplicationBuilder" />
 public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
 {

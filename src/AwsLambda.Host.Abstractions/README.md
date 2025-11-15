@@ -2,11 +2,6 @@
 
 Core interfaces and abstractions for the aws-lambda-host framework.
 
-[![Main Build](https://github.com/j-d-ha/aws-lambda-host/actions/workflows/main-build.yaml/badge.svg)](https://github.com/j-d-ha/aws-lambda-host/actions/workflows/main-build.yaml)
-[![codecov](https://codecov.io/gh/j-d-ha/aws-lambda-host/graph/badge.svg?token=BWORPTQ0UK)](https://codecov.io/gh/j-d-ha/aws-lambda-host)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=j-d-ha_aws-lambda-host&metric=alert_status&token=9fb519975d91379dcfbc6c13a4bd4207131af6e3)](https://sonarcloud.io/summary/new_code?id=j-d-ha_aws-lambda-host)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-
 > ⚠️ **Development Status**: This project is actively under development and not yet
 > production-ready. Breaking changes may occur in future versions. Use at your own discretion in
 > production environments.
@@ -87,6 +82,17 @@ Encapsulates a single Lambda invocation:
 - `ServiceProvider` – Access to the scoped DI container
 - `Items` – Key/value collection for invocation-scoped data
 - `CancellationToken` – Cancellation signal from Lambda timeout
+
+### ILambdaCancellationTokenSourceFactory
+
+Provides a factory for creating cancellation token sources configured for AWS Lambda invocations:
+
+- `NewCancellationTokenSource(ILambdaContext)` – Creates a `CancellationTokenSource` that cancels
+  before the Lambda function timeout, allowing time for graceful shutdown
+
+This interface enables custom implementations for managing cancellation tokens with respect to
+Lambda's remaining execution time. The default implementation applies a configurable buffer duration
+to ensure operations complete before the Lambda runtime's hard timeout.
 
 ### Envelope Abstractions
 
