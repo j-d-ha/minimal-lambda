@@ -958,7 +958,7 @@ public class LambdaLifecycleOrchestratorTest
     ) =>
         async (_, _) =>
         {
-            await Task.Delay(delayMs);
+            await Task.Delay(delayMs, CancellationToken.None);
             executionOrder.Add(handlerId);
         };
 
