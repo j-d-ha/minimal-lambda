@@ -3,8 +3,8 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using Amazon.Lambda.SQSEvents;
 using AwsLambda.Host;
-using AwsLambda.Host.Envelopes.ApiGateway2;
-using AwsLambda.Host.Envelopes.Sqs2;
+using AwsLambda.Host.Envelopes.ApiGateway;
+using AwsLambda.Host.Envelopes.Sqs;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 

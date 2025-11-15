@@ -25,7 +25,10 @@ public static class EnvelopeMiddleware
         ///     </para>
         /// </remarks>
         /// <returns>The <see cref="ILambdaApplication" /> for method chaining.</returns>
-        /// <exception cref="ArgumentNullException">Thrown when <paramref name="application" /> is <c>null</c>.</exception>
+        /// <exception cref="ArgumentNullException">
+        ///     Thrown when <see cref="ILambdaApplication" /> is
+        ///     <c>null</c>.
+        /// </exception>
         /// <seealso cref="IRequestEnvelope" />
         /// <seealso cref="IResponseEnvelope" />
         /// <seealso cref="EnvelopeOptions" />

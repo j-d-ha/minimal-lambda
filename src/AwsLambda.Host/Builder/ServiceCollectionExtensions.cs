@@ -49,11 +49,10 @@ public static class ServiceCollectionExtensions
         ///         from configuration files or other sources.
         ///     </para>
         /// </remarks>
-        /// <param name="serviceCollection">The <see cref="IServiceCollection" /> to configure.</param>
         /// <param name="options">An action that configures the <see cref="EnvelopeOptions" /> instance.</param>
         /// <returns>The <see cref="IServiceCollection" /> for method chaining.</returns>
         /// <exception cref="ArgumentNullException">
-        ///     Thrown when <paramref name="serviceCollection" /> or
+        ///     Thrown when <see cref="IServiceCollection" /> or
         ///     <paramref name="options" /> is <c>null</c>.
         /// </exception>
         /// <seealso cref="EnvelopeOptions" />
@@ -81,7 +80,7 @@ public static class ServiceCollectionExtensions
         /// </typeparam>
         /// <returns>The <see cref="IServiceCollection" /> for method chaining.</returns>
         /// <exception cref="ArgumentNullException">
-        ///     Thrown when <paramref name="serviceCollection" /> is
+        ///     Thrown when <see cref="IServiceCollection" /> is
         ///     <c>null</c>.
         /// </exception>
         /// <seealso cref="SourceGeneratorLambdaJsonSerializer{TContext}" />

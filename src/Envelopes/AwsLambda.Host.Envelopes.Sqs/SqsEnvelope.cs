@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 using Amazon.Lambda.SQSEvents;
 using AwsLambda.Host.Options;
 
-namespace AwsLambda.Host.Envelopes.Sqs2;
+namespace AwsLambda.Host.Envelopes.Sqs;
 
 /// <inheritdoc cref="SQSEvent" />
 /// <remarks>
@@ -25,7 +25,7 @@ public class SqsEnvelope<T> : SQSEvent, IRequestEnvelope
     /// <inheritdoc />
     public class SqsMessageEnvelope : SQSMessage
     {
-        /// <summary>Get and sets the deserialized <see cref="SQSMessage.Body" /></summary>
+        /// <summary>Get and sets the deserialized <see cref="SQSEvent.SQSMessage.Body" /></summary>
         [JsonIgnore]
         public T? BodyContent { get; set; }
     }

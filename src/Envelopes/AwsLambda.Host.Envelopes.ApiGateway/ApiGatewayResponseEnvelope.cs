@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 using Amazon.Lambda.APIGatewayEvents;
 using AwsLambda.Host.Options;
 
-namespace AwsLambda.Host.Envelopes.ApiGateway2;
+namespace AwsLambda.Host.Envelopes.ApiGateway;
 
 /// <inheritdoc cref="Amazon.Lambda.APIGatewayEvents.APIGatewayProxyResponse" />
 /// <remarks>
