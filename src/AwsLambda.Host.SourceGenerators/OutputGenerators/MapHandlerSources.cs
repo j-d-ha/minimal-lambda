@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 using AwsLambda.Host.SourceGenerators.Extensions;
 using AwsLambda.Host.SourceGenerators.Models;
@@ -36,19 +35,6 @@ internal static class MapHandlerSources
             }
             : null;
 
-        // items that implement IJsonSerializable will be serialized to JSON
-        List<string> jsonSerializableItems = [];
-        foreach (var parameter in delegateInfo.Parameters)
-            if (parameter.TypeInfo.ImplementedInterfaces.Contains(TypeConstants.IJsonSerializable))
-                jsonSerializableItems.Add(parameter.TypeInfo.FullyQualifiedType);
-
-        if (
-            delegateInfo.ReturnTypeInfo.ImplementedInterfaces.Contains(
-                TypeConstants.IJsonSerializable
-            )
-        )
-            jsonSerializableItems.Add(delegateInfo.ReturnTypeInfo.FullyQualifiedType);
-
         var model = new
         {
             Location = higherOrderMethodInfo.InterceptableLocationInfo,
@@ -58,7 +44,6 @@ internal static class MapHandlerSources
             ShouldAwait = delegateInfo.IsAwaitable,
             InputEvent = inputEvent,
             OutputResponse = outputResponse,
-            SerializableItems = jsonSerializableItems,
         };
 
         var template = TemplateHelper.LoadTemplate(
