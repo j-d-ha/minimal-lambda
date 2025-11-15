@@ -10,21 +10,16 @@ namespace AwsLambda.Host.Envelopes.Sqs2;
 /// This class extends <see cref="SQSEvent"/> and adds strongly typed <see cref="SqsMessageEnvelope"/>
 /// records for easier serialization and deserialization of SQS message payloads.
 /// </remarks>
-public class SqsEnvelope<T> : SQSEvent, IEnvelope
+public class SqsEnvelope<T> : SQSEvent, IRequestEnvelope
 {
-    /// <summary>Get and sets the Records</summary>
+    /// <inheritdoc cref="SQSEvent.Records" />
     public new required List<SqsMessageEnvelope> Records { get; set; }
 
+    /// <inheritdoc />
     public void ExtractPayload(EnvelopeOptions options)
     {
         foreach (var record in Records)
             record.BodyContent = JsonSerializer.Deserialize<T>(record.Body, options.JsonOptions);
-    }
-
-    public void PackPayload(EnvelopeOptions options)
-    {
-        foreach (var record in Records)
-            record.Body = JsonSerializer.Serialize(record.BodyContent, options.JsonOptions);
     }
 
     /// <inheritdoc />

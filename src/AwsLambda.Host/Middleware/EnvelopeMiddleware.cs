@@ -19,12 +19,12 @@ public static class EnvelopeMiddleware
             application.UseMiddleware(
                 async (context, next) =>
                 {
-                    if (context.Event is IEnvelope eventEnvelope)
-                        eventEnvelope.ExtractPayload(settings);
+                    if (context.Event is IRequestEnvelope requestEnvelope)
+                        requestEnvelope.ExtractPayload(settings);
 
                     await next(context);
 
-                    if (context.Response is IEnvelope responseEnvelope)
+                    if (context.Response is IResponseEnvelope responseEnvelope)
                         responseEnvelope.PackPayload(settings);
                 }
             );
