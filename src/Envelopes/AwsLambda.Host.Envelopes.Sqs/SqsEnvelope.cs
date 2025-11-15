@@ -7,8 +7,9 @@ namespace AwsLambda.Host.Envelopes.Sqs;
 
 /// <inheritdoc cref="SQSEvent" />
 /// <remarks>
-/// This class extends <see cref="SQSEvent"/> and adds strongly typed <see cref="SqsMessageEnvelope"/>
-/// records for easier serialization and deserialization of SQS message payloads.
+///     This class extends <see cref="SQSEvent" /> and adds strongly typed
+///     <see cref="SqsMessageEnvelope" /> records for easier serialization and deserialization of SQS
+///     message payloads.
 /// </remarks>
 public class SqsEnvelope<T> : SQSEvent, IRequestEnvelope
 {
