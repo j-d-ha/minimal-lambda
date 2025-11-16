@@ -28,4 +28,8 @@
     <AdditionalFiles Include="AnalyzerReleases.Shipped.md" />
     <AdditionalFiles Include="AnalyzerReleases.Unshipped.md" />
   </ItemGroup>
+  <PropertyGroup>
+    <!-- Disable PolySharp's ModuleInitializerAttribute shim -->
+    <PolySharpExcludeGeneratedTypes>System.Runtime.CompilerServices.ModuleInitializerAttribute</PolySharpExcludeGeneratedTypes>
+  </PropertyGroup>
 </Project>
