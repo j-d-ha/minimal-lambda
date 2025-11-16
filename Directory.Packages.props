@@ -19,6 +19,8 @@
       Include="Microsoft.CodeAnalysis.CSharp.SourceGenerators.Testing"
       Version="1.1.2"
     />
+    <PackageVersion Include="NSubstitute.Analyzers.CSharp" Version="1.0.17" />
+    <PackageVersion Include="OpenTelemetry.Exporter.InMemory" Version="1.14.0" />
     <PackageVersion Include="PolySharp" Version="1.15.0" />
     <PackageVersion Include="Scriban" Version="6.5.0" />
     <!-- OTEL Libraries -->
@@ -36,6 +38,7 @@
     <PackageVersion Include="xunit.runner.visualstudio" Version="3.1.4" />
     <PackageVersion Include="xunit.v3" Version="3.2.0" />
     <PackageVersion Include="AutoFixture" Version="4.18.1" />
+    <PackageVersion Include="Microsoft.Extensions.Diagnostics.Testing" Version="10.0.0" />
     <!-- Lambda Event Libraries -->
     <PackageVersion Include="Amazon.Lambda.APIGatewayEvents" Version="2.7.2" />
     <PackageVersion Include="Amazon.Lambda.SQSEvents" Version="2.2.0" />
