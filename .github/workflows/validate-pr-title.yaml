@@ -34,6 +34,7 @@ jobs:
             envelopes
             abstractions
             opentelemetry
+            source-generators
             deps
             build
             ci
