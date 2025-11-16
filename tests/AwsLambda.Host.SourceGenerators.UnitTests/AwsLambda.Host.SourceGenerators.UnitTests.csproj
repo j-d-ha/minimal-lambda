@@ -39,6 +39,9 @@
     <ProjectReference Include="..\..\src\Envelopes\AwsLambda.Host.Envelopes.ApiGateway\AwsLambda.Host.Envelopes.ApiGateway.csproj" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="System.Formats.Asn1" />
+    <PackageReference Include="System.Net.Http" />
+  <PackageReference Include="System.Text.RegularExpressions" />
     <Folder Include="Snapshots\" />
     <Folder Include="\Snapshots\" />
   </ItemGroup>
