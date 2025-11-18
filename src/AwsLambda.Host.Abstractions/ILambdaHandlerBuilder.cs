@@ -4,13 +4,13 @@ public interface ILambdaHandlerBuilder
 {
     IServiceProvider Services { get; }
 
-    IFeatureCollection Features { get; }
+    IDictionary<string, object?> Properties { get; }
 
     List<Func<LambdaInvocationDelegate, LambdaInvocationDelegate>> Middlewares { get; }
 
-    LambdaInvocationDelegate Hanlder { get; }
+    LambdaInvocationDelegate? Handler { get; }
 
-    ILambdaHandlerBuilder Run(LambdaInvocationDelegate handler);
+    ILambdaHandlerBuilder Handle(LambdaInvocationDelegate handler);
 
     ILambdaHandlerBuilder Use(Func<LambdaInvocationDelegate, LambdaInvocationDelegate> middleware);
 
