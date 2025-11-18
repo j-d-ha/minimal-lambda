@@ -24,12 +24,12 @@ internal class FeatureCollection : IFeatureCollection
 
     public IEnumerator<KeyValuePair<Type, object>> GetEnumerator() => _features.GetEnumerator();
 
-    public void Set<T>(T instance)
+    public void Set(Type type, object instance)
     {
-        if (instance is null)
-            throw new ArgumentNullException(nameof(instance));
+        ArgumentNullException.ThrowIfNull(type);
+        ArgumentNullException.ThrowIfNull(instance);
 
-        _features[typeof(T)] = instance;
+        _features[type] = instance;
     }
 
     IEnumerator IEnumerable.GetEnumerator() => _features.GetEnumerator();

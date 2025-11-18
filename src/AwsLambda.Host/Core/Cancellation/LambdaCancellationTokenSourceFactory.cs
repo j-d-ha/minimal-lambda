@@ -1,4 +1,5 @@
 using Amazon.Lambda.Core;
+using Microsoft.Extensions.Options;
 
 namespace AwsLambda.Host;
 
@@ -28,15 +29,17 @@ public class LambdaCancellationTokenSourceFactory : ILambdaCancellationTokenSour
     ///     duration to ensure that the created cancellation tokens expire in a timely manner before the
     ///     remaining execution time of the Lambda function is exhausted.
     /// </summary>
-    public LambdaCancellationTokenSourceFactory(TimeSpan bufferDuration)
+    public LambdaCancellationTokenSourceFactory(IOptions<LambdaHostOptions> options)
     {
-        if (bufferDuration < TimeSpan.Zero)
+        ArgumentNullException.ThrowIfNull(options);
+
+        if (options.Value.InvocationCancellationBuffer < TimeSpan.Zero)
             throw new ArgumentOutOfRangeException(
-                nameof(bufferDuration),
+                nameof(options.Value.InvocationCancellationBuffer),
                 "bufferDuration must be greater than or equal to zero."
             );
 
-        _bufferDuration = bufferDuration;
+        _bufferDuration = options.Value.InvocationCancellationBuffer;
     }
 
     /// <summary>

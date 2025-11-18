@@ -1,6 +1,6 @@
 namespace AwsLambda.Host.Core.Features;
 
-public class FeatureCollectionFactory
+internal class FeatureCollectionFactory : IFeatureCollectionFactory
 {
-    
+    public IFeatureCollection Create() => new FeatureCollection();
 }
