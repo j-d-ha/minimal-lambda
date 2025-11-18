@@ -11,5 +11,6 @@ internal class LambdaHandlerBuilderFactory : ILambdaHandlerBuilderFactory
         _serviceProvider = serviceProvider;
     }
 
-    public ILambdaHandlerBuilder CreateBuilder() => new LambdaHandlerBuilder(_serviceProvider);
+    public ILambdaInvocationBuilder CreateBuilder() =>
+        new LambdaInvocationBuilder(_serviceProvider);
 }

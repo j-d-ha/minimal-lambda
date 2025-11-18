@@ -7,7 +7,7 @@ namespace AwsLambda.Host;
 /// <summary>Provides middleware for processing Lambda event and response envelopes.</summary>
 public static class RequestEnvelopeMiddleware
 {
-    extension(ILambdaHandlerBuilder application)
+    extension(ILambdaInvocationBuilder application)
     {
         /// <summary>Adds envelope extraction and packing middleware to the lambda invocation pipeline.</summary>
         /// <remarks>
@@ -32,7 +32,7 @@ public static class RequestEnvelopeMiddleware
         /// <seealso cref="IRequestEnvelope" />
         /// <seealso cref="IResponseEnvelope" />
         /// <seealso cref="EnvelopeOptions" />
-        public ILambdaHandlerBuilder UseExtractAndPackEnvelope()
+        public ILambdaInvocationBuilder UseExtractAndPackEnvelope()
         {
             ArgumentNullException.ThrowIfNull(application);
 

@@ -1,9 +1,14 @@
-using AwsLambda.Host.Core.Features;
-
 namespace AwsLambda.Host;
 
-internal class LambdaHandlerBuilder : ILambdaHandlerBuilder
+internal class LambdaInvocationBuilder : ILambdaInvocationBuilder
 {
+    public LambdaInvocationBuilder(IServiceProvider services)
+    {
+        ArgumentNullException.ThrowIfNull(services);
+
+        Services = services;
+    }
+
     public IServiceProvider Services { get; }
 
     public IDictionary<string, object?> Properties { get; } = new Dictionary<string, object?>();
@@ -12,14 +17,7 @@ internal class LambdaHandlerBuilder : ILambdaHandlerBuilder
 
     public LambdaInvocationDelegate? Handler { get; private set; }
 
-    public LambdaHandlerBuilder(IServiceProvider services)
-    {
-        ArgumentNullException.ThrowIfNull(services);
-
-        Services = services;
-    }
-
-    public ILambdaHandlerBuilder Handle(LambdaInvocationDelegate handler)
+    public ILambdaInvocationBuilder Handle(LambdaInvocationDelegate handler)
     {
         ArgumentNullException.ThrowIfNull(handler);
 
@@ -31,7 +29,7 @@ internal class LambdaHandlerBuilder : ILambdaHandlerBuilder
         return this;
     }
 
-    public ILambdaHandlerBuilder Use(
+    public ILambdaInvocationBuilder Use(
         Func<LambdaInvocationDelegate, LambdaInvocationDelegate> middleware
     )
     {

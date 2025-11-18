@@ -1,9 +1,6 @@
 using System.Diagnostics;
-using Amazon.Lambda.Core;
-using Amazon.Lambda.Serialization.SystemTextJson;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Diagnostics.Metrics;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -161,7 +158,7 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
         return _builtApplication;
     }
 
-    private void ConfigureHandlerBuilder(ILambdaHandlerBuilder builder)
+    private void ConfigureHandlerBuilder(ILambdaInvocationBuilder builder)
     {
         ArgumentNullException.ThrowIfNull(builder);
         Debug.Assert(_builtApplication is not null);

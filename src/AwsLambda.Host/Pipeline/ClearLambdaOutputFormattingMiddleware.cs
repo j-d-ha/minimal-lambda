@@ -6,7 +6,7 @@ namespace AwsLambda.Host;
 /// </summary>
 public static class ClearLambdaOutputFormattingMiddleware
 {
-    extension(ILambdaHandlerBuilder application)
+    extension(ILambdaInvocationBuilder application)
     {
         /// <summary>
         ///     Clears the output formatting applied by the Lambda runtime and resets console output to
@@ -27,7 +27,7 @@ public static class ClearLambdaOutputFormattingMiddleware
         ///     Thrown when <see cref="ILambdaApplication" /> is
         ///     <c>null</c>.
         /// </exception>
-        public ILambdaHandlerBuilder UseClearLambdaOutputFormatting()
+        public ILambdaInvocationBuilder UseClearLambdaOutputFormatting()
         {
             ArgumentNullException.ThrowIfNull(application);
 

@@ -39,8 +39,8 @@ public static class MapHandlerLambdaApplicationExtensions
     /// </exception>
     /// <seealso
     ///     cref="ILambdaApplication.MapHandler(LambdaInvocationDelegate, Func{ILambdaHostContext, ILambdaSerializer, Stream, Task}, Func{ILambdaHostContext, ILambdaSerializer, Task{Stream}})" />
-    public static ILambdaHandlerBuilder MapHandler(
-        this ILambdaHandlerBuilder application,
+    public static ILambdaInvocationBuilder MapHandler(
+        this ILambdaInvocationBuilder application,
         Delegate handler
     )
     {

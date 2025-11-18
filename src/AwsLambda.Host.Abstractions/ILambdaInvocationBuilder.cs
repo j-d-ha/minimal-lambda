@@ -1,6 +1,6 @@
 namespace AwsLambda.Host;
 
-public interface ILambdaHandlerBuilder
+public interface ILambdaInvocationBuilder
 {
     IServiceProvider Services { get; }
 
@@ -10,9 +10,11 @@ public interface ILambdaHandlerBuilder
 
     LambdaInvocationDelegate? Handler { get; }
 
-    ILambdaHandlerBuilder Handle(LambdaInvocationDelegate handler);
+    ILambdaInvocationBuilder Handle(LambdaInvocationDelegate handler);
 
-    ILambdaHandlerBuilder Use(Func<LambdaInvocationDelegate, LambdaInvocationDelegate> middleware);
+    ILambdaInvocationBuilder Use(
+        Func<LambdaInvocationDelegate, LambdaInvocationDelegate> middleware
+    );
 
     LambdaInvocationDelegate Build();
 }
