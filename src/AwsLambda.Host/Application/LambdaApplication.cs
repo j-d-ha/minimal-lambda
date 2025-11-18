@@ -1,6 +1,8 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 
 namespace AwsLambda.Host;
 
@@ -19,12 +21,23 @@ public sealed class LambdaApplication
         ArgumentNullException.ThrowIfNull(host);
 
         _host = host;
-
-        var settings = Services.GetRequiredService<IOptions<LambdaHostOptions>>().Value;
-
-        if (settings.ClearLambdaOutputFormatting)
-            this.OnInitClearLambdaOutputFormatting();
     }
+
+    public IConfiguration Configuration =>
+        field ??= _host.Services.GetRequiredService<IConfiguration>();
+
+    public IHostEnvironment Environment =>
+        field ??= _host.Services.GetRequiredService<IHostEnvironment>();
+
+    public IHostApplicationLifetime Lifetime =>
+        field ??= _host.Services.GetRequiredService<IHostApplicationLifetime>();
+
+    public ILogger Logger =>
+        field ??=
+            _host
+                .Services.GetService<ILoggerFactory>()
+                ?.CreateLogger(Environment.ApplicationName ?? nameof(LambdaApplication))
+            ?? NullLogger.Instance;
 
     /// <inheritdoc />
     public ValueTask DisposeAsync() => ((IAsyncDisposable)_host).DisposeAsync();
@@ -32,17 +45,19 @@ public sealed class LambdaApplication
     public IServiceProvider Services => _host.Services;
 
     /// <inheritdoc />
-    public void Dispose() => _host.Dispose();
-
-    /// <inheritdoc />
-    public Task StartAsync(CancellationToken cancellationToken = default)
-    {
-        return _host.StartAsync(cancellationToken);
-    }
+    public Task StartAsync(CancellationToken cancellationToken = default) =>
+        _host.StartAsync(cancellationToken);
 
     /// <inheritdoc />
     public Task StopAsync(CancellationToken cancellationToken = default) =>
         _host.StopAsync(cancellationToken);
+
+    /// <inheritdoc />
+    public void Dispose() => _host.Dispose();
+
+    //      ┌──────────────────────────────────────────────────────────┐
+    //      │                 ILambdaInvocationBuilder                 │
+    //      └──────────────────────────────────────────────────────────┘
 
     public IDictionary<string, object?> Properties { get; }
     public List<Func<LambdaInvocationDelegate, LambdaInvocationDelegate>> Middlewares { get; }
@@ -57,6 +72,15 @@ public sealed class LambdaApplication
 
     public LambdaInvocationDelegate Build() => throw new NotImplementedException();
 
+    //      ┌──────────────────────────────────────────────────────────┐
+    //      │                   ILambdaOnInitBuilder                   │
+    //      └──────────────────────────────────────────────────────────┘
+
     public List<LambdaInitDelegate> InitHandlers { get; }
+
+    //      ┌──────────────────────────────────────────────────────────┐
+    //      │                 ILambdaOnShutdownBuilder                 │
+    //      └──────────────────────────────────────────────────────────┘
+
     public List<LambdaShutdownDelegate> ShutdownHandlers { get; }
 }

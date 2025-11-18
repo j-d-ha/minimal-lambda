@@ -183,6 +183,14 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
         ArgumentNullException.ThrowIfNull(builder);
         Debug.Assert(_builtApplication is not null);
 
+        var settings = _builtApplication
+            .Services.GetRequiredService<IOptions<LambdaHostOptions>>()
+            .Value;
+
+        // Add default OnInit handlers if asked for
+        if (settings.ClearLambdaOutputFormatting)
+            builder.OnInitClearLambdaOutputFormatting();
+
         foreach (var handlers in _builtApplication.InitHandlers)
             builder.InitHandlers.Add(handlers);
     }
