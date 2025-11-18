@@ -80,7 +80,9 @@ public static class MiddlewareOpenTelemetryExtensions
     ///     record Response(string Message);
     ///     </code>
     /// </example>
-    public static ILambdaApplication UseOpenTelemetryTracing(this ILambdaApplication application)
+    public static ILambdaHandlerBuilder UseOpenTelemetryTracing(
+        this ILambdaHandlerBuilder application
+    )
     {
         Debug.Fail("This method should have been intercepted at compile time!");
         throw new InvalidOperationException("This method is replaced at compile time.");

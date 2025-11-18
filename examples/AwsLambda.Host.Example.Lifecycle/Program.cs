@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using AwsLambda.Host;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 var builder = LambdaApplication.CreateBuilder();
@@ -19,7 +21,7 @@ var lambda = builder.Build();
 lambda.UseClearLambdaOutputFormatting();
 
 lambda.OnInit(
-    Task<bool> (services, token) =>
+    Task<bool> (IServiceCollection services, CancellationToken cancellationToken) =>
     {
         Console.WriteLine("Initializing...");
         return Task.FromResult(true);
@@ -27,7 +29,7 @@ lambda.OnInit(
 );
 
 lambda.OnInit(
-    async Task<bool> (services, cancellationToken) =>
+    async Task<bool> (IServiceCollection services, CancellationToken cancellationToken) =>
     {
         var stopwatch = Stopwatch.StartNew();
         while (!cancellationToken.IsCancellationRequested)
@@ -56,7 +58,7 @@ lambda.MapHandler(() =>
 });
 
 lambda.OnShutdown(
-    (services, token) =>
+    (IServiceCollection services, CancellationToken token) =>
     {
         Console.WriteLine("Shutting down...");
         return Task.CompletedTask;

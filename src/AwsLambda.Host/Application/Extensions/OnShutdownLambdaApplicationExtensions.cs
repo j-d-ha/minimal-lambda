@@ -28,8 +28,8 @@ public static class OnShutdownLambdaApplicationExtensions
     /// </exception>
     /// <seealso cref="LambdaShutdownDelegate" />
     /// <seealso cref="ILambdaApplication.OnShutdown(LambdaShutdownDelegate)" />
-    public static ILambdaApplication OnShutdown(
-        this ILambdaApplication application,
+    public static ILambdaOnShutdownBuilder OnShutdown(
+        this ILambdaOnShutdownBuilder application,
         Delegate handler
     )
     {

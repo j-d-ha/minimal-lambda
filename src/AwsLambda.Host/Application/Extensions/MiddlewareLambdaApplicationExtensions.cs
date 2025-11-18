@@ -3,7 +3,7 @@ namespace AwsLambda.Host;
 /// <summary>Provides extension methods for adding middleware to the Lambda invocation pipeline.</summary>
 public static class MiddlewareLambdaApplicationExtensions
 {
-    extension(ILambdaApplication application)
+    extension(ILambdaHandlerBuilder application)
     {
         /// <summary>Adds middleware to the Lambda invocation pipeline using a simplified signature.</summary>
         /// <remarks>
@@ -25,7 +25,7 @@ public static class MiddlewareLambdaApplicationExtensions
         ///     <c>null</c>.
         /// </exception>
         /// <seealso cref="ILambdaApplication.Use" />
-        public ILambdaApplication UseMiddleware(
+        public ILambdaHandlerBuilder UseMiddleware(
             Func<ILambdaHostContext, LambdaInvocationDelegate, Task> middleware
         )
         {
