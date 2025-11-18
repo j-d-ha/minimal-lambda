@@ -118,7 +118,7 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
             _exceptions.Add(ex);
         }
 
-        // Run shutdown tasks and add any exceptions to the list of exceptions
+        // Handle shutdown tasks and add any exceptions to the list of exceptions
         var shutdownErrors = await _lifecycle.OnShutdown(cancellationToken);
         _exceptions.AddRange(shutdownErrors);
 
@@ -145,7 +145,7 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
 
         var onInitHandler = _lifecycle.OnInit(stoppingToken);
 
-        // Run the bootstrap with the processed handler. Once the task completes, we will manually
+        // Handle the bootstrap with the processed handler. Once the task completes, we will manually
         // trigger the stop of the application.
         try
         {

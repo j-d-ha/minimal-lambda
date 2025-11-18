@@ -6,9 +6,20 @@ using Microsoft.Extensions.Options;
 namespace AwsLambda.Host;
 
 /// <summary>A Lambda application that provides host functionality for running AWS Lambda handlers.</summary>
-public sealed class LambdaApplication : IHost, ILambdaApplication, IAsyncDisposable
+public sealed class LambdaApplication
+    : IHost,
+        ILambdaHandlerBuilder,
+        ILambdaOnInitBuilder,
+        ILambdaOnShutdownBuilder,
+        IAsyncDisposable
 {
-    private readonly DelegateHolder _delegateHolder;
+    public IServiceProvider Services => _host.Services;
+    public List<LambdaShutdownDelegate> ShutdownHandlers { get; }
+    public List<LambdaInitDelegate> InitHandlers { get; }
+    public IDictionary<string, object?> Properties { get; }
+    public List<Func<LambdaInvocationDelegate, LambdaInvocationDelegate>> Middlewares { get; }
+    public LambdaInvocationDelegate? Handler { get; }
+
     private readonly IHost _host;
 
     internal LambdaApplication(IHost host)
@@ -16,8 +27,6 @@ public sealed class LambdaApplication : IHost, ILambdaApplication, IAsyncDisposa
         ArgumentNullException.ThrowIfNull(host);
 
         _host = host;
-        _delegateHolder =
-            Services.GetRequiredService<DelegateHolder>() ?? throw new InvalidOperationException();
 
         var settings = Services.GetRequiredService<IOptions<LambdaHostOptions>>().Value;
 
@@ -32,15 +41,8 @@ public sealed class LambdaApplication : IHost, ILambdaApplication, IAsyncDisposa
     public void Dispose() => _host.Dispose();
 
     /// <inheritdoc />
-    /// <remarks>
-    ///     Before starting the host, this method applies default middleware to the invocation
-    ///     pipeline.
-    /// </remarks>
     public Task StartAsync(CancellationToken cancellationToken = default)
     {
-        // add default middleware to the end of the pipeline
-        AddDefaultMiddleware();
-
         return _host.StartAsync(cancellationToken);
     }
 
@@ -48,64 +50,12 @@ public sealed class LambdaApplication : IHost, ILambdaApplication, IAsyncDisposa
     public Task StopAsync(CancellationToken cancellationToken = default) =>
         _host.StopAsync(cancellationToken);
 
-    /// <inheritdoc cref="ILambdaApplication.Services" />
-    public IServiceProvider Services => _host.Services;
+    public ILambdaHandlerBuilder Handle(LambdaInvocationDelegate handler) =>
+        throw new NotImplementedException();
 
-    /// <inheritdoc />
-    public ILambdaApplication MapHandler(
-        LambdaInvocationDelegate handler,
-        Func<ILambdaHostContext, ILambdaSerializer, Stream, Task>? deserializer,
-        Func<ILambdaHostContext, ILambdaSerializer, Task<Stream>>? serializer
-    )
-    {
-        ArgumentNullException.ThrowIfNull(handler);
-
-        if (_delegateHolder.IsHandlerSet)
-            throw new InvalidOperationException(
-                "Lambda Handler is already set. Only one is allowed."
-            );
-
-        _delegateHolder.Handler = handler;
-
-        _delegateHolder.Deserializer = deserializer;
-        _delegateHolder.Serializer = serializer;
-
-        return this;
-    }
-
-    /// <inheritdoc />
-    public ILambdaApplication Use(
+    public ILambdaHandlerBuilder Use(
         Func<LambdaInvocationDelegate, LambdaInvocationDelegate> middleware
-    )
-    {
-        ArgumentNullException.ThrowIfNull(middleware);
+    ) => throw new NotImplementedException();
 
-        _delegateHolder.Middlewares.Add(middleware);
-
-        return this;
-    }
-
-    /// <inheritdoc />
-    public ILambdaApplication OnInit(LambdaInitDelegate handler)
-    {
-        ArgumentNullException.ThrowIfNull(handler);
-
-        _delegateHolder.InitHandlers.Add(handler);
-
-        return this;
-    }
-
-    /// <inheritdoc />
-    public ILambdaApplication OnShutdown(LambdaShutdownDelegate handler)
-    {
-        ArgumentNullException.ThrowIfNull(handler);
-
-        _delegateHolder.ShutdownHandlers.Add(handler);
-
-        return this;
-    }
-
-    private void AddDefaultMiddleware() =>
-        // Add Envelope middleware
-        this.UseExtractAndPackEnvelope();
+    public LambdaInvocationDelegate Build() => throw new NotImplementedException();
 }

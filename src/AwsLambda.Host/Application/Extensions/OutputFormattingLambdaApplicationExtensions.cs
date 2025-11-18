@@ -14,13 +14,13 @@ public static class OutputFormattingLambdaApplicationExtensions
     /// </remarks>
     /// <param name="application">The Lambda application to configure.</param>
     /// <returns>The configured <see cref="ILambdaApplication" /> for method chaining.</returns>
-    public static ILambdaApplication OnInitClearLambdaOutputFormatting(
-        this ILambdaApplication application
+    public static ILambdaOnInitBuilder OnInitClearLambdaOutputFormatting(
+        this ILambdaOnInitBuilder application
     )
     {
         ArgumentNullException.ThrowIfNull(application);
 
-        application.OnInit(
+        application.InitHandlers.Add(
             Task<bool> (services, _) =>
             {
                 var logger = services.GetService<ILogger<LambdaHostedService>>();
