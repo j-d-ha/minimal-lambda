@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.Serialization.SystemTextJson;
 using Microsoft.Extensions.Configuration;
@@ -38,6 +39,8 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
     private const string LambdaHostAppSettingsSectionName = "AwsLambdaHost";
     private readonly HostApplicationBuilder _hostBuilder;
 
+    private LambdaApplication? _builtApplication = null;
+
     private LambdaApplicationBuilder(HostApplicationBuilder hostBuilder)
     {
         _hostBuilder = hostBuilder ?? throw new ArgumentNullException(nameof(hostBuilder));
@@ -47,16 +50,18 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
             Configuration.GetSection(LambdaHostAppSettingsSectionName)
         );
 
+        // Configure LambdaHostedServiceOptions with callbacks
+        Services.Configure<LambdaHostedServiceOptions>(options =>
+        {
+            options.ConfigureHandlerBuilder = ConfigureHandlerBuilder;
+            options.ConfigureOnInitBuilder = ConfigureOnInitBuilder;
+            options.ConfigureOnShutdownBuilder = ConfigureOnShutdownBuilder;
+        });
+
         // Register DelegateHolder to pass the handler delegate to the generated LambdaApplication
         Services.AddSingleton<DelegateHolder>();
 
-        // Register Lambda execution components
-        Services.AddSingleton<ILambdaHandlerFactory, LambdaHandlerComposer>();
-        Services.AddSingleton<ILambdaBootstrapOrchestrator, LambdaBootstrapAdapter>();
-        Services.AddSingleton<ILambdaLifecycleOrchestrator, LambdaLifecycleOrchestrator>();
-
-        // Register LambdaHostedService as IHostedService
-        Services.AddHostedService<LambdaHostedService>();
+        Services.AddLambdaHostCoreServices();
     }
 
     internal LambdaApplicationBuilder()
@@ -134,15 +139,6 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
     /// </exception>
     public LambdaApplication Build()
     {
-        // Attempt to add a default cancellation token source factory if one is not already
-        // registered.
-        Services.TryAddSingleton<ILambdaCancellationTokenSourceFactory>(sp =>
-        {
-            var settings = sp.GetRequiredService<IOptions<LambdaHostOptions>>().Value;
-
-            return new LambdaCancellationTokenSourceFactory(settings.InvocationCancellationBuffer);
-        });
-
         // Get LambdaHostOptions from DI for final configuration.
         var lambdaHostOptions = Services
             .BuildServiceProvider()
@@ -158,11 +154,48 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
                 shutdownTimeout >= TimeSpan.Zero ? shutdownTimeout : TimeSpan.Zero
         );
 
-        // Try to register ILambdaSerializer if not already registered.
-        Services.TryAddSingleton<ILambdaSerializer, DefaultLambdaJsonSerializer>();
+        Services.TryAddLambdaHostDefaultServices();
 
-        var host = _hostBuilder.Build();
+        _builtApplication = new LambdaApplication(_hostBuilder.Build());
 
-        return new LambdaApplication(host);
+        return _builtApplication;
+    }
+
+    private void ConfigureHandlerBuilder(ILambdaHandlerBuilder builder)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        Debug.Assert(_builtApplication is not null);
+
+        if (_builtApplication.Handler is null)
+            throw new InvalidOperationException("Lambda Handler is not set.");
+
+        foreach (var middleware in _builtApplication.Middlewares)
+            builder.Use(middleware);
+
+        // add default middleware to the end of the middleware pipeline
+        builder.UseExtractAndPackEnvelope();
+
+        builder.Handle(_builtApplication.Handler);
+
+        foreach (var property in _builtApplication.Properties)
+            builder.Properties[property.Key] = property.Value;
+    }
+
+    private void ConfigureOnInitBuilder(ILambdaOnInitBuilder builder)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        Debug.Assert(_builtApplication is not null);
+
+        foreach (var handlers in _builtApplication.InitHandlers)
+            builder.InitHandlers.Add(handlers);
+    }
+
+    private void ConfigureOnShutdownBuilder(ILambdaOnShutdownBuilder builder)
+    {
+        ArgumentNullException.ThrowIfNull(builder);
+        Debug.Assert(_builtApplication is not null);
+
+        foreach (var handlers in _builtApplication.ShutdownHandlers)
+            builder.ShutdownHandlers.Add(handlers);
     }
 }
