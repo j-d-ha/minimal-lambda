@@ -7,7 +7,7 @@ namespace AwsLambda.Host.SourceGenerators;
 internal static class OpenTelemetrySources
 {
     internal static string Generate(
-        EquatableArray<UseOpenTelemetryTracingInfo> useOpenTelemetryTracingInfos,
+        EquatableArray<SimpleMethodInfo> useOpenTelemetryTracingInfos,
         DelegateInfo delegateInfo
     )
     {

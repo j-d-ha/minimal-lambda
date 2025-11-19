@@ -7,11 +7,10 @@ using Microsoft.CodeAnalysis.Operations;
 
 namespace AwsLambda.Host.SourceGenerators;
 
-internal static class UseOpenTelemetryTracingSyntaxProvider
+internal static class LambdaApplicationBuilderBuildSyntaxProvider
 {
     internal static bool Predicate(SyntaxNode node, CancellationToken _) =>
-        node.TryGetMethodName(out var name)
-        && name == GeneratorConstants.UseOpenTelemetryTracingMethodName;
+        node.TryGetMethodName(out var name) && name == "Build";
 
     internal static SimpleMethodInfo? Transformer(
         GeneratorSyntaxContext context,
@@ -24,15 +23,18 @@ internal static class UseOpenTelemetryTracingSyntaxProvider
             operation
                 is IInvocationOperation
                 {
-                    TargetMethod.ContainingNamespace:
+                    TargetMethod:
                     {
-                        Name: "Host",
+                        ContainingType.Name: "LambdaApplicationBuilder",
                         ContainingNamespace:
-                        { Name: "AwsLambda", ContainingNamespace.IsGlobalNamespace: true },
+                        {
+                            Name: "Host",
+                            ContainingNamespace:
+                            { Name: "AwsLambda", ContainingNamespace.IsGlobalNamespace: true },
+                        }
                     },
                 } targetOperation
-            && targetOperation.TargetMethod.ContainingAssembly.Name
-                == "AwsLambda.Host.OpenTelemetry"
+            && targetOperation.TargetMethod.ContainingAssembly.Name == "AwsLambda.Host"
         )
         {
             var interceptableLocation = context.SemanticModel.GetInterceptableLocation(
@@ -41,7 +43,7 @@ internal static class UseOpenTelemetryTracingSyntaxProvider
             )!;
 
             return new SimpleMethodInfo(
-                GeneratorConstants.UseOpenTelemetryTracingMethodName,
+                "Build",
                 LocationInfo.CreateFrom(context.Node),
                 InterceptableLocationInfo.CreateFrom(interceptableLocation)
             );

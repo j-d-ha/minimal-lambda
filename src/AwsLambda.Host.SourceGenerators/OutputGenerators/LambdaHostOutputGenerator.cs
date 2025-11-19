@@ -25,7 +25,9 @@ internal static class LambdaHostOutputGenerator
         {
             var mapHandlerInvocationInfo = compilationInfo.MapHandlerInvocationInfos.First();
 
-            outputs.Add(MapHandlerSources.Generate(mapHandlerInvocationInfo));
+            outputs.Add(
+                MapHandlerSources.Generate(mapHandlerInvocationInfo, compilationInfo.BuilderInfos)
+            );
 
             // if UseOpenTelemetryTracing calls found, generate the source code.
             if (compilationInfo.UseOpenTelemetryTracingInfos.Count >= 1)
