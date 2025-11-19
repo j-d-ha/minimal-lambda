@@ -14,7 +14,7 @@ public class ExpressionLambdaVerifyTests
 
             var lambda = builder.Build();
 
-            lambda.MapHandler(Task (ILambdaHostContext context) => Task.CompletedTask, null, null);
+            lambda.MapHandler(Task (ILambdaHostContext context) => Task.CompletedTask);
 
             await lambda.RunAsync();
             """,
