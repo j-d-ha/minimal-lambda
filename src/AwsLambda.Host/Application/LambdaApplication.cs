@@ -26,13 +26,13 @@ public sealed class LambdaApplication
         _host = host;
 
         _invocationBuilder = Services
-            .GetRequiredService<ILambdaInvocationBuilderFactory>()
+            .GetRequiredService<IInvocationBuilderFactory>()
             .CreateBuilder();
 
-        _onInitBuilder = Services.GetRequiredService<ILambdaOnInitBuilderFactory>().CreateBuilder();
+        _onInitBuilder = Services.GetRequiredService<IOnInitBuilderFactory>().CreateBuilder();
 
         _onShutdownBuilder = Services
-            .GetRequiredService<ILambdaOnShutdownBuilderFactory>()
+            .GetRequiredService<IOnShutdownBuilderFactory>()
             .CreateBuilder();
     }
 
@@ -99,11 +99,11 @@ public sealed class LambdaApplication
     //      │                   ILambdaOnInitBuilder                   │
     //      └──────────────────────────────────────────────────────────┘
 
-    public List<LambdaInitDelegate> InitHandlers => _onInitBuilder.InitHandlers;
+    public IList<LambdaInitDelegate> InitHandlers => _onInitBuilder.InitHandlers;
 
     //      ┌──────────────────────────────────────────────────────────┐
     //      │                 ILambdaOnShutdownBuilder                 │
     //      └──────────────────────────────────────────────────────────┘
 
-    public List<LambdaShutdownDelegate> ShutdownHandlers => _onShutdownBuilder.ShutdownHandlers;
+    public IList<LambdaShutdownDelegate> ShutdownHandlers => _onShutdownBuilder.ShutdownHandlers;
 }
