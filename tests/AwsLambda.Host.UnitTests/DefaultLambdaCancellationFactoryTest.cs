@@ -35,25 +35,41 @@ public class DefaultLambdaCancellationFactoryTest
     public void Constructor_WithZeroOrPositiveBufferDuration_DoesNotThrow()
     {
         // Arrange
-        var zeroBufferDuration = TimeSpan.Zero;
-        var positiveBufferDuration = TimeSpan.FromSeconds(10);
+        var optionsWithZero = Options.Create(
+            new LambdaHostOptions { InvocationCancellationBuffer = TimeSpan.Zero }
+        );
+        var optionsWithPositive = Options.Create(
+            new LambdaHostOptions { InvocationCancellationBuffer = TimeSpan.FromSeconds(10) }
+        );
 
         // Act & Assert
-        var factoryWithZero = new DefaultLambdaCancellationFactory(zeroBufferDuration);
-        factoryWithZero.Should().NotBeNull();
+        var actWithZero = () =>
+        {
+            var factory = new DefaultLambdaCancellationFactory(optionsWithZero);
+        };
+        actWithZero.Should().NotThrow();
 
-        var factoryWithPositive = new DefaultLambdaCancellationFactory(positiveBufferDuration);
-        factoryWithPositive.Should().NotBeNull();
+        var actWithPositive = () =>
+        {
+            var factory = new DefaultLambdaCancellationFactory(optionsWithPositive);
+        };
+        actWithPositive.Should().NotThrow();
     }
 
     [Fact]
     public void NewCancellationTokenSource_WithNullContext_ThrowsArgumentNullException()
     {
         // Arrange
-        var factory = new DefaultLambdaCancellationFactory(TimeSpan.FromSeconds(5));
+        var options = Options.Create(
+            new LambdaHostOptions { InvocationCancellationBuffer = TimeSpan.FromSeconds(5) }
+        );
+        var factory = new DefaultLambdaCancellationFactory(options);
 
         // Act & Assert
-        Action act = () => factory.NewCancellationTokenSource(null!);
+        var act = () =>
+        {
+            factory.NewCancellationTokenSource(null!);
+        };
         act.Should().Throw<ArgumentNullException>();
     }
 
@@ -61,12 +77,18 @@ public class DefaultLambdaCancellationFactoryTest
     public void NewCancellationTokenSource_WhenContextRemainingTimeZeroOrLess_ThrowsInvalidOperationException()
     {
         // Arrange
-        var factory = new DefaultLambdaCancellationFactory(TimeSpan.FromSeconds(5));
+        var options = Options.Create(
+            new LambdaHostOptions { InvocationCancellationBuffer = TimeSpan.FromSeconds(5) }
+        );
+        var factory = new DefaultLambdaCancellationFactory(options);
         var mockContext = Substitute.For<ILambdaContext>();
         mockContext.RemainingTime.Returns(TimeSpan.Zero);
 
         // Act & Assert
-        Action act = () => factory.NewCancellationTokenSource(mockContext);
+        var act = () =>
+        {
+            factory.NewCancellationTokenSource(mockContext);
+        };
         act.Should().Throw<InvalidOperationException>();
 
         // Test with negative remaining time
@@ -79,12 +101,18 @@ public class DefaultLambdaCancellationFactoryTest
     {
         // Arrange
         var bufferDuration = TimeSpan.FromSeconds(10);
-        var factory = new DefaultLambdaCancellationFactory(bufferDuration);
+        var options = Options.Create(
+            new LambdaHostOptions { InvocationCancellationBuffer = bufferDuration }
+        );
+        var factory = new DefaultLambdaCancellationFactory(options);
         var mockContext = Substitute.For<ILambdaContext>();
         mockContext.RemainingTime.Returns(TimeSpan.FromSeconds(5)); // Less than buffer
 
         // Act & Assert
-        Action act = () => factory.NewCancellationTokenSource(mockContext);
+        var act = () =>
+        {
+            factory.NewCancellationTokenSource(mockContext);
+        };
         act.Should().Throw<InvalidOperationException>();
     }
 
@@ -93,7 +121,10 @@ public class DefaultLambdaCancellationFactoryTest
     {
         // Arrange
         var bufferDuration = TimeSpan.FromSeconds(5);
-        var factory = new DefaultLambdaCancellationFactory(bufferDuration);
+        var options = Options.Create(
+            new LambdaHostOptions { InvocationCancellationBuffer = bufferDuration }
+        );
+        var factory = new DefaultLambdaCancellationFactory(options);
         var mockContext = Substitute.For<ILambdaContext>();
         mockContext.RemainingTime.Returns(TimeSpan.FromSeconds(30));
 
@@ -116,12 +147,18 @@ public class DefaultLambdaCancellationFactoryTest
     {
         // Arrange
         var bufferDuration = TimeSpan.FromSeconds(10);
-        var factory = new DefaultLambdaCancellationFactory(bufferDuration);
+        var options = Options.Create(
+            new LambdaHostOptions { InvocationCancellationBuffer = bufferDuration }
+        );
+        var factory = new DefaultLambdaCancellationFactory(options);
         var mockContext = Substitute.For<ILambdaContext>();
         mockContext.RemainingTime.Returns(bufferDuration);
 
         // Act & Assert
-        Action act = () => factory.NewCancellationTokenSource(mockContext);
+        var act = () =>
+        {
+            factory.NewCancellationTokenSource(mockContext);
+        };
         act.Should().Throw<InvalidOperationException>();
     }
 }
