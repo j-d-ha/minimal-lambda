@@ -1,15 +1,15 @@
-namespace AwsLambda.Host.Core.Features;
+using System.Diagnostics.CodeAnalysis;
+
+namespace AwsLambda.Host;
 
 public static class FeatureCollectionExtensions
 {
     extension(IFeatureCollection featureCollection)
     {
-        public void Set<T>(T instance)
+        public bool TryGet<T>([NotNullWhen(true)] out T? result)
         {
-            ArgumentNullException.ThrowIfNull(featureCollection);
-            ArgumentNullException.ThrowIfNull(instance);
-
-            featureCollection.Set(typeof(T), instance);
+            result = featureCollection.Get<T>();
+            return result is not null;
         }
     }
 }
