@@ -1,3 +1,4 @@
+using AwsLambda.Host.Core.Features;
 using AwsLambda.Host.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
@@ -44,12 +45,18 @@ public static class RequestEnvelopeMiddleware
             {
                 return async context =>
                 {
-                    if (context.Event is IRequestEnvelope requestEnvelope)
+                    if (
+                        context.Features.TryGet(out IEventFeature? eventFeature)
+                        && eventFeature.GetEvent(context) is IRequestEnvelope requestEnvelope
+                    )
                         requestEnvelope.ExtractPayload(settings);
 
                     await next(context);
 
-                    if (context.Response is IResponseEnvelope responseEnvelope)
+                    if (
+                        context.Features.TryGet(out IResponseFeature? responseFeature)
+                        && responseFeature.GetResponse() is IResponseEnvelope responseEnvelope
+                    )
                         responseEnvelope.PackPayload(settings);
                 };
             });
