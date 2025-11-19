@@ -6,5 +6,6 @@ internal readonly record struct CompilationInfo(
     EquatableArray<HigherOrderMethodInfo> MapHandlerInvocationInfos,
     EquatableArray<HigherOrderMethodInfo> OnShutdownInvocationInfos,
     EquatableArray<HigherOrderMethodInfo> OnInitInvocationInfos,
-    EquatableArray<UseOpenTelemetryTracingInfo> UseOpenTelemetryTracingInfos
+    EquatableArray<SimpleMethodInfo> UseOpenTelemetryTracingInfos,
+    EquatableArray<SimpleMethodInfo> BuilderInfos = default
 );

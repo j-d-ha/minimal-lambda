@@ -11,12 +11,14 @@ namespace AwsLambda.Host
     {
         // Location: {{ location.display_location }}
         [InterceptsLocation({{ location.version }}, "{{ location.data }}")]
-        internal static ILambdaApplication MapHandlerInterceptor(
-            this ILambdaApplication application,
+        internal static ILambdaInvocationBuilder MapHandlerInterceptor(
+            this ILambdaInvocationBuilder application,
             Delegate handler
         )
         {
             var castHandler = ({{ handler_signature }})handler;
+
+            return application.Handle(InvocationDelegate);
 
             {{ if should_await ~}} async {{ end ~}}Task InvocationDelegate(ILambdaHostContext context)
             {
@@ -30,44 +32,31 @@ namespace AwsLambda.Host
                 // {{ handler_arg.string }}
                 var arg{{ for.index }} = {{ handler_arg.assignment }};
                 {{~ end ~}}
-                {{ if output_response != null; ~}} context.Response = {{ end }}{{ if should_await ~}} await {{ end ~}} castHandler.Invoke({{ for arg in handler_args }}arg{{ for.index }}{{ if !for.last }}, {{ end }}{{ end }});
+                {{ if output_response != null; ~}} var response = {{ end }}{{ if should_await ~}} await {{ end ~}} castHandler.Invoke({{ for arg in handler_args }}arg{{ for.index }}{{ if !for.last }}, {{ end }}{{ end }});
+                {{~ if output_response != null; ~}}
+                context.SetResponseT(response);
+                {{~ end ~}}  
                 {{~ if !should_await ~}}
                 return Task.CompletedTask; 
                 {{~ end ~}}
             }
-            
-            Task Deserializer(ILambdaHostContext context, ILambdaSerializer serializer, Stream eventStream)
-            {
-                {{~ if input_event != null ~}}
-                {{~ if input_event.is_stream ~}}
-                context.Event = eventStream;
-                {{~ else ~}}
-                context.Event = serializer.Deserialize<{{~ input_event.type ~}}>(eventStream);
-                {{~ end ~}}
-                {{~ end ~}}
-                return Task.CompletedTask;
-            }
-            
-            Task<Stream> Serializer(ILambdaHostContext context, ILambdaSerializer serializer)
-            {
-                {{~ if output_response != null ~}}
-                var response = context.GetResponseT<{{ output_response.response_type }}>();
-                {{~ if output_response.response_is_stream ~}}
-                return Task.FromResult(response);
-                {{~ else ~}}
-                var outputStream = new MemoryStream();
-                outputStream.SetLength(0L);
-                serializer.Serialize<{{ output_response.response_type }}>(response, outputStream);
-                outputStream.Position = 0L;
-                return Task.FromResult<Stream>(outputStream);
-                {{~ end ~}}
-                {{~ else ~}}
-                return Task.FromResult<Stream>(new MemoryStream(0));
-                {{~ end ~}}
-            }
-
-            return application.MapHandler(InvocationDelegate, Deserializer, Serializer);
         }
+        {{~ if builders.size >= 1 ~}}
+        
+        {{~ for builder in builders ~}}
+        [InterceptsLocation({{ builder.version }}, "{{ builder.data }}")] // Location: {{ builder.display_location }}
+        {{~ end ~}}
+        internal static LambdaApplication BuildInterceptor(this LambdaApplicationBuilder builder)
+        {
+            {{~ if input_event != null && !input_event.is_stream ~}}
+            builder.Services.AddSingleton<IFeatureProvider, EventFeatureProvider>();
+            {{~ end ~}}
+            {{~ if output_response != null && !output_response.response_is_stream ~}}
+            builder.Services.AddSingleton<IFeatureProvider, ResponseFeatureProvider>();
+            {{~ end ~}}
+            return builder.Build();
+        }
+        {{~ end ~}}
 
         private static T GetEventT<T>(this ILambdaHostContext context)
         {
@@ -79,14 +68,112 @@ namespace AwsLambda.Host
             return eventT!;
         }
 
-        private static T GetResponseT<T>(this ILambdaHostContext context)
+        private static void SetResponseT<T>(this ILambdaHostContext context, T response)
         {
-            if (!context.TryGetResponse<T>(out var responseT))
+            if (response is Stream stream)
             {
-                throw new InvalidOperationException($"Lambda response of type '{typeof(T).FullName}' is not available in the context.");
+                context.RawInvocationData.Response = stream;
+                return;
             }
-            
-            return responseT!;
+    
+            if (!context.Features.TryGet<IResponseFeature>(out var responseFeature))
+            {
+                throw new InvalidOperationException("Response feature is not available in the context.");
+            }
+    
+            responseFeature.SetResponse(response);
         }
     }
+{{~ if input_event != null && !input_event.is_stream ~}}
+    
+    file class EventFeatureProvider(ILambdaSerializer lambdaSerializer) : IFeatureProvider
+    {
+        private static readonly Type FeatureType = typeof(IEventFeature);
+    
+        public bool TryCreate(Type type, out object? feature)
+        {
+            feature = type == FeatureType ? new EventFeature(lambdaSerializer) : null;
+    
+            return feature is not null;
+        }
+    }    
+    
+    file class EventFeature : IEventFeature
+    {
+#nullable disable    
+        private {{ input_event.type }} _data;
+#nullable restore
+    
+        private readonly ILambdaSerializer _lambdaSerializer;
+    
+        public EventFeature(ILambdaSerializer lambdaSerializer)
+        {
+            ArgumentNullException.ThrowIfNull(lambdaSerializer);
+    
+            _lambdaSerializer = lambdaSerializer;
+        }
+    
+        public object? GetEvent(ILambdaHostContext context)
+        {
+            _data ??= _lambdaSerializer.Deserialize<{{ input_event.type }}>(context.RawInvocationData.Event);
+    
+            return _data;
+        }
+    }
+    
+    file class ResponseFeatureProvider(ILambdaSerializer lambdaSerializer) : IFeatureProvider
+    {
+        private static readonly Type FeatureType = typeof(IResponseFeature);
+    
+        public bool TryCreate(Type type, out object? feature)
+        {
+            feature = type == FeatureType ? new ResponseFeature(lambdaSerializer) : null;
+    
+            return feature is not null;
+        }
+    }
+{{~ end ~}}    
+{{~ if output_response != null && !output_response.response_is_stream ~}}
+    
+    file class ResponseFeature : IResponseFeature
+    {
+#nullable disable
+        private {{ output_response.response_type }} _data;
+#nullable restore
+    
+        private readonly ILambdaSerializer _lambdaSerializer;
+    
+        public ResponseFeature(ILambdaSerializer lambdaSerializer)
+        {
+            ArgumentNullException.ThrowIfNull(lambdaSerializer);
+    
+            _lambdaSerializer = lambdaSerializer;
+        }
+    
+        public object? GetResponse() => _data;
+    
+        public void SetResponse(object? response)
+        {
+            if (response is null)
+            {
+                _data = null;
+                return;
+            }
+    
+            _data = ({{ output_response.response_type }})response;
+        }
+    
+        public void SerializeToStream(ILambdaHostContext context)
+        {
+            ArgumentNullException.ThrowIfNull(context);
+    
+            if (_data is null)
+                return;
+    
+            context.RawInvocationData.Response.SetLength(0L);
+            _lambdaSerializer.Serialize<{{ output_response.response_type }}>(_data, context.RawInvocationData.Response);
+            context.RawInvocationData.Response.Position = 0L;
+        }
+    }
+{{~ end ~}}
 }

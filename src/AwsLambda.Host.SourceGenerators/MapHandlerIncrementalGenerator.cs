@@ -67,22 +67,35 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
             .Where(static m => m is not null)
             .Select(static (m, _) => m!.Value);
 
+        // find LambdaApplicationBuilder.Build() calls
+        var lambdaApplicationBuilderBuildCalls = context
+            .SyntaxProvider.CreateSyntaxProvider(
+                LambdaApplicationBuilderBuildSyntaxProvider.Predicate,
+                LambdaApplicationBuilderBuildSyntaxProvider.Transformer
+            )
+            .Where(static m => m is not null)
+            .Select(static (m, _) => m!.Value);
+
         // collect call
         var mapHandlerCallsCollected = mapHandlerCalls.Collect();
         var onShutdownCallsCollected = onShutdownCalls.Collect();
         var onInitCallsCollected = onInitCalls.Collect();
         var openTelemetryTracingCallsCollected = openTelemetryTracingCalls.Collect();
+        var lambdaApplicationBuilderBuildCallsCollected =
+            lambdaApplicationBuilderBuildCalls.Collect();
 
         // combine the compilation and map handler calls
         var combined = mapHandlerCallsCollected
             .Combine(onShutdownCallsCollected)
             .Combine(onInitCallsCollected)
             .Combine(openTelemetryTracingCallsCollected)
+            .Combine(lambdaApplicationBuilderBuildCallsCollected)
             .Select(
                 CompilationInfo? (t, _) =>
                 {
                     if (
-                        t.Left.Left.Left.Length == 0
+                        t.Left.Left.Left.Left.Length == 0
+                        && t.Left.Left.Left.Right.Length == 0
                         && t.Left.Left.Right.Length == 0
                         && t.Left.Right.Length == 0
                         && t.Right.Length == 0
@@ -90,7 +103,8 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
                         return null;
 
                     return new CompilationInfo(
-                        t.Left.Left.Left.ToEquatableArray(),
+                        t.Left.Left.Left.Left.ToEquatableArray(),
+                        t.Left.Left.Left.Right.ToEquatableArray(),
                         t.Left.Left.Right.ToEquatableArray(),
                         t.Left.Right.ToEquatableArray(),
                         t.Right.ToEquatableArray()

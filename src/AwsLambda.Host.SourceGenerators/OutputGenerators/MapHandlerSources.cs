@@ -1,12 +1,16 @@
 using System.Linq;
 using AwsLambda.Host.SourceGenerators.Extensions;
 using AwsLambda.Host.SourceGenerators.Models;
+using AwsLambda.Host.SourceGenerators.Types;
 
 namespace AwsLambda.Host.SourceGenerators;
 
 internal static class MapHandlerSources
 {
-    internal static string Generate(HigherOrderMethodInfo higherOrderMethodInfo)
+    internal static string Generate(
+        HigherOrderMethodInfo higherOrderMethodInfo,
+        EquatableArray<SimpleMethodInfo> builderInfo
+    )
     {
         var delegateInfo = higherOrderMethodInfo.DelegateInfo;
 
@@ -35,6 +39,8 @@ internal static class MapHandlerSources
             }
             : null;
 
+        var builderCalls = builderInfo.Select(b => b.InterceptableLocationInfo).ToArray();
+
         var model = new
         {
             Location = higherOrderMethodInfo.InterceptableLocationInfo,
@@ -44,6 +50,7 @@ internal static class MapHandlerSources
             ShouldAwait = delegateInfo.IsAwaitable,
             InputEvent = inputEvent,
             OutputResponse = outputResponse,
+            Builders = builderCalls,
         };
 
         var template = TemplateHelper.LoadTemplate(
@@ -62,6 +69,10 @@ internal static class MapHandlerSources
                 Assignment = param.Source switch
                 {
                     // Event -> deserialize to type
+                    ParameterSource.Event
+                        when param.TypeInfo.FullyQualifiedType == TypeConstants.Stream =>
+                        "context.RawInvocationData.Event",
+
                     ParameterSource.Event =>
                         $"context.GetEventT<{param.TypeInfo.FullyQualifiedType}>()",
 
