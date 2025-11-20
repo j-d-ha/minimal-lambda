@@ -18,7 +18,6 @@ public sealed class LambdaApplication
     private readonly ILambdaInvocationBuilder _invocationBuilder;
     private readonly ILambdaOnInitBuilder _onInitBuilder;
     private readonly ILambdaOnShutdownBuilder _onShutdownBuilder;
-    private IReadOnlyList<LambdaInitDelegate> _initHandlers;
 
     internal LambdaApplication(IHost host)
     {
@@ -37,15 +36,19 @@ public sealed class LambdaApplication
             .CreateBuilder();
     }
 
+    /// <summary>Gets the application's configuration.</summary>
     public IConfiguration Configuration =>
         field ??= _host.Services.GetRequiredService<IConfiguration>();
 
+    /// <summary>Gets the application's host environment.</summary>
     public IHostEnvironment Environment =>
         field ??= _host.Services.GetRequiredService<IHostEnvironment>();
 
+    /// <summary>Gets the application's lifetime token source.</summary>
     public IHostApplicationLifetime Lifetime =>
         field ??= _host.Services.GetRequiredService<IHostApplicationLifetime>();
 
+    /// <summary>Gets the application's logger.</summary>
     public ILogger Logger =>
         field ??=
             _host
@@ -56,6 +59,7 @@ public sealed class LambdaApplication
     /// <inheritdoc />
     public ValueTask DisposeAsync() => ((IAsyncDisposable)_host).DisposeAsync();
 
+    /// <summary>Gets the application's service provider.</summary>
     public IServiceProvider Services => _host.Services;
 
     /// <inheritdoc />
@@ -117,12 +121,23 @@ public sealed class LambdaApplication
     }
 
     /// <inheritdoc />
-    LambdaInitDelegate ILambdaOnInitBuilder.Build() => _onInitBuilder.Build();
+    Func<CancellationToken, Task<bool>> ILambdaOnInitBuilder.Build() => _onInitBuilder.Build();
 
     //      ┌──────────────────────────────────────────────────────────┐
     //      │                 ILambdaOnShutdownBuilder                 │
     //      └──────────────────────────────────────────────────────────┘
 
     /// <inheritdoc />
-    public IList<LambdaShutdownDelegate> ShutdownHandlers => _onShutdownBuilder.ShutdownHandlers;
+    public IReadOnlyList<LambdaShutdownDelegate> ShutdownHandlers =>
+        _onShutdownBuilder.ShutdownHandlers;
+
+    /// <inheritdoc />
+    public ILambdaOnShutdownBuilder OnShutdown(LambdaShutdownDelegate handler)
+    {
+        _onShutdownBuilder.OnShutdown(handler);
+        return this;
+    }
+
+    /// <inheritdoc />
+    Func<CancellationToken, Task> ILambdaOnShutdownBuilder.Build() => _onShutdownBuilder.Build();
 }
