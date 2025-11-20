@@ -8,8 +8,8 @@ namespace AwsLambda.Host
         {{~ for location in locations ~}}
         [InterceptsLocation({{ location.version }}, "{{ location.data }}")] // Location: {{ location.display_location }}
         {{~ end ~}}
-        internal static ILambdaApplication UseOpenTelemetryTracingInterceptor(
-            this ILambdaApplication application
+        internal static ILambdaInvocationBuilder UseOpenTelemetryTracingInterceptor(
+            this ILambdaInvocationBuilder application
         )
         {
             {{~ if response_type != null && event_type != null ~}}

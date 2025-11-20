@@ -46,7 +46,8 @@ internal static class LambdaHostOutputGenerator
                     compilationInfo.OnShutdownInvocationInfos,
                     "OnShutdown",
                     null,
-                    null
+                    null,
+                    "ILambdaOnShutdownBuilder"
                 )
             );
 
@@ -57,7 +58,8 @@ internal static class LambdaHostOutputGenerator
                     compilationInfo.OnInitInvocationInfos,
                     "OnInit",
                     "bool",
-                    "true"
+                    "true",
+                    "ILambdaOnInitBuilder"
                 )
             );
 

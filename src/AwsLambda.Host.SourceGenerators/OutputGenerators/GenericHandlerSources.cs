@@ -31,7 +31,8 @@ internal static class GenericHandlerSources
         EquatableArray<HigherOrderMethodInfo> higherOrderMethodInfos,
         string methodName,
         string? wrapperReturnType,
-        string? defaultWrapperReturnValue
+        string? defaultWrapperReturnValue,
+        string targetType
     )
     {
         var calls = higherOrderMethodInfos
@@ -99,6 +100,7 @@ internal static class GenericHandlerSources
                     ShouldReturnResponse = shouldReturnResponse,
                     ShouldWrapResponse = shouldWrapResponse,
                     DefaultReturnValue = defaultReturnValueString,
+                    TargetType = targetType,
                 };
             })
             .ToArray();

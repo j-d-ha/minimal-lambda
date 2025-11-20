@@ -120,6 +120,8 @@ namespace AwsLambda.Host
             return _data;
         }
     }
+{{~ end ~}}    
+{{~ if output_response != null && !output_response.response_is_stream ~}}
     
     file class ResponseFeatureProvider(ILambdaSerializer lambdaSerializer) : IFeatureProvider
     {
@@ -132,8 +134,6 @@ namespace AwsLambda.Host
             return feature is not null;
         }
     }
-{{~ end ~}}    
-{{~ if output_response != null && !output_response.response_is_stream ~}}
     
     file class ResponseFeature : IResponseFeature
     {
