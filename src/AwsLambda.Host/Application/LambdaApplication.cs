@@ -74,7 +74,7 @@ public sealed class LambdaApplication
 
     public IDictionary<string, object?> Properties => _invocationBuilder.Properties;
 
-    public List<Func<LambdaInvocationDelegate, LambdaInvocationDelegate>> Middlewares =>
+    public IList<Func<LambdaInvocationDelegate, LambdaInvocationDelegate>> Middlewares =>
         _invocationBuilder.Middlewares;
 
     public LambdaInvocationDelegate? Handler => _invocationBuilder.Handler;
