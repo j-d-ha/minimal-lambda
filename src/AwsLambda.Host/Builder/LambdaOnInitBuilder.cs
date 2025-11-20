@@ -36,42 +36,39 @@ internal class LambdaOnInitBuilder : ILambdaOnInitBuilder
         return this;
     }
 
-    public Func<CancellationToken, Task<bool>> Build()
-    {
-        if (_handlers.Count == 0)
-            return _ => Task.FromResult(true);
+    public Func<CancellationToken, Task<bool>> Build() =>
+        _handlers.Count == 0
+            ? _ => Task.FromResult(true)
+            : async Task<bool> (stoppingToken) =>
+            {
+                using var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
+                cts.CancelAfter(_options.InitTimeout);
 
-        return async Task<bool> (stoppingToken) =>
-        {
-            using var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
-            cts.CancelAfter(_options.InitTimeout);
+                var tasks = _handlers.Select(h => RunInitHandler(h, cts.Token));
 
-            var tasks = _handlers.Select(h => RunInitHandler(h, cts.Token));
+                var results = await Task.WhenAll(tasks).ConfigureAwait(false);
 
-            var results = await Task.WhenAll(tasks).ConfigureAwait(false);
+                var (errors, shouldContinue) = results.Aggregate(
+                    (errors: new List<Exception>(), shouldContinue: true),
+                    (acc, result) =>
+                    {
+                        if (result.Error is not null)
+                            acc.errors.Add(result.Error);
+                        else if (!result.ShouldContinue)
+                            acc.shouldContinue = false;
 
-            var (errors, shouldContinue) = results.Aggregate(
-                (errors: new List<Exception>(), shouldContinue: true),
-                (acc, result) =>
-                {
-                    if (result.Error is not null)
-                        acc.errors.Add(result.Error);
-                    else if (!result.ShouldContinue)
-                        acc.shouldContinue = false;
-
-                    return acc;
-                }
-            );
-
-            if (errors.Count > 0)
-                throw new AggregateException(
-                    "Encountered errors while running OnInit handlers:",
-                    errors
+                        return acc;
+                    }
                 );
 
-            return shouldContinue;
-        };
-    }
+                if (errors.Count > 0)
+                    throw new AggregateException(
+                        "Encountered errors while running OnInit handlers:",
+                        errors
+                    );
+
+                return shouldContinue;
+            };
 
     private async Task<(Exception? Error, bool ShouldContinue)> RunInitHandler(
         LambdaInitDelegate handler,

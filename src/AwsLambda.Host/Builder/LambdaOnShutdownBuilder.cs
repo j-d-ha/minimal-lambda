@@ -30,26 +30,23 @@ internal class LambdaOnShutdownBuilder : ILambdaOnShutdownBuilder
         return this;
     }
 
-    public Func<CancellationToken, Task> Build()
-    {
-        if (_handlers.Count == 0)
-            return _ => Task.CompletedTask;
+    public Func<CancellationToken, Task> Build() =>
+        _handlers.Count == 0
+            ? _ => Task.CompletedTask
+            : async Task (cancellationToken) =>
+            {
+                var tasks = _handlers.Select(h => RunShutdownHandler(h, cancellationToken));
 
-        return async Task (cancellationToken) =>
-        {
-            var tasks = _handlers.Select(h => RunShutdownHandler(h, cancellationToken));
+                var output = await Task.WhenAll(tasks).ConfigureAwait(false);
 
-            var output = await Task.WhenAll(tasks).ConfigureAwait(false);
+                var errors = output.Where(x => x is not null).Select(x => x!).ToArray();
 
-            var errors = output.Where(x => x is not null).Select(x => x!).ToArray();
-
-            if (errors.Length != 0)
-                throw new AggregateException(
-                    "Encountered errors while running OnShutdown handlers:",
-                    errors
-                );
-        };
-    }
+                if (errors.Length != 0)
+                    throw new AggregateException(
+                        "Encountered errors while running OnShutdown handlers:",
+                        errors
+                    );
+            };
 
     private async Task<Exception?> RunShutdownHandler(
         LambdaShutdownDelegate handler,
