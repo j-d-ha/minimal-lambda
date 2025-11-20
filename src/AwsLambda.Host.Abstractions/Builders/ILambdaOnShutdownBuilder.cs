@@ -3,7 +3,7 @@ namespace AwsLambda.Host;
 /// <summary>Builder for composing Lambda shutdown handlers that execute during the Shutdown phase.</summary>
 /// <remarks>
 ///     <para>
-///         Register handlers using <see cref="OnInit" /> and call <see cref="Build" /> to create a
+///         Register handlers using <see cref="OnShutdown" /> and call <see cref="Build" /> to create a
 ///         composed <see cref="LambdaShutdownDelegate" /> that executes all handlers sequentially.
 ///     </para>
 ///     <para>
