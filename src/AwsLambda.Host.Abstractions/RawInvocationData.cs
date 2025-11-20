@@ -11,12 +11,12 @@ namespace AwsLambda.Host;
 public class RawInvocationData
 {
     /// <summary>Gets the stream containing the raw Lambda invocation event data.</summary>
-    public Stream Event { get; init; }
+    public required Stream Event { get; init; }
 
     /// <summary>Gets or sets the stream for writing the Lambda invocation response.</summary>
     /// <remarks>
     ///     The invocation response will be written to this stream unless a stream is returned from
     ///     the handler, in which case the default stream is replaced with the returned stream.
     /// </remarks>
-    public Stream Response { get; set; }
+    public required Stream Response { get; set; }
 }
