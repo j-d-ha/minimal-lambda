@@ -36,12 +36,13 @@ internal class LambdaOnInitBuilder : ILambdaOnInitBuilder
         return this;
     }
 
-    public LambdaInitDelegate Build() =>
-        async Task<bool> (_, stoppingToken) =>
-        {
-            if (_handlers.Count == 0)
-                return true;
+    public LambdaInitDelegate Build()
+    {
+        if (_handlers.Count == 0)
+            return (_, _) => Task.FromResult(true);
 
+        return async Task<bool> (_, stoppingToken) =>
+        {
             using var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
             cts.CancelAfter(_options.InitTimeout);
 
@@ -70,6 +71,7 @@ internal class LambdaOnInitBuilder : ILambdaOnInitBuilder
 
             return shouldContinue;
         };
+    }
 
     private async Task<(Exception? Error, bool ShouldContinue)> RunInitHandler(
         LambdaInitDelegate handler,
