@@ -15,10 +15,12 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
     private readonly ILambdaLifecycleOrchestrator _lifecycle;
     private readonly IHostApplicationLifetime _lifetime;
     private readonly IOnInitBuilderFactory _onInitBuilderFactory;
+    private readonly IOnShutdownBuilderFactory _onShutdownBuilderFactory;
     private readonly LambdaHostedServiceOptions _options;
     private bool _disposed;
 
     private Task? _executeTask;
+    private Func<CancellationToken, Task> _shutdownHandler;
     private CancellationTokenSource? _stoppingCts;
 
     /// <summary>Initializes a new instance of the <see cref="LambdaHostedService" /> class.</summary>
@@ -39,7 +41,8 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
         IHostApplicationLifetime lifetime,
         ILambdaLifecycleOrchestrator lifecycle,
         IOnInitBuilderFactory onInitBuilderFactory,
-        IOptions<LambdaHostedServiceOptions> lambdaHostOptions
+        IOptions<LambdaHostedServiceOptions> lambdaHostOptions,
+        IOnShutdownBuilderFactory onShutdownBuilderFactory
     )
     {
         ArgumentNullException.ThrowIfNull(bootstrap);
@@ -48,6 +51,7 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
         ArgumentNullException.ThrowIfNull(lifecycle);
         ArgumentNullException.ThrowIfNull(onInitBuilderFactory);
         ArgumentNullException.ThrowIfNull(lambdaHostOptions);
+        ArgumentNullException.ThrowIfNull(onShutdownBuilderFactory);
 
         _bootstrap = bootstrap;
         _handlerFactory = handlerFactory;
@@ -55,6 +59,7 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
         _lifecycle = lifecycle;
         _onInitBuilderFactory = onInitBuilderFactory;
         _options = lambdaHostOptions.Value;
+        _onShutdownBuilderFactory = onShutdownBuilderFactory;
     }
 
     /// <inheritdoc />
@@ -127,9 +132,15 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
             _exceptions.Add(ex);
         }
 
-        // Handle shutdown tasks and add any exceptions to the list of exceptions
-        var shutdownErrors = await _lifecycle.OnShutdown(cancellationToken);
-        _exceptions.AddRange(shutdownErrors);
+        try
+        {
+            // Handle shutdown tasks and add any exceptions to the list of exceptions
+            await _shutdownHandler.Invoke(cancellationToken);
+        }
+        catch (Exception ex)
+        {
+            _exceptions.Add(ex);
+        }
 
         if (_exceptions.Count > 0)
             throw new AggregateException(
@@ -149,18 +160,24 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
     /// <returns>A task representing the asynchronous bootstrap operation.</returns>
     private async Task ExecuteAsync(CancellationToken stoppingToken)
     {
-        // Create a fully composed handler with middleware and request processing.
-        var requestHandler = _handlerFactory.CreateHandler(stoppingToken);
-
-        var onInitBuilder = _onInitBuilderFactory.CreateBuilder();
-        _options.ConfigureOnInitBuilder?.Invoke(onInitBuilder);
-        var onInitHandler = onInitBuilder.Build();
-
-        // Handle the bootstrap with the processed handler. Once the task completes, we will
-        // manually
-        // trigger the stop of the application.
         try
         {
+            // Create a fully composed handler with middleware and request processing.
+            var requestHandler = _handlerFactory.CreateHandler(stoppingToken);
+
+            // Create an optional initialization handler.
+            var onInitBuilder = _onInitBuilderFactory.CreateBuilder();
+            _options.ConfigureOnInitBuilder?.Invoke(onInitBuilder);
+            var onInitHandler = onInitBuilder.Build();
+
+            // Create the optional shutdown handler.
+            var onShutdownBuilder = _onShutdownBuilderFactory.CreateBuilder();
+            _options.ConfigureOnShutdownBuilder?.Invoke(onShutdownBuilder);
+            _shutdownHandler = onShutdownBuilder.Build();
+
+            // Handle the bootstrap with the processed handler. Once the task completes, we will
+            // manually
+            // trigger the stop of the application.
             await _bootstrap.RunAsync(requestHandler, onInitHandler, stoppingToken);
         }
         finally

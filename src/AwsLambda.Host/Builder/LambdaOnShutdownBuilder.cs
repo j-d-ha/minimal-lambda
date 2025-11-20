@@ -35,12 +35,12 @@ internal class LambdaOnShutdownBuilder : ILambdaOnShutdownBuilder
         return this;
     }
 
-    public LambdaShutdownDelegate Build()
+    public Func<CancellationToken, Task> Build()
     {
         if (_handlers.Count == 0)
-            return (_, _) => Task.CompletedTask;
+            return _ => Task.CompletedTask;
 
-        return async Task (_, cancellationToken) =>
+        return async Task (cancellationToken) =>
         {
             var tasks = _handlers.Select(h => RunShutdownHandler(h, cancellationToken));
 

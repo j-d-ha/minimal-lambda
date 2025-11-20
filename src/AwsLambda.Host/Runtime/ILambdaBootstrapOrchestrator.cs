@@ -24,7 +24,7 @@ internal interface ILambdaBootstrapOrchestrator
     /// <returns>A task representing the asynchronous bootstrap execution.</returns>
     Task RunAsync(
         Func<Stream, ILambdaContext, Task<Stream>> handler,
-        LambdaInitDelegate? initializer,
+        Func<CancellationToken, Task<bool>>? initializer,
         CancellationToken stoppingToken
     );
 }

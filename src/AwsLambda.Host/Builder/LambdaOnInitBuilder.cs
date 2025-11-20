@@ -36,12 +36,12 @@ internal class LambdaOnInitBuilder : ILambdaOnInitBuilder
         return this;
     }
 
-    public LambdaInitDelegate Build()
+    public Func<CancellationToken, Task<bool>> Build()
     {
         if (_handlers.Count == 0)
-            return (_, _) => Task.FromResult(true);
+            return _ => Task.FromResult(true);
 
-        return async Task<bool> (_, stoppingToken) =>
+        return async Task<bool> (stoppingToken) =>
         {
             using var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
             cts.CancelAfter(_options.InitTimeout);

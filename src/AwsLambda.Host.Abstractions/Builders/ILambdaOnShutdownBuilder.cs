@@ -28,11 +28,15 @@ public interface ILambdaOnShutdownBuilder
     /// <summary>Builds the final shutdown delegate by composing all registered handlers.</summary>
     /// <remarks>
     ///     <para>
-    ///         All registered handlers are composed into a single <see cref="LambdaShutdownDelegate" />
-    ///         that executes them sequentially during the Shutdown phase, with timeout enforcement and
-    ///         exception handling.
+    ///         Composes all registered handlers into a single function that executes them concurrently
+    ///         during the Shutdown phase with timeout enforcement and exception handling. The returned
+    ///         function accepts a <see cref="CancellationToken" /> for cancellation support and can be
+    ///         invoked multiple times.
     ///     </para>
     /// </remarks>
-    /// <returns>A composed <see cref="LambdaShutdownDelegate" /> ready for the Lambda Shutdown phase.</returns>
-    LambdaShutdownDelegate Build();
+    /// <returns>
+    ///     A function that accepts a <see cref="CancellationToken" /> and executes all registered
+    ///     handlers sequentially. Ready for the Lambda Shutdown phase.
+    /// </returns>
+    Func<CancellationToken, Task> Build();
 }

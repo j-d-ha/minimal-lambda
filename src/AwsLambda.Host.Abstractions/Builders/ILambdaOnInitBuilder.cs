@@ -29,11 +29,15 @@ public interface ILambdaOnInitBuilder
     /// <summary>Builds the final init delegate by composing all registered handlers.</summary>
     /// <remarks>
     ///     <para>
-    ///         All registered handlers are composed into a single <see cref="LambdaInitDelegate" /> that
-    ///         executes them concurrently during the Init phase, with timeout enforcement and error
-    ///         aggregation.
+    ///         Composes all registered handlers into a single function that executes them concurrently
+    ///         during the Init phase with timeout enforcement and error aggregation. The returned function
+    ///         accepts a <see cref="CancellationToken" /> for cancellation support and can be invoked
+    ///         multiple times.
     ///     </para>
     /// </remarks>
-    /// <returns>A composed <see cref="LambdaInitDelegate" /> ready for the Lambda Init phase.</returns>
-    LambdaInitDelegate Build();
+    /// <returns>
+    ///     A function that accepts a <see cref="CancellationToken" /> and executes all registered
+    ///     handlers concurrently. Ready for the Lambda Init phase.
+    /// </returns>
+    Func<CancellationToken, Task<bool>> Build();
 }

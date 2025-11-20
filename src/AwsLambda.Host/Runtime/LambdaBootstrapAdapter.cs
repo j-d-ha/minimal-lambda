@@ -31,7 +31,7 @@ internal sealed class LambdaBootstrapAdapter : ILambdaBootstrapOrchestrator
     /// <inheritdoc />
     public async Task RunAsync(
         Func<Stream, ILambdaContext, Task<Stream>> handler,
-        LambdaInitDelegate? initializer,
+        Func<CancellationToken, Task<bool>>? initializer,
         CancellationToken stoppingToken
     )
     {
@@ -53,8 +53,8 @@ internal sealed class LambdaBootstrapAdapter : ILambdaBootstrapOrchestrator
         await bootstrap.RunAsync(stoppingToken);
     }
 
-    private LambdaBootstrapInitializer LambdaBootstrapInitializerAdapter(
-        LambdaInitDelegate? handler,
+    private static LambdaBootstrapInitializer LambdaBootstrapInitializerAdapter(
+        Func<CancellationToken, Task<bool>>? handler,
         CancellationToken stoppingToken
-    ) => () => handler?.Invoke(_serviceProvider, stoppingToken) ?? Task.FromResult(true);
+    ) => () => handler?.Invoke(stoppingToken) ?? Task.FromResult(true);
 }
