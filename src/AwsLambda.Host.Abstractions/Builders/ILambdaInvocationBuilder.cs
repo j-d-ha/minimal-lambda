@@ -19,7 +19,7 @@ public interface ILambdaInvocationBuilder
     LambdaInvocationDelegate? Handler { get; }
 
     /// <summary>Gets the list of registered middleware handlers.</summary>
-    IList<Func<LambdaInvocationDelegate, LambdaInvocationDelegate>> Middlewares { get; }
+    IReadOnlyList<Func<LambdaInvocationDelegate, LambdaInvocationDelegate>> Middlewares { get; }
 
     /// <summary>Gets a dictionary for storing state that is shared across invocations.</summary>
     IDictionary<string, object?> Properties { get; }

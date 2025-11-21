@@ -81,7 +81,7 @@ public sealed class LambdaApplication
     public IDictionary<string, object?> Properties => _invocationBuilder.Properties;
 
     /// <inheritdoc />
-    public IList<Func<LambdaInvocationDelegate, LambdaInvocationDelegate>> Middlewares =>
+    public IReadOnlyList<Func<LambdaInvocationDelegate, LambdaInvocationDelegate>> Middlewares =>
         _invocationBuilder.Middlewares;
 
     /// <inheritdoc />

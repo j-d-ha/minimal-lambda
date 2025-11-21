@@ -2,6 +2,9 @@ namespace AwsLambda.Host;
 
 internal class LambdaInvocationBuilder : ILambdaInvocationBuilder
 {
+    private readonly List<Func<LambdaInvocationDelegate, LambdaInvocationDelegate>> _middleware =
+    [];
+
     public LambdaInvocationBuilder(IServiceProvider services)
     {
         ArgumentNullException.ThrowIfNull(services);
@@ -13,8 +16,8 @@ internal class LambdaInvocationBuilder : ILambdaInvocationBuilder
 
     public IDictionary<string, object?> Properties { get; } = new Dictionary<string, object?>();
 
-    public IList<Func<LambdaInvocationDelegate, LambdaInvocationDelegate>> Middlewares { get; } =
-    [];
+    public IReadOnlyList<Func<LambdaInvocationDelegate, LambdaInvocationDelegate>> Middlewares =>
+        _middleware;
 
     public LambdaInvocationDelegate? Handler { get; private set; }
 
@@ -36,7 +39,7 @@ internal class LambdaInvocationBuilder : ILambdaInvocationBuilder
     {
         ArgumentNullException.ThrowIfNull(middleware);
 
-        Middlewares.Add(middleware);
+        _middleware.Add(middleware);
 
         return this;
     }
