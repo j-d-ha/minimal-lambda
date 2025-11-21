@@ -5,11 +5,7 @@ using Microsoft.Extensions.Options;
 
 namespace AwsLambda.Host;
 
-/// <summary>
-///     Composes the Lambda handler with middleware and handles request processing. Responsible
-///     for building middleware pipelines and creating request handlers with serialization,
-///     deserialization, and context management.
-/// </summary>
+/// <summary>Builds and composes the Lambda invocation pipeline into a request handler.</summary>
 internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory
 {
     private readonly ILambdaCancellationFactory _cancellationFactory;
@@ -19,33 +15,27 @@ internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory
     private readonly IServiceScopeFactory _scopeFactory;
 
     public LambdaHandlerComposer(
-        ILambdaCancellationFactory cancellationFactory,
+        IFeatureCollectionFactory featureCollectionFactory,
         IInvocationBuilderFactory invocationBuilderFactory,
-        IServiceScopeFactory serviceScopeFactory,
-        ILambdaSerializer lambdaSerializer,
-        IOptions<LambdaHostedServiceOptions> options,
-        IFeatureCollectionFactory featureCollectionFactory
+        ILambdaCancellationFactory cancellationFactory,
+        IServiceScopeFactory scopeFactory,
+        IOptions<LambdaHostedServiceOptions> options
     )
     {
         ArgumentNullException.ThrowIfNull(cancellationFactory);
-        ArgumentNullException.ThrowIfNull(invocationBuilderFactory);
-        ArgumentNullException.ThrowIfNull(serviceScopeFactory);
-        ArgumentNullException.ThrowIfNull(lambdaSerializer);
-        ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(featureCollectionFactory);
+        ArgumentNullException.ThrowIfNull(invocationBuilderFactory);
+        ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(scopeFactory);
 
         _cancellationFactory = cancellationFactory;
-        _invocationBuilderFactory = invocationBuilderFactory;
-        _scopeFactory = serviceScopeFactory;
-        _options = options.Value;
         _featureCollectionFactory = featureCollectionFactory;
+        _invocationBuilderFactory = invocationBuilderFactory;
+        _options = options.Value;
+        _scopeFactory = scopeFactory;
     }
 
-    /// <summary>
-    ///     Creates a fully composed Lambda handler that includes middleware pipeline composition and
-    ///     request processing. This composes BuildMiddlewarePipeline and CreateRequestHandler into a
-    ///     single operation. The handler and middleware are obtained from the injected DelegateHolder.
-    /// </summary>
+    /// <summary>Creates a wrapper that invokes the middleware pipeline for each Lambda invocation.</summary>
     public Func<Stream, ILambdaContext, Task<Stream>> CreateHandler(CancellationToken stoppingToken)
     {
         var builder = _invocationBuilderFactory.CreateBuilder();
