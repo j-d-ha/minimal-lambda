@@ -359,6 +359,85 @@ public class LambdaApplicationBuilderTests
     }
 
     [Fact]
+    public void Build_ConfigureOnShutdownBuilderCallback_AppliesShutdownHandlers()
+    {
+        // Arrange
+        var builder = LambdaApplication.CreateBuilder();
+        var app = builder.Build();
+
+        // Register shutdown handlers on the app
+        LambdaShutdownDelegate handler1 = (_, __) => Task.CompletedTask;
+        LambdaShutdownDelegate handler2 = (_, __) => Task.CompletedTask;
+        app.OnShutdown(handler1);
+        app.OnShutdown(handler2);
+
+        var options = app.Services.GetRequiredService<IOptions<LambdaHostedServiceOptions>>();
+        var callbackDelegate = options.Value.ConfigureOnShutdownBuilder;
+
+        // Act - create onShutdown builder to verify callback applies handlers
+        var onShutdownBuilder = app
+            .Services.GetRequiredService<ILambdaOnShutdownBuilderFactory>()
+            .CreateBuilder();
+
+        callbackDelegate.Invoke(onShutdownBuilder);
+
+        // Assert - verify the shutdown builder has the registered handlers
+        onShutdownBuilder.ShutdownHandlers.Should().Contain(handler1);
+        onShutdownBuilder.ShutdownHandlers.Should().Contain(handler2);
+    }
+
+    [Fact]
+    public void Build_ConfigureOnShutdownBuilderCallback_WithNoHandlers()
+    {
+        // Arrange
+        var builder = LambdaApplication.CreateBuilder();
+        var app = builder.Build();
+
+        var options = app.Services.GetRequiredService<IOptions<LambdaHostedServiceOptions>>();
+        var callbackDelegate = options.Value.ConfigureOnShutdownBuilder;
+
+        // Act - create onShutdown builder without registering shutdown handlers
+        var onShutdownBuilder = app
+            .Services.GetRequiredService<ILambdaOnShutdownBuilderFactory>()
+            .CreateBuilder();
+
+        callbackDelegate.Invoke(onShutdownBuilder);
+
+        // Assert - when no handlers are registered, the shutdown handlers list should be empty
+        onShutdownBuilder.ShutdownHandlers.Should().BeEmpty();
+    }
+
+    [Fact]
+    public void Build_ConfigureOnShutdownBuilderCallback_WithMultipleHandlers()
+    {
+        // Arrange
+        var builder = LambdaApplication.CreateBuilder();
+        var app = builder.Build();
+
+        // Register multiple shutdown handlers
+        LambdaShutdownDelegate handler1 = (_, __) => Task.CompletedTask;
+        LambdaShutdownDelegate handler2 = (_, __) => Task.CompletedTask;
+        LambdaShutdownDelegate handler3 = (_, __) => Task.CompletedTask;
+        app.OnShutdown(handler1);
+        app.OnShutdown(handler2);
+        app.OnShutdown(handler3);
+
+        var options = app.Services.GetRequiredService<IOptions<LambdaHostedServiceOptions>>();
+        var callbackDelegate = options.Value.ConfigureOnShutdownBuilder;
+
+        // Act - create onShutdown builder and apply handlers
+        var onShutdownBuilder = app
+            .Services.GetRequiredService<ILambdaOnShutdownBuilderFactory>()
+            .CreateBuilder();
+
+        callbackDelegate.Invoke(onShutdownBuilder);
+
+        // Assert - all handlers should be applied in order
+        onShutdownBuilder.ShutdownHandlers.Should().HaveCount(3);
+        onShutdownBuilder.ShutdownHandlers.Should().Equal(handler1, handler2, handler3);
+    }
+
+    [Fact]
     public void Build_ImplementsILambdaInvocationBuilder_HandleMethod()
     {
         // Arrange
