@@ -564,6 +564,25 @@ public class LambdaApplicationTests
     }
 
     [Fact]
+    public async Task OnInit_Build_ReturnsCallable()
+    {
+        // Arrange
+        var host = CreateHostWithServices();
+        var app = new LambdaApplication(host);
+        LambdaInitDelegate handler = async (_, _) => true;
+        app.OnInit(handler);
+
+        // Act
+        var builder = (ILambdaOnInitBuilder)app;
+        var buildResult = builder.Build();
+
+        // Assert
+        buildResult.Should().NotBeNull();
+        var result = await buildResult(CancellationToken.None);
+        result.Should().BeTrue();
+    }
+
+    [Fact]
     public void ShutdownHandlers_ReturnsHandlersList()
     {
         // Arrange
@@ -650,6 +669,24 @@ public class LambdaApplicationTests
         // Assert
         result.Should().Be(app);
         app.ShutdownHandlers.Should().HaveCount(2);
+    }
+
+    [Fact]
+    public async Task OnShutdown_Build_ReturnsCallable()
+    {
+        // Arrange
+        var host = CreateHostWithServices();
+        var app = new LambdaApplication(host);
+        LambdaShutdownDelegate handler = async (_, _) => await Task.CompletedTask;
+        app.OnShutdown(handler);
+
+        // Act
+        var builder = (ILambdaOnShutdownBuilder)app;
+        var buildResult = builder.Build();
+
+        // Assert
+        buildResult.Should().NotBeNull();
+        await buildResult(CancellationToken.None);
     }
 
     [Fact]
