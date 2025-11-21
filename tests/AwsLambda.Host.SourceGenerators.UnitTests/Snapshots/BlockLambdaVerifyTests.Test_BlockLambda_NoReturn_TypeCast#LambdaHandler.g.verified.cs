@@ -36,12 +36,14 @@ namespace AwsLambda.Host
     {
         // Location: InputFile.cs(9,8)
         [InterceptsLocation(1, "NzqSbOGKJo+Tth5rfZuYJb4AAABJbnB1dEZpbGUuY3M=")]
-        internal static ILambdaApplication MapHandlerInterceptor(
-            this ILambdaApplication application,
+        internal static ILambdaInvocationBuilder MapHandlerInterceptor(
+            this ILambdaInvocationBuilder application,
             Delegate handler
         )
         {
             var castHandler = (global::System.Action<string, global::IService>)handler;
+
+            return application.Handle(InvocationDelegate);
 
             Task InvocationDelegate(ILambdaHostContext context)
             {
@@ -52,19 +54,13 @@ namespace AwsLambda.Host
                 castHandler.Invoke(arg0, arg1);
                 return Task.CompletedTask; 
             }
-            
-            Task Deserializer(ILambdaHostContext context, ILambdaSerializer serializer, Stream eventStream)
-            {
-                context.Event = serializer.Deserialize<string>(eventStream);
-                return Task.CompletedTask;
-            }
-            
-            Task<Stream> Serializer(ILambdaHostContext context, ILambdaSerializer serializer)
-            {
-                return Task.FromResult<Stream>(new MemoryStream(0));
-            }
-
-            return application.MapHandler(InvocationDelegate, Deserializer, Serializer);
+        }
+        
+        [InterceptsLocation(1, "NzqSbOGKJo+Tth5rfZuYJa0AAABJbnB1dEZpbGUuY3M=")] // Location: InputFile.cs(7,22)
+        internal static LambdaApplication BuildInterceptor(this LambdaApplicationBuilder builder)
+        {
+            builder.Services.AddSingleton<IFeatureProvider, EventFeatureProvider>();
+            return builder.Build();
         }
 
         private static T GetEventT<T>(this ILambdaHostContext context)
@@ -77,14 +73,55 @@ namespace AwsLambda.Host
             return eventT!;
         }
 
-        private static T GetResponseT<T>(this ILambdaHostContext context)
+        private static void SetResponseT<T>(this ILambdaHostContext context, T response)
         {
-            if (!context.TryGetResponse<T>(out var responseT))
+            if (response is Stream stream)
             {
-                throw new InvalidOperationException($"Lambda response of type '{typeof(T).FullName}' is not available in the context.");
+                context.RawInvocationData.Response = stream;
+                return;
             }
-            
-            return responseT!;
+    
+            if (!context.Features.TryGet<IResponseFeature>(out var responseFeature))
+            {
+                throw new InvalidOperationException("Response feature is not available in the context.");
+            }
+    
+            responseFeature.SetResponse(response);
+        }
+    }
+    
+    file class EventFeatureProvider(ILambdaSerializer lambdaSerializer) : IFeatureProvider
+    {
+        private static readonly Type FeatureType = typeof(IEventFeature);
+    
+        public bool TryCreate(Type type, out object? feature)
+        {
+            feature = type == FeatureType ? new EventFeature(lambdaSerializer) : null;
+    
+            return feature is not null;
+        }
+    }    
+    
+    file class EventFeature : IEventFeature
+    {
+#nullable disable    
+        private string _data;
+#nullable restore
+    
+        private readonly ILambdaSerializer _lambdaSerializer;
+    
+        public EventFeature(ILambdaSerializer lambdaSerializer)
+        {
+            ArgumentNullException.ThrowIfNull(lambdaSerializer);
+    
+            _lambdaSerializer = lambdaSerializer;
+        }
+    
+        public object? GetEvent(ILambdaHostContext context)
+        {
+            _data ??= _lambdaSerializer.Deserialize<string>(context.RawInvocationData.Event);
+    
+            return _data;
         }
     }
 }

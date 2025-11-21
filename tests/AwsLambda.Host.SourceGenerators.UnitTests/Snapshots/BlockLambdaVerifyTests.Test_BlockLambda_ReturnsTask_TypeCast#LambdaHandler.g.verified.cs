@@ -36,29 +36,25 @@ namespace AwsLambda.Host
     {
         // Location: InputFile.cs(8,8)
         [InterceptsLocation(1, "jyGZjO9dJpfgikk021n+BZoAAABJbnB1dEZpbGUuY3M=")]
-        internal static ILambdaApplication MapHandlerInterceptor(
-            this ILambdaApplication application,
+        internal static ILambdaInvocationBuilder MapHandlerInterceptor(
+            this ILambdaInvocationBuilder application,
             Delegate handler
         )
         {
             var castHandler = (global::System.Func<global::System.Threading.Tasks.Task>)handler;
 
+            return application.Handle(InvocationDelegate);
+
             async Task InvocationDelegate(ILambdaHostContext context)
             {
                 await castHandler.Invoke();
             }
-            
-            Task Deserializer(ILambdaHostContext context, ILambdaSerializer serializer, Stream eventStream)
-            {
-                return Task.CompletedTask;
-            }
-            
-            Task<Stream> Serializer(ILambdaHostContext context, ILambdaSerializer serializer)
-            {
-                return Task.FromResult<Stream>(new MemoryStream(0));
-            }
-
-            return application.MapHandler(InvocationDelegate, Deserializer, Serializer);
+        }
+        
+        [InterceptsLocation(1, "jyGZjO9dJpfgikk021n+BYkAAABJbnB1dEZpbGUuY3M=")] // Location: InputFile.cs(6,22)
+        internal static LambdaApplication BuildInterceptor(this LambdaApplicationBuilder builder)
+        {
+            return builder.Build();
         }
 
         private static T GetEventT<T>(this ILambdaHostContext context)
@@ -71,14 +67,20 @@ namespace AwsLambda.Host
             return eventT!;
         }
 
-        private static T GetResponseT<T>(this ILambdaHostContext context)
+        private static void SetResponseT<T>(this ILambdaHostContext context, T response)
         {
-            if (!context.TryGetResponse<T>(out var responseT))
+            if (response is Stream stream)
             {
-                throw new InvalidOperationException($"Lambda response of type '{typeof(T).FullName}' is not available in the context.");
+                context.RawInvocationData.Response = stream;
+                return;
             }
-            
-            return responseT!;
+    
+            if (!context.Features.TryGet<IResponseFeature>(out var responseFeature))
+            {
+                throw new InvalidOperationException("Response feature is not available in the context.");
+            }
+    
+            responseFeature.SetResponse(response);
         }
     }
 }
