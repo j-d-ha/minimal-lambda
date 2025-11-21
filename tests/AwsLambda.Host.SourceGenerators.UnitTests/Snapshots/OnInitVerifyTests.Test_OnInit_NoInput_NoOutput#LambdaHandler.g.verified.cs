@@ -35,8 +35,8 @@ namespace AwsLambda.Host
     {
         // Location: InputFile.cs(9,8)
         [InterceptsLocation(1, "yWLktEubwJoCbfYppt/Gz7EAAABJbnB1dEZpbGUuY3M=")]
-        internal static ILambdaApplication OnInitInterceptor0(
-            this ILambdaApplication application,
+        internal static ILambdaOnInitBuilder OnInitInterceptor0(
+            this ILambdaOnInitBuilder application,
             Delegate handler
         )
         {

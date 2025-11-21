@@ -21,8 +21,7 @@ public class OnInitVerifyTests
             );
 
             await lambda.RunAsync();
-            """,
-            0
+            """
         );
 
     [Fact]
