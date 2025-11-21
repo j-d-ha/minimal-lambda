@@ -35,8 +35,8 @@ namespace AwsLambda.Host
     {
         // Location: InputFile.cs(9,8)
         [InterceptsLocation(1, "752jWHLpcl0NwGol0bVk/LEAAABJbnB1dEZpbGUuY3M=")]
-        internal static ILambdaApplication OnShutdownInterceptor0(
-            this ILambdaApplication application,
+        internal static ILambdaOnShutdownBuilder OnShutdownInterceptor0(
+            this ILambdaOnShutdownBuilder application,
             Delegate handler
         )
         {
@@ -53,8 +53,8 @@ namespace AwsLambda.Host
         
         // Location: InputFile.cs(14,8)
         [InterceptsLocation(1, "752jWHLpcl0NwGol0bVk/PQAAABJbnB1dEZpbGUuY3M=")]
-        internal static ILambdaApplication OnShutdownInterceptor1(
-            this ILambdaApplication application,
+        internal static ILambdaOnShutdownBuilder OnShutdownInterceptor1(
+            this ILambdaOnShutdownBuilder application,
             Delegate handler
         )
         {
@@ -75,8 +75,8 @@ namespace AwsLambda.Host
         
         // Location: InputFile.cs(21,8)
         [InterceptsLocation(1, "752jWHLpcl0NwGol0bVk/F8BAABJbnB1dEZpbGUuY3M=")]
-        internal static ILambdaApplication OnShutdownInterceptor2(
-            this ILambdaApplication application,
+        internal static ILambdaOnShutdownBuilder OnShutdownInterceptor2(
+            this ILambdaOnShutdownBuilder application,
             Delegate handler
         )
         {

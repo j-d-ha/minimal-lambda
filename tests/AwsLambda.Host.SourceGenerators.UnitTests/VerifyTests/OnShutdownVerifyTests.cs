@@ -21,8 +21,7 @@ public class OnShutdownVerifyTests
             );
 
             await lambda.RunAsync();
-            """,
-            0
+            """
         );
 
     [Fact]
@@ -60,7 +59,7 @@ public class OnShutdownVerifyTests
 
             lambda.OnShutdown(() =>
             {
-                return "test"; 
+                return "test";
             });
 
             await lambda.RunAsync();
@@ -81,7 +80,7 @@ public class OnShutdownVerifyTests
 
             lambda.OnShutdown(() =>
             {
-                return Task.FromResult("test"); 
+                return Task.FromResult("test");
             });
 
             await lambda.RunAsync();
@@ -102,7 +101,7 @@ public class OnShutdownVerifyTests
 
             lambda.OnShutdown(async () =>
             {
-                return "test"; 
+                return "test";
             });
 
             await lambda.RunAsync();
