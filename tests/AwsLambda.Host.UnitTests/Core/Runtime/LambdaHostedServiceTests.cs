@@ -156,7 +156,7 @@ public class LambdaHostedServiceTests
 
         // Assert
         // Verify by attempting to cancel and checking if the bootstrap was called with a token
-        _fixture
+        await _fixture
             .Bootstrap.Received(1)
             .RunAsync(
                 Arg.Any<Func<Stream, ILambdaContext, Task<Stream>>>(),

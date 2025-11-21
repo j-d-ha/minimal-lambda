@@ -18,7 +18,10 @@ public static class ServiceCollectionExtensions
             ArgumentNullException.ThrowIfNull(services);
 
             // register core factories
-            services.AddSingleton<IInvocationBuilderFactory, DefaultInvocationBuilderFactory>();
+            services.AddSingleton<
+                ILambdaInvocationBuilderFactory,
+                DefaultLambdaInvocationBuilderFactory
+            >();
             services.AddSingleton<IOnInitBuilderFactory, DefaultOnInitBuilderFactory>();
             services.AddSingleton<IOnShutdownBuilderFactory, DefaultOnShutdownBuilderFactory>();
             services.AddSingleton<IFeatureCollectionFactory, DefaultFeatureCollectionFactory>();

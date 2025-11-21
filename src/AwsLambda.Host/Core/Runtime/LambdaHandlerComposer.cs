@@ -10,13 +10,13 @@ internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory
 {
     private readonly ILambdaCancellationFactory _cancellationFactory;
     private readonly IFeatureCollectionFactory _featureCollectionFactory;
-    private readonly IInvocationBuilderFactory _invocationBuilderFactory;
+    private readonly ILambdaInvocationBuilderFactory _lambdaInvocationBuilderFactory;
     private readonly LambdaHostedServiceOptions _options;
     private readonly IServiceScopeFactory _scopeFactory;
 
     public LambdaHandlerComposer(
         IFeatureCollectionFactory featureCollectionFactory,
-        IInvocationBuilderFactory invocationBuilderFactory,
+        ILambdaInvocationBuilderFactory lambdaInvocationBuilderFactory,
         ILambdaCancellationFactory cancellationFactory,
         IServiceScopeFactory scopeFactory,
         IOptions<LambdaHostedServiceOptions> options
@@ -24,13 +24,13 @@ internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory
     {
         ArgumentNullException.ThrowIfNull(cancellationFactory);
         ArgumentNullException.ThrowIfNull(featureCollectionFactory);
-        ArgumentNullException.ThrowIfNull(invocationBuilderFactory);
+        ArgumentNullException.ThrowIfNull(lambdaInvocationBuilderFactory);
         ArgumentNullException.ThrowIfNull(options);
         ArgumentNullException.ThrowIfNull(scopeFactory);
 
         _cancellationFactory = cancellationFactory;
         _featureCollectionFactory = featureCollectionFactory;
-        _invocationBuilderFactory = invocationBuilderFactory;
+        _lambdaInvocationBuilderFactory = lambdaInvocationBuilderFactory;
         _options = options.Value;
         _scopeFactory = scopeFactory;
     }
@@ -38,7 +38,7 @@ internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory
     /// <summary>Creates a wrapper that invokes the middleware pipeline for each Lambda invocation.</summary>
     public Func<Stream, ILambdaContext, Task<Stream>> CreateHandler(CancellationToken stoppingToken)
     {
-        var builder = _invocationBuilderFactory.CreateBuilder();
+        var builder = _lambdaInvocationBuilderFactory.CreateBuilder();
 
         _options.ConfigureHandlerBuilder?.Invoke(builder);
 

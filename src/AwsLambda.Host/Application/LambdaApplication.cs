@@ -26,7 +26,7 @@ public sealed class LambdaApplication
         _host = host;
 
         _invocationBuilder = Services
-            .GetRequiredService<IInvocationBuilderFactory>()
+            .GetRequiredService<ILambdaInvocationBuilderFactory>()
             .CreateBuilder();
 
         _onInitBuilder = Services.GetRequiredService<IOnInitBuilderFactory>().CreateBuilder();

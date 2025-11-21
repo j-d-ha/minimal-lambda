@@ -44,7 +44,7 @@ public class LambdaHandlerComposerTests
         public Fixture()
         {
             FeatureCollectionFactory = Substitute.For<IFeatureCollectionFactory>();
-            InvocationBuilderFactory = Substitute.For<IInvocationBuilderFactory>();
+            LambdaInvocationBuilderFactory = Substitute.For<ILambdaInvocationBuilderFactory>();
             CancellationFactory = Substitute.For<ILambdaCancellationFactory>();
             ScopeFactory = Substitute.For<IServiceScopeFactory>();
             Options = Microsoft.Extensions.Options.Options.Create(new LambdaHostedServiceOptions());
@@ -62,8 +62,8 @@ public class LambdaHandlerComposerTests
         public IFeatureCollection FeatureCollection { get; }
         public IFeatureCollectionFactory FeatureCollectionFactory { get; }
         public ILambdaInvocationBuilder InvocationBuilder { get; }
-        public IInvocationBuilderFactory InvocationBuilderFactory { get; }
         public ILambdaContext LambdaContext { get; }
+        public ILambdaInvocationBuilderFactory LambdaInvocationBuilderFactory { get; }
         public IOptions<LambdaHostedServiceOptions> Options { get; }
         public IServiceScopeFactory ScopeFactory { get; }
 
@@ -71,7 +71,7 @@ public class LambdaHandlerComposerTests
         private void SetupDefaults()
         {
             InvocationBuilder.Build().Returns(async context => { });
-            InvocationBuilderFactory.CreateBuilder().Returns(InvocationBuilder);
+            LambdaInvocationBuilderFactory.CreateBuilder().Returns(InvocationBuilder);
 
             CancellationFactory
                 .NewCancellationTokenSource(Arg.Any<ILambdaContext>())
@@ -84,7 +84,7 @@ public class LambdaHandlerComposerTests
         public LambdaHandlerComposer CreateComposer() =>
             new(
                 FeatureCollectionFactory,
-                InvocationBuilderFactory,
+                LambdaInvocationBuilderFactory,
                 CancellationFactory,
                 ScopeFactory,
                 Options
@@ -109,7 +109,7 @@ public class LambdaHandlerComposerTests
 
     [Theory]
     [InlineData(0)] // FeatureCollectionFactory
-    [InlineData(1)] // InvocationBuilderFactory
+    [InlineData(1)] // LambdaInvocationBuilderFactory
     [InlineData(2)] // CancellationFactory
     [InlineData(3)] // ScopeFactory
     [InlineData(4)] // Options
@@ -119,7 +119,7 @@ public class LambdaHandlerComposerTests
         var featureCollectionFactory =
             parameterIndex == 0 ? null : _fixture.FeatureCollectionFactory;
         var invocationBuilderFactory =
-            parameterIndex == 1 ? null : _fixture.InvocationBuilderFactory;
+            parameterIndex == 1 ? null : _fixture.LambdaInvocationBuilderFactory;
         var cancellationFactory = parameterIndex == 2 ? null : _fixture.CancellationFactory;
         var scopeFactory = parameterIndex == 3 ? null : _fixture.ScopeFactory;
         var options = parameterIndex == 4 ? null : _fixture.Options;
@@ -174,7 +174,7 @@ public class LambdaHandlerComposerTests
         composer.CreateHandler(CancellationToken.None);
 
         // Assert
-        _fixture.InvocationBuilderFactory.Received(1).CreateBuilder();
+        _fixture.LambdaInvocationBuilderFactory.Received(1).CreateBuilder();
     }
 
     [Fact]
@@ -208,7 +208,7 @@ public class LambdaHandlerComposerTests
 
         var composer = new LambdaHandlerComposer(
             _fixture.FeatureCollectionFactory,
-            _fixture.InvocationBuilderFactory,
+            _fixture.LambdaInvocationBuilderFactory,
             _fixture.CancellationFactory,
             _fixture.ScopeFactory,
             options
