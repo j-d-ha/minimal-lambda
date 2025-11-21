@@ -394,6 +394,33 @@ public class LambdaHostedServiceTests
     }
 
     [Fact]
+    public async Task StopAsync_PropagatesShutdownHandlerException()
+    {
+        // Arrange
+        var shutdownException = new InvalidOperationException("Shutdown handler error");
+        var taskCompletionSource = new TaskCompletionSource();
+        _fixture.BootstrapTask = taskCompletionSource.Task;
+
+        _fixture.OnShutdownBuilderHandler = async ct =>
+        {
+            await Task.CompletedTask;
+            throw shutdownException;
+        };
+
+        var service = _fixture.CreateService();
+        await service.StartAsync(CancellationToken.None);
+
+        // Act & Assert - StopAsync should propagate exception from shutdown handler
+        var stopTask = service.StopAsync(CancellationToken.None);
+        taskCompletionSource.SetResult();
+
+        var act = async () => await stopTask;
+        await act.Should()
+            .ThrowExactlyAsync<AggregateException>()
+            .Where(ae => ae.InnerExceptions.Contains(shutdownException));
+    }
+
+    [Fact]
     public async Task StopAsync_PropagatesNonCanceledExceptionFromExecuteTask()
     {
         // Arrange
