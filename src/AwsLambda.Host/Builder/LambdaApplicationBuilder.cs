@@ -57,9 +57,7 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
             options.ConfigureOnShutdownBuilder = ConfigureOnShutdownBuilder;
         });
 
-        // Register DelegateHolder to pass the handler delegate to the generated LambdaApplication
-        Services.AddSingleton<DelegateHolder>();
-
+        // Register core services that are required for Lambda Host to run
         Services.AddLambdaHostCoreServices();
     }
 
