@@ -17,7 +17,7 @@ jobs:
         if: ${{ env.ACT }}
         run: curl -fsSL https://deb.nodesource.com/setup_22.x | bash && apt install -y nodejs
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v5
