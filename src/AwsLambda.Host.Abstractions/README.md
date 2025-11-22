@@ -62,16 +62,42 @@ Ensure your project uses C# 11 or later:
 
 ## Core Abstractions
 
-### ILambdaApplication
+### Builder Interfaces
 
-The main builder interface for configuring a Lambda application using a fluent pattern:
+The framework uses three specialized builder interfaces for configuring different Lambda execution phases, providing clear separation of concerns:
 
-- `MapHandler()` – Register the Lambda invocation handler
-- `Use()` – Add middleware to the pipeline
-- `OnInit()` – Register initialization handlers
-- `OnShutdown()` – Register shutdown handlers
+**ILambdaInvocationBuilder**
 
-See [AwsLambda.Host](../AwsLambda.Host/README.md) for usage examples.
+Configures the Lambda invocation request/response pipeline:
+
+- `Handle()` – Register the Lambda invocation handler
+- `Use()` – Add middleware to the invocation pipeline
+
+**ILambdaOnInitBuilder**
+
+Configures the initialization phase (runs once on cold start):
+
+- `OnInit()` – Register initialization handlers that run before the first invocation
+
+**ILambdaOnShutdownBuilder**
+
+Configures the shutdown phase (runs once before Lambda termination):
+
+- `OnShutdown()` – Register shutdown handlers that run during cleanup
+
+These interfaces are obtained from `LambdaApplication` after calling `Build()`. The builder pattern flow is:
+
+```
+LambdaApplication.CreateBuilder()
+  → Configure services
+    → .Build()
+      → Returns LambdaApplication (implementing all three builder interfaces)
+        → Configure invocation pipeline (ILambdaInvocationBuilder)
+        → Configure init handlers (ILambdaOnInitBuilder)
+        → Configure shutdown handlers (ILambdaOnShutdownBuilder)
+```
+
+This design separates concerns between request/response handling, initialization, and lifecycle cleanup. See [AwsLambda.Host](../AwsLambda.Host/README.md) for detailed usage examples and the complete builder API.
 
 ### ILambdaHostContext
 
