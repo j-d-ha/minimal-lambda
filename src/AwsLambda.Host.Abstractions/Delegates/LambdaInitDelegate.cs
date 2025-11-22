@@ -11,7 +11,7 @@ namespace AwsLambda.Host;
 ///     phase to continue, or <c>false</c> to abort the Function Init phase. Exceptions thrown are
 ///     collected and rethrown after all delegates complete.
 /// </returns>
-/// <seealso cref="ILambdaApplication.OnInit(LambdaInitDelegate)" />
+/// <seealso cref="ILambdaOnInitBuilder.OnInit(LambdaInitDelegate)" />
 public delegate Task<bool> LambdaInitDelegate(
     IServiceProvider services,
     CancellationToken cancellationToken

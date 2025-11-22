@@ -24,9 +24,9 @@ public static class RequestEnvelopeMiddleware
         ///         runtime.
         ///     </para>
         /// </remarks>
-        /// <returns>The <see cref="ILambdaApplication" /> for method chaining.</returns>
+        /// <returns>The <see cref="ILambdaInvocationBuilder" /> for method chaining.</returns>
         /// <exception cref="ArgumentNullException">
-        ///     Thrown when <see cref="ILambdaApplication" /> is
+        ///     Thrown when <see cref="ILambdaInvocationBuilder" /> is
         ///     <c>null</c>.
         /// </exception>
         /// <seealso cref="IRequestEnvelope" />

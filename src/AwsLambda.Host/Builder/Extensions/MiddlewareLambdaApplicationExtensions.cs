@@ -9,7 +9,7 @@ public static class MiddlewareLambdaApplicationExtensions
         /// <remarks>
         ///     <para>
         ///         This extension method provides a simpler API compared to
-        ///         <see cref="ILambdaApplication.Use" />. Middleware is applied in the order registered and
+        ///         <see cref="ILambdaInvocationBuilder.Use" />. Middleware is applied in the order registered and
         ///         can intercept invocations before they reach the handler, or process the response after the
         ///         handler completes.
         ///     </para>
@@ -19,12 +19,12 @@ public static class MiddlewareLambdaApplicationExtensions
         ///     next <see cref="LambdaInvocationDelegate" /> in the pipeline, and returns a <see cref="Task" />
         ///     representing the asynchronous operation.
         /// </param>
-        /// <returns>The current <see cref="ILambdaApplication" /> instance for method chaining.</returns>
+        /// <returns>The current <see cref="ILambdaInvocationBuilder" /> instance for method chaining.</returns>
         /// <exception cref="ArgumentNullException">
-        ///     Thrown when <see cref="ILambdaApplication" /> is
+        ///     Thrown when <see cref="ILambdaInvocationBuilder" /> is
         ///     <c>null</c>.
         /// </exception>
-        /// <seealso cref="ILambdaApplication.Use" />
+        /// <seealso cref="ILambdaInvocationBuilder.Use" />
         public ILambdaInvocationBuilder UseMiddleware(
             Func<ILambdaHostContext, LambdaInvocationDelegate, Task> middleware
         )

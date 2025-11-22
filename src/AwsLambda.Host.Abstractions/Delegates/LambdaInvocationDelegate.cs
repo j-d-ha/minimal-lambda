@@ -14,9 +14,9 @@ namespace AwsLambda.Host;
 ///         Function Shutdown phase.
 ///     </para>
 ///     <para>
-///         Handlers can be registered using the <see cref="ILambdaApplication.MapHandler" /> method
+///         Handlers can be registered using the <see cref="ILambdaInvocationBuilder.Handle" /> method
 ///         and overloads. Multiple middleware can wrap handlers using the
-///         <see cref="ILambdaApplication.Use" /> method to implement cross-cutting concerns.
+///         <see cref="ILambdaInvocationBuilder.Use" /> method to implement cross-cutting concerns.
 ///     </para>
 /// </remarks>
 /// <param name="context">
@@ -26,6 +26,6 @@ namespace AwsLambda.Host;
 /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
 /// <seealso cref="LambdaInitDelegate" />
 /// <seealso cref="LambdaShutdownDelegate" />
-/// <seealso cref="ILambdaApplication.MapHandler" />
-/// <seealso cref="ILambdaApplication.Use" />
+/// <seealso cref="ILambdaInvocationBuilder.Handle" />
+/// <seealso cref="ILambdaInvocationBuilder.Use" />
 public delegate Task LambdaInvocationDelegate(ILambdaHostContext context);

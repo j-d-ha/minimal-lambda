@@ -1,4 +1,5 @@
 using System.Text.Json;
+using AwsLambda.Host.Envelopes;
 
 namespace AwsLambda.Host.Options;
 

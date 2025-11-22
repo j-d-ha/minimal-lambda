@@ -1,13 +1,12 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using Amazon.Lambda.Core;
 
 namespace AwsLambda.Host.Builder;
 
 /// <summary>
 ///     Overloads for
 ///     <see
-///         cref="ILambdaApplication.MapHandler(LambdaInvocationDelegate, Func{ILambdaHostContext, ILambdaSerializer, Stream, Task}, Func{ILambdaHostContext, ILambdaSerializer, Task{Stream}})" />
+///         cref="ILambdaInvocationBuilder.Handle(LambdaInvocationDelegate)" />
 ///     that support automatic dependency injection and serialization for Lambda handlers.
 /// </summary>
 [ExcludeFromCodeCoverage]
@@ -27,20 +26,20 @@ public static class MapHandlerLambdaApplicationExtensions
     ///     </para>
     /// </remarks>
     /// <param name="application">
-    ///     The <see cref="ILambdaApplication" /> instance to register the handler
+    ///     The <see cref="ILambdaInvocationBuilder" /> instance to register the handler
     ///     with.
     /// </param>
     /// <param name="handler">
     ///     A handler function that will be intercepted and replaced at compile time by
     ///     the source generator.
     /// </param>
-    /// <returns>The current <see cref="ILambdaApplication" /> instance for method chaining.</returns>
+    /// <returns>The current <see cref="ILambdaInvocationBuilder" /> instance for method chaining.</returns>
     /// <exception cref="InvalidOperationException">
     ///     Thrown if called at runtime; this exception is
     ///     unreachable as this method is intercepted by the source generator code at compile time.
     /// </exception>
     /// <seealso
-    ///     cref="ILambdaApplication.MapHandler(LambdaInvocationDelegate, Func{ILambdaHostContext, ILambdaSerializer, Stream, Task}, Func{ILambdaHostContext, ILambdaSerializer, Task{Stream}})" />
+    ///     cref="ILambdaInvocationBuilder.Handle(LambdaInvocationDelegate)" />
     public static ILambdaInvocationBuilder MapHandler(
         this ILambdaInvocationBuilder application,
         Delegate handler

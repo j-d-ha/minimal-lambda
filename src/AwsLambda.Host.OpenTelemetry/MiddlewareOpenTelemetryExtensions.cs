@@ -50,8 +50,8 @@ public static class MiddlewareOpenTelemetryExtensions
     ///         startup.
     ///     </para>
     /// </remarks>
-    /// <param name="application">The <see cref="ILambdaApplication" /> instance.</param>
-    /// <returns>The same <see cref="ILambdaApplication" /> instance for method chaining.</returns>
+    /// <param name="application">The <see cref="ILambdaInvocationBuilder" /> instance.</param>
+    /// <returns>The same <see cref="ILambdaInvocationBuilder" /> instance for method chaining.</returns>
     /// <example>
     ///     <para>
     ///         First, register OpenTelemetry in the dependency injection container using AWS Lambda

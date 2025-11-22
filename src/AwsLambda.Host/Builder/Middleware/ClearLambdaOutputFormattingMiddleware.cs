@@ -22,9 +22,9 @@ public static class ClearLambdaOutputFormattingMiddleware
         ///     clearing the output formatting, you ensure that your structured logs are written directly to
         ///     stdout without unwanted modifications.
         /// </remarks>
-        /// <returns>The configured <see cref="ILambdaApplication" /> for method chaining.</returns>
+        /// <returns>The configured <see cref="ILambdaInvocationBuilder" /> for method chaining.</returns>
         /// <exception cref="ArgumentNullException">
-        ///     Thrown when <see cref="ILambdaApplication" /> is
+        ///     Thrown when <see cref="ILambdaInvocationBuilder" /> is
         ///     <c>null</c>.
         /// </exception>
         public ILambdaInvocationBuilder UseClearLambdaOutputFormatting()

@@ -7,7 +7,7 @@ namespace AwsLambda.Host;
 ///     hard timeout.
 /// </param>
 /// <returns>A <see cref="Task" /> representing the shutdown operation.</returns>
-/// <seealso cref="ILambdaApplication.OnShutdown(LambdaShutdownDelegate)" />
+/// <seealso cref="ILambdaOnShutdownBuilder.OnShutdown(LambdaShutdownDelegate)" />
 public delegate Task LambdaShutdownDelegate(
     IServiceProvider services,
     CancellationToken cancellationToken

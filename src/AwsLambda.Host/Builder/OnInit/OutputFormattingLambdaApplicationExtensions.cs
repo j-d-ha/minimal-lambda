@@ -13,7 +13,7 @@ public static class OutputFormattingLambdaApplicationExtensions
     ///     for structured logging frameworks like Serilog to output JSON without corruption.
     /// </remarks>
     /// <param name="application">The Lambda application to configure.</param>
-    /// <returns>The configured <see cref="ILambdaApplication" /> for method chaining.</returns>
+    /// <returns>The configured <see cref="ILambdaOnInitBuilder" /> for method chaining.</returns>
     public static ILambdaOnInitBuilder OnInitClearLambdaOutputFormatting(
         this ILambdaOnInitBuilder application
     )

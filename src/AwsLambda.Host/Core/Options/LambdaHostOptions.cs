@@ -35,10 +35,10 @@ public class LambdaHostOptions
     /// </remarks>
     public bool ClearLambdaOutputFormatting { get; set; } = false;
 
-    /// <summary>Gets or sets the timeout duration for <see cref="ILambdaApplication.OnInit" /> handlers.</summary>
+    /// <summary>Gets or sets the timeout duration for <see cref="ILambdaOnInitBuilder.OnInit" /> handlers.</summary>
     /// <remarks>
     ///     This value is used as the duration of the <see cref="CancellationTokenSource" /> that is
-    ///     passed to <see cref="ILambdaApplication.OnInit" /> handlers. Default is 5 seconds.
+    ///     passed to <see cref="ILambdaOnInitBuilder.OnInit" /> handlers. Default is 5 seconds.
     /// </remarks>
     public TimeSpan InitTimeout { get; set; } = TimeSpan.FromSeconds(5);
 
@@ -54,7 +54,7 @@ public class LambdaHostOptions
     ///     function.
     /// </summary>
     /// <remarks>
-    ///     The <see cref="AwsLambda.Host.ShutdownDuration" /> class provides predetermined values for
+    ///     The <see cref="ShutdownDuration" /> class provides predetermined values for
     ///     common scenarios:
     ///     <list type="bullet">
     ///         <item>

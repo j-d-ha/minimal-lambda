@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace AwsLambda.Host.Builder;
 
 /// <summary>
-///     Overloads for <see cref="ILambdaApplication.OnShutdown(LambdaShutdownDelegate)" /> that
+///     Overloads for <see cref="ILambdaOnShutdownBuilder.OnShutdown(LambdaShutdownDelegate)" /> that
 ///     support automatic dependency injection for shutdown handlers.
 /// </summary>
 [ExcludeFromCodeCoverage]
@@ -21,13 +21,13 @@ public static class OnShutdownLambdaApplicationExtensions
     /// <note>Shutdown logic should execute quickly as time is minimal before forced termination.</note>
     /// <param name="application">The Lambda application.</param>
     /// <param name="handler">An asynchronous handler function.</param>
-    /// <returns>The current <see cref="ILambdaApplication" /> instance for method chaining.</returns>
+    /// <returns>The current <see cref="ILambdaOnShutdownBuilder" /> instance for method chaining.</returns>
     /// <exception cref="InvalidOperationException">
     ///     Thrown if called at runtime; this exception is
     ///     unreachable as this method is intercepted by the source generator code at compile time.
     /// </exception>
     /// <seealso cref="LambdaShutdownDelegate" />
-    /// <seealso cref="ILambdaApplication.OnShutdown(LambdaShutdownDelegate)" />
+    /// <seealso cref="ILambdaOnShutdownBuilder.OnShutdown(LambdaShutdownDelegate)" />
     public static ILambdaOnShutdownBuilder OnShutdown(
         this ILambdaOnShutdownBuilder application,
         Delegate handler

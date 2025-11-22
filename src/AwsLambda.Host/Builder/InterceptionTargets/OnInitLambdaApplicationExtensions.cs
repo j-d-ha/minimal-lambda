@@ -4,7 +4,7 @@ using System.Diagnostics.CodeAnalysis;
 namespace AwsLambda.Host.Builder;
 
 /// <summary>
-///     Overloads for <see cref="ILambdaApplication.OnInit(LambdaInitDelegate)" /> that support
+///     Overloads for <see cref="ILambdaOnInitBuilder.OnInit(LambdaInitDelegate)" /> that support
 ///     automatic dependency injection for initialization handlers.
 /// </summary>
 [ExcludeFromCodeCoverage]
@@ -37,13 +37,13 @@ public static class OnInitLambdaApplicationExtensions
     /// </note>
     /// <param name="application">The Lambda application.</param>
     /// <param name="handler">An initialization handler function.</param>
-    /// <returns>The current <see cref="ILambdaApplication" /> instance for method chaining.</returns>
+    /// <returns>The current <see cref="ILambdaOnInitBuilder" /> instance for method chaining.</returns>
     /// <exception cref="InvalidOperationException">
     ///     Thrown if called at runtime; this exception is
     ///     unreachable as this method is intercepted by the source generator code at compile time.
     /// </exception>
     /// <seealso cref="LambdaInitDelegate" />
-    /// <seealso cref="ILambdaApplication.OnInit(LambdaInitDelegate)" />
+    /// <seealso cref="ILambdaOnInitBuilder.OnInit(LambdaInitDelegate)" />
     public static ILambdaOnInitBuilder OnInit(
         this ILambdaOnInitBuilder application,
         Delegate handler

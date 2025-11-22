@@ -6,8 +6,8 @@ namespace AwsLambda.Host.Builder;
 ///         The <see cref="EventAttribute" /> is used with the source generator to indicate that a
 ///         handler method parameter should be injected with the deserialized event from the current
 ///         Lambda invocation. This attribute is applied to the event parameter in handler methods that
-///         are registered using <see cref="ILambdaApplication.OnInit" />,
-///         <see cref="ILambdaApplication.MapHandler" />, or related extension methods.
+///         are registered using <see cref="ILambdaOnInitBuilder.OnInit" />,
+///         <see cref="ILambdaInvocationBuilder.Handle" />, or related extension methods.
 ///     </para>
 ///     <para>
 ///         This attribute is only valid on method parameters and is processed at compile-time by the
