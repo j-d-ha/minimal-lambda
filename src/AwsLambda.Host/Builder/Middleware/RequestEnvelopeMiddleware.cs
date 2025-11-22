@@ -1,9 +1,8 @@
-using AwsLambda.Host.Core;
-using AwsLambda.Host.Options;
+using AwsLambda.Host.Envelopes;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace AwsLambda.Host;
+namespace AwsLambda.Host.Builder;
 
 /// <summary>Provides middleware for processing Lambda event and response envelopes.</summary>
 public static class RequestEnvelopeMiddleware

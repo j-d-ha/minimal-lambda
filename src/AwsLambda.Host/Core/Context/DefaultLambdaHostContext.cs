@@ -1,8 +1,7 @@
 using Amazon.Lambda.Core;
-using AwsLambda.Host.Core;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AwsLambda.Host;
+namespace AwsLambda.Host.Core;
 
 internal class DefaultLambdaHostContext : ILambdaHostContext, IAsyncDisposable
 {

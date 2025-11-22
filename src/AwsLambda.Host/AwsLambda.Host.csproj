@@ -32,6 +32,9 @@
       ReferenceOutputAssembly="false"
     />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Builder\OnShutdown\" />
+  </ItemGroup>
   <Target Name="IncludeSourceGenerator" BeforeTargets="_GetPackageFiles">
     <ItemGroup>
       <None

@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
-namespace AwsLambda.Host;
+namespace AwsLambda.Host.Options;
 
 internal class HostOptionsPostConfiguration : IPostConfigureOptions<HostOptions>
 {

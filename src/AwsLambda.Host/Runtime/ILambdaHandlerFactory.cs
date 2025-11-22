@@ -1,6 +1,6 @@
 using Amazon.Lambda.Core;
 
-namespace AwsLambda.Host;
+namespace AwsLambda.Host.Runtime;
 
 /// <summary>
 ///     Responsible for creating and composing the Lambda handler. Handles middleware pipeline

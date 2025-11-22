@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 using Amazon.Lambda.Core;
 
-namespace AwsLambda.Host;
+namespace AwsLambda.Host.Builder;
 
 /// <summary>
 ///     Overloads for

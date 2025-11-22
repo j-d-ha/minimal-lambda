@@ -2,7 +2,7 @@ using Amazon.Lambda.Core;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
-namespace AwsLambda.Host;
+namespace AwsLambda.Host.Runtime;
 
 /// <summary>
 ///     Orchestrates the Lambda hosting environment lifecycle. Delegates specific concerns to

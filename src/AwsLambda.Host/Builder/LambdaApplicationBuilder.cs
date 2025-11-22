@@ -6,7 +6,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace AwsLambda.Host;
+namespace AwsLambda.Host.Builder;
 
 /// <summary>A builder for configuring and constructing an AWS Lambda Host application.</summary>
 /// <remarks>
@@ -36,7 +36,7 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
     private const string LambdaHostAppSettingsSectionName = "AwsLambdaHost";
     private readonly HostApplicationBuilder _hostBuilder;
 
-    private LambdaApplication? _builtApplication = null;
+    private LambdaApplication? _builtApplication;
 
     private LambdaApplicationBuilder(HostApplicationBuilder hostBuilder)
     {
@@ -110,9 +110,8 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
     ///     <list type="bullet">
     ///         <item>
     ///             <description>
-    ///                 Registers a default <see cref="ILambdaCancellationFactory" />
-    ///                 if one is not already registered, which manages cancellation tokens for Lambda
-    ///                 invocations.
+    ///                 Registers a default <see cref="ILambdaCancellationFactory" /> if one is
+    ///                 not already registered, which manages cancellation tokens for Lambda invocations.
     ///             </description>
     ///         </item>
     ///         <item>

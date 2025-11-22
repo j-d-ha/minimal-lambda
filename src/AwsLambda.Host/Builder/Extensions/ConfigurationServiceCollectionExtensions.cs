@@ -1,6 +1,3 @@
-using AwsLambda.Host;
-using AwsLambda.Host.Options;
-
 namespace Microsoft.Extensions.DependencyInjection;
 
 /// <summary>Provides extension methods for configuring Lambda host services.</summary>

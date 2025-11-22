@@ -1,6 +1,4 @@
-using AwsLambda.Host.Options;
-
-namespace AwsLambda.Host;
+namespace AwsLambda.Host.Envelopes;
 
 /// <summary>Defines a contract for extracting and deserializing incoming Lambda event payloads.</summary>
 /// <remarks>

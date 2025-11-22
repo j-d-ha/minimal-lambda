@@ -1,4 +1,4 @@
-namespace AwsLambda.Host;
+namespace AwsLambda.Host.Builder;
 
 internal class DefaultLambdaInvocationBuilderFactory(IServiceProvider serviceProvider)
     : ILambdaInvocationBuilderFactory

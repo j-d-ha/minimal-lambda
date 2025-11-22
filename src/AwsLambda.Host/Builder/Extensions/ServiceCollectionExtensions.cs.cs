@@ -1,7 +1,5 @@
 using Amazon.Lambda.Core;
 using Amazon.Lambda.Serialization.SystemTextJson;
-using AwsLambda.Host;
-using AwsLambda.Host.Core;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;

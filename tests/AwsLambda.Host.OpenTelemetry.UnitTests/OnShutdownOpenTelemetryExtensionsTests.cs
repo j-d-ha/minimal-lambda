@@ -1,13 +1,9 @@
 using System.Diagnostics;
-using AwesomeAssertions;
-using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using NSubstitute;
 using OpenTelemetry;
 using OpenTelemetry.Metrics;
 using OpenTelemetry.Trace;
-using Xunit;
 
 namespace AwsLambda.Host.OpenTelemetry.UnitTests;
 

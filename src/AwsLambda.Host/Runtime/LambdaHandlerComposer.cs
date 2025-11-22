@@ -1,9 +1,8 @@
 using Amazon.Lambda.Core;
-using AwsLambda.Host.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace AwsLambda.Host;
+namespace AwsLambda.Host.Runtime;
 
 /// <summary>Builds and composes the Lambda invocation pipeline into a request handler.</summary>
 internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory

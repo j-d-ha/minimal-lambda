@@ -1,4 +1,4 @@
-namespace AwsLambda.Host;
+namespace AwsLambda.Host.Builder;
 
 /// <summary>Builder for composing Lambda init handlers that execute during the Init phase.</summary>
 /// <remarks>

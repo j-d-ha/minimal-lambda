@@ -1,6 +1,6 @@
 using Microsoft.Extensions.DependencyInjection;
 
-namespace AwsLambda.Host;
+namespace AwsLambda.Host.Builder;
 
 internal class DefaultLambdaOnShutdownBuilderFactory(
     IServiceProvider serviceProvider,

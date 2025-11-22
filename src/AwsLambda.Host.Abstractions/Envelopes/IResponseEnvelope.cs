@@ -1,6 +1,4 @@
-using AwsLambda.Host.Options;
-
-namespace AwsLambda.Host;
+namespace AwsLambda.Host.Envelopes;
 
 /// <summary>
 ///     Defines a contract for serializing and packing handler results into Lambda response

@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
-namespace AwsLambda.Host;
+namespace AwsLambda.Host.Builder;
 
 /// <summary>
 ///     Overloads for <see cref="ILambdaApplication.OnInit(LambdaInitDelegate)" /> that support

@@ -1,4 +1,4 @@
-namespace AwsLambda.Host;
+namespace AwsLambda.Host.Options;
 
 internal class LambdaHostedServiceOptions
 {

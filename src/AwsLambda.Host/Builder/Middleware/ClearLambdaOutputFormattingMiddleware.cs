@@ -1,4 +1,4 @@
-namespace AwsLambda.Host;
+namespace AwsLambda.Host.Builder;
 
 /// <summary>
 ///     Provides extension methods for clearing Lambda runtime output formatting in the middleware

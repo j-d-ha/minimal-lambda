@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 
-namespace AwsLambda.Host;
+namespace AwsLambda.Host.Builder;
 
 /// <summary>Provides extension methods for managing Lambda runtime output formatting.</summary>
 public static class OutputFormattingLambdaApplicationExtensions

@@ -2,7 +2,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
-namespace AwsLambda.Host;
+namespace AwsLambda.Host.Builder;
 
 /// <summary>
 ///     Provides extension methods on <see cref="LambdaApplication" /> for creating and
@@ -106,8 +106,8 @@ public static class BuilderLambdaApplicationExtensions
         ///         <item><description>load app <see cref="IConfiguration" /> from supplied command line args</description></item>
         ///         <item>
         ///             <description>
-        ///                 configure the <see cref="ILoggerFactory" /> to log to console, debug,
-        ///                 and event source output
+        ///                 configure the <see cref="ILoggerFactory" /> to log to console, debug, and
+        ///                 event source output
         ///             </description>
         ///         </item>
         ///         <item>

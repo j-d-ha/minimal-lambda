@@ -1,4 +1,4 @@
-namespace AwsLambda.Host;
+namespace AwsLambda.Host.Options;
 
 /// <summary>
 ///     Provides predetermined timeout durations for AWS Lambda shutdown based on extension

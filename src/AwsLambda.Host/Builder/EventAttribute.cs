@@ -1,4 +1,4 @@
-namespace AwsLambda.Host;
+namespace AwsLambda.Host.Builder;
 
 /// <summary>Marks a parameter to receive the deserialized Lambda event object.</summary>
 /// <remarks>

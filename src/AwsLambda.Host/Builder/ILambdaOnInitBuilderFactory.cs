@@ -1,4 +1,4 @@
-namespace AwsLambda.Host;
+namespace AwsLambda.Host.Builder;
 
 internal interface ILambdaOnInitBuilderFactory
 {

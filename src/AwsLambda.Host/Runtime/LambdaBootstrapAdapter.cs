@@ -2,7 +2,7 @@ using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
 using Microsoft.Extensions.Options;
 
-namespace AwsLambda.Host;
+namespace AwsLambda.Host.Runtime;
 
 /// <summary>
 ///     Adapts AWS Lambda bootstrap configuration and execution. This class abstracts away AWS SDK

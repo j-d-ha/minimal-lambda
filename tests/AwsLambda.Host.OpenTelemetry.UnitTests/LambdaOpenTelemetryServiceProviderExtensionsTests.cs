@@ -1,10 +1,5 @@
-﻿using AwesomeAssertions;
-using AwsLambda.Host.Core;
-using JetBrains.Annotations;
-using Microsoft.Extensions.DependencyInjection;
-using NSubstitute;
+﻿using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry.Trace;
-using Xunit;
 
 namespace AwsLambda.Host.OpenTelemetry.UnitTests;
 

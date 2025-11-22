@@ -1,5 +1,6 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using AwsLambda.Host.Builder;
 using OpenTelemetry.Trace;
 
 namespace AwsLambda.Host;

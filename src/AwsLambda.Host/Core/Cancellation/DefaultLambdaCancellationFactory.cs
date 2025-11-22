@@ -1,7 +1,7 @@
 using Amazon.Lambda.Core;
 using Microsoft.Extensions.Options;
 
-namespace AwsLambda.Host;
+namespace AwsLambda.Host.Core;
 
 /// <summary>
 ///     Provides functionality to create a <see cref="CancellationTokenSource" /> with respect to
@@ -9,7 +9,7 @@ namespace AwsLambda.Host;
 ///     cancellation tokens are created with a buffer duration to provide sufficient time before the
 ///     Lambda execution timeout occurs.
 /// </summary>
-public class DefaultLambdaCancellationFactory : ILambdaCancellationFactory
+internal class DefaultLambdaCancellationFactory : ILambdaCancellationFactory
 {
     /// <summary>
     ///     Represents a time duration that is subtracted from the remaining time of a Lambda function

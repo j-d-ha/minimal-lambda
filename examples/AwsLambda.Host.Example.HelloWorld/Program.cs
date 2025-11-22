@@ -1,4 +1,5 @@
 ﻿using AwsLambda.Host;
+using AwsLambda.Host.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -12,6 +13,14 @@ lambda.UseClearLambdaOutputFormatting();
 
 lambda.MapHandler(
     ([Event] Request request, IService service) => new Response(service.GetMessage(request.Name))
+);
+
+lambda.UseMiddleware(
+    async (context, next) =>
+    {
+        context.Features.Get<ILambdaHostContext>();
+        await next(context);
+    }
 );
 
 await lambda.RunAsync();
