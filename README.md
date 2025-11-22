@@ -57,7 +57,7 @@ dotnet add package AwsLambda.Host
 Create a simple Lambda handler with dependency injection:
 
 ```csharp
-using AwsLambda.Host;
+using AwsLambda.Host.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
