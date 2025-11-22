@@ -1,4 +1,4 @@
-using AwsLambda.Host.Core.Features;
+using AwsLambda.Host.Core;
 using AwsLambda.Host.Options;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;

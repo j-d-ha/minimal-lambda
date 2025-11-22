@@ -1,4 +1,5 @@
 ﻿using AwesomeAssertions;
+using AwsLambda.Host.Core;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
 using NSubstitute;

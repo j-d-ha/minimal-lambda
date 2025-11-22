@@ -1,4 +1,5 @@
 using System.Diagnostics.CodeAnalysis;
+using AwsLambda.Host.Core;
 
 namespace AwsLambda.Host;
 

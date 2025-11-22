@@ -1,5 +1,5 @@
 using AwesomeAssertions;
-using AwsLambda.Host.Core.Features;
+using AwsLambda.Host.Core;
 using JetBrains.Annotations;
 using NSubstitute;
 using Xunit;

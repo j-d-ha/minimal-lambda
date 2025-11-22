@@ -1,5 +1,6 @@
 using Amazon.Lambda.Core;
 using AwsLambda.Host;
+using AwsLambda.Host.Core;
 using OpenTelemetry.Instrumentation.AWSLambda;
 using OpenTelemetry.Trace;
 

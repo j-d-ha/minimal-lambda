@@ -8,12 +8,12 @@
 
 using System.Collections;
 
-namespace AwsLambda.Host.Core.Features;
+namespace AwsLambda.Host.Core;
 
 internal class DefaultFeatureCollection : IFeatureCollection
 {
-    private readonly Dictionary<Type, object> _features = new();
     private readonly IEnumerable<IFeatureProvider> _featureProviders;
+    private readonly Dictionary<Type, object> _features = new();
 
     internal DefaultFeatureCollection(IEnumerable<IFeatureProvider> featureProviders)
     {

@@ -1,4 +1,4 @@
-namespace AwsLambda.Host.Core.Features;
+namespace AwsLambda.Host.Core;
 
 internal interface IFeatureCollectionFactory
 {

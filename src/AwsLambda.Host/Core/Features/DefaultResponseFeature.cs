@@ -1,6 +1,6 @@
 using Amazon.Lambda.Core;
 
-namespace AwsLambda.Host.Core.Features;
+namespace AwsLambda.Host.Core;
 
 /// <summary>
 ///     Default implementation of <see cref="DefaultResponseFeature{T}" /> that is used by source

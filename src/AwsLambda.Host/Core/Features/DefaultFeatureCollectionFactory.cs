@@ -1,4 +1,4 @@
-namespace AwsLambda.Host.Core.Features;
+namespace AwsLambda.Host.Core;
 
 internal class DefaultFeatureCollectionFactory(IEnumerable<IFeatureProvider> featureProviders)
     : IFeatureCollectionFactory

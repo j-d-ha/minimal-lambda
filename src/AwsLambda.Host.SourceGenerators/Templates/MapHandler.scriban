@@ -49,10 +49,10 @@ namespace AwsLambda.Host
         internal static LambdaApplication BuildInterceptor(this LambdaApplicationBuilder builder)
         {
             {{~ if input_event != null && !input_event.is_stream ~}}
-            builder.Services.AddSingleton<IFeatureProvider, EventFeatureProvider>();
+            builder.Services.AddSingleton<IFeatureProvider, DefaultEventFeatureProvider>();
             {{~ end ~}}
             {{~ if output_response != null && !output_response.response_is_stream ~}}
-            builder.Services.AddSingleton<IFeatureProvider, ResponseFeatureProvider>();
+            builder.Services.AddSingleton<IFeatureProvider, DefaultResponseFeatureProvider>();
             {{~ end ~}}
             return builder.Build();
         }
@@ -84,96 +84,4 @@ namespace AwsLambda.Host
             responseFeature.SetResponse(response);
         }
     }
-{{~ if input_event != null && !input_event.is_stream ~}}
-    
-    file class EventFeatureProvider(ILambdaSerializer lambdaSerializer) : IFeatureProvider
-    {
-        private static readonly Type FeatureType = typeof(IEventFeature);
-    
-        public bool TryCreate(Type type, out object? feature)
-        {
-            feature = type == FeatureType ? new EventFeature(lambdaSerializer) : null;
-    
-            return feature is not null;
-        }
-    }    
-    
-    file class EventFeature : IEventFeature
-    {
-#nullable disable    
-        private {{ input_event.type }} _data;
-#nullable restore
-    
-        private readonly ILambdaSerializer _lambdaSerializer;
-    
-        public EventFeature(ILambdaSerializer lambdaSerializer)
-        {
-            ArgumentNullException.ThrowIfNull(lambdaSerializer);
-    
-            _lambdaSerializer = lambdaSerializer;
-        }
-    
-        public object? GetEvent(ILambdaHostContext context)
-        {
-            _data ??= _lambdaSerializer.Deserialize<{{ input_event.type }}>(context.RawInvocationData.Event);
-    
-            return _data;
-        }
-    }
-{{~ end ~}}    
-{{~ if output_response != null && !output_response.response_is_stream ~}}
-    
-    file class ResponseFeatureProvider(ILambdaSerializer lambdaSerializer) : IFeatureProvider
-    {
-        private static readonly Type FeatureType = typeof(IResponseFeature);
-    
-        public bool TryCreate(Type type, out object? feature)
-        {
-            feature = type == FeatureType ? new ResponseFeature(lambdaSerializer) : null;
-    
-            return feature is not null;
-        }
-    }
-    
-    file class ResponseFeature : IResponseFeature
-    {
-#nullable disable
-        private {{ output_response.response_type }} _data;
-#nullable restore
-    
-        private readonly ILambdaSerializer _lambdaSerializer;
-    
-        public ResponseFeature(ILambdaSerializer lambdaSerializer)
-        {
-            ArgumentNullException.ThrowIfNull(lambdaSerializer);
-    
-            _lambdaSerializer = lambdaSerializer;
-        }
-    
-        public object? GetResponse() => _data;
-    
-        public void SetResponse(object? response)
-        {
-            if (response is null)
-            {
-                _data = null;
-                return;
-            }
-    
-            _data = ({{ output_response.response_type }})response;
-        }
-    
-        public void SerializeToStream(ILambdaHostContext context)
-        {
-            ArgumentNullException.ThrowIfNull(context);
-    
-            if (_data is null)
-                return;
-    
-            context.RawInvocationData.Response.SetLength(0L);
-            _lambdaSerializer.Serialize<{{ output_response.response_type }}>(_data, context.RawInvocationData.Response);
-            context.RawInvocationData.Response.Position = 0L;
-        }
-    }
-{{~ end ~}}
 }

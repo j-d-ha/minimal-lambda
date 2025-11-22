@@ -1,5 +1,5 @@
 using Amazon.Lambda.Core;
-using AwsLambda.Host.Core.Features;
+using AwsLambda.Host.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 

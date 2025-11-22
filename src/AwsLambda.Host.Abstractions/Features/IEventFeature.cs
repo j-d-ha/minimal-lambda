@@ -1,4 +1,4 @@
-namespace AwsLambda.Host;
+namespace AwsLambda.Host.Core;
 
 /// <summary>Provides access to the deserialized Lambda invocation event.</summary>
 /// <remarks>

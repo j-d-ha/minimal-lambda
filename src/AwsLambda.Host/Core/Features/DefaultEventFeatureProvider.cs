@@ -1,6 +1,6 @@
 using Amazon.Lambda.Core;
 
-namespace AwsLambda.Host.Core.Features;
+namespace AwsLambda.Host.Core;
 
 /// <summary>
 ///     Provides a default implementation of <see cref="IEventFeature" /> for Lambda event

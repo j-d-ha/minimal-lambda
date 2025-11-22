@@ -6,7 +6,7 @@
 // See THIRD-PARTY-LICENSES.txt file in the project root or visit
 // https://github.com/Azure/azure-functions-dotnet-worker/blob/2.51.0/LICENSE
 
-namespace AwsLambda.Host;
+namespace AwsLambda.Host.Core;
 
 /// <summary>Provides a mechanism to create feature instances on demand.</summary>
 /// <remarks>
