@@ -29,6 +29,60 @@
 - **Test only what can be meaningfully tested**: Don't write tests for things that depend entirely
   on external library internals
 
+#### AutoNSubstituteData Pattern
+
+The `[AutoNSubstituteData]` attribute integrates three testing libraries:
+
+**How it works:**
+
+1. **AutoFixture** - Automatically generates test data for any type parameter
+2. **NSubstitute** - Automatically replaces all interface types with NSubstitute mocks
+3. **xUnit** - Injects these generated instances into test method parameters
+
+**Example:**
+
+```csharp
+[Theory]
+[AutoNSubstituteData]
+internal async Task MyTest(
+    [Frozen] IMyInterface dependency,     // Mocked interface (frozen for assertions)
+    MyClass instanceUnderTest             // Auto-constructed with mocked dependencies
+)
+{
+    // Act
+    await instanceUnderTest.DoSomething();
+
+    // Assert - verify the frozen mock was called
+    await dependency.Received(1).ExpectedMethod();
+}
+```
+
+**Key attributes:**
+
+- `[Frozen]` - Freezes a mock instance so the same instance is injected into dependent objects. Use
+  this on parameters you want to assert on later. Without `[Frozen]`, a new mock is created for each
+  dependency.
+
+**When to use:**
+
+- Tests with simple dependencies that don't need custom setup
+- Tests where you want to verify a dependency was called (use `[Frozen]` for the dependency)
+- Reduces boilerplate compared to manual fixture setup
+
+**When NOT to use:**
+
+- Tests needing complex mock behavior configuration (use manual `Fixture` helper class instead)
+- Tests requiring specific return values from mocks
+- Tests where you need multiple instances of the same type with different configurations
+
+**Pattern in this codebase:**
+
+- Prefer `[AutoNSubstituteData]` for simple assertion tests
+- Use the manual `Fixture` helper class (in test file) when mocks need `SetupDefaults()`
+  configuration
+- Combine both: use `[AutoNSubstituteData]` with `[Frozen]` to inject configured mocks from a manual
+  fixture
+
 # C# 14 Extension Members - Valid Syntax
 
 ## This is VALID C# 14 syntax - do NOT change it
