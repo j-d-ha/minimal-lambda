@@ -14,10 +14,6 @@ public interface IResponseFeature
     /// <returns>The response object, or <c>null</c> if no response has been set.</returns>
     object? GetResponse();
 
-    /// <summary>Sets the response object for the Lambda invocation.</summary>
-    /// <param name="response">The response object to set, or <c>null</c> to clear the response.</param>
-    void SetResponse(object? response);
-
     /// <summary>Serializes the response object to the Lambda response stream.</summary>
     /// <param name="context">The <see cref="ILambdaHostContext" /> for the current invocation.</param>
     void SerializeToStream(ILambdaHostContext context);
