@@ -1,9 +1,8 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
-using AwsLambda.Host.Builder;
 using OpenTelemetry.Trace;
 
-namespace AwsLambda.Host;
+namespace AwsLambda.Host.Builder;
 
 /// <summary>
 ///     Provides extension methods for enabling OpenTelemetry tracing in the Lambda invocation
@@ -32,8 +31,8 @@ public static class MiddlewareOpenTelemetryExtensions
     ///             </item>
     ///             <item>
     ///                 <description>
-    ///                     Wraps the handler pipeline with tracing middleware that creates a
-    ///                     root span with invocation info.
+    ///                     Wraps the handler pipeline with tracing middleware that creates a root
+    ///                     span with invocation info.
     ///                 </description>
     ///             </item>
     ///         </list>
