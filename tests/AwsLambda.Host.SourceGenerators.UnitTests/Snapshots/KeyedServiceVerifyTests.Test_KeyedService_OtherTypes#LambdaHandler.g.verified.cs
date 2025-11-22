@@ -23,19 +23,21 @@ namespace System.Runtime.CompilerServices
     }
 }
 
-namespace AwsLambda.Host
+namespace AwsLambda.Host.Core.Generated
 {
     using System;
     using System.IO;
     using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
     using Amazon.Lambda.Core;
+    using AwsLambda.Host.Builder;
+    using AwsLambda.Host.Core;
     using Microsoft.Extensions.DependencyInjection;
-
+    
     file static class MapHandlerLambdaApplicationExtensions
     {
-        // Location: InputFile.cs(13,8)
-        [InterceptsLocation(1, "IsM4FA3W7thmbE0DtjQI1sEBAABJbnB1dEZpbGUuY3M=")]
+        // Location: InputFile.cs(14,8)
+        [InterceptsLocation(1, "FPApiCPACeBSE0aOLeXmruQBAABJbnB1dEZpbGUuY3M=")]
         internal static ILambdaInvocationBuilder MapHandlerInterceptor(
             this ILambdaInvocationBuilder application,
             Delegate handler
@@ -64,36 +66,10 @@ namespace AwsLambda.Host
             }
         }
         
-        [InterceptsLocation(1, "IsM4FA3W7thmbE0DtjQI1rABAABJbnB1dEZpbGUuY3M=")] // Location: InputFile.cs(11,22)
+        [InterceptsLocation(1, "FPApiCPACeBSE0aOLeXmrtMBAABJbnB1dEZpbGUuY3M=")] // Location: InputFile.cs(12,22)
         internal static LambdaApplication BuildInterceptor(this LambdaApplicationBuilder builder)
         {
             return builder.Build();
-        }
-
-        private static T GetEventT<T>(this ILambdaHostContext context)
-        {
-            if (!context.TryGetEvent<T>(out var eventT))
-            {
-                throw new InvalidOperationException($"Lambda event of type '{typeof(T).FullName}' is not available in the context.");
-            }
-            
-            return eventT!;
-        }
-
-        private static void SetResponseT<T>(this ILambdaHostContext context, T response)
-        {
-            if (response is Stream stream)
-            {
-                context.RawInvocationData.Response = stream;
-                return;
-            }
-    
-            if (!context.Features.TryGet<IResponseFeature>(out var responseFeature))
-            {
-                throw new InvalidOperationException("Response feature is not available in the context.");
-            }
-    
-            responseFeature.SetResponse(response);
         }
     }
 }
