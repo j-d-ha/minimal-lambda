@@ -16,12 +16,9 @@ public class DefaultEventFeatureProviderTests
     [Theory]
     [AutoNSubstituteData]
     internal void Constructor_WithValidSerializer_SuccessfullyConstructs(
-        ILambdaSerializer serializer
+        DefaultEventFeatureProvider<string> provider
     )
     {
-        // Act
-        var provider = new DefaultEventFeatureProvider<string>(serializer);
-
         // Assert
         provider.Should().NotBeNull();
     }
@@ -32,11 +29,8 @@ public class DefaultEventFeatureProviderTests
 
     [Theory]
     [AutoNSubstituteData]
-    internal void Provider_ImplementsIFeatureProvider(ILambdaSerializer serializer)
+    internal void Provider_ImplementsIFeatureProvider(DefaultEventFeatureProvider<string> provider)
     {
-        // Arrange
-        var provider = new DefaultEventFeatureProvider<string>(serializer);
-
         // Assert
         provider.Should().BeAssignableTo<IFeatureProvider>();
     }
@@ -57,11 +51,10 @@ public class DefaultEventFeatureProviderTests
 
     [Theory]
     [AutoNSubstituteData]
-    internal void TryCreate_WithIEventFeatureType_ReturnsTrue(ILambdaSerializer serializer)
+    internal void TryCreate_WithIEventFeatureType_ReturnsTrue(
+        DefaultEventFeatureProvider<string> provider
+    )
     {
-        // Arrange
-        var provider = new DefaultEventFeatureProvider<string>(serializer);
-
         // Act
         var result = provider.TryCreate(typeof(IEventFeature), out var feature);
 
@@ -73,12 +66,9 @@ public class DefaultEventFeatureProviderTests
     [Theory]
     [AutoNSubstituteData]
     internal void TryCreate_WithIEventFeatureType_CreatesDefaultEventFeature(
-        ILambdaSerializer serializer
+        DefaultEventFeatureProvider<string> provider
     )
     {
-        // Arrange
-        var provider = new DefaultEventFeatureProvider<string>(serializer);
-
         // Act
         provider.TryCreate(typeof(IEventFeature), out var feature);
 
@@ -89,12 +79,9 @@ public class DefaultEventFeatureProviderTests
     [Theory]
     [AutoNSubstituteData]
     internal void TryCreate_WithIEventFeatureType_CreatesNewInstanceEachCall(
-        ILambdaSerializer serializer
+        DefaultEventFeatureProvider<string> provider
     )
     {
-        // Arrange
-        var provider = new DefaultEventFeatureProvider<string>(serializer);
-
         // Act
         provider.TryCreate(typeof(IEventFeature), out var feature1);
         provider.TryCreate(typeof(IEventFeature), out var feature2);
@@ -107,13 +94,13 @@ public class DefaultEventFeatureProviderTests
     [AutoNSubstituteData]
     internal void TryCreate_WithIEventFeatureType_InitializesFeatureWithSerializer(
         [Frozen] ILambdaSerializer serializer,
+        DefaultEventFeatureProvider<string> provider,
         ILambdaHostContext context
     )
     {
         // Arrange
         const string expectedEvent = "test-event";
         serializer.Deserialize<string>(Arg.Any<Stream>()).Returns(expectedEvent);
-        var provider = new DefaultEventFeatureProvider<string>(serializer);
 
         // Act
         provider.TryCreate(typeof(IEventFeature), out var feature);
@@ -129,11 +116,8 @@ public class DefaultEventFeatureProviderTests
 
     [Theory]
     [AutoNSubstituteData]
-    internal void TryCreate_WithWrongType_ReturnsFalse(ILambdaSerializer serializer)
+    internal void TryCreate_WithWrongType_ReturnsFalse(DefaultEventFeatureProvider<string> provider)
     {
-        // Arrange
-        var provider = new DefaultEventFeatureProvider<string>(serializer);
-
         // Act
         var result = provider.TryCreate(typeof(ILambdaSerializer), out var feature);
 
@@ -144,11 +128,10 @@ public class DefaultEventFeatureProviderTests
 
     [Theory]
     [AutoNSubstituteData]
-    internal void TryCreate_WithStringType_ReturnsFalse(ILambdaSerializer serializer)
+    internal void TryCreate_WithStringType_ReturnsFalse(
+        DefaultEventFeatureProvider<string> provider
+    )
     {
-        // Arrange
-        var provider = new DefaultEventFeatureProvider<string>(serializer);
-
         // Act
         var result = provider.TryCreate(typeof(string), out var feature);
 
@@ -159,11 +142,8 @@ public class DefaultEventFeatureProviderTests
 
     [Theory]
     [AutoNSubstituteData]
-    internal void TryCreate_WithNullType_ReturnsFalse(ILambdaSerializer serializer)
+    internal void TryCreate_WithNullType_ReturnsFalse(DefaultEventFeatureProvider<string> provider)
     {
-        // Arrange
-        var provider = new DefaultEventFeatureProvider<string>(serializer);
-
         // Act
         var result = provider.TryCreate(null!, out var feature);
 
@@ -179,17 +159,11 @@ public class DefaultEventFeatureProviderTests
     [Theory]
     [AutoNSubstituteData]
     internal void TryCreate_WithComplexGenericType_CreatesCorrectFeature(
-        ILambdaSerializer serializer
+        DefaultEventFeatureProvider<TestEvent> provider
     )
     {
-        // Arrange
-        var expectedEvent = new TestEvent { Id = 42, Name = "test" };
-        serializer.Deserialize<TestEvent>(Arg.Any<Stream>()).Returns(expectedEvent);
-        var provider = new DefaultEventFeatureProvider<TestEvent>(serializer);
-
         // Act
         provider.TryCreate(typeof(IEventFeature), out var feature);
-        var eventFeature = (IEventFeature)feature!;
 
         // Assert
         feature.Should().BeOfType<DefaultEventFeature<TestEvent>>();
@@ -197,11 +171,10 @@ public class DefaultEventFeatureProviderTests
 
     [Theory]
     [AutoNSubstituteData]
-    internal void TryCreate_WithListGenericType_CreatesCorrectFeature(ILambdaSerializer serializer)
+    internal void TryCreate_WithListGenericType_CreatesCorrectFeature(
+        DefaultEventFeatureProvider<List<string>> provider
+    )
     {
-        // Arrange
-        var provider = new DefaultEventFeatureProvider<List<string>>(serializer);
-
         // Act
         provider.TryCreate(typeof(IEventFeature), out var feature);
 
@@ -211,11 +184,10 @@ public class DefaultEventFeatureProviderTests
 
     [Theory]
     [AutoNSubstituteData]
-    internal void TryCreate_WithNullableType_CreatesCorrectFeature(ILambdaSerializer serializer)
+    internal void TryCreate_WithNullableType_CreatesCorrectFeature(
+        DefaultEventFeatureProvider<int?> provider
+    )
     {
-        // Arrange
-        var provider = new DefaultEventFeatureProvider<int?>(serializer);
-
         // Act
         provider.TryCreate(typeof(IEventFeature), out var feature);
 
@@ -229,13 +201,13 @@ public class DefaultEventFeatureProviderTests
 
     [Theory]
     [AutoNSubstituteData]
-    internal void Provider_CanBeUsedAsIFeatureProviderDependency(ILambdaSerializer serializer)
+    internal void Provider_CanBeUsedAsIFeatureProviderDependency(
+        DefaultEventFeatureProvider<string> provider
+    )
     {
-        // Arrange
-        IFeatureProvider provider = new DefaultEventFeatureProvider<string>(serializer);
-
         // Act
-        var result = provider.TryCreate(typeof(IEventFeature), out var feature);
+        IFeatureProvider featureProvider = provider;
+        var result = featureProvider.TryCreate(typeof(IEventFeature), out var feature);
 
         // Assert
         result.Should().Be(true);
@@ -245,13 +217,10 @@ public class DefaultEventFeatureProviderTests
     [Theory]
     [AutoNSubstituteData]
     internal void Provider_WithDifferentGenericTypes_CreatesTypedFeatures(
-        ILambdaSerializer serializer
+        DefaultEventFeatureProvider<string> stringProvider,
+        DefaultEventFeatureProvider<int> intProvider
     )
     {
-        // Arrange
-        IFeatureProvider stringProvider = new DefaultEventFeatureProvider<string>(serializer);
-        IFeatureProvider intProvider = new DefaultEventFeatureProvider<int>(serializer);
-
         // Act
         stringProvider.TryCreate(typeof(IEventFeature), out var stringFeature);
         intProvider.TryCreate(typeof(IEventFeature), out var intFeature);
