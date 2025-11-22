@@ -58,14 +58,14 @@ public class DefaultEventFeatureTests
     [Theory]
     [AutoNSubstituteData]
     internal void GetEvent_WithSimpleStringEvent_ReturnsDeserializedString(
-        [Frozen] ILambdaSerializer serializer
+        [Frozen] ILambdaSerializer serializer,
+        DefaultEventFeature<string> feature,
+        ILambdaHostContext context
     )
     {
         // Arrange
         const string expectedEvent = "test-event-data";
         serializer.Deserialize<string>(Arg.Any<Stream>()).Returns(expectedEvent);
-        var feature = new DefaultEventFeature<string>(serializer);
-        var context = CreateMockContext(serializer);
 
         // Act
         var result = feature.GetEvent(context);
