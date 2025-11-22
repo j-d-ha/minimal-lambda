@@ -27,14 +27,14 @@ public static class FeatureLambdaHostContextExtensions
         ///     context.
         /// </summary>
         /// <typeparam name="T">The type of event data to retrieve.</typeparam>
-        /// <param name="result">The typed event data, or null if not found or not of the specified type.</param>
+        /// <param name="eventT">The typed event data, or null if not found or not of the specified type.</param>
         /// <returns>True if the event data was found and is of the specified type; otherwise false.</returns>
-        public bool TryGetEvent<T>([NotNullWhen(true)] out T? result)
+        public bool TryGetEvent<T>([NotNullWhen(true)] out T? eventT)
         {
             ArgumentNullException.ThrowIfNull(context);
 
-            result = context.GetEvent<T>();
-            return result is not null;
+            eventT = context.GetEvent<T>();
+            return eventT is not null;
         }
 
         /// <summary>Gets the typed event data from the <see cref="IEventFeature" /> in the Lambda context.</summary>
@@ -76,14 +76,14 @@ public static class FeatureLambdaHostContextExtensions
         ///     Lambda context.
         /// </summary>
         /// <typeparam name="T">The type of response data to retrieve.</typeparam>
-        /// <param name="result">The typed response data, or null if not found or not of the specified type.</param>
+        /// <param name="responseT">The typed response data, or null if not found or not of the specified type.</param>
         /// <returns>True if the response data was found and is of the specified type; otherwise false.</returns>
-        public bool TryGetResponse<T>([NotNullWhen(true)] out T? result)
+        public bool TryGetResponse<T>([NotNullWhen(true)] out T? responseT)
         {
             ArgumentNullException.ThrowIfNull(context);
 
-            result = context.GetResponse<T>();
-            return result is not null;
+            responseT = context.GetResponse<T>();
+            return responseT is not null;
         }
 
         /// <summary>
