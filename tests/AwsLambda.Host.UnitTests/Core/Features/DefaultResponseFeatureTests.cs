@@ -171,7 +171,6 @@ public class DefaultResponseFeatureTests
     [Theory]
     [AutoNSubstituteData]
     internal void SerializeToStream_WhenResponseIsSet_ClearsResponseStream(
-        [Frozen] ILambdaSerializer serializer,
         DefaultResponseFeature<string> feature,
         ILambdaHostContext context
     )
@@ -191,7 +190,6 @@ public class DefaultResponseFeatureTests
     [Theory]
     [AutoNSubstituteData]
     internal void SerializeToStream_WhenResponseIsSet_ResetsStreamPosition(
-        [Frozen] ILambdaSerializer serializer,
         DefaultResponseFeature<string> feature,
         ILambdaHostContext context
     )

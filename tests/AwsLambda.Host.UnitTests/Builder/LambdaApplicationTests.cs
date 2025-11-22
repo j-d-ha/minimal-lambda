@@ -195,7 +195,7 @@ public class LambdaApplicationTests
         var app = new LambdaApplication(host);
 
         // Act
-        var task = app.StartAsync();
+        var task = app.StartAsync(TestContext.Current.CancellationToken);
 
         // Assert
         task.Should().NotBeNull();
@@ -224,7 +224,7 @@ public class LambdaApplicationTests
         var app = new LambdaApplication(host);
 
         // Act
-        var task = app.StopAsync();
+        var task = app.StopAsync(TestContext.Current.CancellationToken);
 
         // Assert
         task.Should().NotBeNull();

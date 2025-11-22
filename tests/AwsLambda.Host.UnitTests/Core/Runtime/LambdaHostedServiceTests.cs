@@ -308,7 +308,7 @@ public class LambdaHostedServiceTests
         await stopTask;
 
         // Assert
-        _fixture
+        await _fixture
             .Bootstrap.Received(1)
             .RunAsync(
                 Arg.Any<Func<Stream, ILambdaContext, Task<Stream>>>(),
@@ -328,7 +328,7 @@ public class LambdaHostedServiceTests
         await service.StartAsync(CancellationToken.None);
 
         // Verify task is not completed
-        service.GetExecuteTask().IsCompleted.Should().BeFalse();
+        service.GetExecuteTask()?.IsCompleted.Should().BeFalse();
 
         // Act
         var stopTask = service.StopAsync(CancellationToken.None);
@@ -492,11 +492,11 @@ public class LambdaHostedServiceTests
 
         // Act
         taskCompletionSource.SetResult();
-        await Task.Delay(10); // Allow task to complete
+        await Task.Delay(10, TestContext.Current.CancellationToken); // Allow task to complete
         service.Dispose();
 
         // Assert
-        service.GetExecuteTask().IsCompleted.Should().BeTrue();
+        service.GetExecuteTask()?.IsCompleted.Should().BeTrue();
     }
 
     #endregion
@@ -513,7 +513,7 @@ public class LambdaHostedServiceTests
         await service.StartAsync(CancellationToken.None);
 
         // Assert
-        _fixture
+        await _fixture
             .Bootstrap.Received(1)
             .RunAsync(
                 Arg.Any<Func<Stream, ILambdaContext, Task<Stream>>>(),
@@ -536,7 +536,7 @@ public class LambdaHostedServiceTests
         taskCompletionSource.SetResult();
 
         // Wait a bit for the finally block to execute
-        await Task.Delay(50);
+        await Task.Delay(50, TestContext.Current.CancellationToken);
 
         // Assert
         _fixture.Lifetime.Received(1).StopApplication();
