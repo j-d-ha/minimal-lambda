@@ -23,19 +23,21 @@ namespace System.Runtime.CompilerServices
     }
 }
 
-namespace AwsLambda.Host
+namespace AwsLambda.Host.Core.Generated
 {
     using System;
     using System.IO;
     using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
     using Amazon.Lambda.Core;
+    using AwsLambda.Host.Builder;
+    using AwsLambda.Host.Core;
     using Microsoft.Extensions.DependencyInjection;
-
+    
     file static class MapHandlerLambdaApplicationExtensions
     {
-        // Location: InputFile.cs(9,8)
-        [InterceptsLocation(1, "NzqSbOGKJo+Tth5rfZuYJb4AAABJbnB1dEZpbGUuY3M=")]
+        // Location: InputFile.cs(10,8)
+        [InterceptsLocation(1, "24NtoO22UPa+/C0ogM3RV+EAAABJbnB1dEZpbGUuY3M=")]
         internal static ILambdaInvocationBuilder MapHandlerInterceptor(
             this ILambdaInvocationBuilder application,
             Delegate handler
@@ -48,7 +50,7 @@ namespace AwsLambda.Host
             Task InvocationDelegate(ILambdaHostContext context)
             {
                 // ParameterInfo { Type = string, Name = input, Source = Event, IsNullable = False, IsOptional = False}
-                var arg0 = context.GetEventT<string>();
+                var arg0 = context.GetRequiredEvent<string>();
                 // ParameterInfo { Type = global::IService, Name = service, Source = Service, IsNullable = False, IsOptional = False}
                 var arg1 = context.ServiceProvider.GetRequiredService<global::IService>();
                 castHandler.Invoke(arg0, arg1);
@@ -56,72 +58,11 @@ namespace AwsLambda.Host
             }
         }
         
-        [InterceptsLocation(1, "NzqSbOGKJo+Tth5rfZuYJa0AAABJbnB1dEZpbGUuY3M=")] // Location: InputFile.cs(7,22)
+        [InterceptsLocation(1, "24NtoO22UPa+/C0ogM3RV9AAAABJbnB1dEZpbGUuY3M=")] // Location: InputFile.cs(8,22)
         internal static LambdaApplication BuildInterceptor(this LambdaApplicationBuilder builder)
         {
-            builder.Services.AddSingleton<IFeatureProvider, EventFeatureProvider>();
+            builder.Services.AddSingleton<IFeatureProvider, DefaultEventFeatureProvider<string>>();
             return builder.Build();
-        }
-
-        private static T GetEventT<T>(this ILambdaHostContext context)
-        {
-            if (!context.TryGetEvent<T>(out var eventT))
-            {
-                throw new InvalidOperationException($"Lambda event of type '{typeof(T).FullName}' is not available in the context.");
-            }
-            
-            return eventT!;
-        }
-
-        private static void SetResponseT<T>(this ILambdaHostContext context, T response)
-        {
-            if (response is Stream stream)
-            {
-                context.RawInvocationData.Response = stream;
-                return;
-            }
-    
-            if (!context.Features.TryGet<IResponseFeature>(out var responseFeature))
-            {
-                throw new InvalidOperationException("Response feature is not available in the context.");
-            }
-    
-            responseFeature.SetResponse(response);
-        }
-    }
-    
-    file class EventFeatureProvider(ILambdaSerializer lambdaSerializer) : IFeatureProvider
-    {
-        private static readonly Type FeatureType = typeof(IEventFeature);
-    
-        public bool TryCreate(Type type, out object? feature)
-        {
-            feature = type == FeatureType ? new EventFeature(lambdaSerializer) : null;
-    
-            return feature is not null;
-        }
-    }    
-    
-    file class EventFeature : IEventFeature
-    {
-#nullable disable    
-        private string _data;
-#nullable restore
-    
-        private readonly ILambdaSerializer _lambdaSerializer;
-    
-        public EventFeature(ILambdaSerializer lambdaSerializer)
-        {
-            ArgumentNullException.ThrowIfNull(lambdaSerializer);
-    
-            _lambdaSerializer = lambdaSerializer;
-        }
-    
-        public object? GetEvent(ILambdaHostContext context)
-        {
-            _data ??= _lambdaSerializer.Deserialize<string>(context.RawInvocationData.Event);
-    
-            return _data;
         }
     }
 }

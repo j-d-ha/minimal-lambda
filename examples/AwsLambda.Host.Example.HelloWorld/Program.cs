@@ -1,4 +1,7 @@
 ﻿using System;
+using System.IO;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using AwsLambda.Host.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -19,14 +22,24 @@ lambda.UseMiddleware(
 );
 
 lambda.MapHandler(
-    ([Event] Request request, IService service) => new Response(service.GetMessage(request.Name))
+    Stream ([Event] Stream request, IService service) =>
+    {
+        var @event = JsonSerializer.Deserialize<Request>(request);
+
+        var response = new Response(service.GetMessage(@event?.Name ?? "EMPTY"));
+
+        var outputStream = new MemoryStream();
+        JsonSerializer.Serialize(outputStream, response);
+        outputStream.Position = 0;
+        return outputStream;
+    }
 );
 
 await lambda.RunAsync();
 
-internal record Response(string Message);
+internal record Response([property: JsonPropertyName("message")] string Message);
 
-internal record Request(string Name);
+internal record Request([property: JsonPropertyName("name")] string Name);
 
 internal interface IService
 {

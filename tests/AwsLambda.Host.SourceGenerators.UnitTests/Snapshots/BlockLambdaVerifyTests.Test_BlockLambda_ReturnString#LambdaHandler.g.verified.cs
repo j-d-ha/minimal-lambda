@@ -23,19 +23,21 @@ namespace System.Runtime.CompilerServices
     }
 }
 
-namespace AwsLambda.Host
+namespace AwsLambda.Host.Core.Generated
 {
     using System;
     using System.IO;
     using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
     using Amazon.Lambda.Core;
+    using AwsLambda.Host.Builder;
+    using AwsLambda.Host.Core;
     using Microsoft.Extensions.DependencyInjection;
-
+    
     file static class MapHandlerLambdaApplicationExtensions
     {
-        // Location: InputFile.cs(7,8)
-        [InterceptsLocation(1, "Cr2/zBqVMrBzlwadjb8TRZIAAABJbnB1dEZpbGUuY3M=")]
+        // Location: InputFile.cs(8,8)
+        [InterceptsLocation(1, "SBl4e782DgMu+0FLfrzfUbUAAABJbnB1dEZpbGUuY3M=")]
         internal static ILambdaInvocationBuilder MapHandlerInterceptor(
             this ILambdaInvocationBuilder application,
             Delegate handler
@@ -48,133 +50,23 @@ namespace AwsLambda.Host
             Task InvocationDelegate(ILambdaHostContext context)
             {
                 // ParameterInfo { Type = string, Name = input, Source = Event, IsNullable = False, IsOptional = False}
-                var arg0 = context.GetEventT<string>();
+                var arg0 = context.GetRequiredEvent<string>();
                 var response = castHandler.Invoke(arg0);
-                context.SetResponseT(response);
+                if (context.Features.Get<IResponseFeature>() is not IResponseFeature<string> responseFeature)
+                {
+                    throw new InvalidOperationException($"Response feature for type 'string' is not available in the collection.");
+                }
+                responseFeature.SetResponse(response);
                 return Task.CompletedTask; 
             }
         }
         
-        [InterceptsLocation(1, "Cr2/zBqVMrBzlwadjb8TRYEAAABJbnB1dEZpbGUuY3M=")] // Location: InputFile.cs(5,22)
+        [InterceptsLocation(1, "SBl4e782DgMu+0FLfrzfUaQAAABJbnB1dEZpbGUuY3M=")] // Location: InputFile.cs(6,22)
         internal static LambdaApplication BuildInterceptor(this LambdaApplicationBuilder builder)
         {
-            builder.Services.AddSingleton<IFeatureProvider, EventFeatureProvider>();
-            builder.Services.AddSingleton<IFeatureProvider, ResponseFeatureProvider>();
+            builder.Services.AddSingleton<IFeatureProvider, DefaultEventFeatureProvider<string>>();
+            builder.Services.AddSingleton<IFeatureProvider, DefaultResponseFeatureProvider<string>>();
             return builder.Build();
-        }
-
-        private static T GetEventT<T>(this ILambdaHostContext context)
-        {
-            if (!context.TryGetEvent<T>(out var eventT))
-            {
-                throw new InvalidOperationException($"Lambda event of type '{typeof(T).FullName}' is not available in the context.");
-            }
-            
-            return eventT!;
-        }
-
-        private static void SetResponseT<T>(this ILambdaHostContext context, T response)
-        {
-            if (response is Stream stream)
-            {
-                context.RawInvocationData.Response = stream;
-                return;
-            }
-    
-            if (!context.Features.TryGet<IResponseFeature>(out var responseFeature))
-            {
-                throw new InvalidOperationException("Response feature is not available in the context.");
-            }
-    
-            responseFeature.SetResponse(response);
-        }
-    }
-    
-    file class EventFeatureProvider(ILambdaSerializer lambdaSerializer) : IFeatureProvider
-    {
-        private static readonly Type FeatureType = typeof(IEventFeature);
-    
-        public bool TryCreate(Type type, out object? feature)
-        {
-            feature = type == FeatureType ? new EventFeature(lambdaSerializer) : null;
-    
-            return feature is not null;
-        }
-    }    
-    
-    file class EventFeature : IEventFeature
-    {
-#nullable disable    
-        private string _data;
-#nullable restore
-    
-        private readonly ILambdaSerializer _lambdaSerializer;
-    
-        public EventFeature(ILambdaSerializer lambdaSerializer)
-        {
-            ArgumentNullException.ThrowIfNull(lambdaSerializer);
-    
-            _lambdaSerializer = lambdaSerializer;
-        }
-    
-        public object? GetEvent(ILambdaHostContext context)
-        {
-            _data ??= _lambdaSerializer.Deserialize<string>(context.RawInvocationData.Event);
-    
-            return _data;
-        }
-    }
-    
-    file class ResponseFeatureProvider(ILambdaSerializer lambdaSerializer) : IFeatureProvider
-    {
-        private static readonly Type FeatureType = typeof(IResponseFeature);
-    
-        public bool TryCreate(Type type, out object? feature)
-        {
-            feature = type == FeatureType ? new ResponseFeature(lambdaSerializer) : null;
-    
-            return feature is not null;
-        }
-    }
-    
-    file class ResponseFeature : IResponseFeature
-    {
-#nullable disable
-        private string _data;
-#nullable restore
-    
-        private readonly ILambdaSerializer _lambdaSerializer;
-    
-        public ResponseFeature(ILambdaSerializer lambdaSerializer)
-        {
-            ArgumentNullException.ThrowIfNull(lambdaSerializer);
-    
-            _lambdaSerializer = lambdaSerializer;
-        }
-    
-        public object? GetResponse() => _data;
-    
-        public void SetResponse(object? response)
-        {
-            if (response is null)
-            {
-                _data = null;
-                return;
-            }
-    
-            _data = (string)response;
-        }
-    
-        public void SerializeToStream(ILambdaHostContext context)
-        {
-            ArgumentNullException.ThrowIfNull(context);
-    
-            if (_data is null)
-                return;
-    
-            context.RawInvocationData.Response.SetLength(0L);
-            _lambdaSerializer.Serialize<string>(_data, context.RawInvocationData.Response);
-            context.RawInvocationData.Response.Position = 0L;
         }
     }
 }

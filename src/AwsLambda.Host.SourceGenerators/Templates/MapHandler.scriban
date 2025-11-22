@@ -41,7 +41,7 @@ namespace AwsLambda.Host.Core.Generated
                 {{~ else ~}}
                 if (context.Features.Get<IResponseFeature>() is not IResponseFeature<{{ output_response.response_type }}> responseFeature)
                 {
-                    throw new InvalidOperationException($"Response feature for type '{typeof({{ output_response.response_type }}).FullName}' is not available in the collection.");
+                    throw new InvalidOperationException($"Response feature for type '{{ output_response.response_type }}' is not available in the collection.");
                 }
                 responseFeature.SetResponse(response);
                 {{~ end ~}}
