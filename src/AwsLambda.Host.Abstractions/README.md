@@ -70,20 +70,40 @@ The framework uses three specialized builder interfaces for configuring differen
 
 Configures the Lambda invocation request/response pipeline:
 
-- `Handle()` – Register the Lambda invocation handler
-- `Use()` – Add middleware to the invocation pipeline
+- `Handle(LambdaInvocationDelegate handler)` – Register the Lambda invocation handler that processes
+  each incoming event
+- `Use(Func<LambdaInvocationDelegate, LambdaInvocationDelegate> middleware)` – Add middleware to the
+  invocation pipeline; middleware is composed sequentially and can inspect/modify the context before
+  and after invocation
+- `Handler` (property) – The currently registered invocation handler
+- `Middlewares` (property) – Collection of registered middleware components
+- `Properties` (property) – Key/value collection for sharing between the builder phases and all
+  invocations
+- `Services` (property) – `IServiceProvider` for accessing registered services during configuration
+- `Build()` – Compiles the configured handler and middleware into an executable
+  `LambdaInvocationDelegate`
 
 **ILambdaOnInitBuilder**
 
 Configures the initialization phase (runs once on cold start):
 
-- `OnInit()` – Register initialization handlers that run before the first invocation
+- `OnInit(LambdaInitDelegate handler)` – Register initialization handlers that run before the first
+  invocation; handlers are executed and return `true` to proceed or `false` to abort initialization
+- `InitHandlers` (property) – Collection of registered initialization handlers
+- `Services` (property) – `IServiceProvider` for accessing registered services during configuration
+- `Build()` – Compiles the configured handlers into an executable initialization delegate with
+  concurrent execution and error aggregation
 
 **ILambdaOnShutdownBuilder**
 
 Configures the shutdown phase (runs once before Lambda termination):
 
-- `OnShutdown()` – Register shutdown handlers that run during cleanup
+- `OnShutdown(LambdaShutdownDelegate handler)` – Register shutdown handlers that run during cleanup;
+  handlers execute sequentially for graceful resource release
+- `ShutdownHandlers` (property) – Collection of registered shutdown handlers
+- `Services` (property) – `IServiceProvider` for accessing registered services during configuration
+- `Build()` – Compiles the configured handlers into an executable shutdown delegate with sequential
+  execution and error logging
 
 These interfaces are obtained from `LambdaApplication` after calling `Build()`. The builder pattern flow is:
 
@@ -101,15 +121,31 @@ This design separates concerns between request/response handling, initialization
 
 ### ILambdaHostContext
 
-Encapsulates a single Lambda invocation:
+Encapsulates a single Lambda invocation and provides access to contextual information and services:
 
-- `Event` – The deserialized Lambda event
-- `Response` – The handler's response to return
-- `ServiceProvider` – Access to the scoped DI container
-- `Items` – Key/value collection for invocation-scoped data
-- `CancellationToken` – Cancellation signal from Lambda timeout
+- `ServiceProvider` – Access to the scoped DI container for resolving services during invocation
+- `CancellationToken` – Cancellation signal triggered when Lambda approaches its timeout, allowing
+  graceful shutdown
+- `Features` – `IFeatureCollection` providing access to custom functionalaty within the invocation
+  pipeline such as for accessing the invocation Event or Response data
+- `Items` – `IDictionary<object, object?>` for storing invocation-scoped data; cleared per
+  invocation
+- `Properties` – `IDictionary<string, object?>` for accessing shared data configured during the
+  build phase; persists across invocations
+- `RawInvocationData` – Raw stream access to serialized event and response data via
+  `RawInvocationData.Event` and `RawInvocationData.Response`
 
-### ILambdaCancellationTokenSourceFactory
+#### Properties vs Items
+
+`Properties` and `Items` serve different purposes:
+
+- **Properties**: Configured during the build phase and available for the lifetime of the Lambda
+  function. Use this for data that should be shared across invocations (e.g., configuration values
+  set during initialization).
+- **Items**: Scoped to a single invocation and cleared after each request completes. Use this for
+  temporary state that is specific to a single Lambda invocation.
+
+### ILambdaCancellationFactory
 
 Provides a factory for creating cancellation token sources configured for AWS Lambda invocations:
 
