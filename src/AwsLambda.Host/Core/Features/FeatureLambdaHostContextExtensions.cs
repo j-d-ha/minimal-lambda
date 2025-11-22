@@ -17,8 +17,8 @@ public static class FeatureLambdaHostContextExtensions
         {
             ArgumentNullException.ThrowIfNull(context);
 
-            return context.Features.Get<IEventFeature>()?.GetEvent(context) is T data
-                ? data
+            return context.Features.Get<IEventFeature>() is IEventFeature<T> eventFeature
+                ? eventFeature.GetEvent(context)
                 : default;
         }
 
@@ -37,6 +37,25 @@ public static class FeatureLambdaHostContextExtensions
             return result is not null;
         }
 
+        /// <summary>Gets the typed event data from the <see cref="IEventFeature" /> in the Lambda context.</summary>
+        /// <typeparam name="T">The type of event data to retrieve.</typeparam>
+        /// <returns>The typed event data.</returns>
+        /// <exception cref="InvalidOperationException">
+        ///     Thrown when the event data is not found or not of the
+        ///     specified type.
+        /// </exception>
+        public T GetRequiredEvent<T>()
+        {
+            ArgumentNullException.ThrowIfNull(context);
+
+            if (!context.TryGetEvent<T>(out var eventT))
+                throw new InvalidOperationException(
+                    $"Lambda event of type '{typeof(T).FullName}' is not available in the context."
+                );
+
+            return eventT;
+        }
+
         /// <summary>
         ///     Gets the typed response data from the <see cref="IResponseFeature" /> in the Lambda
         ///     context.
@@ -47,8 +66,8 @@ public static class FeatureLambdaHostContextExtensions
         {
             ArgumentNullException.ThrowIfNull(context);
 
-            return context.Features.Get<IResponseFeature>()?.GetResponse() is T data
-                ? data
+            return context.Features.Get<IResponseFeature>() is IResponseFeature<T> responseFeature
+                ? responseFeature.GetResponse()
                 : default;
         }
 
@@ -65,6 +84,28 @@ public static class FeatureLambdaHostContextExtensions
 
             result = context.GetResponse<T>();
             return result is not null;
+        }
+
+        /// <summary>
+        ///     Gets the typed response data from the <see cref="IResponseFeature" /> in the Lambda
+        ///     context.
+        /// </summary>
+        /// <typeparam name="T">The type of response data to retrieve.</typeparam>
+        /// <returns>The typed response data.</returns>
+        /// <exception cref="InvalidOperationException">
+        ///     Thrown when the response data is not found or not of
+        ///     the specified type.
+        /// </exception>
+        public T GetRequiredResponse<T>()
+        {
+            ArgumentNullException.ThrowIfNull(context);
+
+            if (!context.TryGetResponse<T>(out var responseT))
+                throw new InvalidOperationException(
+                    $"Lambda response of type '{typeof(T).FullName}' is not available in the context."
+                );
+
+            return responseT;
         }
     }
 }
