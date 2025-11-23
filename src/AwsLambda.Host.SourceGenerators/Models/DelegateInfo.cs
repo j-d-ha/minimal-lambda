@@ -17,14 +17,14 @@ internal readonly record struct DelegateInfo(
             ? TypeConstants.Action
             : TypeConstants.Func;
 
-    internal bool HasResponse =>
-        ReturnTypeInfo.FullyQualifiedType
-            is not (TypeConstants.Void or TypeConstants.Task or TypeConstants.ValueTask);
+    internal bool HasAnyKeyedServiceParameter =>
+        Parameters.Any(p => p.Source == ParameterSource.KeyedService);
 
     internal bool HasEventParameter => EventParameter is not null;
 
-    internal bool HasAnyKeyedServiceParameter =>
-        Parameters.Any(p => p.Source == ParameterSource.KeyedService);
+    internal bool HasResponse =>
+        ReturnTypeInfo.FullyQualifiedType
+            is not (TypeConstants.Void or TypeConstants.Task or TypeConstants.ValueTask);
 
     private static ParameterInfo? GetEventParameter(EquatableArray<ParameterInfo> parameters) =>
         parameters

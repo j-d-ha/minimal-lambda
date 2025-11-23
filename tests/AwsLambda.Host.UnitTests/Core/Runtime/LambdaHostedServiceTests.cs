@@ -223,11 +223,11 @@ public class LambdaHostedServiceTests
 
     [Theory]
     [AutoNSubstituteData]
-    internal async Task StopAsync_WithoutStartAsync_ReturnsImmediately(LambdaHostedService service)
-    {
+    internal async Task StopAsync_WithoutStartAsync_ReturnsImmediately(
+        LambdaHostedService service
+    ) =>
         // Act & Assert (should not throw)
         await service.StopAsync(CancellationToken.None);
-    }
 
     [Theory]
     [AutoNSubstituteData]

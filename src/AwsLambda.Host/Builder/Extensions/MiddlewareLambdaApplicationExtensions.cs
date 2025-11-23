@@ -9,9 +9,9 @@ public static class MiddlewareLambdaApplicationExtensions
         /// <remarks>
         ///     <para>
         ///         This extension method provides a simpler API compared to
-        ///         <see cref="ILambdaInvocationBuilder.Use" />. Middleware is applied in the order registered and
-        ///         can intercept invocations before they reach the handler, or process the response after the
-        ///         handler completes.
+        ///         <see cref="ILambdaInvocationBuilder.Use" />. Middleware is applied in the order registered
+        ///         and can intercept invocations before they reach the handler, or process the response after
+        ///         the handler completes.
         ///     </para>
         /// </remarks>
         /// <param name="middleware">

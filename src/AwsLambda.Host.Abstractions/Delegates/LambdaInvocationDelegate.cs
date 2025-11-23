@@ -14,8 +14,8 @@ namespace AwsLambda.Host;
 ///         Function Shutdown phase.
 ///     </para>
 ///     <para>
-///         Handlers can be registered using the <see cref="ILambdaInvocationBuilder.Handle" /> method
-///         and overloads. Multiple middleware can wrap handlers using the
+///         Handlers can be registered using the <see cref="ILambdaInvocationBuilder.Handle" />
+///         method and overloads. Multiple middleware can wrap handlers using the
 ///         <see cref="ILambdaInvocationBuilder.Use" /> method to implement cross-cutting concerns.
 ///     </para>
 /// </remarks>

@@ -247,16 +247,20 @@ The example demonstrates:
 
 -
   *
+
 *[AWS OTel Lambda .NET Guide](https://aws-otel.github.io/docs/getting-started/lambda/lambda-dotnet)
 **
 – Official AWS documentation for OpenTelemetry on Lambda with .NET
+
 - **[OpenTelemetry.io](https://opentelemetry.io/)** – OpenTelemetry specification, APIs, and best
   practices
 -
   *
+
 *[OpenTelemetry Instrumentation AWSLambda](https://github.com/open-telemetry/opentelemetry-dotnet-instrumentation/tree/main/src/OpenTelemetry.Instrumentation.AWSLambda)
 **
 – Source for the AWSLambda instrumentation
+
 - **[Full Project Documentation](https://github.com/j-d-ha/aws-lambda-host/wiki)** – Comprehensive
   guides and patterns
 - **[Examples](../../examples/)** – Sample Lambda functions demonstrating observability patterns

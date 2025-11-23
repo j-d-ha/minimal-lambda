@@ -35,7 +35,7 @@ internal static class LambdaApplicationBuilderBuildSyntaxProvider
                                 ContainingNamespace:
                                 { Name: "AwsLambda", ContainingNamespace.IsGlobalNamespace: true },
                             },
-                        }
+                        },
                     },
                 } targetOperation
             && targetOperation.TargetMethod.ContainingAssembly.Name == "AwsLambda.Host"

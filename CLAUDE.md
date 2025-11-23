@@ -8,7 +8,6 @@
   on AWS Lambda.
 - When writing PRs, ALWAYS use `./.github/pull_request_template.md` as the template for the PR.
 
-
 ## Code Style
 
 ### C# XML Documentation

@@ -4,8 +4,8 @@ using System.Diagnostics.CodeAnalysis;
 namespace AwsLambda.Host.Builder;
 
 /// <summary>
-///     Overloads for <see cref="ILambdaOnShutdownBuilder.OnShutdown(LambdaShutdownDelegate)" /> that
-///     support automatic dependency injection for shutdown handlers.
+///     Overloads for <see cref="ILambdaOnShutdownBuilder.OnShutdown(LambdaShutdownDelegate)" />
+///     that support automatic dependency injection for shutdown handlers.
 /// </summary>
 [ExcludeFromCodeCoverage]
 public static class OnShutdownLambdaApplicationExtensions

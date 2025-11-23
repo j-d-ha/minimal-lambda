@@ -26,8 +26,8 @@ public static class MapHandlerLambdaApplicationExtensions
     ///     </para>
     /// </remarks>
     /// <param name="application">
-    ///     The <see cref="ILambdaInvocationBuilder" /> instance to register the handler
-    ///     with.
+    ///     The <see cref="ILambdaInvocationBuilder" /> instance to register the
+    ///     handler with.
     /// </param>
     /// <param name="handler">
     ///     A handler function that will be intercepted and replaced at compile time by

@@ -1,5 +1,4 @@
-﻿using AwsLambda.Host;
-using AwsLambda.Host.Builder;
+﻿using AwsLambda.Host.Builder;
 using AwsLambda.Host.Example.OpenTelemetry;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;

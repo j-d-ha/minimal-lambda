@@ -54,8 +54,7 @@ public class LambdaHostOptions
     ///     function.
     /// </summary>
     /// <remarks>
-    ///     The <see cref="ShutdownDuration" /> class provides predetermined values for
-    ///     common scenarios:
+    ///     The <see cref="ShutdownDuration" /> class provides predetermined values for common scenarios:
     ///     <list type="bullet">
     ///         <item>
     ///             <description>

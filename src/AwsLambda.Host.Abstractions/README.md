@@ -64,7 +64,8 @@ Ensure your project uses C# 11 or later:
 
 ### Builder Interfaces
 
-The framework uses three specialized builder interfaces for configuring different Lambda execution phases, providing clear separation of concerns:
+The framework uses three specialized builder interfaces for configuring different Lambda execution
+phases, providing clear separation of concerns:
 
 **ILambdaInvocationBuilder**
 
@@ -105,7 +106,8 @@ Configures the shutdown phase (runs once before Lambda termination):
 - `Build()` – Compiles the configured handlers into an executable shutdown delegate with sequential
   execution and error logging
 
-These interfaces are obtained from `LambdaApplication` after calling `Build()`. The builder pattern flow is:
+These interfaces are obtained from `LambdaApplication` after calling `Build()`. The builder pattern
+flow is:
 
 ```
 LambdaApplication.CreateBuilder()
@@ -117,7 +119,9 @@ LambdaApplication.CreateBuilder()
         → Configure shutdown handlers (ILambdaOnShutdownBuilder)
 ```
 
-This design separates concerns between request/response handling, initialization, and lifecycle cleanup. See [AwsLambda.Host](../AwsLambda.Host/README.md) for detailed usage examples and the complete builder API.
+This design separates concerns between request/response handling, initialization, and lifecycle
+cleanup. See [AwsLambda.Host](../AwsLambda.Host/README.md) for detailed usage examples and the
+complete builder API.
 
 ### ILambdaHostContext
 
