@@ -23,20 +23,14 @@ internal class DefaultLambdaCancellationFactory : ILambdaCancellationFactory
     /// </remarks>
     private readonly TimeSpan _bufferDuration;
 
-    /// <summary>
-    ///     Factory class responsible for creating and configuring instances of
-    ///     <see cref="CancellationTokenSource" /> for AWS Lambda functions. The factory uses a buffer
-    ///     duration to ensure that the created cancellation tokens expire in a timely manner before the
-    ///     remaining execution time of the Lambda function is exhausted.
-    /// </summary>
     public DefaultLambdaCancellationFactory(IOptions<LambdaHostOptions> options)
     {
         ArgumentNullException.ThrowIfNull(options);
 
         if (options.Value.InvocationCancellationBuffer < TimeSpan.Zero)
-            throw new ArgumentOutOfRangeException(
-                nameof(options.Value.InvocationCancellationBuffer),
-                "bufferDuration must be greater than or equal to zero."
+            throw new ArgumentException(
+                "The InvocationCancellationBuffer inside options must be greater than or equal to zero.",
+                nameof(options)
             );
 
         _bufferDuration = options.Value.InvocationCancellationBuffer;
