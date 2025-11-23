@@ -39,44 +39,36 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
 
     private LambdaApplication? _builtApplication;
 
-    private LambdaApplicationBuilder(HostApplicationBuilder hostBuilder)
+    /// <summary>Main internal constructor.</summary>
+    internal LambdaApplicationBuilder(LambdaApplicationOptions? settings)
     {
-        ArgumentNullException.ThrowIfNull(hostBuilder);
+        settings ??= new LambdaApplicationOptions();
 
-        _hostBuilder = hostBuilder;
+        settings.Configuration ??= new ConfigurationManager();
+        settings.Configuration.AddEnvironmentVariables("AWS_");
 
-        // Configure LambdaHostSettings from appsettings.json
-        Services.Configure<LambdaHostOptions>(
-            Configuration.GetSection(LambdaHostAppSettingsSectionName)
+        settings.ApplicationName ??= settings.Configuration["LAMBDA_FUNCTION_NAME"];
+
+        SetDefaultContentRoot(settings);
+
+        settings.Configuration.AddEnvironmentVariables("DOTNET_");
+
+        _hostBuilder = Microsoft.Extensions.Hosting.Host.CreateEmptyApplicationBuilder(
+            new HostApplicationBuilderSettings
+            {
+                DisableDefaults = settings.DisableDefaults,
+                Args = settings.Args,
+                Configuration = settings.Configuration,
+                EnvironmentName = settings.EnvironmentName,
+                ApplicationName = settings.ApplicationName,
+                ContentRootPath = settings.ContentRootPath,
+            }
         );
 
-        // Configure LambdaHostedServiceOptions with callbacks
-        Services.Configure<LambdaHostedServiceOptions>(options =>
-        {
-            options.ConfigureHandlerBuilder = ConfigureHandlerBuilder;
-            options.ConfigureOnInitBuilder = ConfigureOnInitBuilder;
-            options.ConfigureOnShutdownBuilder = ConfigureOnShutdownBuilder;
-        });
+        ConfigureBuilder();
 
-        // Register core services that are required for Lambda Host to run
-        Services.AddLambdaHostCoreServices();
+        ConfigureCommonDefaults();
     }
-
-    internal LambdaApplicationBuilder()
-        : this(new HostApplicationBuilder()) { }
-
-    internal LambdaApplicationBuilder(string[]? args)
-        : this(new HostApplicationBuilder(args)) { }
-
-    internal LambdaApplicationBuilder(HostApplicationBuilderSettings settings, bool empty = false)
-        : this(
-            empty
-                ? Microsoft.Extensions.Hosting.Host.CreateEmptyApplicationBuilder(settings)
-                : new HostApplicationBuilder(settings)
-        ) { }
-
-    internal LambdaApplicationBuilder(bool slim)
-        : this(CreateSlimBuilder()) { }
 
     /// <inheritdoc />
     public IDictionary<object, object> Properties =>
@@ -104,32 +96,28 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
     )
         where TContainerBuilder : notnull => _hostBuilder.ConfigureContainer(factory, configure);
 
-    private static HostApplicationBuilder CreateSlimBuilder()
+    private void ConfigureBuilder()
     {
-        var configuration = new ConfigurationManager();
-        configuration.AddEnvironmentVariables("DOTNET_");
-        configuration.AddEnvironmentVariables("AWS_");
+        ApplyDefaultConfiguration(Environment, Configuration);
 
-        var settings = new HostApplicationBuilderSettings
+        Services.AddLogging(logging =>
         {
-            ApplicationName = configuration["LAMBDA_FUNCTION_NAME"] ?? "aws-lambda-host",
-            Configuration = configuration,
-        };
+            logging.AddConfiguration(Configuration.GetSection("Logging"));
+            logging.AddSimpleConsole();
 
-        var hostApplicationBuilder =
-            Microsoft.Extensions.Hosting.Host.CreateEmptyApplicationBuilder(settings);
-
-        ApplyDefaultConfiguration(hostApplicationBuilder.Environment, configuration);
-
-        if (settings.ContentRootPath is null && configuration[HostDefaults.ContentRootKey] is null)
-            SetDefaultContentRoot(configuration);
-
-        return hostApplicationBuilder;
+            logging.Configure(options =>
+            {
+                options.ActivityTrackingOptions =
+                    ActivityTrackingOptions.SpanId
+                    | ActivityTrackingOptions.TraceId
+                    | ActivityTrackingOptions.ParentId;
+            });
+        });
     }
 
     private static void ApplyDefaultConfiguration(
         IHostEnvironment environment,
-        ConfigurationManager configuration
+        IConfigurationManager configuration
     )
     {
         // Add appsettings.json and appsettings.{EnvironmentName}.json
@@ -141,7 +129,9 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
         if (!environment.IsDevelopment())
             try
             {
-                configuration.AddUserSecrets(Assembly.GetExecutingAssembly(), true, false);
+                var assembly = Assembly.GetEntryAssembly();
+                if (assembly is not null)
+                    configuration.AddUserSecrets(assembly, true, false);
             }
             catch
             {
@@ -152,7 +142,7 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
         configuration.AddEnvironmentVariables();
     }
 
-    private static void SetDefaultContentRoot(ConfigurationManager configuration)
+    private static void SetDefaultContentRoot(LambdaApplicationOptions settings)
     {
         // Borowed from:
         // https://github.com/dotnet/dotnet/blob/main/src/runtime/src/libraries/Microsoft.Extensions.Hosting/src/HostingHostBuilderExtensions.cs
@@ -171,17 +161,43 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
         // different from these APIs, but I think it makes sense to
         // ignore case for Windows path comparisons given the file system is usually (always?) going
         // to be case insensitive for the system path.
-        var cwd = System.Environment.CurrentDirectory;
         if (
-            !string.Equals(
-                cwd,
-                System.Environment.SystemDirectory,
-                StringComparison.OrdinalIgnoreCase
-            )
+            settings.ContentRootPath is null
+            && settings.Configuration?[HostDefaults.ContentRootKey] is null
         )
-            configuration.AddInMemoryCollection([
-                new KeyValuePair<string, string?>(HostDefaults.ContentRootKey, cwd),
-            ]);
+        {
+            var cwd = System.Environment.CurrentDirectory;
+            if (
+                !OperatingSystem.IsWindows()
+                || !string.Equals(
+                    cwd,
+                    System.Environment.SystemDirectory,
+                    StringComparison.OrdinalIgnoreCase
+                )
+            )
+                settings.Configuration?.AddInMemoryCollection([
+                    new KeyValuePair<string, string?>(HostDefaults.ContentRootKey, cwd),
+                ]);
+        }
+    }
+
+    private void ConfigureCommonDefaults()
+    {
+        // Configure LambdaHostSettings from appsettings.json
+        Services.Configure<LambdaHostOptions>(
+            Configuration.GetSection(LambdaHostAppSettingsSectionName)
+        );
+
+        // Configure LambdaHostedServiceOptions with callbacks
+        Services.Configure<LambdaHostedServiceOptions>(options =>
+        {
+            options.ConfigureHandlerBuilder = ConfigureHandlerBuilder;
+            options.ConfigureOnInitBuilder = ConfigureOnInitBuilder;
+            options.ConfigureOnShutdownBuilder = ConfigureOnShutdownBuilder;
+        });
+
+        // Register core services that are required for Lambda Host to run
+        Services.AddLambdaHostCoreServices();
     }
 
     /// <summary>Builds the Lambda application with the configured services and settings.</summary>
