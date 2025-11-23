@@ -65,8 +65,7 @@ public class LambdaApplicationOptions
     ///         <item>Load <see cref="IConfiguration" /> from environment variables</item>
     ///         <item>Load <see cref="IConfiguration" /> from supplied command line args</item>
     ///         <item>
-    ///             Configure the <see cref="ILoggerFactory" /> to log to the console, debug, and event
-    ///             source output
+    ///             Configure the <see cref="ILoggerFactory" /> to log to the console
     ///         </item>
     ///         <item>
     ///             Enable scope validation on the dependency injection container when
