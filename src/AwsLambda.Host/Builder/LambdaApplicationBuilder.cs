@@ -1,4 +1,4 @@
-// Portions of this file are derived from azure-functions-dotnet-worker
+// Portions of this file are derived from aspnetcore
 // Source:
 // https://github.com/dotnet/aspnetcore/blob/v10.0.0/src/DefaultBuilder/src/WebApplicationBuilder.cs
 // Copyright (c) .NET Foundation

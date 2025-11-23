@@ -1,3 +1,11 @@
+// Portions of this file are derived from dotnet
+// Source:
+// https://github.com/dotnet/dotnet/blob/v10.0.100/src/runtime/src/libraries/Microsoft.Extensions.Hosting/src/HostApplicationBuilderSettings.cs
+// Copyright (c) .NET Foundation
+// Licensed under the MIT License
+// See THIRD-PARTY-LICENSES.txt file in the project root or visit
+// https://github.com/dotnet/dotnet/blob/v10.0.100/LICENSE.TXT
+
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
