@@ -18,7 +18,7 @@ jobs:
         if: ${{ env.ACT }}
         run: curl -fsSL https://deb.nodesource.com/setup_22.x | bash && apt install -y nodejs
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
@@ -101,7 +101,7 @@ jobs:
         if: ${{ env.ACT }}
         run: curl -fsSL https://deb.nodesource.com/setup_22.x | bash && apt install -y nodejs
 
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
         with:
           ref: ${{ github.event.pull_request.head.sha }}
 
