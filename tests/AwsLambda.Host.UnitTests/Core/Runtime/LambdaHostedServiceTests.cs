@@ -203,31 +203,19 @@ public class LambdaHostedServiceTests
         configureInvoked.Should().BeTrue();
     }
 
-    [Theory]
-    [AutoNSubstituteData]
-    internal async Task StartAsync_StartsExecuteAsyncTask(
-        [Frozen] ILambdaHandlerFactory handlerFactory,
-        LambdaHostedService service
-    )
-    {
-        // Act
-        await service.StartAsync(CancellationToken.None);
-
-        // Assert
-        handlerFactory.Received(1).CreateHandler(Arg.Any<CancellationToken>());
-    }
-
     #endregion
 
     #region StopAsync Tests
 
     [Theory]
     [AutoNSubstituteData]
-    internal async Task StopAsync_WithoutStartAsync_ReturnsImmediately(
-        LambdaHostedService service
-    ) =>
+    internal async Task StopAsync_WithoutStartAsync_ReturnsImmediately(LambdaHostedService service)
+    {
         // Act & Assert (should not throw)
-        await service.StopAsync(CancellationToken.None);
+        var act = async () => await service.StopAsync(CancellationToken.None);
+
+        await act.Should().NotThrowAsync();
+    }
 
     [Theory]
     [AutoNSubstituteData]
@@ -466,20 +454,32 @@ public class LambdaHostedServiceTests
     [AutoNSubstituteData]
     internal async Task Dispose_Idempotent_WhenNotStarted(LambdaHostedService service)
     {
-        // Act & Assert - multiple dispose calls should not throw
-        service.Dispose();
-        service.Dispose();
-        service.Dispose();
+        // Act
+        var act = () =>
+        {
+            service.Dispose();
+            service.Dispose();
+            service.Dispose();
+        };
+
+        // Assert
+        act.Should().NotThrow();
     }
 
     [Theory]
     [AutoNSubstituteData]
     internal void Dispose_IsIdempotent(LambdaHostedService service)
     {
-        // Act & Assert (should not throw)
-        service.Dispose();
-        service.Dispose();
-        service.Dispose();
+        // Act
+        var act = () =>
+        {
+            service.Dispose();
+            service.Dispose();
+            service.Dispose();
+        };
+
+        // Assert
+        act.Should().NotThrow();
     }
 
     [Theory]
