@@ -12,14 +12,14 @@ public class LambdaApplicationOptions
 
     /// <summary>
     ///     Gets or sets the command-line arguments to add to the
-    ///     <see cref="HostApplicationBuilder.Configuration" />.
+    ///     <see cref="LambdaApplicationBuilder.Configuration" />.
     /// </summary>
     public string[]? Args { get; set; }
 
     /// <summary>
     ///     Gets or sets the initial configuration sources to be added to the
-    ///     <see cref="HostApplicationBuilder.Configuration" />. These sources can influence the
-    ///     <see cref="HostApplicationBuilder.Environment" /> through the use of
+    ///     <see cref="LambdaApplicationBuilder.Configuration" />. These sources can influence the
+    ///     <see cref="LambdaApplicationBuilder.Environment" /> through the use of
     ///     <see cref="HostDefaults" /> keys. Disposing the built <see cref="IHost" /> disposes the
     ///     <see cref="ConfigurationManager" />.
     /// </summary>
@@ -29,29 +29,44 @@ public class LambdaApplicationOptions
     public string? ContentRootPath { get; set; }
 
     /// <summary>
-    ///     Gets or sets a value that indicates whether the <see cref="HostApplicationBuilder" />
+    ///     Gets or sets a value that indicates whether the <see cref="LambdaApplicationBuilder" />
     ///     instance is configured with pre-configured defaults.
     /// </summary>
     /// <value>
-    ///     <see langword="false" /> if the <see cref="HostApplicationBuilder" /> instance is configured
-    ///     with pre-configured defaults. This has a similar effect to calling
-    ///     <see cref="HostingHostBuilderExtensions.ConfigureDefaults(IHostBuilder, string[])" />.
+    ///     <see langword="false" /> if the <see cref="LambdaApplicationBuilder" /> instance is configured
+    ///     with pre-configured defaults. This is the default value.
     /// </value>
     /// <remarks>
-    ///     The following defaults are applied to the <see cref="IHostBuilder" />: * set the
-    ///     <see cref="IHostEnvironment.ContentRootPath" /> to the result of
-    ///     <see cref="Directory.GetCurrentDirectory()" /> * load <see cref="IConfiguration" /> from
-    ///     "DOTNET_" prefixed environment variables * load <see cref="IConfiguration" /> from
-    ///     'appsettings.json' and 'appsettings.[<see cref="IHostEnvironment.EnvironmentName" />].json' *
-    ///     load <see cref="IConfiguration" /> from User Secrets when
-    ///     <see cref="IHostEnvironment.EnvironmentName" /> is 'Development' using the entry assembly *
-    ///     load <see cref="IConfiguration" /> from environment variables * load
-    ///     <see cref="IConfiguration" /> from supplied command line args * configure the
-    ///     <see cref="ILoggerFactory" /> to log to the console, debug, and event source output * enables
-    ///     scope validation on the dependency injection container when
-    ///     <see cref="IHostEnvironment.EnvironmentName" /> is 'Development'
+    ///     The following defaults are applied to the <see cref="IHostBuilder" />:
+    ///     <list type="bullet">
+    ///         <item>
+    ///             Set the <see cref="IHostEnvironment.ContentRootPath" /> to the result of
+    ///             <see cref="Directory.GetCurrentDirectory()" />
+    ///         </item>
+    ///         <item>Load <see cref="IConfiguration" /> from "AWS_" prefixed environment variables</item>
+    ///         <item>Load <see cref="IConfiguration" /> from "DOTNET_" prefixed environment variables</item>
+    ///         <item>
+    ///             Load <see cref="IConfiguration" /> from 'appsettings.json' and 'appsettings.[
+    ///             <see cref="IHostEnvironment.EnvironmentName" />].json'
+    ///         </item>
+    ///         <item>
+    ///             Load <see cref="IConfiguration" /> from User Secrets when
+    ///             <see cref="IHostEnvironment.EnvironmentName" /> is 'Development' using the entry
+    ///             assembly
+    ///         </item>
+    ///         <item>Load <see cref="IConfiguration" /> from environment variables</item>
+    ///         <item>Load <see cref="IConfiguration" /> from supplied command line args</item>
+    ///         <item>
+    ///             Configure the <see cref="ILoggerFactory" /> to log to the console, debug, and event
+    ///             source output
+    ///         </item>
+    ///         <item>
+    ///             Enable scope validation on the dependency injection container when
+    ///             <see cref="IHostEnvironment.EnvironmentName" /> is 'Development'
+    ///         </item>
+    ///     </list>
     /// </remarks>
-    public bool DisableDefaults { get; set; }
+    public bool DisableDefaults { get; set; } = false;
 
     /// <summary>Gets or sets the environment name.</summary>
     public string? EnvironmentName { get; set; }

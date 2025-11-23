@@ -65,9 +65,24 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
             }
         );
 
-        ConfigureBuilder();
+        ApplyDefaultConfiguration();
+        AddDefaultServices();
 
-        ConfigureCommonDefaults();
+        // Configure LambdaHostSettings from appsettings.json
+        Services.Configure<LambdaHostOptions>(
+            Configuration.GetSection(LambdaHostAppSettingsSectionName)
+        );
+
+        // Configure LambdaHostedServiceOptions with callbacks
+        Services.Configure<LambdaHostedServiceOptions>(options =>
+        {
+            options.ConfigureHandlerBuilder = ConfigureHandlerBuilder;
+            options.ConfigureOnInitBuilder = ConfigureOnInitBuilder;
+            options.ConfigureOnShutdownBuilder = ConfigureOnShutdownBuilder;
+        });
+
+        // Register core services that are required for Lambda Host to run
+        Services.AddLambdaHostCoreServices();
     }
 
     /// <inheritdoc />
@@ -96,10 +111,8 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
     )
         where TContainerBuilder : notnull => _hostBuilder.ConfigureContainer(factory, configure);
 
-    private void ConfigureBuilder()
+    private void AddDefaultServices()
     {
-        ApplyDefaultConfiguration(Environment, Configuration);
-
         Services.AddLogging(logging =>
         {
             logging.AddConfiguration(Configuration.GetSection("Logging"));
@@ -115,23 +128,20 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
         });
     }
 
-    private static void ApplyDefaultConfiguration(
-        IHostEnvironment environment,
-        IConfigurationManager configuration
-    )
+    private void ApplyDefaultConfiguration()
     {
         // Add appsettings.json and appsettings.{EnvironmentName}.json
-        configuration
+        Configuration
             .AddJsonFile("appsettings.json", true, false)
-            .AddJsonFile($"appsettings.{environment.EnvironmentName}.json", true, false);
+            .AddJsonFile($"appsettings.{Environment.EnvironmentName}.json", true, false);
 
         // add user secrets if in development environment
-        if (!environment.IsDevelopment())
+        if (!Environment.IsDevelopment())
             try
             {
                 var assembly = Assembly.GetEntryAssembly();
                 if (assembly is not null)
-                    configuration.AddUserSecrets(assembly, true, false);
+                    Configuration.AddUserSecrets(assembly, true, false);
             }
             catch
             {
@@ -139,7 +149,7 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
             }
 
         // add the rest of the environment variables
-        configuration.AddEnvironmentVariables();
+        Configuration.AddEnvironmentVariables();
     }
 
     private static void SetDefaultContentRoot(LambdaApplicationOptions settings)
@@ -179,25 +189,6 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
                     new KeyValuePair<string, string?>(HostDefaults.ContentRootKey, cwd),
                 ]);
         }
-    }
-
-    private void ConfigureCommonDefaults()
-    {
-        // Configure LambdaHostSettings from appsettings.json
-        Services.Configure<LambdaHostOptions>(
-            Configuration.GetSection(LambdaHostAppSettingsSectionName)
-        );
-
-        // Configure LambdaHostedServiceOptions with callbacks
-        Services.Configure<LambdaHostedServiceOptions>(options =>
-        {
-            options.ConfigureHandlerBuilder = ConfigureHandlerBuilder;
-            options.ConfigureOnInitBuilder = ConfigureOnInitBuilder;
-            options.ConfigureOnShutdownBuilder = ConfigureOnShutdownBuilder;
-        });
-
-        // Register core services that are required for Lambda Host to run
-        Services.AddLambdaHostCoreServices();
     }
 
     /// <summary>Builds the Lambda application with the configured services and settings.</summary>
