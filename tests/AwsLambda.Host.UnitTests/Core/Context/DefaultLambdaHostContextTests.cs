@@ -5,46 +5,9 @@ namespace AwsLambda.Host.UnitTests.Core.Context;
 [TestSubject(typeof(DefaultLambdaHostContext))]
 public class DefaultLambdaHostContextTests
 {
-    #region Helper Methods
-
-    /// <summary>Creates a DefaultLambdaHostContext instance with sensible defaults for testing.</summary>
-    private DefaultLambdaHostContext CreateDefaultLambdaHostContext(
-        ILambdaContext? lambdaContext = null,
-        IServiceScopeFactory? serviceScopeFactory = null,
-        IDictionary<string, object?>? properties = null,
-        IFeatureCollection? featuresCollection = null,
-        RawInvocationData? rawData = null,
-        CancellationToken? cancellationToken = null
-    )
-    {
-        lambdaContext ??= Substitute.For<ILambdaContext>();
-        serviceScopeFactory ??= Substitute.For<IServiceScopeFactory>();
-        properties ??= new Dictionary<string, object?>();
-        featuresCollection ??= Substitute.For<IFeatureCollection>();
-        rawData ??= new RawInvocationData
-        {
-            Event = new MemoryStream(),
-            Response = new MemoryStream(),
-        };
-        cancellationToken ??= CancellationToken.None;
-
-        return new DefaultLambdaHostContext(
-            lambdaContext,
-            serviceScopeFactory,
-            properties,
-            featuresCollection,
-            rawData,
-            cancellationToken.Value
-        );
-    }
-
-    #endregion
-
-    #region Constructor Validation Tests
-
     [Theory]
     [AutoNSubstituteData]
-    public void Constructor_WithNullLambdaContext_ThrowsArgumentNullException(
+    internal void Constructor_WithNullLambdaContext_ThrowsArgumentNullException(
         Dictionary<string, object?> properties,
         IServiceScopeFactory serviceScopeFactory,
         IFeatureCollection featuresCollection,
@@ -67,7 +30,7 @@ public class DefaultLambdaHostContextTests
 
     [Theory]
     [AutoNSubstituteData]
-    public void Constructor_WithNullServiceScopeFactory_ThrowsArgumentNullException(
+    internal void Constructor_WithNullServiceScopeFactory_ThrowsArgumentNullException(
         Dictionary<string, object?> properties,
         ILambdaContext lambdaContext,
         IFeatureCollection featuresCollection,
@@ -90,7 +53,7 @@ public class DefaultLambdaHostContextTests
 
     [Theory]
     [AutoNSubstituteData]
-    public void Constructor_WithNullProperties_ThrowsArgumentNullException(
+    internal void Constructor_WithNullProperties_ThrowsArgumentNullException(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
         IFeatureCollection featuresCollection,
@@ -113,7 +76,7 @@ public class DefaultLambdaHostContextTests
 
     [Theory]
     [AutoNSubstituteData]
-    public void Constructor_WithNullFeaturesCollection_ThrowsArgumentNullException(
+    internal void Constructor_WithNullFeaturesCollection_ThrowsArgumentNullException(
         Dictionary<string, object?> properties,
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
@@ -136,7 +99,7 @@ public class DefaultLambdaHostContextTests
 
     [Theory]
     [AutoNSubstituteData]
-    public void Constructor_WithValidParameters_SuccessfullyConstructs(
+    internal void Constructor_WithValidParameters_SuccessfullyConstructs(
         Dictionary<string, object?> properties,
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
@@ -159,20 +122,26 @@ public class DefaultLambdaHostContextTests
         context.Should().NotBeNull();
     }
 
-    #endregion
-
-    #region ILambdaContext Delegation Tests
-
     [Theory]
     [AutoNSubstituteData]
-    public void AwsRequestId_ReturnsValueFromDelegatedContext(
+    internal void AwsRequestId_ReturnsValueFromDelegatedContext(
         string expectedValue,
-        ILambdaContext lambdaContext
+        ILambdaContext lambdaContext,
+        IServiceScopeFactory serviceScopeFactory,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
     )
     {
         // Arrange
         lambdaContext.AwsRequestId.Returns(expectedValue);
-        var context = CreateDefaultLambdaHostContext(lambdaContext);
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
 
         // Act
         var result = context.AwsRequestId;
@@ -183,14 +152,24 @@ public class DefaultLambdaHostContextTests
 
     [Theory]
     [AutoNSubstituteData]
-    public void ClientContext_ReturnsValueFromDelegatedContext(
+    internal void ClientContext_ReturnsValueFromDelegatedContext(
         IClientContext expectedValue,
-        ILambdaContext lambdaContext
+        ILambdaContext lambdaContext,
+        IServiceScopeFactory serviceScopeFactory,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
     )
     {
         // Arrange
         lambdaContext.ClientContext.Returns(expectedValue);
-        var context = CreateDefaultLambdaHostContext(lambdaContext);
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
 
         // Act
         var result = context.ClientContext;
@@ -201,14 +180,24 @@ public class DefaultLambdaHostContextTests
 
     [Theory]
     [AutoNSubstituteData]
-    public void FunctionName_ReturnsValueFromDelegatedContext(
+    internal void FunctionName_ReturnsValueFromDelegatedContext(
         string expectedValue,
-        ILambdaContext lambdaContext
+        ILambdaContext lambdaContext,
+        IServiceScopeFactory serviceScopeFactory,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
     )
     {
         // Arrange
         lambdaContext.FunctionName.Returns(expectedValue);
-        var context = CreateDefaultLambdaHostContext(lambdaContext);
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
 
         // Act
         var result = context.FunctionName;
@@ -219,14 +208,24 @@ public class DefaultLambdaHostContextTests
 
     [Theory]
     [AutoNSubstituteData]
-    public void FunctionVersion_ReturnsValueFromDelegatedContext(
+    internal void FunctionVersion_ReturnsValueFromDelegatedContext(
         string expectedValue,
-        ILambdaContext lambdaContext
+        ILambdaContext lambdaContext,
+        IServiceScopeFactory serviceScopeFactory,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
     )
     {
         // Arrange
         lambdaContext.FunctionVersion.Returns(expectedValue);
-        var context = CreateDefaultLambdaHostContext(lambdaContext);
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
 
         // Act
         var result = context.FunctionVersion;
@@ -237,14 +236,24 @@ public class DefaultLambdaHostContextTests
 
     [Theory]
     [AutoNSubstituteData]
-    public void Identity_ReturnsValueFromDelegatedContext(
+    internal void Identity_ReturnsValueFromDelegatedContext(
         ICognitoIdentity expectedValue,
-        ILambdaContext lambdaContext
+        ILambdaContext lambdaContext,
+        IServiceScopeFactory serviceScopeFactory,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
     )
     {
         // Arrange
         lambdaContext.Identity.Returns(expectedValue);
-        var context = CreateDefaultLambdaHostContext(lambdaContext);
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
 
         // Act
         var result = context.Identity;
@@ -255,14 +264,24 @@ public class DefaultLambdaHostContextTests
 
     [Theory]
     [AutoNSubstituteData]
-    public void InvokedFunctionArn_ReturnsValueFromDelegatedContext(
+    internal void InvokedFunctionArn_ReturnsValueFromDelegatedContext(
         string expectedValue,
-        ILambdaContext lambdaContext
+        ILambdaContext lambdaContext,
+        IServiceScopeFactory serviceScopeFactory,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
     )
     {
         // Arrange
         lambdaContext.InvokedFunctionArn.Returns(expectedValue);
-        var context = CreateDefaultLambdaHostContext(lambdaContext);
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
 
         // Act
         var result = context.InvokedFunctionArn;
@@ -273,14 +292,24 @@ public class DefaultLambdaHostContextTests
 
     [Theory]
     [AutoNSubstituteData]
-    public void Logger_ReturnsValueFromDelegatedContext(
+    internal void Logger_ReturnsValueFromDelegatedContext(
         ILambdaLogger expectedValue,
-        ILambdaContext lambdaContext
+        ILambdaContext lambdaContext,
+        IServiceScopeFactory serviceScopeFactory,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
     )
     {
         // Arrange
         lambdaContext.Logger.Returns(expectedValue);
-        var context = CreateDefaultLambdaHostContext(lambdaContext);
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
 
         // Act
         var result = context.Logger;
@@ -291,14 +320,24 @@ public class DefaultLambdaHostContextTests
 
     [Theory]
     [AutoNSubstituteData]
-    public void LogGroupName_ReturnsValueFromDelegatedContext(
+    internal void LogGroupName_ReturnsValueFromDelegatedContext(
         string expectedValue,
-        ILambdaContext lambdaContext
+        ILambdaContext lambdaContext,
+        IServiceScopeFactory serviceScopeFactory,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
     )
     {
         // Arrange
         lambdaContext.LogGroupName.Returns(expectedValue);
-        var context = CreateDefaultLambdaHostContext(lambdaContext);
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
 
         // Act
         var result = context.LogGroupName;
@@ -309,14 +348,24 @@ public class DefaultLambdaHostContextTests
 
     [Theory]
     [AutoNSubstituteData]
-    public void LogStreamName_ReturnsValueFromDelegatedContext(
+    internal void LogStreamName_ReturnsValueFromDelegatedContext(
         string expectedValue,
-        ILambdaContext lambdaContext
+        ILambdaContext lambdaContext,
+        IServiceScopeFactory serviceScopeFactory,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
     )
     {
         // Arrange
         lambdaContext.LogStreamName.Returns(expectedValue);
-        var context = CreateDefaultLambdaHostContext(lambdaContext);
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
 
         // Act
         var result = context.LogStreamName;
@@ -327,14 +376,24 @@ public class DefaultLambdaHostContextTests
 
     [Theory]
     [AutoNSubstituteData]
-    public void MemoryLimitInMB_ReturnsValueFromDelegatedContext(
+    internal void MemoryLimitInMB_ReturnsValueFromDelegatedContext(
         int expectedValue,
-        ILambdaContext lambdaContext
+        ILambdaContext lambdaContext,
+        IServiceScopeFactory serviceScopeFactory,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
     )
     {
         // Arrange
         lambdaContext.MemoryLimitInMB.Returns(expectedValue);
-        var context = CreateDefaultLambdaHostContext(lambdaContext);
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
 
         // Act
         var result = context.MemoryLimitInMB;
@@ -345,14 +404,24 @@ public class DefaultLambdaHostContextTests
 
     [Theory]
     [AutoNSubstituteData]
-    public void RemainingTime_ReturnsValueFromDelegatedContext(
+    internal void RemainingTime_ReturnsValueFromDelegatedContext(
         TimeSpan expectedValue,
-        ILambdaContext lambdaContext
+        ILambdaContext lambdaContext,
+        IServiceScopeFactory serviceScopeFactory,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
     )
     {
         // Arrange
         lambdaContext.RemainingTime.Returns(expectedValue);
-        var context = CreateDefaultLambdaHostContext(lambdaContext);
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
 
         // Act
         var result = context.RemainingTime;
@@ -361,12 +430,14 @@ public class DefaultLambdaHostContextTests
         result.Should().Be(expectedValue);
     }
 
-    #endregion
-
-    #region ILambdaHostContext Property Tests
-
-    [Fact]
-    public void Properties_ReturnsPropertiesDictionaryPassedToConstructor()
+    [Theory]
+    [AutoNSubstituteData]
+    internal void Properties_ReturnsPropertiesDictionaryPassedToConstructor(
+        ILambdaContext lambdaContext,
+        IServiceScopeFactory serviceScopeFactory,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
+    )
     {
         // Arrange
         var propertiesDict = new Dictionary<string, object?>
@@ -374,7 +445,14 @@ public class DefaultLambdaHostContextTests
             { "key1", "value1" },
             { "key2", 42 },
         };
-        var context = CreateDefaultLambdaHostContext(properties: propertiesDict);
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            propertiesDict,
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
 
         // Act
         var result = context.Properties;
@@ -384,22 +462,48 @@ public class DefaultLambdaHostContextTests
         result.Should().BeSameAs(propertiesDict);
     }
 
-    [Fact]
-    public void Items_ReturnsEmptyDictionaryInitially()
+    [Theory]
+    [AutoNSubstituteData]
+    internal void Items_ReturnsEmptyDictionaryInitially(
+        ILambdaContext lambdaContext,
+        IServiceScopeFactory serviceScopeFactory,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
+    )
     {
         // Arrange & Act
-        var context = CreateDefaultLambdaHostContext();
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
 
         // Assert
         context.Items.Should().NotBeNull();
         context.Items.Should().BeEmpty();
     }
 
-    [Fact]
-    public void Items_AllowsAddingAndRetrievingValues()
+    [Theory]
+    [AutoNSubstituteData]
+    internal void Items_AllowsAddingAndRetrievingValues(
+        ILambdaContext lambdaContext,
+        IServiceScopeFactory serviceScopeFactory,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
+    )
     {
         // Arrange
-        var context = CreateDefaultLambdaHostContext();
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
         var key = new object();
         var value = "test-value";
 
@@ -411,11 +515,24 @@ public class DefaultLambdaHostContextTests
         result.Should().Be(value);
     }
 
-    [Fact]
-    public void Items_AllowsClearingValues()
+    [Theory]
+    [AutoNSubstituteData]
+    internal void Items_AllowsClearingValues(
+        ILambdaContext lambdaContext,
+        IServiceScopeFactory serviceScopeFactory,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
+    )
     {
         // Arrange
-        var context = CreateDefaultLambdaHostContext();
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
         context.Items["key1"] = "value1";
         context.Items["key2"] = "value2";
 
@@ -426,12 +543,25 @@ public class DefaultLambdaHostContextTests
         context.Items.Should().BeEmpty();
     }
 
-    [Fact]
-    public void CancellationToken_ReturnsCancellationTokenPassedToConstructor()
+    [Theory]
+    [AutoNSubstituteData]
+    internal void CancellationToken_ReturnsCancellationTokenPassedToConstructor(
+        ILambdaContext lambdaContext,
+        IServiceScopeFactory serviceScopeFactory,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
+    )
     {
         // Arrange
         var expectedToken = new CancellationToken();
-        var context = CreateDefaultLambdaHostContext(cancellationToken: expectedToken);
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            expectedToken
+        );
 
         // Act
         var result = context.CancellationToken;
@@ -440,12 +570,24 @@ public class DefaultLambdaHostContextTests
         result.Should().Be(expectedToken);
     }
 
-    [Fact]
-    public void Features_ReturnsFeaturesCollectionPassedToConstructor()
+    [Theory]
+    [AutoNSubstituteData]
+    internal void Features_ReturnsFeaturesCollectionPassedToConstructor(
+        ILambdaContext lambdaContext,
+        IServiceScopeFactory serviceScopeFactory,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
+    )
     {
         // Arrange
-        var featuresCollection = Substitute.For<IFeatureCollection>();
-        var context = CreateDefaultLambdaHostContext(featuresCollection: featuresCollection);
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
 
         // Act
         var result = context.Features;
@@ -454,8 +596,13 @@ public class DefaultLambdaHostContextTests
         result.Should().BeSameAs(featuresCollection);
     }
 
-    [Fact]
-    public void RawInvocationData_ReturnsRawDataPassedToConstructor()
+    [Theory]
+    [AutoNSubstituteData]
+    internal void RawInvocationData_ReturnsRawDataPassedToConstructor(
+        ILambdaContext lambdaContext,
+        IServiceScopeFactory serviceScopeFactory,
+        IFeatureCollection featuresCollection
+    )
     {
         // Arrange
         var rawData = new RawInvocationData
@@ -463,7 +610,14 @@ public class DefaultLambdaHostContextTests
             Event = new MemoryStream(),
             Response = new MemoryStream(),
         };
-        var context = CreateDefaultLambdaHostContext(rawData: rawData);
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
 
         // Act
         var result = context.RawInvocationData;
@@ -472,12 +626,13 @@ public class DefaultLambdaHostContextTests
         result.Should().BeSameAs(rawData);
     }
 
-    #endregion
-
-    #region ServiceProvider Lazy Initialization Tests
-
-    [Fact]
-    public void ServiceProvider_IsCreatedOnFirstAccess()
+    [Theory]
+    [AutoNSubstituteData]
+    internal void ServiceProvider_IsCreatedOnFirstAccess(
+        ILambdaContext lambdaContext,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
+    )
     {
         // Arrange
         var mockScope = Substitute.For<IServiceScope>();
@@ -487,7 +642,14 @@ public class DefaultLambdaHostContextTests
         var serviceScopeFactory = Substitute.For<IServiceScopeFactory>();
         serviceScopeFactory.CreateScope().Returns(mockScope);
 
-        var context = CreateDefaultLambdaHostContext(serviceScopeFactory: serviceScopeFactory);
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
 
         // Act
         var result = context.ServiceProvider;
@@ -498,8 +660,13 @@ public class DefaultLambdaHostContextTests
         serviceScopeFactory.Received(1).CreateScope();
     }
 
-    [Fact]
-    public void ServiceProvider_ReturnsSameScopeOnSubsequentAccess()
+    [Theory]
+    [AutoNSubstituteData]
+    internal void ServiceProvider_ReturnsSameScopeOnSubsequentAccess(
+        ILambdaContext lambdaContext,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
+    )
     {
         // Arrange
         var mockScope = Substitute.For<IServiceScope>();
@@ -509,7 +676,14 @@ public class DefaultLambdaHostContextTests
         var serviceScopeFactory = Substitute.For<IServiceScopeFactory>();
         serviceScopeFactory.CreateScope().Returns(mockScope);
 
-        var context = CreateDefaultLambdaHostContext(serviceScopeFactory: serviceScopeFactory);
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
 
         // Act
         var result1 = context.ServiceProvider;
@@ -522,15 +696,27 @@ public class DefaultLambdaHostContextTests
         serviceScopeFactory.Received(1).CreateScope();
     }
 
-    [Fact]
-    public void ServiceProvider_UsesServiceScopeFactory()
+    [Theory]
+    [AutoNSubstituteData]
+    internal void ServiceProvider_UsesServiceScopeFactory(
+        ILambdaContext lambdaContext,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
+    )
     {
         // Arrange
         var serviceScopeFactory = Substitute.For<IServiceScopeFactory>();
         var mockScope = Substitute.For<IServiceScope>();
         serviceScopeFactory.CreateScope().Returns(mockScope);
 
-        var context = CreateDefaultLambdaHostContext(serviceScopeFactory: serviceScopeFactory);
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
 
         // Act
         _ = context.ServiceProvider;
@@ -539,19 +725,27 @@ public class DefaultLambdaHostContextTests
         serviceScopeFactory.Received(1).CreateScope();
     }
 
-    #endregion
-
-    #region DisposeAsync Tests
-
-    [Fact]
-    public async Task DisposeAsync_DisposesServiceScopeWhenAsyncDisposable()
+    [Theory]
+    [AutoNSubstituteData]
+    internal async Task DisposeAsync_DisposesServiceScopeWhenAsyncDisposable(
+        ILambdaContext lambdaContext,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
+    )
     {
         // Arrange
         var asyncDisposableScope = Substitute.For<IServiceScope, IAsyncDisposable>();
         var serviceScopeFactory = Substitute.For<IServiceScopeFactory>();
         serviceScopeFactory.CreateScope().Returns(asyncDisposableScope);
 
-        var context = CreateDefaultLambdaHostContext(serviceScopeFactory: serviceScopeFactory);
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
         _ = context.ServiceProvider; // Trigger lazy initialization
 
         // Act
@@ -561,15 +755,27 @@ public class DefaultLambdaHostContextTests
         await ((IAsyncDisposable)asyncDisposableScope).Received(1).DisposeAsync();
     }
 
-    [Fact]
-    public async Task DisposeAsync_DisposesServiceScopeSynchronouslyWhenNotAsyncDisposable()
+    [Theory]
+    [AutoNSubstituteData]
+    internal async Task DisposeAsync_DisposesServiceScopeSynchronouslyWhenNotAsyncDisposable(
+        ILambdaContext lambdaContext,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
+    )
     {
         // Arrange
         var mockScope = Substitute.For<IServiceScope>();
         var serviceScopeFactory = Substitute.For<IServiceScopeFactory>();
         serviceScopeFactory.CreateScope().Returns(mockScope);
 
-        var context = CreateDefaultLambdaHostContext(serviceScopeFactory: serviceScopeFactory);
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
         _ = context.ServiceProvider; // Trigger lazy initialization
 
         // Act
@@ -579,15 +785,27 @@ public class DefaultLambdaHostContextTests
         mockScope.Received(1).Dispose();
     }
 
-    [Fact]
-    public async Task DisposeAsync_DisposesRawInvocationEventStream()
+    [Theory]
+    [AutoNSubstituteData]
+    internal async Task DisposeAsync_DisposesRawInvocationEventStream(
+        ILambdaContext lambdaContext,
+        IServiceScopeFactory serviceScopeFactory,
+        IFeatureCollection featuresCollection
+    )
     {
         // Arrange
         var eventStream = new MemoryStream();
         var responseStream = new MemoryStream();
         var rawData = new RawInvocationData { Event = eventStream, Response = responseStream };
 
-        var context = CreateDefaultLambdaHostContext(rawData: rawData);
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
 
         // Act
         await context.DisposeAsync();
@@ -596,11 +814,24 @@ public class DefaultLambdaHostContextTests
         eventStream.CanRead.Should().BeFalse();
     }
 
-    [Fact]
-    public async Task DisposeAsync_ClearsItemsCollection()
+    [Theory]
+    [AutoNSubstituteData]
+    internal async Task DisposeAsync_ClearsItemsCollection(
+        ILambdaContext lambdaContext,
+        IServiceScopeFactory serviceScopeFactory,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
+    )
     {
         // Arrange
-        var context = CreateDefaultLambdaHostContext();
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
         context.Items["key1"] = "value1";
         context.Items["key2"] = "value2";
 
@@ -611,8 +842,13 @@ public class DefaultLambdaHostContextTests
         context.Items.Should().BeEmpty();
     }
 
-    [Fact]
-    public async Task DisposeAsync_DisposesServiceScopeBeforeNullingServiceProvider()
+    [Theory]
+    [AutoNSubstituteData]
+    internal async Task DisposeAsync_DisposesServiceScopeBeforeNullingServiceProvider(
+        ILambdaContext lambdaContext,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
+    )
     {
         // Arrange
         var mockScope = Substitute.For<IServiceScope>();
@@ -622,7 +858,14 @@ public class DefaultLambdaHostContextTests
         var serviceScopeFactory = Substitute.For<IServiceScopeFactory>();
         serviceScopeFactory.CreateScope().Returns(mockScope);
 
-        var context = CreateDefaultLambdaHostContext(serviceScopeFactory: serviceScopeFactory);
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
         _ = context.ServiceProvider; // Trigger initialization
 
         // Act
@@ -633,57 +876,127 @@ public class DefaultLambdaHostContextTests
         mockScope.Received(1).Dispose();
     }
 
-    [Fact]
-    public async Task DisposeAsync_CanBeCalledMultipleTimes()
+    [Theory]
+    [AutoNSubstituteData]
+    internal async Task DisposeAsync_CanBeCalledMultipleTimes(
+        ILambdaContext lambdaContext,
+        IServiceScopeFactory serviceScopeFactory,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
+    )
     {
         // Arrange
-        var context = CreateDefaultLambdaHostContext();
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
 
         // Act & Assert
         await context.DisposeAsync();
         await context.DisposeAsync(); // Should not throw
     }
 
-    #endregion
-
-    #region Edge Cases & Integration Tests
-
-    [Fact]
-    public void ContextImplementsIAsyncDisposable()
+    [Theory]
+    [AutoNSubstituteData]
+    internal void ContextImplementsIAsyncDisposable(
+        ILambdaContext lambdaContext,
+        IServiceScopeFactory serviceScopeFactory,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
+    )
     {
         // Arrange & Act
-        var context = CreateDefaultLambdaHostContext();
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
 
         // Assert
         context.Should().BeAssignableTo<IAsyncDisposable>();
     }
 
-    [Fact]
-    public void ContextImplementsILambdaHostContext()
+    [Theory]
+    [AutoNSubstituteData]
+    internal void ContextImplementsILambdaHostContext(
+        ILambdaContext lambdaContext,
+        IServiceScopeFactory serviceScopeFactory,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
+    )
     {
         // Arrange & Act
-        var context = CreateDefaultLambdaHostContext();
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
 
         // Assert
         context.Should().BeAssignableTo<ILambdaHostContext>();
     }
 
-    [Fact]
-    public void ContextImplementsILambdaContext()
+    [Theory]
+    [AutoNSubstituteData]
+    internal void ContextImplementsILambdaContext(
+        ILambdaContext lambdaContext,
+        IServiceScopeFactory serviceScopeFactory,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
+    )
     {
         // Arrange & Act
-        var context = CreateDefaultLambdaHostContext();
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
 
         // Assert
         context.Should().BeAssignableTo<ILambdaContext>();
     }
 
-    [Fact]
-    public void MultipleContextInstances_AreIndependent()
+    [Theory]
+    [AutoNSubstituteData]
+    internal void MultipleContextInstances_AreIndependent(
+        ILambdaContext lambdaContext1,
+        ILambdaContext lambdaContext2,
+        IServiceScopeFactory serviceScopeFactory,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData1,
+        RawInvocationData rawData2
+    )
     {
         // Arrange
-        var context1 = CreateDefaultLambdaHostContext();
-        var context2 = CreateDefaultLambdaHostContext();
+        var context1 = new DefaultLambdaHostContext(
+            lambdaContext1,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData1,
+            CancellationToken.None
+        );
+        var context2 = new DefaultLambdaHostContext(
+            lambdaContext2,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData2,
+            CancellationToken.None
+        );
 
         context1.Items["key"] = "value1";
         context2.Items["key"] = "value2";
@@ -693,11 +1006,24 @@ public class DefaultLambdaHostContextTests
         context2.Items["key"].Should().Be("value2");
     }
 
-    [Fact]
-    public void FeaturesCollection_CanBeUsedToStoreAndRetrieveFeaturesViaItems()
+    [Theory]
+    [AutoNSubstituteData]
+    internal void FeaturesCollection_CanBeUsedToStoreAndRetrieveFeaturesViaItems(
+        ILambdaContext lambdaContext,
+        IServiceScopeFactory serviceScopeFactory,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
+    )
     {
         // Arrange
-        var context = CreateDefaultLambdaHostContext();
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            new Dictionary<string, object?>(),
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
         var featureType = typeof(string);
         var featureValue = "test-feature";
 
@@ -709,12 +1035,25 @@ public class DefaultLambdaHostContextTests
         retrievedValue.Should().Be(featureValue);
     }
 
-    [Fact]
-    public void PropertiesDictionary_PersistsAcrossMultipleInvocations()
+    [Theory]
+    [AutoNSubstituteData]
+    internal void PropertiesDictionary_PersistsAcrossMultipleInvocations(
+        ILambdaContext lambdaContext,
+        IServiceScopeFactory serviceScopeFactory,
+        IFeatureCollection featuresCollection,
+        RawInvocationData rawData
+    )
     {
         // Arrange
         var properties = new Dictionary<string, object?> { { "persistent", "value" } };
-        var context = CreateDefaultLambdaHostContext(properties: properties);
+        var context = new DefaultLambdaHostContext(
+            lambdaContext,
+            serviceScopeFactory,
+            properties,
+            featuresCollection,
+            rawData,
+            CancellationToken.None
+        );
 
         // Act
         properties["persistent"] = "updated-value";
@@ -723,6 +1062,4 @@ public class DefaultLambdaHostContextTests
         // Assert
         result.Should().Be("updated-value");
     }
-
-    #endregion
 }
