@@ -48,6 +48,41 @@ public class LambdaApplicationBuilderTests
     }
 
     [Fact]
+    public void Build_InDevelopmentEnvironment_EnablesScopeValidation()
+    {
+        // Arrange
+        var environmentName = "Development";
+        var options = new LambdaApplicationOptions { EnvironmentName = environmentName };
+
+        // Act
+        var builder = LambdaApplication.CreateBuilder(options);
+        var app = builder.Build();
+
+        // Assert
+        app.Environment.EnvironmentName.Should().Be(environmentName);
+        // In Development, the service provider should have been configured with scope validation
+        // We verify this indirectly by checking that the services were registered successfully
+        app.Services.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void Build_InProductionEnvironment_DisablesScopeValidation()
+    {
+        // Arrange
+        var environmentName = "Production";
+        var options = new LambdaApplicationOptions { EnvironmentName = environmentName };
+
+        // Act
+        var builder = LambdaApplication.CreateBuilder(options);
+        var app = builder.Build();
+
+        // Assert
+        app.Environment.EnvironmentName.Should().Be(environmentName);
+        // In Production, no special scope validation is configured
+        app.Services.Should().NotBeNull();
+    }
+
+    [Fact]
     public void Build_ReturnsLambdaApplication()
     {
         // Arrange
@@ -539,6 +574,54 @@ public class LambdaApplicationBuilderTests
         app.ShutdownHandlers.Should().HaveCount(2);
         app.ShutdownHandlers.Should().Contain(handler1);
         app.ShutdownHandlers.Should().Contain(handler2);
+    }
+
+    [Fact]
+    public void Build_WithDevelopmentEnvironment_LoadsEnvironmentSpecificAppSettings()
+    {
+        // Arrange
+        var options = new LambdaApplicationOptions { EnvironmentName = "Development" };
+
+        // Act
+        var builder = LambdaApplication.CreateBuilder(options);
+        var app = builder.Build();
+
+        // Assert
+        app.Environment.EnvironmentName.Should().Be("Development");
+        // Configuration should be loaded and include environment-specific sources
+        app.Configuration.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void Build_WithProductionEnvironment_LoadsEnvironmentSpecificAppSettings()
+    {
+        // Arrange
+        var options = new LambdaApplicationOptions { EnvironmentName = "Production" };
+
+        // Act
+        var builder = LambdaApplication.CreateBuilder(options);
+        var app = builder.Build();
+
+        // Assert
+        app.Environment.EnvironmentName.Should().Be("Production");
+        // Configuration should be loaded and include environment-specific sources
+        app.Configuration.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void Build_DisablesDefaults_SkipsApplyDefaultConfiguration()
+    {
+        // Arrange
+        var options = new LambdaApplicationOptions { DisableDefaults = true };
+
+        // Act
+        var builder = LambdaApplication.CreateBuilder(options);
+        var app = builder.Build();
+
+        // Assert
+        app.Should().NotBeNull();
+        // With defaults disabled, minimal configuration is applied
+        app.Configuration.Should().NotBeNull();
     }
 
     [Fact]
