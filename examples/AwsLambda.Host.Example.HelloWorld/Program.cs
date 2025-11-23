@@ -2,9 +2,15 @@
 using System.Text.Json.Serialization;
 using AwsLambda.Host.Builder;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 
 var builder = LambdaApplication.CreateBuilder();
+
+// var builder = LambdaApplication.CreateBuilder(
+//     new LambdaApplicationOptions { DisableDefaults = true }
+// );
+
+Console.WriteLine($"Application Name: {builder.Environment.ApplicationName}");
+Console.WriteLine($"Environment Name: {builder.Environment.EnvironmentName}");
 
 builder.Services.AddSingleton<IService, Service>();
 
@@ -23,7 +29,7 @@ lambda.MapHandler(
     ([Event] Request request, IService service) => new Response(service.GetMessage(request.Name))
 );
 
-await lambda.RunAsync();
+// await lambda.RunAsync();
 
 internal record Response([property: JsonPropertyName("message")] string Message);
 

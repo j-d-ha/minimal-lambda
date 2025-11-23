@@ -5,9 +5,10 @@
       "commandName": "Project",
       "environmentVariables": {
         "AWS_LAMBDA_RUNTIME_API": "localhost:5050",
-        "ASPNETCORE_ENVIRONMENT": "Development",
+        "DOTNET_ENVIRONMENT": "Development",
         "AWS_LAMBDA_LOG_FORMAT": "JSON",
-        "AWS_LAMBDA_LOG_LEVEL": "DEBUG"
+        "AWS_LAMBDA_LOG_LEVEL": "DEBUG",
+        "AWS_LAMBDA_FUNCTION_NAME": "Lambda-Host-Example-HelloWorld"
       }
     }
   }
