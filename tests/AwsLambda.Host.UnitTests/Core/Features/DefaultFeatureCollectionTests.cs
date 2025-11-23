@@ -8,7 +8,7 @@ public class DefaultFeatureCollectionTest
     #region Helper Methods
 
     /// <summary>Creates a DefaultFeatureCollection with optional feature providers.</summary>
-    private DefaultFeatureCollection CreateDefaultFeatureCollection(
+    private static DefaultFeatureCollection CreateDefaultFeatureCollection(
         IEnumerable<IFeatureProvider>? featureProviders = null
     )
     {
@@ -204,7 +204,7 @@ public class DefaultFeatureCollectionTest
         var testFeature = new TestFeature { Value = "from-provider" };
 
         provider
-            .TryCreate(typeof(TestFeature), out var feature)
+            .TryCreate(typeof(TestFeature), out _)
             .Returns(x =>
             {
                 x[1] = testFeature;
@@ -227,7 +227,7 @@ public class DefaultFeatureCollectionTest
         var testFeature = new TestFeature { Value = "from-provider" };
 
         provider
-            .TryCreate(typeof(TestFeature), out var feature)
+            .TryCreate(typeof(TestFeature), out _)
             .Returns(x =>
             {
                 x[1] = testFeature;
@@ -273,7 +273,7 @@ public class DefaultFeatureCollectionTest
 
         provider1.TryCreate(Arg.Any<Type>(), out _).Returns(false);
         provider2
-            .TryCreate(typeof(TestFeature), out var feature)
+            .TryCreate(typeof(TestFeature), out _)
             .Returns(x =>
             {
                 x[1] = testFeature;
@@ -301,7 +301,7 @@ public class DefaultFeatureCollectionTest
         var testFeature = new TestFeature { Value = "from-first-provider" };
 
         provider1
-            .TryCreate(typeof(TestFeature), out var feature)
+            .TryCreate(typeof(TestFeature), out _)
             .Returns(x =>
             {
                 x[1] = testFeature;
@@ -442,7 +442,7 @@ public class DefaultFeatureCollectionTest
         var testFeature = new TestFeature { Value = "from-provider" };
 
         provider
-            .TryCreate(typeof(TestFeature), out var feature)
+            .TryCreate(typeof(TestFeature), out _)
             .Returns(x =>
             {
                 x[1] = testFeature;
