@@ -25,12 +25,12 @@ internal class DefaultFeatureCollection : IFeatureCollection
     public T? Get<T>()
     {
         var type = typeof(T);
-        if (!_features.TryGetValue(type, out var feature))
-            if (
-                _featureProviders.Any(t => t.TryCreate(type, out feature))
-                && !_features.TryAdd(type, feature!)
-            )
-                feature = _features[type];
+        if (
+            !_features.TryGetValue(type, out var feature)
+            && _featureProviders.Any(t => t.TryCreate(type, out feature))
+            && !_features.TryAdd(type, feature!)
+        )
+            feature = _features[type];
 
         return feature is null ? default : (T)feature;
     }
