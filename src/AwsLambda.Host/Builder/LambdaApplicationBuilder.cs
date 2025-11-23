@@ -80,6 +80,11 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
             ApplyDefaultConfiguration();
             AddDefaultServices();
 
+            // Configure the default service provider factory. This will also handle validation of
+            // scope on build.
+            var serviceProviderFactory = GetServiceProviderFactory();
+            ConfigureContainer(serviceProviderFactory);
+
             // Configure LambdaHostSettings from appsettings.json
             Services.Configure<LambdaHostOptions>(
                 Configuration.GetSection(LambdaHostAppSettingsSectionName)
@@ -124,7 +129,8 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
     )
         where TContainerBuilder : notnull => _hostBuilder.ConfigureContainer(factory, configure);
 
-    private void AddDefaultServices() =>
+    private void AddDefaultServices()
+    {
         Services.AddLogging(logging =>
         {
             logging.AddConfiguration(Configuration.GetSection("Logging"));
@@ -138,6 +144,14 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
                     | ActivityTrackingOptions.ParentId;
             });
         });
+    }
+
+    private DefaultServiceProviderFactory GetServiceProviderFactory() =>
+        Environment.IsDevelopment()
+            ? new DefaultServiceProviderFactory(
+                new ServiceProviderOptions { ValidateScopes = true, ValidateOnBuild = true }
+            )
+            : new DefaultServiceProviderFactory();
 
     /// <summary>Applies default configuration sources to the application's configuration manager.</summary>
     /// <remarks>
