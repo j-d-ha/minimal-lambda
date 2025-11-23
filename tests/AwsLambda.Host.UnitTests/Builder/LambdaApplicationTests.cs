@@ -26,7 +26,7 @@ public class LambdaApplicationTests
         var act = () => new LambdaApplication(null!);
 
         // Assert
-        act.Should().ThrowExactly<ArgumentNullException>().WithParameterName("host");
+        act.Should().ThrowExactly<ArgumentNullException>().WithParameterName("Host");
     }
 
     [Fact]
@@ -250,13 +250,13 @@ public class LambdaApplicationTests
     {
         // Arrange
         var mocks = CreatMocks();
-        var app = new LambdaApplication(mocks.host);
+        var app = new LambdaApplication(mocks.Host);
 
         // Act
         app.Dispose();
 
         // Assert
-        mocks.host.Received().Dispose();
+        mocks.Host.Received().Dispose();
     }
 
     [Fact]
@@ -264,13 +264,13 @@ public class LambdaApplicationTests
     {
         // Arrange
         var mocks = CreatMocks();
-        var app = new LambdaApplication(mocks.host);
+        var app = new LambdaApplication(mocks.Host);
 
         // Act & Assert
         await app.DisposeAsync();
 
         // Assert
-        await ((IAsyncDisposable)mocks.host).Received().DisposeAsync();
+        await ((IAsyncDisposable)mocks.Host).Received().DisposeAsync();
     }
 
     [Fact]
@@ -717,42 +717,42 @@ public class LambdaApplicationTests
     {
         var mocks = new Mocks
         {
-            host = Substitute.For<IHost, IAsyncDisposable>(),
-            lambdaInvocationBuilder = Substitute.For<ILambdaInvocationBuilder>(),
-            lambdaOnInitBuilder = Substitute.For<ILambdaOnInitBuilder>(),
-            lambdaOnShutdownBuilder = Substitute.For<ILambdaOnShutdownBuilder>(),
+            Host = Substitute.For<IHost, IAsyncDisposable>(),
+            LambdaInvocationBuilder = Substitute.For<ILambdaInvocationBuilder>(),
+            LambdaOnInitBuilder = Substitute.For<ILambdaOnInitBuilder>(),
+            LambdaOnShutdownBuilder = Substitute.For<ILambdaOnShutdownBuilder>(),
         };
 
         var serviceProvider = Substitute.For<IServiceProvider>();
 
-        mocks.host.Services.Returns(serviceProvider);
+        mocks.Host.Services.Returns(serviceProvider);
 
         var invocationBuilderFactory = Substitute.For<ILambdaInvocationBuilderFactory>();
         serviceProvider
             .GetService(typeof(ILambdaInvocationBuilderFactory))
             .Returns(invocationBuilderFactory);
-        invocationBuilderFactory.CreateBuilder().Returns(mocks.lambdaInvocationBuilder);
+        invocationBuilderFactory.CreateBuilder().Returns(mocks.LambdaInvocationBuilder);
 
         var lambdaOnInitBuilderFactory = Substitute.For<ILambdaOnInitBuilderFactory>();
         serviceProvider
             .GetService(typeof(ILambdaOnInitBuilderFactory))
             .Returns(lambdaOnInitBuilderFactory);
-        lambdaOnInitBuilderFactory.CreateBuilder().Returns(mocks.lambdaOnInitBuilder);
+        lambdaOnInitBuilderFactory.CreateBuilder().Returns(mocks.LambdaOnInitBuilder);
 
         var lambdaOnShutdownBuilderFactory = Substitute.For<ILambdaOnShutdownBuilderFactory>();
         serviceProvider
             .GetService(typeof(ILambdaOnShutdownBuilderFactory))
             .Returns(lambdaOnShutdownBuilderFactory);
-        lambdaOnShutdownBuilderFactory.CreateBuilder().Returns(mocks.lambdaOnShutdownBuilder);
+        lambdaOnShutdownBuilderFactory.CreateBuilder().Returns(mocks.LambdaOnShutdownBuilder);
 
         return mocks;
     }
 
     private class Mocks
     {
-        internal IHost host { get; set; }
-        internal ILambdaInvocationBuilder lambdaInvocationBuilder { get; set; }
-        internal ILambdaOnInitBuilder lambdaOnInitBuilder { get; set; }
-        internal ILambdaOnShutdownBuilder lambdaOnShutdownBuilder { get; set; }
+        internal required IHost Host { get; init; }
+        internal required ILambdaInvocationBuilder LambdaInvocationBuilder { get; init; }
+        internal required ILambdaOnInitBuilder LambdaOnInitBuilder { get; init; }
+        internal required ILambdaOnShutdownBuilder LambdaOnShutdownBuilder { get; init; }
     }
 }
