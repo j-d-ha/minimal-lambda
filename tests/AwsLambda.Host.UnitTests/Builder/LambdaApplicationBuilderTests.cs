@@ -626,10 +626,33 @@ public class LambdaApplicationBuilderTests
     }
 
     [Fact]
-    public void Build_WithCONTENTROOTEnvVar_UsesCONTENTROOTPath()
+    public void Build_WithDOTNET_CONTENTROOTSystemEnvVar_UsesCONTENTROOTPath()
     {
         // Arrange
-        var currentDir = System.Environment.CurrentDirectory;
+        var currentDir = Environment.CurrentDirectory;
+        var oldValue = Environment.GetEnvironmentVariable("DOTNET_CONTENTROOT");
+        try
+        {
+            Environment.SetEnvironmentVariable("DOTNET_CONTENTROOT", currentDir);
+
+            // Act - Create builder without explicit configuration, so it loads from env vars
+            var builder = LambdaApplication.CreateBuilder();
+            var app = builder.Build();
+
+            // Assert - DOTNET_CONTENTROOT should be loaded and stripped to CONTENTROOT
+            app.Environment.ContentRootPath.Should().Be(currentDir);
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("DOTNET_CONTENTROOT", oldValue);
+        }
+    }
+
+    [Fact]
+    public void Build_WithCONTENTROOTInConfiguration_UsesCONTENTROOTPath()
+    {
+        // Arrange
+        var currentDir = Environment.CurrentDirectory;
         var configManager = new ConfigurationManager();
         configManager["CONTENTROOT"] = currentDir;
         var options = new LambdaApplicationOptions { Configuration = configManager };
@@ -643,10 +666,37 @@ public class LambdaApplicationBuilderTests
     }
 
     [Fact]
+    public void Build_WithAWS_LAMBDA_TASK_ROOTSystemEnvVar_UsesLambdaTaskRoot()
+    {
+        // Arrange
+        var currentDir = Environment.CurrentDirectory;
+        var oldDotnetValue = Environment.GetEnvironmentVariable("DOTNET_CONTENTROOT");
+        var oldAwsValue = Environment.GetEnvironmentVariable("AWS_LAMBDA_TASK_ROOT");
+        try
+        {
+            // Clear DOTNET_CONTENTROOT so LAMBDA_TASK_ROOT is used
+            Environment.SetEnvironmentVariable("DOTNET_CONTENTROOT", null);
+            Environment.SetEnvironmentVariable("AWS_LAMBDA_TASK_ROOT", currentDir);
+
+            // Act - Create builder without explicit configuration, so it loads from env vars
+            var builder = LambdaApplication.CreateBuilder();
+            var app = builder.Build();
+
+            // Assert - AWS_LAMBDA_TASK_ROOT should be loaded and become LAMBDA_TASK_ROOT
+            app.Environment.ContentRootPath.Should().Be(currentDir);
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("DOTNET_CONTENTROOT", oldDotnetValue);
+            Environment.SetEnvironmentVariable("AWS_LAMBDA_TASK_ROOT", oldAwsValue);
+        }
+    }
+
+    [Fact]
     public void Build_WithLAMBDA_TASK_ROOTEnvVar_UsesLambdaTaskRoot()
     {
         // Arrange
-        var currentDir = System.Environment.CurrentDirectory;
+        var currentDir = Environment.CurrentDirectory;
         var configManager = new ConfigurationManager();
         configManager["LAMBDA_TASK_ROOT"] = currentDir;
         var options = new LambdaApplicationOptions { Configuration = configManager };
@@ -663,7 +713,7 @@ public class LambdaApplicationBuilderTests
     public void Build_WithBothCONTENTROOTAndLAMBDA_TASK_ROOT_PrefersCONTENTROOT()
     {
         // Arrange
-        var currentDir = System.Environment.CurrentDirectory;
+        var currentDir = Environment.CurrentDirectory;
         var configManager = new ConfigurationManager();
         configManager["CONTENTROOT"] = currentDir;
         configManager["LAMBDA_TASK_ROOT"] = "/different/path";
@@ -681,14 +731,14 @@ public class LambdaApplicationBuilderTests
     public void Build_WithExplicitContentRootPath_OverridesEnvVars()
     {
         // Arrange
-        var currentDir = System.Environment.CurrentDirectory;
+        var currentDir = Environment.CurrentDirectory;
         var configManager = new ConfigurationManager();
         configManager["CONTENTROOT"] = "/some/other/path";
         configManager["LAMBDA_TASK_ROOT"] = "/another/path";
         var options = new LambdaApplicationOptions
         {
             Configuration = configManager,
-            ContentRootPath = currentDir
+            ContentRootPath = currentDir,
         };
 
         // Act

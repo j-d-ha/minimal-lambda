@@ -185,23 +185,16 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
 
     private static void ResolveContentRoot(LambdaApplicationOptions settings)
     {
-        // If the user has set the ContentRootPath explicitly, we don't need to do anything.
+        // If the user has set the ContentRootPath explicitly, we don't need to do anything. This
+        // will also capture if the user set DOTNET_CONTENTROOT.
         if (
             settings.ContentRootPath is not null
             || settings.Configuration?[HostDefaults.ContentRootKey] is not null
         )
             return;
 
-        // We will default to DOTNET_CONTENTROOT, as users have the option to set this variable
-        // when deployed, unlike AWS_LAMBDA_TASK_ROOT.
-        if (settings.Configuration?["CONTENTROOT"] is { Length: > 0 } contentRoot)
-        {
-            settings.ContentRootPath = contentRoot;
-            return;
-        }
-
-        // If the user does not set DOTNET_CONTENTROOT, we will default to AWS_LAMBDA_TASK_ROOT as
-        // AWS will always set this when deployed.
+        // If the user does not set DOTNET_CONTENTROOT or sets the content root explicitly, we will
+        // try to use AWS_LAMBDA_TASK_ROOT as AWS will always set this when deployed.
         if (settings.Configuration?["LAMBDA_TASK_ROOT"] is { Length: > 0 } lambdaRoot)
         {
             settings.ContentRootPath = lambdaRoot;
