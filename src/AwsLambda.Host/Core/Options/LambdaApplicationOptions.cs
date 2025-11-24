@@ -41,34 +41,36 @@ public class LambdaApplicationOptions
     ///     instance is configured with pre-configured defaults.
     /// </summary>
     /// <value>
-    ///     <see langword="false" /> if the <see cref="LambdaApplicationBuilder" /> instance is configured
-    ///     with pre-configured defaults. This is the default value.
+    ///     <see langword="false" /> if the <see cref="LambdaApplicationBuilder" /> instance is
+    ///     configured with pre-configured defaults. This is the default value.
     /// </value>
     /// <remarks>
     ///     The following defaults are applied to the <see cref="IHostBuilder" />:
     ///     <list type="bullet">
+    ///         <item>set the application name from <c>AWS_LAMBDA_FUNCTION_NAME</c> environment variable</item>
     ///         <item>
-    ///             Set the <see cref="IHostEnvironment.ContentRootPath" /> to the result of
-    ///             <see cref="Directory.GetCurrentDirectory()" />
+    ///             set the <see cref="IHostEnvironment.ContentRootPath" /> by checking environment
+    ///             variables in order: <c>DOTNET_CONTENTROOT</c>, then <c>AWS_LAMBDA_TASK_ROOT</c>,
+    ///             falling back to <see cref="Directory.GetCurrentDirectory()" />
     ///         </item>
     ///         <item>Load <see cref="IConfiguration" /> from "AWS_" prefixed environment variables</item>
-    ///         <item>Load <see cref="IConfiguration" /> from "DOTNET_" prefixed environment variables</item>
+    ///         <item>load host <see cref="IConfiguration" /> from "DOTNET_" prefixed environment variables</item>
     ///         <item>
-    ///             Load <see cref="IConfiguration" /> from 'appsettings.json' and 'appsettings.[
+    ///             load app <see cref="IConfiguration" /> from 'appsettings.json' and 'appsettings.[
     ///             <see cref="IHostEnvironment.EnvironmentName" />].json'
     ///         </item>
     ///         <item>
-    ///             Load <see cref="IConfiguration" /> from User Secrets when
+    ///             load app <see cref="IConfiguration" /> from User Secrets when
     ///             <see cref="IHostEnvironment.EnvironmentName" /> is 'Development' using the entry
     ///             assembly
     ///         </item>
-    ///         <item>Load <see cref="IConfiguration" /> from environment variables</item>
-    ///         <item>Load <see cref="IConfiguration" /> from supplied command line args</item>
+    ///         <item>load app <see cref="IConfiguration" /> from environment variables</item>
     ///         <item>
-    ///             Configure the <see cref="ILoggerFactory" /> to log to the console
+    ///             configure the <see cref="ILoggerFactory" /> to log out to the console, debug, and
+    ///             event source output
     ///         </item>
     ///         <item>
-    ///             Enable scope validation on the dependency injection container when
+    ///             enables scope validation on the dependency injection container when
     ///             <see cref="IHostEnvironment.EnvironmentName" /> is 'Development'
     ///         </item>
     ///     </list>
