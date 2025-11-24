@@ -7,7 +7,12 @@ namespace AwsLambda.Host.SourceGenerators;
 
 internal static class LambdaHostOutputGenerator
 {
-    internal static void Generate(SourceProductionContext context, CompilationInfo compilationInfo)
+    internal static void Generate(
+        SourceProductionContext context,
+        CompilationInfo compilationInfo,
+        string generatorName,
+        string generatorVersion
+    )
     {
         // validate the generator data and report any diagnostics before exiting.
         var diagnostics = DiagnosticGenerator.GenerateDiagnostics(compilationInfo);
@@ -17,7 +22,11 @@ internal static class LambdaHostOutputGenerator
             return;
         }
 
-        List<string?> outputs = [CommonSources.Generate()];
+        // create GeneratedCodeAttribute. This is used across all generated source files.
+        var generatedCodeAttribute =
+            $"[GeneratedCode(\"{generatorName}\", \"{generatorVersion}\")]";
+
+        List<string?> outputs = [CommonSources.Generate(generatedCodeAttribute)];
 
         // if MapHandler calls found, generate the source code. Will always be 0 or 1 at this point.
         // Anything that needs to know types from the handler must be generated here.
@@ -26,7 +35,11 @@ internal static class LambdaHostOutputGenerator
             var mapHandlerInvocationInfo = compilationInfo.MapHandlerInvocationInfos.First();
 
             outputs.Add(
-                MapHandlerSources.Generate(mapHandlerInvocationInfo, compilationInfo.BuilderInfos)
+                MapHandlerSources.Generate(
+                    mapHandlerInvocationInfo,
+                    compilationInfo.BuilderInfos,
+                    generatedCodeAttribute
+                )
             );
 
             // if UseOpenTelemetryTracing calls found, generate the source code.
@@ -34,7 +47,8 @@ internal static class LambdaHostOutputGenerator
                 outputs.Add(
                     OpenTelemetrySources.Generate(
                         compilationInfo.UseOpenTelemetryTracingInfos,
-                        mapHandlerInvocationInfo.DelegateInfo
+                        mapHandlerInvocationInfo.DelegateInfo,
+                        generatedCodeAttribute
                     )
                 );
         }
@@ -47,7 +61,8 @@ internal static class LambdaHostOutputGenerator
                     "OnShutdown",
                     null,
                     null,
-                    "ILambdaOnShutdownBuilder"
+                    "ILambdaOnShutdownBuilder",
+                    generatedCodeAttribute
                 )
             );
 
@@ -59,7 +74,8 @@ internal static class LambdaHostOutputGenerator
                     "OnInit",
                     "bool",
                     "true",
-                    "ILambdaOnInitBuilder"
+                    "ILambdaOnInitBuilder",
+                    generatedCodeAttribute
                 )
             );
 

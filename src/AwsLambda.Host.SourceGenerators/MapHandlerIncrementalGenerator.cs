@@ -1,3 +1,5 @@
+using System.Linq;
+using System.Reflection;
 using AwsLambda.Host.SourceGenerators.Models;
 using AwsLambda.Host.SourceGenerators.Types;
 using Microsoft.CodeAnalysis;
@@ -8,6 +10,32 @@ namespace AwsLambda.Host.SourceGenerators;
 [Generator]
 public class MapHandlerIncrementalGenerator : IIncrementalGenerator
 {
+    private readonly string _generatorName;
+    private readonly string _generatorVersion;
+
+    public MapHandlerIncrementalGenerator()
+    {
+        // Get the embedded metadata attributes
+        var metadataAttributes = typeof(MapHandlerIncrementalGenerator)
+            .Assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
+            .ToList();
+
+        _generatorName =
+            metadataAttributes.FirstOrDefault(a => a.Key == "SourceGeneratorName")?.Value
+            ?? "UNKNOWN";
+
+        _generatorVersion =
+            metadataAttributes.FirstOrDefault(a => a.Key == "SourceGeneratorVersion")?.Value
+            ?? "UNKNOWN";
+    }
+
+    /// <summary>This constructor is only used for testing.</summary>
+    internal MapHandlerIncrementalGenerator(string generatorName, string generatorVersion)
+    {
+        _generatorName = generatorName;
+        _generatorVersion = generatorVersion;
+    }
+
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         // Language version gate - only generate source if C# 11 or later is used
@@ -120,7 +148,12 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
                 if (info is null)
                     return;
 
-                LambdaHostOutputGenerator.Generate(productionContext, info.Value);
+                LambdaHostOutputGenerator.Generate(
+                    productionContext,
+                    info.Value,
+                    _generatorName,
+                    _generatorVersion
+                );
             }
         );
     }

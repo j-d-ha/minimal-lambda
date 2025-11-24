@@ -1,10 +1,12 @@
 namespace AwsLambda.Host.Core.Generated
 {
+    using System.CodeDom.Compiler;
     using System.Runtime.CompilerServices;
     using Microsoft.Extensions.DependencyInjection;
     using AwsLambda.Host.Builder;
     using AwsLambda.Host.Core;
     
+    {{ generated_code_attribute }}
     file static class OpenTelemetryLambdaApplicationExtensions
     {
         {{~ for location in locations ~}}

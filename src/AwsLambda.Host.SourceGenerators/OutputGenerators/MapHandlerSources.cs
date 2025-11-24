@@ -9,7 +9,8 @@ internal static class MapHandlerSources
 {
     internal static string Generate(
         HigherOrderMethodInfo higherOrderMethodInfo,
-        EquatableArray<SimpleMethodInfo> builderInfo
+        EquatableArray<SimpleMethodInfo> builderInfo,
+        string generatedCodeAttribute
     )
     {
         var delegateInfo = higherOrderMethodInfo.DelegateInfo;
@@ -51,6 +52,7 @@ internal static class MapHandlerSources
             InputEvent = inputEvent,
             OutputResponse = outputResponse,
             Builders = builderCalls,
+            GeneratedCodeAttribute = generatedCodeAttribute,
         };
 
         var template = TemplateHelper.LoadTemplate(

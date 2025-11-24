@@ -1,6 +1,7 @@
 namespace AwsLambda.Host.Core.Generated
 {
     using System;
+    using System.CodeDom.Compiler;
     using System.Runtime.CompilerServices;
     using System.Threading;
     using System.Threading.Tasks;
@@ -8,6 +9,7 @@ namespace AwsLambda.Host.Core.Generated
     using AwsLambda.Host.Builder;
     using AwsLambda.Host.Core;
     
+    {{ generated_code_attribute }}
     file static class {{ name }}LambdaApplicationExtensions
     {
         {{~ for call in calls ~}}

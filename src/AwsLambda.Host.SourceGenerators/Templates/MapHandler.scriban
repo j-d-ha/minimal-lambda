@@ -1,6 +1,7 @@
 namespace AwsLambda.Host.Core.Generated
 {
     using System;
+    using System.CodeDom.Compiler;
     using System.IO;
     using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
@@ -9,6 +10,7 @@ namespace AwsLambda.Host.Core.Generated
     using AwsLambda.Host.Core;
     using Microsoft.Extensions.DependencyInjection;
     
+    {{ generated_code_attribute }}
     file static class MapHandlerLambdaApplicationExtensions
     {
         // Location: {{ location.display_location }}
