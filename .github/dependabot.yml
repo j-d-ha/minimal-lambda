@@ -3,7 +3,7 @@ updates:
   - package-ecosystem: "nuget"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
     commit-message:
       prefix: "chore(deps)"
@@ -18,7 +18,7 @@ updates:
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
     commit-message:
       prefix: "chore(deps)"
@@ -33,7 +33,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     schedule:
-      interval: "daily"
+      interval: "weekly"
     open-pull-requests-limit: 10
     commit-message:
       prefix: "chore(deps)"

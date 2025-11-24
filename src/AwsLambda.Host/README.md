@@ -3,10 +3,6 @@
 Core framework for building AWS Lambda functions with dependency injection, middleware, and source
 generation.
 
-> ⚠️ **Development Status**: This project is actively under development and not yet
-> production-ready. Breaking changes may occur in future versions. Use at your own discretion in
-> production environments.
-
 ## Overview
 
 A modern .NET framework for building AWS Lambda functions using familiar ASP.NET Core patterns. The

@@ -10,6 +10,10 @@ on:
 permissions:
   contents: read
 
+concurrency:
+  group: release-drafter-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   update-release-draft:
     if: github.event.pull_request.draft == false

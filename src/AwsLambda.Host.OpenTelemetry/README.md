@@ -2,10 +2,6 @@
 
 OpenTelemetry integration for distributed tracing and observability in AWS Lambda functions.
 
-> ⚠️ **Development Status**: This project is actively under development and not yet
-> production-ready. Breaking changes may occur in future versions. Use at your own discretion in
-> production environments.
-
 ## Overview
 
 An extension package for the [AwsLambda.Host](../AwsLambda.Host/README.md) framework that provides

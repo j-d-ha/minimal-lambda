@@ -2,10 +2,6 @@
 
 Core interfaces and abstractions for the aws-lambda-host framework.
 
-> ⚠️ **Development Status**: This project is actively under development and not yet
-> production-ready. Breaking changes may occur in future versions. Use at your own discretion in
-> production environments.
-
 ## Overview
 
 Core interfaces and delegates that define the AwsLambda.Host framework contract. This package
