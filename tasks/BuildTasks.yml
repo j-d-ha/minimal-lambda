@@ -30,6 +30,8 @@ tasks:
     silent: true
     cmds:
       - echo "🧹 Cleaning"
+      - '[ -d ./nupkg ] && rm -r ./nupkg || true'
+      - echo "done with one"
       - find src -path "src/*/obj/Release/*.nuspec" -delete
       - dotnet clean --configuration Release
 
@@ -41,5 +43,5 @@ tasks:
       - echo "📦 Packing {{.DIR}}"
       - dotnet restore
       - dotnet build --configuration Release --no-restore
-      - dotnet pack --configuration Release --no-build
+      - dotnet pack --configuration Release --no-build --output ./nupkg
       - echo "✅ Packed"

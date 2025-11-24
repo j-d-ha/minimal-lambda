@@ -16,12 +16,11 @@ tasks:
 
   publish:
     desc: Publish the NuGet package to NuGet.org
-    dir: '{{.DIR}}'
     silent: true
     cmds:
-      - echo "🚀 Publishing {{.DIR}}"
-      - dotnet nuget push bin/Release/*.nupkg --source https://api.nuget.org/v3/index.json --api-key $NUGET_API_KEY --skip-duplicate
-      - echo "✨ Published {{.DIR}}"
+      - echo "🚀 Publishing"
+      - dotnet nuget push ./nupkg/*.nupkg --source https://api.nuget.org/v3/index.json --api-key $NUGET_API_KEY --skip-duplicate
+      - echo "✨ Published"
 
   publish-all:
     desc: Pack, validate versions, and publish all packages (Host, Abstractions, OpenTelemetry)
@@ -41,12 +40,4 @@ tasks:
           DIR: src/AwsLambda.Host.OpenTelemetry
       - echo "🚀 Publishing all packages"
       - task: publish
-        vars:
-          DIR: src/AwsLambda.Host
-      - task: publish
-        vars:
-          DIR: src/AwsLambda.Host.Abstractions
-      - task: publish
-        vars:
-          DIR: src/AwsLambda.Host.OpenTelemetry
       - echo "✨ All packages published successfully!"
