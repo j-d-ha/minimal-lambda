@@ -52,6 +52,13 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Envelopes.Un
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.OpenTelemetry.UnitTests", "tests\AwsLambda.Host.OpenTelemetry.UnitTests\AwsLambda.Host.OpenTelemetry.UnitTests.csproj", "{B8FD7488-07A9-4CA0-8F40-483ECE109159}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Benchmarks", "benchmarks\AwsLambda.Host.Benchmarks\AwsLambda.Host.Benchmarks.csproj", "{C3E6B18E-A30A-4844-BB82-209A6CC52205}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{A193E0DE-D617-4E7E-83CA-2A9150E44841}"
+	ProjectSection(SolutionItems) = preProject
+		Properties\launchSettings.json = Properties\launchSettings.json
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -118,6 +125,10 @@ Global
 		{B8FD7488-07A9-4CA0-8F40-483ECE109159}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B8FD7488-07A9-4CA0-8F40-483ECE109159}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B8FD7488-07A9-4CA0-8F40-483ECE109159}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C3E6B18E-A30A-4844-BB82-209A6CC52205}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C3E6B18E-A30A-4844-BB82-209A6CC52205}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C3E6B18E-A30A-4844-BB82-209A6CC52205}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C3E6B18E-A30A-4844-BB82-209A6CC52205}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{6B8CD8FF-832E-9F88-FB36-2173461F6678} = {B36A84DF-456D-A817-6EDD-3EC3E7F6E11F}
@@ -136,5 +147,6 @@ Global
 		{83E4EBD0-EE1C-422D-A22C-BC6A1895A879} = {1C3C52D9-2936-4A0C-A9C8-F330F22B8359}
 		{0BBBEF49-6478-4394-9BD7-B9AFCA280B3D} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{B8FD7488-07A9-4CA0-8F40-483ECE109159} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
+		{C3E6B18E-A30A-4844-BB82-209A6CC52205} = {A193E0DE-D617-4E7E-83CA-2A9150E44841}
 	EndGlobalSection
 EndGlobal

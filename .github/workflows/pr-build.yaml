@@ -120,7 +120,7 @@ jobs:
         uses: go-task/setup-task@v1
 
       - name: Run formatting
-        run: task format
+        run: task format:csharpier
 
       - name: Check for formatting changes
         run: |

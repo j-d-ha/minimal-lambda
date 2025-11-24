@@ -70,7 +70,9 @@ nunit-*.xml
 
 # temp files used for dev
 **/Temp*.cs
+**/Temp*/
 
 **/*.env
 
 **/node_modules/
+/benchmarks/AwsLambda.Host.Benchmarks/BenchmarkDotNet.Artifacts/

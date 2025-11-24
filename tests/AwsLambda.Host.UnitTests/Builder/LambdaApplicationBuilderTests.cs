@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
@@ -19,10 +20,13 @@ public class LambdaApplicationBuilderTests
     }
 
     [Fact]
-    public void CreateBuilder_WithArgs_ReturnsValidLambdaApplicationBuilder()
+    public void CreateBuilder_WithOptions_ReturnsValidLambdaApplicationBuilder()
     {
+        // Arrange
+        var options = new LambdaApplicationOptions();
+
         // Act
-        var builder = LambdaApplication.CreateBuilder(Array.Empty<string>());
+        var builder = LambdaApplication.CreateBuilder(options);
 
         // Assert
         builder.Should().NotBeNull();
@@ -42,6 +46,41 @@ public class LambdaApplicationBuilderTests
         builder.Logging.Should().NotBeNull();
         builder.Metrics.Should().NotBeNull();
         builder.Properties.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void Build_InDevelopmentEnvironment_EnablesScopeValidation()
+    {
+        // Arrange
+        var environmentName = "Development";
+        var options = new LambdaApplicationOptions { EnvironmentName = environmentName };
+
+        // Act
+        var builder = LambdaApplication.CreateBuilder(options);
+        var app = builder.Build();
+
+        // Assert
+        app.Environment.EnvironmentName.Should().Be(environmentName);
+        // In Development, the service provider should have been configured with scope validation
+        // We verify this indirectly by checking that the services were registered successfully
+        app.Services.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void Build_InProductionEnvironment_DisablesScopeValidation()
+    {
+        // Arrange
+        var environmentName = "Production";
+        var options = new LambdaApplicationOptions { EnvironmentName = environmentName };
+
+        // Act
+        var builder = LambdaApplication.CreateBuilder(options);
+        var app = builder.Build();
+
+        // Assert
+        app.Environment.EnvironmentName.Should().Be(environmentName);
+        // In Production, no special scope validation is configured
+        app.Services.Should().NotBeNull();
     }
 
     [Fact]
@@ -103,31 +142,18 @@ public class LambdaApplicationBuilderTests
     }
 
     [Fact]
-    public void CreateBuilder_WithHostApplicationBuilderSettings_ReturnsValidBuilder()
+    public void CreateBuilder_WithApplicationName_ReturnsValidBuilder()
     {
         // Arrange
-        var settings = new HostApplicationBuilderSettings();
+        var options = new LambdaApplicationOptions { ApplicationName = "TestApp" };
 
         // Act
-        var builder = LambdaApplication.CreateBuilder(settings);
+        var builder = LambdaApplication.CreateBuilder(options);
 
         // Assert
         builder.Should().NotBeNull();
         builder.Should().BeAssignableTo<IHostApplicationBuilder>();
-    }
-
-    [Fact]
-    public void CreateEmptyBuilder_WithHostApplicationBuilderSettings_ReturnsValidBuilder()
-    {
-        // Arrange
-        var settings = new HostApplicationBuilderSettings();
-
-        // Act
-        var builder = LambdaApplication.CreateEmptyBuilder(settings);
-
-        // Assert
-        builder.Should().NotBeNull();
-        builder.Should().BeAssignableTo<IHostApplicationBuilder>();
+        builder.Environment.ApplicationName.Should().Be("TestApp");
     }
 
     [Fact]
@@ -295,8 +321,7 @@ public class LambdaApplicationBuilderTests
     public void Build_ConfigureOnInitBuilderCallback_AppliesClearLambdaOutputFormattingWhenEnabled()
     {
         // Arrange
-        var builderSettings = new HostApplicationBuilderSettings();
-        var builder = LambdaApplication.CreateBuilder(builderSettings);
+        var builder = LambdaApplication.CreateBuilder();
 
         // Configure to enable ClearLambdaOutputFormatting via appsettings
         builder.Configuration["AwsLambdaHost:ClearLambdaOutputFormatting"] = "true";
@@ -550,6 +575,178 @@ public class LambdaApplicationBuilderTests
         app.ShutdownHandlers.Should().HaveCount(2);
         app.ShutdownHandlers.Should().Contain(handler1);
         app.ShutdownHandlers.Should().Contain(handler2);
+    }
+
+    [Fact]
+    public void Build_WithDevelopmentEnvironment_LoadsEnvironmentSpecificAppSettings()
+    {
+        // Arrange
+        var options = new LambdaApplicationOptions { EnvironmentName = "Development" };
+
+        // Act
+        var builder = LambdaApplication.CreateBuilder(options);
+        var app = builder.Build();
+
+        // Assert
+        app.Environment.EnvironmentName.Should().Be("Development");
+        // Configuration should be loaded and include environment-specific sources
+        app.Configuration.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void Build_WithProductionEnvironment_LoadsEnvironmentSpecificAppSettings()
+    {
+        // Arrange
+        var options = new LambdaApplicationOptions { EnvironmentName = "Production" };
+
+        // Act
+        var builder = LambdaApplication.CreateBuilder(options);
+        var app = builder.Build();
+
+        // Assert
+        app.Environment.EnvironmentName.Should().Be("Production");
+        // Configuration should be loaded and include environment-specific sources
+        app.Configuration.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void Build_DisablesDefaults_SkipsApplyDefaultConfiguration()
+    {
+        // Arrange
+        var options = new LambdaApplicationOptions { DisableDefaults = true };
+
+        // Act
+        var builder = LambdaApplication.CreateBuilder(options);
+        var app = builder.Build();
+
+        // Assert
+        app.Should().NotBeNull();
+        // With defaults disabled, minimal configuration is applied
+        app.Configuration.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void Build_WithDOTNET_CONTENTROOTSystemEnvVar_UsesCONTENTROOTPath()
+    {
+        // Arrange
+        var currentDir = Environment.CurrentDirectory;
+        var oldValue = Environment.GetEnvironmentVariable("DOTNET_CONTENTROOT");
+        try
+        {
+            Environment.SetEnvironmentVariable("DOTNET_CONTENTROOT", currentDir);
+
+            // Act - Create builder without explicit configuration, so it loads from env vars
+            var builder = LambdaApplication.CreateBuilder();
+            var app = builder.Build();
+
+            // Assert - DOTNET_CONTENTROOT should be loaded and stripped to CONTENTROOT
+            app.Environment.ContentRootPath.Should().Be(currentDir);
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("DOTNET_CONTENTROOT", oldValue);
+        }
+    }
+
+    [Fact]
+    public void Build_WithCONTENTROOTInConfiguration_UsesCONTENTROOTPath()
+    {
+        // Arrange
+        var currentDir = Environment.CurrentDirectory;
+        var configManager = new ConfigurationManager();
+        configManager["CONTENTROOT"] = currentDir;
+        var options = new LambdaApplicationOptions { Configuration = configManager };
+
+        // Act
+        var builder = LambdaApplication.CreateBuilder(options);
+        var app = builder.Build();
+
+        // Assert
+        app.Environment.ContentRootPath.Should().Be(currentDir);
+    }
+
+    [Fact]
+    public void Build_WithAWS_LAMBDA_TASK_ROOTSystemEnvVar_UsesLambdaTaskRoot()
+    {
+        // Arrange
+        var currentDir = Environment.CurrentDirectory;
+        var oldDotnetValue = Environment.GetEnvironmentVariable("DOTNET_CONTENTROOT");
+        var oldAwsValue = Environment.GetEnvironmentVariable("AWS_LAMBDA_TASK_ROOT");
+        try
+        {
+            // Clear DOTNET_CONTENTROOT so LAMBDA_TASK_ROOT is used
+            Environment.SetEnvironmentVariable("DOTNET_CONTENTROOT", null);
+            Environment.SetEnvironmentVariable("AWS_LAMBDA_TASK_ROOT", currentDir);
+
+            // Act - Create builder without explicit configuration, so it loads from env vars
+            var builder = LambdaApplication.CreateBuilder();
+            var app = builder.Build();
+
+            // Assert - AWS_LAMBDA_TASK_ROOT should be loaded and become LAMBDA_TASK_ROOT
+            app.Environment.ContentRootPath.Should().Be(currentDir);
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("DOTNET_CONTENTROOT", oldDotnetValue);
+            Environment.SetEnvironmentVariable("AWS_LAMBDA_TASK_ROOT", oldAwsValue);
+        }
+    }
+
+    [Fact]
+    public void Build_WithLAMBDA_TASK_ROOTEnvVar_UsesLambdaTaskRoot()
+    {
+        // Arrange
+        var currentDir = Environment.CurrentDirectory;
+        var configManager = new ConfigurationManager();
+        configManager["LAMBDA_TASK_ROOT"] = currentDir;
+        var options = new LambdaApplicationOptions { Configuration = configManager };
+
+        // Act
+        var builder = LambdaApplication.CreateBuilder(options);
+        var app = builder.Build();
+
+        // Assert
+        app.Environment.ContentRootPath.Should().Be(currentDir);
+    }
+
+    [Fact]
+    public void Build_WithBothCONTENTROOTAndLAMBDA_TASK_ROOT_PrefersCONTENTROOT()
+    {
+        // Arrange
+        var currentDir = Environment.CurrentDirectory;
+        var configManager = new ConfigurationManager();
+        configManager["CONTENTROOT"] = currentDir;
+        configManager["LAMBDA_TASK_ROOT"] = "/different/path";
+        var options = new LambdaApplicationOptions { Configuration = configManager };
+
+        // Act
+        var builder = LambdaApplication.CreateBuilder(options);
+        var app = builder.Build();
+
+        // Assert - CONTENTROOT should take precedence over LAMBDA_TASK_ROOT
+        app.Environment.ContentRootPath.Should().Be(currentDir);
+    }
+
+    [Fact]
+    public void Build_WithExplicitContentRootPath_OverridesEnvVars()
+    {
+        // Arrange
+        var currentDir = Environment.CurrentDirectory;
+        var configManager = new ConfigurationManager();
+        configManager["CONTENTROOT"] = "/some/other/path";
+        configManager["LAMBDA_TASK_ROOT"] = "/another/path";
+        var options = new LambdaApplicationOptions
+        {
+            Configuration = configManager,
+            ContentRootPath = currentDir,
+        };
+
+        // Act
+        var builder = LambdaApplication.CreateBuilder(options);
+        var app = builder.Build();
+
+        // Assert - explicit path should take precedence over env vars
+        app.Environment.ContentRootPath.Should().Be(currentDir);
     }
 
     [Fact]

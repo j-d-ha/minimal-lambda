@@ -1,4 +1,13 @@
+// Portions of this file are derived from aspnetcore
+// Source:
+// https://github.com/dotnet/aspnetcore/blob/v10.0.0/src/DefaultBuilder/src/WebApplicationBuilder.cs
+// Copyright (c) .NET Foundation
+// Licensed under the MIT License
+// See THIRD-PARTY-LICENSES.txt file in the project root or visit
+// https://github.com/Azure/azure-functions-dotnet-worker/blob/2.51.0/LICENSE
+
 using System.Diagnostics;
+using System.Reflection;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Diagnostics.Metrics;
@@ -22,11 +31,7 @@ namespace AwsLambda.Host.Builder;
 ///     </para>
 ///     <para>
 ///         Instances are created using factory methods on <see cref="LambdaApplication" />, such as
-///         <see cref="BuilderLambdaApplicationExtensions.CreateBuilder()" />,
-///         <see cref="BuilderLambdaApplicationExtensions.CreateBuilder(string[])" />, and
-///         <see
-///             cref="BuilderLambdaApplicationExtensions.CreateBuilder(HostApplicationBuilderSettings)" />
-///         .
+///         <see cref="BuilderLambdaApplicationExtensions.CreateBuilder()" />.
 ///     </para>
 /// </remarks>
 /// <seealso cref="BuilderLambdaApplicationExtensions.CreateBuilder()" />
@@ -38,16 +43,49 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
 
     private LambdaApplication? _builtApplication;
 
-    private LambdaApplicationBuilder(HostApplicationBuilder hostBuilder)
+    /// <summary>Main internal constructor.</summary>
+    internal LambdaApplicationBuilder(LambdaApplicationOptions? settings)
     {
-        ArgumentNullException.ThrowIfNull(hostBuilder);
+        settings ??= new LambdaApplicationOptions();
 
-        _hostBuilder = hostBuilder;
+        if (!settings.DisableDefaults)
+        {
+            settings.Configuration ??= new ConfigurationManager();
+            settings.Configuration.AddEnvironmentVariables("AWS_");
+            settings.Configuration.AddEnvironmentVariables("DOTNET_");
 
-        // Configure LambdaHostSettings from appsettings.json
-        Services.Configure<LambdaHostOptions>(
-            Configuration.GetSection(LambdaHostAppSettingsSectionName)
+            settings.ApplicationName ??= settings.Configuration["LAMBDA_FUNCTION_NAME"];
+
+            ResolveContentRoot(settings);
+        }
+
+        _hostBuilder = Microsoft.Extensions.Hosting.Host.CreateEmptyApplicationBuilder(
+            new HostApplicationBuilderSettings
+            {
+                DisableDefaults = settings.DisableDefaults,
+                Args = settings.Args,
+                Configuration = settings.Configuration,
+                EnvironmentName = settings.EnvironmentName,
+                ApplicationName = settings.ApplicationName,
+                ContentRootPath = settings.ContentRootPath,
+            }
         );
+
+        if (!settings.DisableDefaults)
+        {
+            ApplyDefaultConfiguration();
+            AddDefaultServices();
+
+            // Configure the default service provider factory. This will also handle validation of
+            // scope on build.
+            var serviceProviderFactory = GetServiceProviderFactory();
+            ConfigureContainer(serviceProviderFactory);
+
+            // Configure LambdaHostSettings from appsettings.json
+            Services.Configure<LambdaHostOptions>(
+                Configuration.GetSection(LambdaHostAppSettingsSectionName)
+            );
+        }
 
         // Configure LambdaHostedServiceOptions with callbacks
         Services.Configure<LambdaHostedServiceOptions>(options =>
@@ -60,19 +98,6 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
         // Register core services that are required for Lambda Host to run
         Services.AddLambdaHostCoreServices();
     }
-
-    internal LambdaApplicationBuilder()
-        : this(new HostApplicationBuilder()) { }
-
-    internal LambdaApplicationBuilder(string[]? args)
-        : this(new HostApplicationBuilder(args)) { }
-
-    internal LambdaApplicationBuilder(HostApplicationBuilderSettings settings, bool empty = false)
-        : this(
-            empty
-                ? Microsoft.Extensions.Hosting.Host.CreateEmptyApplicationBuilder(settings)
-                : new HostApplicationBuilder(settings)
-        ) { }
 
     /// <inheritdoc />
     public IDictionary<object, object> Properties =>
@@ -99,6 +124,111 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
         Action<TContainerBuilder>? configure = null
     )
         where TContainerBuilder : notnull => _hostBuilder.ConfigureContainer(factory, configure);
+
+    private void AddDefaultServices() =>
+        Services.AddLogging(logging =>
+        {
+            logging.AddConfiguration(Configuration.GetSection("Logging"));
+            logging.AddSimpleConsole();
+
+            logging.Configure(options =>
+            {
+                options.ActivityTrackingOptions =
+                    ActivityTrackingOptions.SpanId
+                    | ActivityTrackingOptions.TraceId
+                    | ActivityTrackingOptions.ParentId;
+            });
+        });
+
+    private DefaultServiceProviderFactory GetServiceProviderFactory() =>
+        Environment.IsDevelopment()
+            ? new DefaultServiceProviderFactory(
+                new ServiceProviderOptions { ValidateScopes = true, ValidateOnBuild = true }
+            )
+            : new DefaultServiceProviderFactory();
+
+    /// <summary>Applies default configuration sources to the application's configuration manager.</summary>
+    /// <remarks>
+    ///     This method configures the standard configuration sources for a Lambda application:
+    ///     <list type="bullet">
+    ///         <item>Loads <c>appsettings.json</c> from the content root</item>
+    ///         <item>Loads environment-specific settings from <c>appsettings.{EnvironmentName}.json</c></item>
+    ///         <item>Loads user secrets in development environments from the entry assembly</item>
+    ///         <item>Loads all remaining environment variables</item>
+    ///     </list>
+    /// </remarks>
+    private void ApplyDefaultConfiguration()
+    {
+        // Add appsettings.json and appsettings.{EnvironmentName}.json
+        Configuration
+            .AddJsonFile("appsettings.json", true, false)
+            .AddJsonFile($"appsettings.{Environment.EnvironmentName}.json", true, false);
+
+        // add user secrets if in development environment
+        if (Environment.IsDevelopment())
+            try
+            {
+                var assembly = Assembly.GetEntryAssembly();
+                if (assembly is not null)
+                    Configuration.AddUserSecrets(assembly, true, false);
+            }
+            catch
+            {
+                // ignored
+            }
+
+        // add the rest of the environment variables
+        Configuration.AddEnvironmentVariables();
+    }
+
+    private static void ResolveContentRoot(LambdaApplicationOptions settings)
+    {
+        // If the user has set the ContentRootPath explicitly, we don't need to do anything. This
+        // will also capture if the user set DOTNET_CONTENTROOT.
+        if (
+            settings.ContentRootPath is not null
+            || settings.Configuration?[HostDefaults.ContentRootKey] is not null
+        )
+            return;
+
+        // If the user does not set DOTNET_CONTENTROOT or sets the content root explicitly, we will
+        // try to use AWS_LAMBDA_TASK_ROOT as AWS will always set this when deployed.
+        if (settings.Configuration?["LAMBDA_TASK_ROOT"] is { Length: > 0 } lambdaRoot)
+        {
+            settings.ContentRootPath = lambdaRoot;
+            return;
+        }
+
+        // If we're not deployed as a Lambda, we default to the current directory. This may be
+        // overridden later by
+        // Borrowed from:
+        // https://github.com/dotnet/dotnet/blob/main/src/runtime/src/libraries/Microsoft.Extensions.Hosting/src/HostingHostBuilderExtensions.cs
+        // If we're running anywhere other than C:\Windows\system32, we default to using the CWD for
+        // the ContentRoot.
+        // However, since many things like Windows services and MSIX installers have
+        // C:\Windows\system32 as there CWD which is not likely
+        // to really be the home for things like appsettings.json, we skip changing the ContentRoot
+        // in that case. The non-"default" initial
+        // value for ContentRoot is AppContext.BaseDirectory (e.g. the executable path) which
+        // probably makes more sense than the system32.
+
+        // In my testing, both Environment.CurrentDirectory and Environment.SystemDirectory return
+        // the path without
+        // any trailing directory separator characters. I'm not even sure the casing can ever be
+        // different from these APIs, but I think it makes sense to
+        // ignore case for Windows path comparisons given the file system is usually (always?) going
+        // to be case insensitive for the system path.
+        var cwd = System.Environment.CurrentDirectory;
+        if (
+            !OperatingSystem.IsWindows()
+            || !string.Equals(
+                cwd,
+                System.Environment.SystemDirectory,
+                StringComparison.OrdinalIgnoreCase
+            )
+        )
+            settings.ContentRootPath = cwd;
+    }
 
     /// <summary>Builds the Lambda application with the configured services and settings.</summary>
     /// <remarks>
