@@ -13,6 +13,24 @@ namespace AwsLambda.Host.Options;
 /// <seealso cref="IResponseEnvelope" />
 public class EnvelopeOptions
 {
+    /// <summary>Gets or sets a value indicating whether to decode payloads from base64 encoding.</summary>
+    /// <remarks>
+    ///     <para>
+    ///         When set to <c>null</c> (default), the envelope implementation uses its default behavior
+    ///         without overriding the decoding strategy.
+    ///     </para>
+    /// </remarks>
+    public bool? DecodeFromBase64 { get; set; } = null;
+
+    /// <summary>Gets or sets a value indicating whether to encode payloads to base64 encoding.</summary>
+    /// <remarks>
+    ///     <para>
+    ///         When set to <c>null</c> (default), the envelope implementation uses its default behavior
+    ///         without overriding the encoding strategy.
+    ///     </para>
+    /// </remarks>
+    public bool? EncodeToBase64 { get; set; } = null;
+
     /// <summary>
     ///     Gets or sets a dictionary for storing custom extension data associated with envelope
     ///     processing.
