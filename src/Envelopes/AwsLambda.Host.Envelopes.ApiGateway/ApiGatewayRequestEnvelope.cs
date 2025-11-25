@@ -1,23 +1,17 @@
 ﻿using System.Text.Json;
-using System.Text.Json.Serialization;
-using Amazon.Lambda.APIGatewayEvents;
 using AwsLambda.Host.Options;
 
 namespace AwsLambda.Host.Envelopes.ApiGateway;
 
-/// <inheritdoc cref="Amazon.Lambda.APIGatewayEvents.APIGatewayProxyRequest" />
+/// <inheritdoc cref="ApiGatewayRequestEnvelopeBase{T}" />
 /// <remarks>
-///     This class extends <see cref="Amazon.Lambda.APIGatewayEvents.APIGatewayProxyRequest" />
-///     and adds a strongly typed <see cref="BodyContent" /> property for easier serialization and
-///     deserialization of request payloads.
+///     Provides the default implementation for deserializing request payloads using
+///     <see cref="System.Text.Json.JsonSerializer" /> with the configured
+///     <see cref="EnvelopeOptions.JsonOptions" />.
 /// </remarks>
-public class ApiGatewayRequestEnvelope<T> : APIGatewayProxyRequest, IRequestEnvelope
+public class ApiGatewayRequestEnvelope<T> : ApiGatewayRequestEnvelopeBase<T>
 {
-    /// <summary>The deserialized content of the <see cref="APIGatewayProxyRequest.Body" /></summary>
-    [JsonIgnore]
-    public T? BodyContent { get; set; }
-
-    /// <inheritdoc />
-    public void ExtractPayload(EnvelopeOptions options) =>
+    /// <inheritdoc cref="IRequestEnvelope" />
+    public override void ExtractPayload(EnvelopeOptions options) =>
         BodyContent = JsonSerializer.Deserialize<T>(Body, options.JsonOptions);
 }
