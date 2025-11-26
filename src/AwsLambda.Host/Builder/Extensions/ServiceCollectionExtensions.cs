@@ -28,6 +28,7 @@ public static class ServiceCollectionExtensions
                 DefaultLambdaOnShutdownBuilderFactory
             >();
             services.AddSingleton<IFeatureCollectionFactory, DefaultFeatureCollectionFactory>();
+            services.AddSingleton<ILambdaHostContextFactory, LambdaHostContextFactory>();
 
             // Register internal Lambda execution components
             services.AddSingleton<ILambdaHandlerFactory, LambdaHandlerComposer>();
@@ -59,6 +60,26 @@ public static class ServiceCollectionExtensions
                 ILambdaCancellationFactory,
                 DefaultLambdaCancellationFactory
             >();
+
+            return services;
+        }
+
+        /// <summary>
+        ///     Registers the <see cref="ILambdaHostContextAccessor" /> service into the dependency
+        ///     injection container.
+        /// </summary>
+        /// <remarks>
+        ///     This service allows components throughout the application to access the current
+        ///     <see cref="ILambdaHostContext" /> via dependency injection without requiring it to be passed as
+        ///     a parameter. The accessor is registered as a singleton and stores the context per invocation
+        ///     for convenient access throughout the dependency injection container.
+        /// </remarks>
+        /// <returns>The service collection for chaining.</returns>
+        public IServiceCollection AddLambdaHostContextAccessor()
+        {
+            ArgumentNullException.ThrowIfNull(services);
+
+            services.AddSingleton<ILambdaHostContextAccessor, LambdaHostContextAccessor>();
 
             return services;
         }

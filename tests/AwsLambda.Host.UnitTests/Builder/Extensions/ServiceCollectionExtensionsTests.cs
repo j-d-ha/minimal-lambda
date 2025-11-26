@@ -41,7 +41,7 @@ public class ServiceCollectionExtensionsTests
 
         // Assert
         // Should register exactly 8 services (with hosted service being the 8th)
-        serviceCollection.Should().HaveCount(8);
+        serviceCollection.Should().HaveCount(9);
     }
 
     [Fact]
@@ -300,6 +300,62 @@ public class ServiceCollectionExtensionsTests
         var result = serviceCollection
             .TryAddLambdaHostDefaultServices()
             .TryAddLambdaHostDefaultServices();
+
+        // Assert
+        result.Should().BeSameAs(serviceCollection);
+    }
+
+    [Fact]
+    public void AddLambdaHostContextAccessor_WithNullServiceCollection_ThrowsArgumentNullException()
+    {
+        // Act
+        var act = () => ((IServiceCollection)null!).AddLambdaHostContextAccessor();
+
+        // Assert
+        act.Should().ThrowExactly<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void AddLambdaHostContextAccessor_WithValidServiceCollection_ReturnsServiceCollection()
+    {
+        // Arrange
+        var serviceCollection = new ServiceCollection();
+
+        // Act
+        var result = serviceCollection.AddLambdaHostContextAccessor();
+
+        // Assert
+        result.Should().BeSameAs(serviceCollection);
+    }
+
+    [Fact]
+    public void AddLambdaHostContextAccessor_RegistersILambdaHostContextAccessor()
+    {
+        // Arrange
+        var serviceCollection = new ServiceCollection();
+
+        // Act
+        serviceCollection.AddLambdaHostContextAccessor();
+
+        // Assert
+        var descriptor = serviceCollection.FirstOrDefault(d =>
+            d.ServiceType == typeof(ILambdaHostContextAccessor)
+        );
+        descriptor.Should().NotBeNull();
+        descriptor!.ImplementationType.Should().Be<LambdaHostContextAccessor>();
+        descriptor.Lifetime.Should().Be(ServiceLifetime.Singleton);
+    }
+
+    [Fact]
+    public void AddLambdaHostContextAccessor_EnablesMethodChaining()
+    {
+        // Arrange
+        var serviceCollection = new ServiceCollection();
+
+        // Act
+        var result = serviceCollection
+            .AddLambdaHostContextAccessor()
+            .AddLambdaHostContextAccessor();
 
         // Assert
         result.Should().BeSameAs(serviceCollection);

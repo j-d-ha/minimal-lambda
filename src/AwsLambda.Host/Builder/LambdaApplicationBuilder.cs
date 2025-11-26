@@ -4,7 +4,7 @@
 // Copyright (c) .NET Foundation
 // Licensed under the MIT License
 // See THIRD-PARTY-LICENSES.txt file in the project root or visit
-// https://github.com/Azure/azure-functions-dotnet-worker/blob/2.51.0/LICENSE
+// https://github.com/dotnet/aspnetcore/blob/v10.0.0/LICENSE.txt
 
 using System.Diagnostics;
 using System.Reflection;
