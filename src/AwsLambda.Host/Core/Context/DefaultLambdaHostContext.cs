@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace AwsLambda.Host.Core;
 
-internal class DefaultLambdaHostContext : ILambdaHostContext, IAsyncDisposable
+internal sealed class DefaultLambdaHostContext : ILambdaHostContext, IAsyncDisposable
 {
     private readonly ILambdaContext _lambdaContext;
     private readonly IServiceScopeFactory _serviceScopeFactory;

@@ -1,6 +1,6 @@
 namespace AwsLambda.Host.Core;
 
-internal class InvocationDataFeature : IInvocationDataFeature
+internal sealed class InvocationDataFeature : IInvocationDataFeature
 {
     public required Stream EventStream { get; init; }
     public Stream ResponseStream { get; set; } = new MemoryStream();
