@@ -3,7 +3,28 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [Unreleased](https://github.com/j-d-ha/aws-lambda-host/compare/v1.0.0...HEAD)
+## [Unreleased](https://github.com/j-d-ha/aws-lambda-host/compare/v1.1.0...HEAD)
+
+## [v1.1.0](https://github.com/j-d-ha/aws-lambda-host/compare/v1.0.0...v1.1.0) - 2025-11-10
+
+## 🚀 Features
+
+* feat(host): add stream feature abstraction layer (#181) @j-d-ha
+* feat(core): add ILambdaHostContextAccessor and context factory integration (#178) @j-d-ha
+* feat(source-generators): add GeneratedCodeAttribute to all generated code classes (#174) @j-d-ha
+
+## 🐛 Bug Fixes
+
+* fix(ci): update changelog workflow to create pull request instead of direct commit (#172) @j-d-ha
+* fix(ci): add write permissions for release asset uploads (#171) @j-d-ha
+
+## 📚 Documentation
+
+* docs: add GitHub issue and discussion templates (#176) @j-d-ha
+
+## 🔧 Maintenance
+
+* chore(github): update changelog for v1.0.0 release (#170) @j-d-ha
 
 ## [v1.0.0](https://github.com/j-d-ha/aws-lambda-host/compare/v0.1.3...v1.0.0) - 2025-11-10
 
