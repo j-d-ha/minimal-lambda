@@ -1,5 +1,4 @@
 using Amazon.Lambda.Core;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace AwsLambda.Host.Runtime;
@@ -8,30 +7,26 @@ namespace AwsLambda.Host.Runtime;
 internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory
 {
     private readonly ILambdaCancellationFactory _cancellationFactory;
-    private readonly IFeatureCollectionFactory _featureCollectionFactory;
+    private readonly ILambdaHostContextFactory _contextFactory;
     private readonly ILambdaInvocationBuilderFactory _lambdaInvocationBuilderFactory;
     private readonly LambdaHostedServiceOptions _options;
-    private readonly IServiceScopeFactory _scopeFactory;
 
     public LambdaHandlerComposer(
-        IFeatureCollectionFactory featureCollectionFactory,
         ILambdaInvocationBuilderFactory lambdaInvocationBuilderFactory,
         ILambdaCancellationFactory cancellationFactory,
-        IServiceScopeFactory scopeFactory,
-        IOptions<LambdaHostedServiceOptions> options
+        IOptions<LambdaHostedServiceOptions> options,
+        ILambdaHostContextFactory contextFactory
     )
     {
         ArgumentNullException.ThrowIfNull(cancellationFactory);
-        ArgumentNullException.ThrowIfNull(featureCollectionFactory);
         ArgumentNullException.ThrowIfNull(lambdaInvocationBuilderFactory);
         ArgumentNullException.ThrowIfNull(options);
-        ArgumentNullException.ThrowIfNull(scopeFactory);
+        ArgumentNullException.ThrowIfNull(contextFactory);
 
         _cancellationFactory = cancellationFactory;
-        _featureCollectionFactory = featureCollectionFactory;
         _lambdaInvocationBuilderFactory = lambdaInvocationBuilderFactory;
         _options = options.Value;
-        _scopeFactory = scopeFactory;
+        _contextFactory = contextFactory;
     }
 
     /// <summary>Creates a wrapper that invokes the middleware pipeline for each Lambda invocation.</summary>
@@ -62,7 +57,6 @@ internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory
                 cancellationTokenSource.Token
             );
 
-            var featureCollection = _featureCollectionFactory.Create();
             var rawData = new RawInvocationData
             {
                 Event = inputStream,
@@ -71,23 +65,24 @@ internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory
 
             // Create a new lambda host context. This will also create a new service scope
             // the first time that the service container is accessed.
-            await using var lambdaHostContext = new DefaultLambdaHostContext(
+            var lambdaHostContext = _contextFactory.Create(
                 lambdaContext,
-                _scopeFactory,
                 builder.Properties,
-                featureCollection,
                 rawData,
                 linkedTokenSource.Token
             );
 
-            // Invoke the handler wrapped in the middleware pipeline.
-            await handler.Invoke(lambdaHostContext);
+            await using (lambdaHostContext as IAsyncDisposable)
+            {
+                // Invoke the handler wrapped in the middleware pipeline.
+                await handler.Invoke(lambdaHostContext);
 
-            if (lambdaHostContext.Features.TryGet<IResponseFeature>(out var responseFeature))
-                responseFeature.SerializeToStream(lambdaHostContext);
+                if (lambdaHostContext.Features.TryGet<IResponseFeature>(out var responseFeature))
+                    responseFeature.SerializeToStream(lambdaHostContext);
 
-            // If no serializer is provided, return an empty stream.
-            return lambdaHostContext.RawInvocationData.Response;
+                // If no serializer is provided, return an empty stream.
+                return lambdaHostContext.RawInvocationData.Response;
+            }
         }
     }
 }

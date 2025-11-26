@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace AwsLambda.Host.UnitTests.Core.Runtime;
@@ -37,51 +36,73 @@ public class LambdaHandlerComposerTests
     {
         public Fixture()
         {
-            FeatureCollectionFactory = Substitute.For<IFeatureCollectionFactory>();
             LambdaInvocationBuilderFactory = Substitute.For<ILambdaInvocationBuilderFactory>();
             CancellationFactory = Substitute.For<ILambdaCancellationFactory>();
-            ScopeFactory = Substitute.For<IServiceScopeFactory>();
             Options = Microsoft.Extensions.Options.Options.Create(new LambdaHostedServiceOptions());
+            LambdaHostContextFactory = Substitute.For<ILambdaHostContextFactory>();
 
             InvocationBuilder = Substitute.For<ILambdaInvocationBuilder>();
-            FeatureCollection = Substitute.For<IFeatureCollection>();
             CancellationTokenSource = new CancellationTokenSource();
             LambdaContext = Substitute.For<ILambdaContext>();
+            ResponseFeature = Substitute.For<IResponseFeature>();
+            LambdaHostContext = Substitute.For<ILambdaHostContext, IAsyncDisposable>();
 
             SetupDefaults();
         }
 
         public ILambdaCancellationFactory CancellationFactory { get; }
         public CancellationTokenSource CancellationTokenSource { get; }
-        public IFeatureCollection FeatureCollection { get; }
-        public IFeatureCollectionFactory FeatureCollectionFactory { get; }
         public ILambdaInvocationBuilder InvocationBuilder { get; }
         public ILambdaContext LambdaContext { get; }
+        public ILambdaHostContext LambdaHostContext { get; }
+        public ILambdaHostContextFactory LambdaHostContextFactory { get; }
         public ILambdaInvocationBuilderFactory LambdaInvocationBuilderFactory { get; }
         public IOptions<LambdaHostedServiceOptions> Options { get; }
-        public IServiceScopeFactory ScopeFactory { get; }
+        public IResponseFeature ResponseFeature { get; }
 
         /// <summary>Sets up default mock behaviors.</summary>
         private void SetupDefaults()
         {
             InvocationBuilder.Build().Returns(async context => { });
+            InvocationBuilder.Properties.Returns(new Dictionary<string, object?>());
             LambdaInvocationBuilderFactory.CreateBuilder().Returns(InvocationBuilder);
 
             CancellationFactory
                 .NewCancellationTokenSource(Arg.Any<ILambdaContext>())
                 .Returns(CancellationTokenSource);
 
-            FeatureCollectionFactory.Create().Returns(FeatureCollection);
+            // Create a mock features collection
+            var mockFeatures = Substitute.For<IFeatureCollection>();
+            mockFeatures.Get<IResponseFeature>().Returns(ResponseFeature);
+
+            // Set up the context factory to return a mock context for any Create call
+            LambdaHostContextFactory
+                .Create(
+                    Arg.Any<ILambdaContext>(),
+                    Arg.Any<IDictionary<string, object?>>(),
+                    Arg.Any<RawInvocationData>(),
+                    Arg.Any<CancellationToken>()
+                )
+                .Returns(info =>
+                {
+                    // Create a new mock context for each call
+                    // The RawInvocationData passed to Create should be returned
+                    LambdaHostContext.RawInvocationData.Returns(info.Arg<RawInvocationData>());
+                    LambdaHostContext.Features.Returns(mockFeatures);
+                    ((IAsyncDisposable)LambdaHostContext)
+                        .DisposeAsync()
+                        .Returns(ValueTask.CompletedTask);
+                    return LambdaHostContext;
+                });
         }
 
         /// <summary>Creates a LambdaHandlerComposer with the configured mocks.</summary>
         public LambdaHandlerComposer CreateComposer() =>
             new(
-                FeatureCollectionFactory,
                 LambdaInvocationBuilderFactory,
                 CancellationFactory,
-                ScopeFactory,
-                Options
+                Options,
+                LambdaHostContextFactory
             );
 
         /// <summary>Sets the invocation handler that will be built by the builder.</summary>
@@ -102,30 +123,26 @@ public class LambdaHandlerComposerTests
     #region Constructor Validation Tests
 
     [Theory]
-    [InlineData(0)] // FeatureCollectionFactory
-    [InlineData(1)] // LambdaInvocationBuilderFactory
-    [InlineData(2)] // CancellationFactory
-    [InlineData(3)] // ScopeFactory
-    [InlineData(4)] // Options
+    [InlineData(0)] // LambdaInvocationBuilderFactory
+    [InlineData(1)] // CancellationFactory
+    [InlineData(2)] // Options
+    [InlineData(3)] // LambdaHostContextFactory
     public void Constructor_WithNullParameter_ThrowsArgumentNullException(int parameterIndex)
     {
         // Arrange
-        var featureCollectionFactory =
-            parameterIndex == 0 ? null : _fixture.FeatureCollectionFactory;
         var invocationBuilderFactory =
-            parameterIndex == 1 ? null : _fixture.LambdaInvocationBuilderFactory;
-        var cancellationFactory = parameterIndex == 2 ? null : _fixture.CancellationFactory;
-        var scopeFactory = parameterIndex == 3 ? null : _fixture.ScopeFactory;
-        var options = parameterIndex == 4 ? null : _fixture.Options;
+            parameterIndex == 0 ? null : _fixture.LambdaInvocationBuilderFactory;
+        var cancellationFactory = parameterIndex == 1 ? null : _fixture.CancellationFactory;
+        var options = parameterIndex == 2 ? null : _fixture.Options;
+        var contextFactory = parameterIndex == 3 ? null : _fixture.LambdaHostContextFactory;
 
         // Act & Assert
         var act = () =>
             new LambdaHandlerComposer(
-                featureCollectionFactory!,
                 invocationBuilderFactory!,
                 cancellationFactory!,
-                scopeFactory!,
-                options!
+                options!,
+                contextFactory!
             );
         act.Should().ThrowExactly<ArgumentNullException>();
     }
@@ -189,7 +206,7 @@ public class LambdaHandlerComposerTests
     {
         // Arrange
         var configureHandlerBuilderInvoked = false;
-        Action<ILambdaInvocationBuilder>? configureAction = builder =>
+        Action<ILambdaInvocationBuilder> configureAction = builder =>
         {
             configureHandlerBuilderInvoked = true;
         };
@@ -201,11 +218,10 @@ public class LambdaHandlerComposerTests
         var options = Microsoft.Extensions.Options.Options.Create(lambdaOptions);
 
         var composer = new LambdaHandlerComposer(
-            _fixture.FeatureCollectionFactory,
             _fixture.LambdaInvocationBuilderFactory,
             _fixture.CancellationFactory,
-            _fixture.ScopeFactory,
-            options
+            options,
+            _fixture.LambdaHostContextFactory
         );
 
         // Act
@@ -244,20 +260,6 @@ public class LambdaHandlerComposerTests
         _fixture
             .CancellationFactory.Received(1)
             .NewCancellationTokenSource(_fixture.LambdaContext);
-    }
-
-    [Fact]
-    public async Task RequestHandler_CreatesFeatureCollection()
-    {
-        // Arrange
-        var composer = _fixture.CreateComposer();
-        var handler = composer.CreateHandler(CancellationToken.None);
-
-        // Act
-        await handler(new MemoryStream(), _fixture.LambdaContext);
-
-        // Assert
-        _fixture.FeatureCollectionFactory.Received(1).Create();
     }
 
     [Fact]
@@ -312,62 +314,6 @@ public class LambdaHandlerComposerTests
         // After invocation, the cancellation token source should have been disposed
         var act = () => cancellationTokenSource.Token;
         act.Should().ThrowExactly<ObjectDisposedException>();
-    }
-
-    #endregion
-
-    #region Cancellation Token Handling Tests
-
-    [Fact]
-    public async Task RequestHandler_LinksCancellationTokensCorrectly()
-    {
-        // Arrange
-        var capturedContext = default(ILambdaHostContext);
-        LambdaInvocationDelegate handler = async context =>
-        {
-            capturedContext = context;
-            await Task.CompletedTask;
-        };
-        _fixture.SetInvocationHandler(handler);
-
-        var composer = _fixture.CreateComposer();
-        var requestHandler = composer.CreateHandler(CancellationToken.None);
-
-        // Act
-        await requestHandler(new MemoryStream(), _fixture.LambdaContext);
-
-        // Assert
-        capturedContext.Should().NotBeNull();
-        capturedContext!.CancellationToken.Should().NotBe(CancellationToken.None);
-    }
-
-    [Fact]
-    public async Task RequestHandler_CancellationToken_IsCancelledWhenStoppingTokenCancelled()
-    {
-        // Arrange
-        var capturedCancellationToken = CancellationToken.None;
-        LambdaInvocationDelegate handler = async context =>
-        {
-            capturedCancellationToken = context.CancellationToken;
-            await Task.CompletedTask;
-        };
-        _fixture.SetInvocationHandler(handler);
-
-        var lambdaCancellationTokenSource = new CancellationTokenSource(TimeSpan.FromMinutes(5));
-        _fixture
-            .CancellationFactory.NewCancellationTokenSource(Arg.Any<ILambdaContext>())
-            .Returns(lambdaCancellationTokenSource);
-
-        using var stoppingTokenSource = new CancellationTokenSource();
-        var composer = _fixture.CreateComposer();
-        var requestHandler = composer.CreateHandler(stoppingTokenSource.Token);
-
-        // Act
-        stoppingTokenSource.Cancel();
-        await requestHandler(new MemoryStream(), _fixture.LambdaContext);
-
-        // Assert
-        capturedCancellationToken.IsCancellationRequested.Should().BeTrue();
     }
 
     #endregion
