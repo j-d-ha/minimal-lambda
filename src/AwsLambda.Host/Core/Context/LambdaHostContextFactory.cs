@@ -11,8 +11,8 @@ internal class LambdaHostContextFactory : ILambdaHostContextFactory
 
     public LambdaHostContextFactory(
         IServiceScopeFactory serviceScopeFactory,
-        ILambdaHostContextAccessor? contextAccessor,
-        IFeatureCollectionFactory featureCollectionFactory
+        IFeatureCollectionFactory featureCollectionFactory,
+        ILambdaHostContextAccessor? contextAccessor = null
     )
     {
         ArgumentNullException.ThrowIfNull(serviceScopeFactory);
