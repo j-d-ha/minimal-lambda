@@ -11,7 +11,6 @@ public class DefaultLambdaHostContextTests
         Dictionary<string, object?> properties,
         IServiceScopeFactory serviceScopeFactory,
         IFeatureCollection featuresCollection,
-        RawInvocationData rawData,
         CancellationToken cancellationToken
     )
     {
@@ -22,7 +21,6 @@ public class DefaultLambdaHostContextTests
                 serviceScopeFactory,
                 properties,
                 featuresCollection,
-                rawData,
                 cancellationToken
             );
         act.Should().ThrowExactly<ArgumentNullException>();
@@ -34,7 +32,6 @@ public class DefaultLambdaHostContextTests
         Dictionary<string, object?> properties,
         ILambdaContext lambdaContext,
         IFeatureCollection featuresCollection,
-        RawInvocationData rawData,
         CancellationToken cancellationToken
     )
     {
@@ -45,7 +42,6 @@ public class DefaultLambdaHostContextTests
                 null!,
                 properties,
                 featuresCollection,
-                rawData,
                 cancellationToken
             );
         act.Should().ThrowExactly<ArgumentNullException>();
@@ -57,7 +53,6 @@ public class DefaultLambdaHostContextTests
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
         IFeatureCollection featuresCollection,
-        RawInvocationData rawData,
         CancellationToken cancellationToken
     )
     {
@@ -68,7 +63,6 @@ public class DefaultLambdaHostContextTests
                 serviceScopeFactory,
                 null!,
                 featuresCollection,
-                rawData,
                 cancellationToken
             );
         act.Should().ThrowExactly<ArgumentNullException>();
@@ -80,7 +74,6 @@ public class DefaultLambdaHostContextTests
         Dictionary<string, object?> properties,
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        RawInvocationData rawData,
         CancellationToken cancellationToken
     )
     {
@@ -91,7 +84,6 @@ public class DefaultLambdaHostContextTests
                 serviceScopeFactory,
                 properties,
                 null!,
-                rawData,
                 cancellationToken
             );
         act.Should().ThrowExactly<ArgumentNullException>();
@@ -104,7 +96,6 @@ public class DefaultLambdaHostContextTests
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
         IFeatureCollection featuresCollection,
-        RawInvocationData rawData,
         CancellationToken cancellationToken
     )
     {
@@ -114,7 +105,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             properties,
             featuresCollection,
-            rawData,
             cancellationToken
         );
 
@@ -128,8 +118,7 @@ public class DefaultLambdaHostContextTests
         string expectedValue,
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange
@@ -139,7 +128,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData,
             CancellationToken.None
         );
 
@@ -156,8 +144,7 @@ public class DefaultLambdaHostContextTests
         IClientContext expectedValue,
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange
@@ -167,7 +154,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData,
             CancellationToken.None
         );
 
@@ -184,8 +170,7 @@ public class DefaultLambdaHostContextTests
         string expectedValue,
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange
@@ -195,7 +180,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData,
             CancellationToken.None
         );
 
@@ -212,8 +196,7 @@ public class DefaultLambdaHostContextTests
         string expectedValue,
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange
@@ -223,7 +206,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData,
             CancellationToken.None
         );
 
@@ -240,8 +222,7 @@ public class DefaultLambdaHostContextTests
         ICognitoIdentity expectedValue,
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange
@@ -251,7 +232,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData,
             CancellationToken.None
         );
 
@@ -268,8 +248,7 @@ public class DefaultLambdaHostContextTests
         string expectedValue,
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange
@@ -279,7 +258,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData,
             CancellationToken.None
         );
 
@@ -296,8 +274,7 @@ public class DefaultLambdaHostContextTests
         ILambdaLogger expectedValue,
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange
@@ -307,7 +284,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData,
             CancellationToken.None
         );
 
@@ -324,8 +300,7 @@ public class DefaultLambdaHostContextTests
         string expectedValue,
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange
@@ -335,7 +310,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData,
             CancellationToken.None
         );
 
@@ -352,8 +326,7 @@ public class DefaultLambdaHostContextTests
         string expectedValue,
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange
@@ -363,7 +336,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData,
             CancellationToken.None
         );
 
@@ -380,8 +352,7 @@ public class DefaultLambdaHostContextTests
         int expectedValue,
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange
@@ -391,7 +362,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData,
             CancellationToken.None
         );
 
@@ -408,8 +378,7 @@ public class DefaultLambdaHostContextTests
         TimeSpan expectedValue,
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange
@@ -419,7 +388,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData,
             CancellationToken.None
         );
 
@@ -435,8 +403,7 @@ public class DefaultLambdaHostContextTests
     internal void Properties_ReturnsPropertiesDictionaryPassedToConstructor(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange
@@ -450,7 +417,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             propertiesDict,
             featuresCollection,
-            rawData,
             CancellationToken.None
         );
 
@@ -467,8 +433,7 @@ public class DefaultLambdaHostContextTests
     internal void Items_ReturnsEmptyDictionaryInitially(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange & Act
@@ -477,7 +442,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData,
             CancellationToken.None
         );
 
@@ -491,8 +455,7 @@ public class DefaultLambdaHostContextTests
     internal void Items_AllowsAddingAndRetrievingValues(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange
@@ -501,7 +464,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData,
             CancellationToken.None
         );
         var key = new object();
@@ -520,8 +482,7 @@ public class DefaultLambdaHostContextTests
     internal void Items_AllowsClearingValues(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange
@@ -530,7 +491,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData,
             CancellationToken.None
         );
         context.Items["key1"] = "value1";
@@ -548,8 +508,7 @@ public class DefaultLambdaHostContextTests
     internal void CancellationToken_ReturnsCancellationTokenPassedToConstructor(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange
@@ -559,7 +518,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData,
             expectedToken
         );
 
@@ -575,8 +533,7 @@ public class DefaultLambdaHostContextTests
     internal void Features_ReturnsFeaturesCollectionPassedToConstructor(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange
@@ -585,7 +542,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData,
             CancellationToken.None
         );
 
@@ -598,40 +554,9 @@ public class DefaultLambdaHostContextTests
 
     [Theory]
     [AutoNSubstituteData]
-    internal void RawInvocationData_ReturnsRawDataPassedToConstructor(
-        ILambdaContext lambdaContext,
-        IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection
-    )
-    {
-        // Arrange
-        var rawData = new RawInvocationData
-        {
-            Event = new MemoryStream(),
-            Response = new MemoryStream(),
-        };
-        var context = new DefaultLambdaHostContext(
-            lambdaContext,
-            serviceScopeFactory,
-            new Dictionary<string, object?>(),
-            featuresCollection,
-            rawData,
-            CancellationToken.None
-        );
-
-        // Act
-        var result = context.RawInvocationData;
-
-        // Assert
-        result.Should().BeSameAs(rawData);
-    }
-
-    [Theory]
-    [AutoNSubstituteData]
     internal void ServiceProvider_IsCreatedOnFirstAccess(
         ILambdaContext lambdaContext,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange
@@ -647,7 +572,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData,
             CancellationToken.None
         );
 
@@ -664,8 +588,7 @@ public class DefaultLambdaHostContextTests
     [AutoNSubstituteData]
     internal void ServiceProvider_ReturnsSameScopeOnSubsequentAccess(
         ILambdaContext lambdaContext,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange
@@ -681,7 +604,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData,
             CancellationToken.None
         );
 
@@ -700,8 +622,7 @@ public class DefaultLambdaHostContextTests
     [AutoNSubstituteData]
     internal void ServiceProvider_UsesServiceScopeFactory(
         ILambdaContext lambdaContext,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange
@@ -714,7 +635,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData,
             CancellationToken.None
         );
 
@@ -729,8 +649,7 @@ public class DefaultLambdaHostContextTests
     [AutoNSubstituteData]
     internal async Task DisposeAsync_DisposesServiceScopeWhenAsyncDisposable(
         ILambdaContext lambdaContext,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange
@@ -743,7 +662,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData,
             CancellationToken.None
         );
         _ = context.ServiceProvider; // Trigger lazy initialization
@@ -759,8 +677,7 @@ public class DefaultLambdaHostContextTests
     [AutoNSubstituteData]
     internal async Task DisposeAsync_DisposesServiceScopeSynchronouslyWhenNotAsyncDisposable(
         ILambdaContext lambdaContext,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange
@@ -773,7 +690,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData,
             CancellationToken.None
         );
         _ = context.ServiceProvider; // Trigger lazy initialization
@@ -787,49 +703,18 @@ public class DefaultLambdaHostContextTests
 
     [Theory]
     [AutoNSubstituteData]
-    internal async Task DisposeAsync_DisposesRawInvocationEventStream(
+    internal async Task DisposeAsync_ClearsItemsCollection(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
         IFeatureCollection featuresCollection
     )
     {
         // Arrange
-        var eventStream = new MemoryStream();
-        var responseStream = new MemoryStream();
-        var rawData = new RawInvocationData { Event = eventStream, Response = responseStream };
-
         var context = new DefaultLambdaHostContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData,
-            CancellationToken.None
-        );
-
-        // Act
-        await context.DisposeAsync();
-
-        // Assert
-        eventStream.CanRead.Should().BeFalse();
-    }
-
-    [Theory]
-    [AutoNSubstituteData]
-    internal async Task DisposeAsync_ClearsItemsCollection(
-        ILambdaContext lambdaContext,
-        IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
-    )
-    {
-        // Arrange
-        var context = new DefaultLambdaHostContext(
-            lambdaContext,
-            serviceScopeFactory,
-            new Dictionary<string, object?>(),
-            featuresCollection,
-            rawData,
             CancellationToken.None
         );
         context.Items["key1"] = "value1";
@@ -846,8 +731,7 @@ public class DefaultLambdaHostContextTests
     [AutoNSubstituteData]
     internal async Task DisposeAsync_DisposesServiceScopeBeforeNullingServiceProvider(
         ILambdaContext lambdaContext,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange
@@ -863,7 +747,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData,
             CancellationToken.None
         );
         _ = context.ServiceProvider; // Trigger initialization
@@ -881,8 +764,7 @@ public class DefaultLambdaHostContextTests
     internal async Task DisposeAsync_CanBeCalledMultipleTimes(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange
@@ -891,7 +773,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData,
             CancellationToken.None
         );
 
@@ -911,8 +792,7 @@ public class DefaultLambdaHostContextTests
     internal void ContextImplementsIAsyncDisposable(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange & Act
@@ -921,7 +801,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData,
             CancellationToken.None
         );
 
@@ -934,8 +813,7 @@ public class DefaultLambdaHostContextTests
     internal void ContextImplementsILambdaHostContext(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange & Act
@@ -944,7 +822,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData,
             CancellationToken.None
         );
 
@@ -957,8 +834,7 @@ public class DefaultLambdaHostContextTests
     internal void ContextImplementsILambdaContext(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange & Act
@@ -967,7 +843,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData,
             CancellationToken.None
         );
 
@@ -981,9 +856,7 @@ public class DefaultLambdaHostContextTests
         ILambdaContext lambdaContext1,
         ILambdaContext lambdaContext2,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData1,
-        RawInvocationData rawData2
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange
@@ -992,7 +865,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData1,
             CancellationToken.None
         );
         var context2 = new DefaultLambdaHostContext(
@@ -1000,7 +872,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData2,
             CancellationToken.None
         );
 
@@ -1017,8 +888,7 @@ public class DefaultLambdaHostContextTests
     internal void FeaturesCollection_CanBeUsedToStoreAndRetrieveFeaturesViaItems(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange
@@ -1027,7 +897,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            rawData,
             CancellationToken.None
         );
         var featureType = typeof(string);
@@ -1046,8 +915,7 @@ public class DefaultLambdaHostContextTests
     internal void PropertiesDictionary_PersistsAcrossMultipleInvocations(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection,
-        RawInvocationData rawData
+        IFeatureCollection featuresCollection
     )
     {
         // Arrange
@@ -1057,7 +925,6 @@ public class DefaultLambdaHostContextTests
             serviceScopeFactory,
             properties,
             featuresCollection,
-            rawData,
             CancellationToken.None
         );
 
