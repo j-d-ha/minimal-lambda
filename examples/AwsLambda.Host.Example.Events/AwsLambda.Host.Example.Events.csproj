@@ -24,6 +24,7 @@
       OutputItemType="Analyzer"
     />
     <ProjectReference Include="..\..\src\Envelopes\AwsLambda.Host.Envelopes.ApiGateway\AwsLambda.Host.Envelopes.ApiGateway.csproj" />
+    <ProjectReference Include="..\..\src\Envelopes\AwsLambda.Host.Envelopes.Sns\AwsLambda.Host.Envelopes.Sns.csproj" />
     <ProjectReference Include="..\..\src\Envelopes\AwsLambda.Host.Envelopes.Sqs\AwsLambda.Host.Envelopes.Sqs.csproj" />
   </ItemGroup>
   <ItemGroup>

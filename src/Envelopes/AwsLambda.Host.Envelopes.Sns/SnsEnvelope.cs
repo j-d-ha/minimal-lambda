@@ -16,6 +16,9 @@ public sealed class SnsEnvelope<T> : SnsEnvelopeBase<T>
     public override void ExtractPayload(EnvelopeOptions options)
     {
         foreach (var record in Records)
-            record.BodyContent = JsonSerializer.Deserialize<T>(record.Sns.Message, options.JsonOptions);
+            record.Sns.MessageContent = JsonSerializer.Deserialize<T>(
+                record.Sns.Message,
+                options.JsonOptions
+            );
     }
 }

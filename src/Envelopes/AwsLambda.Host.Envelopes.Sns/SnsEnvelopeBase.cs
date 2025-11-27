@@ -8,22 +8,29 @@ namespace AwsLambda.Host.Envelopes.Sns;
 /// <remarks>
 ///     This abstract class extends <see cref="SNSEvent" /> and provides a foundation for strongly
 ///     typed SNS message handling. Derived classes implement <see cref="ExtractPayload" /> to
-///     deserialize the message bodies into strongly typed <see cref="SnsMessageEnvelope" /> records
+///     deserialize the message bodies into strongly typed <see cref="SnsRecordEnvelope" /> records
 ///     using their chosen deserialization strategy.
 /// </remarks>
 public abstract class SnsEnvelopeBase<T> : SNSEvent, IRequestEnvelope
 {
     /// <inheritdoc cref="SNSEvent.Records" />
-    public new required List<SnsMessageEnvelope> Records { get; set; }
+    public new required List<SnsRecordEnvelope> Records { get; set; }
 
     /// <inheritdoc />
     public abstract void ExtractPayload(EnvelopeOptions options);
 
     /// <inheritdoc cref="SNSEvent.SNSRecord" />
-    public class SnsMessageEnvelope : SNSRecord
+    public class SnsRecordEnvelope : SNSRecord
     {
-        /// <summary>Gets and sets the deserialized <see cref="SNSEvent.SNSRecord.Sns" /> message body</summary>
+        /// <inheritdoc cref="SNSRecord.Sns" />
+        public new required SnsMessageEnvalope Sns { get; set; }
+    }
+
+    /// <inheritdoc cref="SNSMessage" />
+    public class SnsMessageEnvalope : SNSMessage
+    {
+        /// <summary>Gets and sets the deserialized <see cref="SNSMessage.Message" /> message body</summary>
         [JsonIgnore]
-        public T? BodyContent { get; set; }
+        public T? MessageContent { get; set; }
     }
 }
