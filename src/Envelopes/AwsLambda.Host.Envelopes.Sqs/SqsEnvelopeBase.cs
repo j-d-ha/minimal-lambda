@@ -6,8 +6,8 @@ namespace AwsLambda.Host.Envelopes.Sqs;
 
 /// <inheritdoc cref="SQSEvent" />
 /// <remarks>
-///     This abstract class extends <see cref="SQSEvent" /> and provides a foundation
-///     for strongly typed SQS message handling. Derived classes implement <see cref="ExtractPayload" /> to
+///     This abstract class extends <see cref="SQSEvent" /> and provides a foundation for strongly
+///     typed SQS message handling. Derived classes implement <see cref="ExtractPayload" /> to
 ///     deserialize the message bodies into strongly typed <see cref="SqsMessageEnvelope" /> records
 ///     using their chosen deserialization strategy.
 /// </remarks>

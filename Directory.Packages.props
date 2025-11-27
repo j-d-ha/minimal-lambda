@@ -48,6 +48,7 @@
     <PackageVersion Include="Microsoft.Extensions.Diagnostics.Testing" Version="10.0.0" />
     <!-- Lambda Event Libraries -->
     <PackageVersion Include="Amazon.Lambda.APIGatewayEvents" Version="2.7.2" />
+    <PackageVersion Include="Amazon.Lambda.ApplicationLoadBalancerEvents" Version="2.2.0" />
     <PackageVersion Include="Amazon.Lambda.SQSEvents" Version="2.2.0" />
   </ItemGroup>
   <!-- Conditional versions based on target framework -->
