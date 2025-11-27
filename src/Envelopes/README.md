@@ -20,12 +20,12 @@ IDE support and compile-time type checking.
 
 ## Packages
 
-| Package                                                                                                 | NuGet                                                                                                                                                                      | Downloads                                                                                                                                                                        |
-|---------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [**AwsLambda.Host.Envelopes.Sqs**](./AwsLambda.Host.Envelopes.Sqs/README.md)                           | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Sqs.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sqs)                               | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Sqs.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sqs/)                               |
-| [**AwsLambda.Host.Envelopes.ApiGateway**](./AwsLambda.Host.Envelopes.ApiGateway/README.md)             | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.ApiGateway.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.ApiGateway)                 | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.ApiGateway.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.ApiGateway/)                 |
-| [**AwsLambda.Host.Envelopes.Sns**](./AwsLambda.Host.Envelopes.Sns/README.md)                           | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Sns.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sns)                               | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Sns.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sns/)                               |
-| [**AwsLambda.Host.Envelopes.Alb**](./AwsLambda.Host.Envelopes.Alb/README.md) | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Alb.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Alb) | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Alb.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Alb/) |
+| Package                                                                                    | NuGet                                                                                                                                                  | Downloads                                                                                                                                                    |
+|--------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [**AwsLambda.Host.Envelopes.Sqs**](./AwsLambda.Host.Envelopes.Sqs/README.md)               | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Sqs.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sqs)               | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Sqs.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sqs/)               |
+| [**AwsLambda.Host.Envelopes.ApiGateway**](./AwsLambda.Host.Envelopes.ApiGateway/README.md) | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.ApiGateway.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.ApiGateway) | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.ApiGateway.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.ApiGateway/) |
+| [**AwsLambda.Host.Envelopes.Sns**](./AwsLambda.Host.Envelopes.Sns/README.md)               | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Sns.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sns)               | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Sns.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sns/)               |
+| [**AwsLambda.Host.Envelopes.Alb**](./AwsLambda.Host.Envelopes.Alb/README.md)               | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Alb.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Alb)               | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Alb.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Alb/)               |
 
 Each package has detailed documentation in its own README file.
 
@@ -33,12 +33,12 @@ Each package has detailed documentation in its own README file.
 
 Use the following table to find the right envelope package for your Lambda event type:
 
-| Lambda Event Type              | Package                                   |
-|--------------------------------|-------------------------------------------|
-| API Gateway REST API           | AwsLambda.Host.Envelopes.ApiGateway       |
-| API Gateway HTTP API v1        | AwsLambda.Host.Envelopes.ApiGateway       |
-| API Gateway HTTP API v2        | AwsLambda.Host.Envelopes.ApiGateway       |
-| API Gateway WebSocket          | AwsLambda.Host.Envelopes.ApiGateway       |
-| Application Load Balancer      | AwsLambda.Host.Envelopes.Alb              |
-| SNS                            | AwsLambda.Host.Envelopes.Sns              |
-| SQS                            | AwsLambda.Host.Envelopes.Sqs              |
+| Lambda Event Type         | Package                             |
+|---------------------------|-------------------------------------|
+| API Gateway REST API      | AwsLambda.Host.Envelopes.ApiGateway |
+| API Gateway HTTP API v1   | AwsLambda.Host.Envelopes.ApiGateway |
+| API Gateway HTTP API v2   | AwsLambda.Host.Envelopes.ApiGateway |
+| API Gateway WebSocket     | AwsLambda.Host.Envelopes.ApiGateway |
+| Application Load Balancer | AwsLambda.Host.Envelopes.Alb        |
+| SNS                       | AwsLambda.Host.Envelopes.Sns        |
+| SQS                       | AwsLambda.Host.Envelopes.Sqs        |
