@@ -22,14 +22,17 @@ public abstract class KinesisEnvelopeBase<T> : KinesisEvent, IRequestEnvelope
     /// <inheritdoc cref="KinesisEvent.KinesisEventRecord" />
     public class KinesisEventRecordEnvelope : KinesisEventRecord
     {
-        /// <inheritdoc cref="KinesisEventRecord.Kinesis" />
+        /// <inheritdoc cref="KinesisEvent.KinesisEventRecord.Kinesis" />
         public new required RecordEnvelope Kinesis { get; set; }
     }
 
     /// <inheritdoc cref="KinesisEvent.Record" />
     public class RecordEnvelope : Record
     {
-        /// <summary>Gets and sets the deserialized <see cref="KinesisEvent.Record.Data" /> stream content</summary>
+        /// <summary>
+        ///     Gets and sets the deserialized <see cref="Amazon.Kinesis.Model.Record.Data" /> stream
+        ///     content
+        /// </summary>
         [JsonIgnore]
         public T? DataContent { get; set; }
     }
