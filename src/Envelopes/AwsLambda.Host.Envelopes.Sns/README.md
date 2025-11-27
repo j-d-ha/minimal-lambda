@@ -71,23 +71,6 @@ public sealed class SnsXmlEnvelope<T> : SnsEnvelopeBase<T>
 This pattern allows you to support multiple serialization formats while maintaining the same
 envelope interface.
 
-## Type Architecture
-
-`SnsEnvelope<T>` uses nested types to provide strongly-typed record and message access:
-
-| Type                | Parent             | Purpose |
-|---------------------|-------------------|---------|
-| `SnsEnvelope<T>`    | `SnsEnvelopeBase<T>` | Default JSON deserialization implementation |
-| `SnsRecordEnvelope` | `SnsEnvelopeBase<T>` | Strongly-typed SNS record with `Sns` property of type `SnsMessageEnvalope` |
-| `SnsMessageEnvalope`| `SnsEnvelopeBase<T>` | Extended `SNSMessage` with `MessageContent` property for deserialized payload |
-
-Access the deserialized message content via:
-```csharp
-foreach (var record in envelope.Records)  // Records is List<SnsRecordEnvelope>
-{
-    var message = record.Sns.MessageContent;  // T? containing deserialized payload
-}
-```
 
 ## AOT Support
 
