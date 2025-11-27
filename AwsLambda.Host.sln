@@ -62,7 +62,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", 
 		Properties\launchSettings.json = Properties\launchSettings.json
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Envelopes.ApplicationLoadBalancer", "src\Envelopes\AwsLambda.Host.Envelopes.ApplicationLoadBalancer\AwsLambda.Host.Envelopes.ApplicationLoadBalancer.csproj", "{450D5371-0581-4480-AB54-46AF86FBC3CF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Envelopes.Alb", "src\Envelopes\AwsLambda.Host.Envelopes.Alb\AwsLambda.Host.Envelopes.Alb.csproj", "{DD02E50C-625B-4A91-9BDF-7E3C08DF9E78}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -266,18 +266,18 @@ Global
 		{C3E6B18E-A30A-4844-BB82-209A6CC52205}.Release|x64.Build.0 = Release|Any CPU
 		{C3E6B18E-A30A-4844-BB82-209A6CC52205}.Release|x86.ActiveCfg = Release|Any CPU
 		{C3E6B18E-A30A-4844-BB82-209A6CC52205}.Release|x86.Build.0 = Release|Any CPU
-		{450D5371-0581-4480-AB54-46AF86FBC3CF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{450D5371-0581-4480-AB54-46AF86FBC3CF}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{450D5371-0581-4480-AB54-46AF86FBC3CF}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{450D5371-0581-4480-AB54-46AF86FBC3CF}.Debug|x64.Build.0 = Debug|Any CPU
-		{450D5371-0581-4480-AB54-46AF86FBC3CF}.Debug|x86.ActiveCfg = Debug|Any CPU
-		{450D5371-0581-4480-AB54-46AF86FBC3CF}.Debug|x86.Build.0 = Debug|Any CPU
-		{450D5371-0581-4480-AB54-46AF86FBC3CF}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{450D5371-0581-4480-AB54-46AF86FBC3CF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{450D5371-0581-4480-AB54-46AF86FBC3CF}.Release|x64.ActiveCfg = Release|Any CPU
-		{450D5371-0581-4480-AB54-46AF86FBC3CF}.Release|x64.Build.0 = Release|Any CPU
-		{450D5371-0581-4480-AB54-46AF86FBC3CF}.Release|x86.ActiveCfg = Release|Any CPU
-		{450D5371-0581-4480-AB54-46AF86FBC3CF}.Release|x86.Build.0 = Release|Any CPU
+		{DD02E50C-625B-4A91-9BDF-7E3C08DF9E78}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DD02E50C-625B-4A91-9BDF-7E3C08DF9E78}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DD02E50C-625B-4A91-9BDF-7E3C08DF9E78}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{DD02E50C-625B-4A91-9BDF-7E3C08DF9E78}.Debug|x64.Build.0 = Debug|Any CPU
+		{DD02E50C-625B-4A91-9BDF-7E3C08DF9E78}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{DD02E50C-625B-4A91-9BDF-7E3C08DF9E78}.Debug|x86.Build.0 = Debug|Any CPU
+		{DD02E50C-625B-4A91-9BDF-7E3C08DF9E78}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DD02E50C-625B-4A91-9BDF-7E3C08DF9E78}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DD02E50C-625B-4A91-9BDF-7E3C08DF9E78}.Release|x64.ActiveCfg = Release|Any CPU
+		{DD02E50C-625B-4A91-9BDF-7E3C08DF9E78}.Release|x64.Build.0 = Release|Any CPU
+		{DD02E50C-625B-4A91-9BDF-7E3C08DF9E78}.Release|x86.ActiveCfg = Release|Any CPU
+		{DD02E50C-625B-4A91-9BDF-7E3C08DF9E78}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -300,6 +300,6 @@ Global
 		{0BBBEF49-6478-4394-9BD7-B9AFCA280B3D} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{B8FD7488-07A9-4CA0-8F40-483ECE109159} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{C3E6B18E-A30A-4844-BB82-209A6CC52205} = {A193E0DE-D617-4E7E-83CA-2A9150E44841}
-		{450D5371-0581-4480-AB54-46AF86FBC3CF} = {1C3C52D9-2936-4A0C-A9C8-F330F22B8359}
+		{DD02E50C-625B-4A91-9BDF-7E3C08DF9E78} = {1C3C52D9-2936-4A0C-A9C8-F330F22B8359}
 	EndGlobalSection
 EndGlobal

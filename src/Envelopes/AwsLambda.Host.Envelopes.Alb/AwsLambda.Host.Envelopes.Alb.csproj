@@ -8,7 +8,7 @@
     <IncludeBuildOutput>true</IncludeBuildOutput>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <!-- Package Metadata -->
-    <PackageId>AwsLambda.Host.Envelopes.ApplicationLoadBalancer</PackageId>
+    <PackageId>AwsLambda.Host.Envelopes.Alb</PackageId>
     <Description>Strongly-typed Application Load Balancer Models for AWS Lambda</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>

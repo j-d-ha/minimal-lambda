@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 using Amazon.Lambda.ApplicationLoadBalancerEvents;
 using AwsLambda.Host.Options;
 
-namespace AwsLambda.Host.Envelopes.ApplicationLoadBalancer;
+namespace AwsLambda.Host.Envelopes.Alb;
 
 /// <inheritdoc cref="Amazon.Lambda.ApplicationLoadBalancerEvents.ApplicationLoadBalancerRequest" />
 /// <remarks>

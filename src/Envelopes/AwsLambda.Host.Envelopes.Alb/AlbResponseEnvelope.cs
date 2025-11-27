@@ -1,7 +1,7 @@
 using System.Text.Json;
 using AwsLambda.Host.Options;
 
-namespace AwsLambda.Host.Envelopes.ApplicationLoadBalancer;
+namespace AwsLambda.Host.Envelopes.Alb;
 
 /// <inheritdoc cref="AlbResponseEnvelopeBase{T}" />
 /// <remarks>

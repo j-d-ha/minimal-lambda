@@ -3,7 +3,7 @@ using System.Text.Json.Serialization;
 using Amazon.Lambda.ApplicationLoadBalancerEvents;
 using AutoFixture;
 using AwesomeAssertions;
-using AwsLambda.Host.Envelopes.ApplicationLoadBalancer;
+using AwsLambda.Host.Envelopes.Alb;
 using AwsLambda.Host.Options;
 using JetBrains.Annotations;
 using Xunit;

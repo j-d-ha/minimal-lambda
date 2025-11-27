@@ -1,4 +1,4 @@
-# AwsLambda.Host.Envelopes.ApplicationLoadBalancer
+# AwsLambda.Host.Envelopes.Alb
 
 Strongly-typed Application Load Balancer event handling for the AwsLambda.Host framework.
 
@@ -27,7 +27,7 @@ Define your request and response types, then create a handler:
 using System;
 using System.Collections.Generic;
 using AwsLambda.Host.Builder;
-using AwsLambda.Host.Envelopes.ApplicationLoadBalancer;
+using AwsLambda.Host.Envelopes.Alb;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 

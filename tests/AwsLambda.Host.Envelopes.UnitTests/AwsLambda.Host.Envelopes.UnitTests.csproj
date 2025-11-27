@@ -25,7 +25,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Envelopes\AwsLambda.Host.Envelopes.ApiGateway\AwsLambda.Host.Envelopes.ApiGateway.csproj" />
-    <ProjectReference Include="..\..\src\Envelopes\AwsLambda.Host.Envelopes.ApplicationLoadBalancer\AwsLambda.Host.Envelopes.ApplicationLoadBalancer.csproj" />
+    <ProjectReference Include="..\..\src\Envelopes\AwsLambda.Host.Envelopes.Alb\AwsLambda.Host.Envelopes.Alb.csproj" />
     <ProjectReference Include="..\..\src\Envelopes\AwsLambda.Host.Envelopes.Sqs\AwsLambda.Host.Envelopes.Sqs.csproj" />
   </ItemGroup>
 </Project>
