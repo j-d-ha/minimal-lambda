@@ -23,7 +23,7 @@ public abstract class KafkaEnvelopeBase<T> : KafkaEvent, IRequestEnvelope
     public class KafkaEventRecordEnvelope : KafkaEventRecord
     {
         /// <summary>
-        ///     Gets and sets the deserialized <see cref="KafkaEventRecord.Value" /> stream content
+        ///     Gets and sets the deserialized Kafka record value stream content
         /// </summary>
         [JsonIgnore]
         public T? ValueContent { get; set; }
