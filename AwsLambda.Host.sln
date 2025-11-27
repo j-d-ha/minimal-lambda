@@ -70,6 +70,12 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Envelopes.Ki
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Envelopes.KinesisFirehose", "src\Envelopes\AwsLambda.Host.Envelopes.KinesisFirehose\AwsLambda.Host.Envelopes.KinesisFirehose.csproj", "{71EB7C3D-6EFE-4189-BE50-DC7C83D666F5}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Envelopes", "Envelopes", "{A74A4529-210E-BAD4-43C8-12300C69A11B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Envelopes.Kafka", "src\Envelopes\AwsLambda.Host.Envelopes.Kafka\AwsLambda.Host.Envelopes.Kafka.csproj", "{1B80EDFA-B849-4B7C-A396-8D2624E161AC}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Envelopes.Kafka", "src\Envelopes\AwsLambda.Host.Envelopes.Kafka\AwsLambda.Host.Envelopes.Kafka.csproj", "{BB30651B-5CD1-4FE5-8BBB-07E8442032A8}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -320,6 +326,30 @@ Global
 		{71EB7C3D-6EFE-4189-BE50-DC7C83D666F5}.Release|x64.Build.0 = Release|Any CPU
 		{71EB7C3D-6EFE-4189-BE50-DC7C83D666F5}.Release|x86.ActiveCfg = Release|Any CPU
 		{71EB7C3D-6EFE-4189-BE50-DC7C83D666F5}.Release|x86.Build.0 = Release|Any CPU
+		{1B80EDFA-B849-4B7C-A396-8D2624E161AC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1B80EDFA-B849-4B7C-A396-8D2624E161AC}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1B80EDFA-B849-4B7C-A396-8D2624E161AC}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{1B80EDFA-B849-4B7C-A396-8D2624E161AC}.Debug|x64.Build.0 = Debug|Any CPU
+		{1B80EDFA-B849-4B7C-A396-8D2624E161AC}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{1B80EDFA-B849-4B7C-A396-8D2624E161AC}.Debug|x86.Build.0 = Debug|Any CPU
+		{1B80EDFA-B849-4B7C-A396-8D2624E161AC}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1B80EDFA-B849-4B7C-A396-8D2624E161AC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1B80EDFA-B849-4B7C-A396-8D2624E161AC}.Release|x64.ActiveCfg = Release|Any CPU
+		{1B80EDFA-B849-4B7C-A396-8D2624E161AC}.Release|x64.Build.0 = Release|Any CPU
+		{1B80EDFA-B849-4B7C-A396-8D2624E161AC}.Release|x86.ActiveCfg = Release|Any CPU
+		{1B80EDFA-B849-4B7C-A396-8D2624E161AC}.Release|x86.Build.0 = Release|Any CPU
+		{BB30651B-5CD1-4FE5-8BBB-07E8442032A8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BB30651B-5CD1-4FE5-8BBB-07E8442032A8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BB30651B-5CD1-4FE5-8BBB-07E8442032A8}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{BB30651B-5CD1-4FE5-8BBB-07E8442032A8}.Debug|x64.Build.0 = Debug|Any CPU
+		{BB30651B-5CD1-4FE5-8BBB-07E8442032A8}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{BB30651B-5CD1-4FE5-8BBB-07E8442032A8}.Debug|x86.Build.0 = Debug|Any CPU
+		{BB30651B-5CD1-4FE5-8BBB-07E8442032A8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BB30651B-5CD1-4FE5-8BBB-07E8442032A8}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BB30651B-5CD1-4FE5-8BBB-07E8442032A8}.Release|x64.ActiveCfg = Release|Any CPU
+		{BB30651B-5CD1-4FE5-8BBB-07E8442032A8}.Release|x64.Build.0 = Release|Any CPU
+		{BB30651B-5CD1-4FE5-8BBB-07E8442032A8}.Release|x86.ActiveCfg = Release|Any CPU
+		{BB30651B-5CD1-4FE5-8BBB-07E8442032A8}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -346,5 +376,7 @@ Global
 		{3F7CDB17-2492-4670-930C-E87DD96A7BB9} = {1C3C52D9-2936-4A0C-A9C8-F330F22B8359}
 		{4A29DBDB-F707-419D-9024-B0B509A415DD} = {1C3C52D9-2936-4A0C-A9C8-F330F22B8359}
 		{71EB7C3D-6EFE-4189-BE50-DC7C83D666F5} = {1C3C52D9-2936-4A0C-A9C8-F330F22B8359}
+		{1B80EDFA-B849-4B7C-A396-8D2624E161AC} = {A74A4529-210E-BAD4-43C8-12300C69A11B}
+		{BB30651B-5CD1-4FE5-8BBB-07E8442032A8} = {1C3C52D9-2936-4A0C-A9C8-F330F22B8359}
 	EndGlobalSection
 EndGlobal

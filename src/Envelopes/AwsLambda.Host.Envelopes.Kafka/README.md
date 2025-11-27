@@ -1,80 +1,90 @@
-# AwsLambda.Host.Envelopes.Sqs
+# AwsLambda.Host.Envelopes.Kafka
 
-Strongly-typed SQS event handling for the AwsLambda.Host framework.
+Strongly-typed Kafka event handling for the AwsLambda.Host framework.
 
 ## Overview
 
-This package provides `SqsEnvelope<T>`, which extends the base [
-`SQSEvent`](https://github.com/aws/aws-lambda-dotnet/blob/master/Libraries/src/Amazon.Lambda.SQSEvents/README.md)
-class with a generic `Records` collection that deserializes message bodies into strongly-typed
-objects. Instead of manually parsing JSON from `record.Body`, you access deserialized payloads
-directly via `record.BodyContent`.
+This package provides `KafkaEnvelope<T>`, which extends the base [
+`KafkaEvent`](https://github.com/aws/aws-lambda-dotnet/blob/master/Libraries/src/Amazon.Lambda.KafkaEvents/README.md)
+class with a generic `Records` collection that deserializes base64-encoded Kafka message values into
+strongly-typed objects. Instead of manually decoding and parsing base64 data from `record.Value`,
+you
+access deserialized payloads directly via `record.ValueContent`.
 
-| Envelope Class   | Base Class | Use Case                                   |
-|------------------|------------|--------------------------------------------|
-| `SqsEnvelope<T>` | `SQSEvent` | SQS event with deserialized message bodies |
+| Envelope Class     | Base Class   | Use Case                                     |
+|--------------------|--------------|----------------------------------------------|
+| `KafkaEnvelope<T>` | `KafkaEvent` | Kafka event with deserialized message values |
 
 ## Quick Start
 
 Define your message type and handler:
 
 ```csharp
-using Amazon.Lambda.SQSEvents;
+using Amazon.Lambda.KafkaEvents;
 using AwsLambda.Host.Builder;
-using AwsLambda.Host.Envelopes.Sqs;
+using AwsLambda.Host.Envelopes.Kafka;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 var builder = LambdaApplication.CreateBuilder();
 var lambda = builder.Build();
 
-// SqsEnvelope<Message> provides access to the SQS event and deserialized Message payloads
+// KafkaEnvelope<OrderEvent> provides access to the Kafka event and deserialized OrderEvent payloads
 lambda.MapHandler(
-    ([Event] SqsEnvelope<Message> envelope, ILogger<Program> logger) =>
+    ([Event] KafkaEnvelope<OrderEvent> envelope, ILogger<Program> logger) =>
     {
-        // Inorder to handle any errors or unprocessed messages, you must return a SQSBatchResponse
-        var batchResponse = new SQSBatchResponse();
-
-        foreach (var record in envelope.Records)
+        foreach (var topic in envelope.Records)
         {
-            // For this example, we'll add a failure to the batch response if the message body is null
-            if (record.BodyContent is null)
-                batchResponse.BatchItemFailures.Add(
-                    new SQSBatchResponse.BatchItemFailure { ItemIdentifier = record.MessageId }
+            logger.LogInformation("Processing {Count} records from topic: {Topic}", topic.Value.Count, topic.Key);
+
+            foreach (var record in topic.Value)
+            {
+                logger.LogInformation(
+                    "Order ID: {OrderId}, Amount: {Amount}",
+                    record.ValueContent?.OrderId,
+                    record.ValueContent?.Amount
                 );
-
-            logger.LogInformation("Message: {Name}", record.BodyContent?.Name);
+            }
         }
-
-        // Return the batch response regardless of whether there were any failures
-        return batchResponse;
     }
 );
 
 await lambda.RunAsync();
 
-// Your message payload - will be deserialized from SQS message body
-internal record Message(string Name);
+// Your message payload - will be deserialized from base64-encoded Kafka message value
+internal record OrderEvent(string OrderId, decimal Amount, DateTime Timestamp);
 ```
 
 ## Custom Envelopes
 
-To implement custom deserialization logic, extend `SqsEnvelopeBase<T>` and override the
+To implement custom deserialization logic, extend `KafkaEnvelopeBase<T>` and override the
 `ExtractPayload` method:
 
 ```csharp
 // Example: Custom XML deserialization
-public sealed class SqsXmlEnvelope<T> : SqsEnvelopeBase<T>
+public sealed class KafkaXmlEnvelope<T> : KafkaEnvelopeBase<T>
 {
     private static readonly XmlSerializer Serializer = new(typeof(T));
 
     public override void ExtractPayload(EnvelopeOptions options)
     {
-        foreach (var record in Records)
+        foreach (var topic in Records)
         {
-            using var stringReader = new StringReader(record.Body);
-            using var xmlReader = XmlReader.Create(stringReader, options.XmlReaderSettings);
-            record.BodyContent = (T)Serializer.Deserialize(xmlReader)!;
+            foreach (var record in topic.Value)
+            {
+                using var reader = new StreamReader(
+                    record.Value,
+                    Encoding.UTF8,
+                    leaveOpen: true
+                );
+                var base64String = reader.ReadToEnd();
+                var xmlBytes = Convert.FromBase64String(base64String);
+                using var xmlReader = XmlReader.Create(
+                    new MemoryStream(xmlBytes),
+                    options.XmlReaderSettings
+                );
+                record.ValueContent = (T)Serializer.Deserialize(xmlReader)!;
+            }
         }
     }
 }
@@ -89,8 +99,8 @@ When using .NET Native AOT, register both the envelope and payload types in your
 `JsonSerializerContext`:
 
 ```csharp
-[JsonSerializable(typeof(SqsEnvelope<Message>))]
-[JsonSerializable(typeof(Message))]
+[JsonSerializable(typeof(KafkaEnvelope<OrderEvent>))]
+[JsonSerializable(typeof(OrderEvent))]
 internal partial class SerializerContext : JsonSerializerContext;
 ```
 
@@ -106,20 +116,20 @@ builder.Services.ConfigureEnvelopeOptions(options =>
 ```
 
 > **Note:** The context must be registered in both places because the Lambda event and payload are
-> deserialized at different steps: the Lambda serializer deserializes the raw SQS event, and the
-> envelope options deserialize the message bodies into your payload type.
+> deserialized at different steps: the Lambda serializer deserializes the raw Kafka event, and the
+> envelope options deserialize the base64-encoded message values into your payload type.
 
-See the [example project](../../examples/AwsLambda.Host.Example.Events/Program.cs) for a complete
-working example.
+See the [AwsLambda.Host documentation](https://github.com/j-d-ha/aws-lambda-host) for more details
+on AOT support.
 
 ## Related Packages
 
 | Package                                                                                               | NuGet                                                                                                                                                            | Downloads                                                                                                                                                              |
 |-------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [**AwsLambda.Host.Envelopes.Sns**](../AwsLambda.Host.Envelopes.Sns/README.md)                         | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Sns.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sns)                         | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Sns.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sns/)                         |
+| [**AwsLambda.Host.Envelopes.Sqs**](../AwsLambda.Host.Envelopes.Sqs/README.md)                         | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Sqs.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sqs)                         | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Sqs.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sqs/)                         |
 | [**AwsLambda.Host.Envelopes.Kinesis**](../AwsLambda.Host.Envelopes.Kinesis/README.md)                 | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Kinesis.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Kinesis)                 | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Kinesis.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Kinesis/)                 |
 | [**AwsLambda.Host.Envelopes.KinesisFirehose**](../AwsLambda.Host.Envelopes.KinesisFirehose/README.md) | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.KinesisFirehose.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.KinesisFirehose) | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.KinesisFirehose.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.KinesisFirehose/) |
-| [**AwsLambda.Host.Envelopes.Kafka**](../AwsLambda.Host.Envelopes.Kafka/README.md)                     | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Kafka.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Kafka)                     | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Kafka.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Kafka/)                     |
 | [**AwsLambda.Host.Envelopes.ApiGateway**](../AwsLambda.Host.Envelopes.ApiGateway/README.md)           | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.ApiGateway.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.ApiGateway)           | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.ApiGateway.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.ApiGateway/)           |
 | [**AwsLambda.Host.Envelopes.Alb**](../AwsLambda.Host.Envelopes.Alb/README.md)                         | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Alb.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Alb)                         | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Alb.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Alb/)                         |
 

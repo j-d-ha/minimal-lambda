@@ -99,6 +99,8 @@ on AOT support.
   handling
 - [AwsLambda.Host.Envelopes.KinesisFirehose](../AwsLambda.Host.Envelopes.KinesisFirehose/README.md) -
   Kinesis Firehose event handling
+- [AwsLambda.Host.Envelopes.Kafka](../AwsLambda.Host.Envelopes.Kafka/README.md) - Kafka event
+  handling
 - [AwsLambda.Host.Envelopes.ApiGateway](../AwsLambda.Host.Envelopes.ApiGateway/README.md) - API
   Gateway event handling
 - [AwsLambda.Host.Envelopes.Alb](../AwsLambda.Host.Envelopes.Alb/README.md) - Application Load
