@@ -49,6 +49,7 @@
     <!-- Lambda Event Libraries -->
     <PackageVersion Include="Amazon.Lambda.APIGatewayEvents" Version="2.7.2" />
     <PackageVersion Include="Amazon.Lambda.ApplicationLoadBalancerEvents" Version="2.2.0" />
+    <PackageVersion Include="Amazon.Lambda.SNSEvents" Version="2.1.0" />
     <PackageVersion Include="Amazon.Lambda.SQSEvents" Version="2.2.0" />
   </ItemGroup>
   <!-- Conditional versions based on target framework -->
