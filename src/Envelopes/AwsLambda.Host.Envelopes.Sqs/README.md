@@ -57,6 +57,32 @@ await lambda.RunAsync();
 internal record Message(string Name);
 ```
 
+## Custom Envelopes
+
+To implement custom deserialization logic, extend `SqsEnvelopeBase<T>` and override the
+`ExtractPayload` method:
+
+```csharp
+// Example: Custom XML deserialization
+public sealed class SqsXmlEnvelope<T> : SqsEnvelopeBase<T>
+{
+    private static readonly XmlSerializer Serializer = new(typeof(T));
+
+    public override void ExtractPayload(EnvelopeOptions options)
+    {
+        foreach (var record in Records)
+        {
+            using var stringReader = new StringReader(record.Body);
+            using var xmlReader = XmlReader.Create(stringReader, options.XmlReaderSettings);
+            record.BodyContent = (T)Serializer.Deserialize(xmlReader)!;
+        }
+    }
+}
+```
+
+This pattern allows you to support multiple serialization formats while maintaining the same
+envelope interface.
+
 ## AOT Support
 
 When using .NET Native AOT, register both the envelope and payload types in your
