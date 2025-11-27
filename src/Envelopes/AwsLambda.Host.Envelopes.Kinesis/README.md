@@ -115,6 +115,8 @@ on AOT support.
 
 ## Related Packages
 
+- [AwsLambda.Host.Envelopes.KinesisFirehose](../AwsLambda.Host.Envelopes.KinesisFirehose/README.md) -
+  Kinesis Firehose event handling
 - [AwsLambda.Host.Envelopes.Sns](../AwsLambda.Host.Envelopes.Sns/README.md) - SNS event handling
 - [AwsLambda.Host.Envelopes.Sqs](../AwsLambda.Host.Envelopes.Sqs/README.md) - SQS event handling
 - [AwsLambda.Host.Envelopes.ApiGateway](../AwsLambda.Host.Envelopes.ApiGateway/README.md) - API

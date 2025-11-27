@@ -68,6 +68,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Envelopes.Sn
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Envelopes.Kinesis", "src\Envelopes\AwsLambda.Host.Envelopes.Kinesis\AwsLambda.Host.Envelopes.Kinesis.csproj", "{4A29DBDB-F707-419D-9024-B0B509A415DD}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Envelopes.KinesisFirehose", "src\Envelopes\AwsLambda.Host.Envelopes.KinesisFirehose\AwsLambda.Host.Envelopes.KinesisFirehose.csproj", "{71EB7C3D-6EFE-4189-BE50-DC7C83D666F5}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -306,6 +308,18 @@ Global
 		{4A29DBDB-F707-419D-9024-B0B509A415DD}.Release|x64.Build.0 = Release|Any CPU
 		{4A29DBDB-F707-419D-9024-B0B509A415DD}.Release|x86.ActiveCfg = Release|Any CPU
 		{4A29DBDB-F707-419D-9024-B0B509A415DD}.Release|x86.Build.0 = Release|Any CPU
+		{71EB7C3D-6EFE-4189-BE50-DC7C83D666F5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{71EB7C3D-6EFE-4189-BE50-DC7C83D666F5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{71EB7C3D-6EFE-4189-BE50-DC7C83D666F5}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{71EB7C3D-6EFE-4189-BE50-DC7C83D666F5}.Debug|x64.Build.0 = Debug|Any CPU
+		{71EB7C3D-6EFE-4189-BE50-DC7C83D666F5}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{71EB7C3D-6EFE-4189-BE50-DC7C83D666F5}.Debug|x86.Build.0 = Debug|Any CPU
+		{71EB7C3D-6EFE-4189-BE50-DC7C83D666F5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{71EB7C3D-6EFE-4189-BE50-DC7C83D666F5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{71EB7C3D-6EFE-4189-BE50-DC7C83D666F5}.Release|x64.ActiveCfg = Release|Any CPU
+		{71EB7C3D-6EFE-4189-BE50-DC7C83D666F5}.Release|x64.Build.0 = Release|Any CPU
+		{71EB7C3D-6EFE-4189-BE50-DC7C83D666F5}.Release|x86.ActiveCfg = Release|Any CPU
+		{71EB7C3D-6EFE-4189-BE50-DC7C83D666F5}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -331,5 +345,6 @@ Global
 		{DD02E50C-625B-4A91-9BDF-7E3C08DF9E78} = {1C3C52D9-2936-4A0C-A9C8-F330F22B8359}
 		{3F7CDB17-2492-4670-930C-E87DD96A7BB9} = {1C3C52D9-2936-4A0C-A9C8-F330F22B8359}
 		{4A29DBDB-F707-419D-9024-B0B509A415DD} = {1C3C52D9-2936-4A0C-A9C8-F330F22B8359}
+		{71EB7C3D-6EFE-4189-BE50-DC7C83D666F5} = {1C3C52D9-2936-4A0C-A9C8-F330F22B8359}
 	EndGlobalSection
 EndGlobal

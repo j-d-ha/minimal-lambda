@@ -95,6 +95,10 @@ on AOT support.
 ## Related Packages
 
 - [AwsLambda.Host.Envelopes.Sqs](../AwsLambda.Host.Envelopes.Sqs/README.md) - SQS event handling
+- [AwsLambda.Host.Envelopes.Kinesis](../AwsLambda.Host.Envelopes.Kinesis/README.md) - Kinesis event
+  handling
+- [AwsLambda.Host.Envelopes.KinesisFirehose](../AwsLambda.Host.Envelopes.KinesisFirehose/README.md) -
+  Kinesis Firehose event handling
 - [AwsLambda.Host.Envelopes.ApiGateway](../AwsLambda.Host.Envelopes.ApiGateway/README.md) - API
   Gateway event handling
 - [AwsLambda.Host.Envelopes.Alb](../AwsLambda.Host.Envelopes.Alb/README.md) - Application Load

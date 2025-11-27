@@ -22,14 +22,14 @@ public abstract class SnsEnvelopeBase<T> : SNSEvent, IRequestEnvelope
     /// <inheritdoc cref="SNSEvent.SNSRecord" />
     public class SnsRecordEnvelope : SNSRecord
     {
-        /// <inheritdoc cref="SNSRecord.Sns" />
+        /// <inheritdoc cref="SNSEvent.SNSRecord.Sns" />
         public new required SnsMessageEnvelope Sns { get; set; }
     }
 
-    /// <inheritdoc cref="SNSMessage" />
+    /// <inheritdoc cref="SNSEvent.SNSMessage" />
     public class SnsMessageEnvelope : SNSMessage
     {
-        /// <summary>Gets and sets the deserialized <see cref="SNSMessage.Message" /> message body</summary>
+        /// <summary>Gets and sets the deserialized <see cref="SNSEvent.SNSMessage.Message" /> message body</summary>
         [JsonIgnore]
         public T? MessageContent { get; set; }
     }
