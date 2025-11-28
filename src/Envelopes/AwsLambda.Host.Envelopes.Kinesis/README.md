@@ -125,3 +125,7 @@ on AOT support.
   Gateway event handling
 - [AwsLambda.Host.Envelopes.Alb](../AwsLambda.Host.Envelopes.Alb/README.md) - Application Load
   Balancer event handling
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](../../LICENSE) for details.

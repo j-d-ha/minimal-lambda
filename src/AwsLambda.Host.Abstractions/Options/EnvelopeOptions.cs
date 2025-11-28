@@ -1,5 +1,8 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Xml;
+using Amazon.Lambda.Serialization.SystemTextJson;
+using Amazon.Lambda.Serialization.SystemTextJson.Converters;
 using AwsLambda.Host.Envelopes;
 
 namespace AwsLambda.Host.Options;
@@ -13,6 +16,30 @@ namespace AwsLambda.Host.Options;
 /// <seealso cref="IResponseEnvelope" />
 public class EnvelopeOptions
 {
+    /// <summary>
+    ///     Gets the default JSON serialization options that match those used by
+    ///     <see cref="DefaultLambdaJsonSerializer" />.
+    /// </summary>
+    /// <remarks>
+    ///     Provides AWS Lambda-specific JSON settings including <see cref="AwsNamingPolicy" /> and
+    ///     specialized converters for DateTime, MemoryStream, ConstantClass, and byte arrays.
+    /// </remarks>
+    public static readonly Lazy<JsonSerializerOptions> LambdaDefaultJsonOptions = new(() =>
+    {
+        var options = new JsonSerializerOptions
+        {
+            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+            PropertyNameCaseInsensitive = true,
+            PropertyNamingPolicy = new AwsNamingPolicy(),
+        };
+        options.Converters.Add(new DateTimeConverter());
+        options.Converters.Add(new MemoryStreamConverter());
+        options.Converters.Add(new ConstantClassConverter());
+        options.Converters.Add(new ByteArrayConverter());
+
+        return options;
+    });
+
     /// <summary>
     ///     Gets or sets a dictionary for storing custom extension data associated with envelope
     ///     processing.

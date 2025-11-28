@@ -23,6 +23,7 @@
       ReferenceOutputAssembly="false"
       OutputItemType="Analyzer"
     />
+    <ProjectReference Include="..\..\src\Envelopes\AwsLambda.Host.Envelopes.CloudWatchLogs\AwsLambda.Host.Envelopes.CloudWatchLogs.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="appsettings.json">

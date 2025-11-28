@@ -8,13 +8,18 @@
     <IncludeBuildOutput>true</IncludeBuildOutput>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <!-- Package Metadata -->
-    <PackageId>AwsLambda.Host.Abstractions</PackageId>
-    <Description>Abstractions for .NET Host for AWS Lambda</Description>
+    <PackageId>AwsLambda.Host.Envelopes.CloudWatchLogs</PackageId>
+    <Description>Strongly-typed CloudWatch Logs Models AWS Lambda</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
+
   <ItemGroup>
+    <PackageReference Include="Amazon.Lambda.CloudWatchLogsEvents" />
     <PackageReference Include="Amazon.Lambda.Core" />
-    <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\AwsLambda.Host.Abstractions\AwsLambda.Host.Abstractions.csproj" />
   </ItemGroup>
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" />

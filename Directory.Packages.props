@@ -5,6 +5,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- Packages for all targets -->
+    <PackageVersion Include="Amazon.Lambda.CloudWatchLogsEvents" Version="2.2.0" />
     <PackageVersion Include="Amazon.Lambda.Core" Version="2.8.0" />
     <PackageVersion Include="Amazon.Lambda.KafkaEvents" Version="2.1.0" />
     <PackageVersion Include="Amazon.Lambda.KinesisEvents" Version="3.0.0" />

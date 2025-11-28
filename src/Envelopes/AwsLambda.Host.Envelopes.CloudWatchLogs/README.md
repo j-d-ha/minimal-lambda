@@ -1,80 +1,86 @@
-# AwsLambda.Host.Envelopes.Sqs
+# AwsLambda.Host.Envelopes.CloudWatchLogs
 
-Strongly-typed SQS event handling for the AwsLambda.Host framework.
+Strongly-typed CloudWatch Logs event handling for the AwsLambda.Host framework.
 
 ## Overview
 
-This package provides `SqsEnvelope<T>`, which extends the base [
-`SQSEvent`](https://github.com/aws/aws-lambda-dotnet/blob/master/Libraries/src/Amazon.Lambda.SQSEvents/README.md)
-class with a generic `Records` collection that deserializes message bodies into strongly-typed
-objects. Instead of manually parsing JSON from `record.Body`, you access deserialized payloads
-directly via `record.BodyContent`.
+This package provides envelope classes that extend the base [
+`CloudWatchLogsEvent`](https://github.com/aws/aws-lambda-dotnet/tree/master/Libraries/src/Amazon.Lambda.CloudWatchLogsEvents)
+with automatic base64 decoding, decompression, and deserialization of CloudWatch Logs data.
+Instead of manually decoding and decompressing data from `Awslogs.Data`, you access the
+deserialized payload directly via `envelope.AwslogsContent`.
 
-| Envelope Class   | Base Class | Use Case                                   |
-|------------------|------------|--------------------------------------------|
-| `SqsEnvelope<T>` | `SQSEvent` | SQS event with deserialized message bodies |
+| Envelope Class              | Base Class            | Use Case                                            |
+|-----------------------------|-----------------------|-----------------------------------------------------|
+| `CloudWatchLogsEnvelope`    | `CloudWatchLogsEvent` | CloudWatch Logs events with plain string log data   |
+| `CloudWatchLogsEnvelope<T>` | `CloudWatchLogsEvent` | CloudWatch Logs events with typed deserialized data |
 
 ## Quick Start
 
-Define your message type and handler:
+Define your log data type and handler:
 
 ```csharp
-using Amazon.Lambda.SQSEvents;
+using System.Text.Json;
 using AwsLambda.Host.Builder;
-using AwsLambda.Host.Envelopes.Sqs;
+using AwsLambda.Host.Envelopes.CloudWatchLogs;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 
 var builder = LambdaApplication.CreateBuilder();
+
+builder.Services.ConfigureEnvelopeOptions(options =>
+{
+    options.JsonOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
+});
+
 var lambda = builder.Build();
 
-// SqsEnvelope<Message> provides access to the SQS event and deserialized Message payloads
+// CloudWatchLogsEnvelope<T> provides access to the CloudWatch Logs event with each log message
+// deserialized into type T
 lambda.MapHandler(
-    ([Event] SqsEnvelope<Message> envelope, ILogger<Program> logger) =>
+    ([Event] CloudWatchLogsEnvelope<Log> logs, ILogger<Program> logger) =>
     {
-        // Inorder to handle any errors or unprocessed messages, you must return a SQSBatchResponse
-        var batchResponse = new SQSBatchResponse();
-
-        foreach (var record in envelope.Records)
+        foreach (var logEvent in logs.AwslogsContent!.LogEvents)
         {
-            // For this example, we'll add a failure to the batch response if the message body is null
-            if (record.BodyContent is null)
-                batchResponse.BatchItemFailures.Add(
-                    new SQSBatchResponse.BatchItemFailure { ItemIdentifier = record.MessageId }
-                );
-
-            logger.LogInformation("Message: {Name}", record.BodyContent?.Name);
+            logger.LogInformation("Log level: {Level}", logEvent.MessageContent?.Level);
+            logger.LogInformation("Log message: {Message}", logEvent.MessageContent?.Message);
+            logger.LogInformation("Request ID: {RequestId}", logEvent.MessageContent?.RequestId);
         }
-
-        // Return the batch response regardless of whether there were any failures
-        return batchResponse;
     }
 );
 
 await lambda.RunAsync();
 
-// Your message payload - will be deserialized from SQS message body
-internal record Message(string Name);
+public record Log(string Level, string Message, string RequestId);
 ```
+
+> [!TIP]
+> If your log messages are plain strings (not JSON data), use `CloudWatchLogsEnvelope` instead of
+> `CloudWatchLogsEnvelope<T>` to avoid deserialization errors. `CloudWatchLogsEnvelope` sets each
+> `MessageContent` to the raw string message without attempting deserialization.
 
 ## Custom Envelopes
 
-To implement custom deserialization logic, extend `SqsEnvelopeBase<T>` and override the
-`ExtractPayload` method:
+To implement custom deserialization logic, extend `CloudWatchLogsEnvelopeBase<T>`, override the
+`ExtractPayload` method, and call `base.ExtractPayload(options)` to deserialize the CloudWatch Logs
+envelope structure, then deserialize each log message:
 
 ```csharp
 // Example: Custom XML deserialization
-public sealed class SqsXmlEnvelope<T> : SqsEnvelopeBase<T>
+public sealed class CloudWatchLogsXmlEnvelope<T> : CloudWatchLogsEnvelopeBase<T>
 {
     private static readonly XmlSerializer Serializer = new(typeof(T));
 
     public override void ExtractPayload(EnvelopeOptions options)
     {
-        foreach (var record in Records)
+        base.ExtractPayload(options);
+
+        foreach (var logEvent in AwslogsContent!.LogEvents)
         {
-            using var stringReader = new StringReader(record.Body);
+            using var stringReader = new StringReader(logEvent.Message);
             using var xmlReader = XmlReader.Create(stringReader, options.XmlReaderSettings);
-            record.BodyContent = (T)Serializer.Deserialize(xmlReader)!;
+            logEvent.MessageContent = (T)Serializer.Deserialize(xmlReader)!;
         }
     }
 }
@@ -89,8 +95,8 @@ When using .NET Native AOT, register both the envelope and payload types in your
 `JsonSerializerContext`:
 
 ```csharp
-[JsonSerializable(typeof(SqsEnvelope<Message>))]
-[JsonSerializable(typeof(Message))]
+[JsonSerializable(typeof(CloudWatchLogsEnvelope<LogData>))]
+[JsonSerializable(typeof(LogData))]
 internal partial class SerializerContext : JsonSerializerContext;
 ```
 
@@ -106,8 +112,8 @@ builder.Services.ConfigureEnvelopeOptions(options =>
 ```
 
 > **Note:** The context must be registered in both places because the Lambda event and payload are
-> deserialized at different steps: the Lambda serializer deserializes the raw SQS event, and the
-> envelope options deserialize the message bodies into your payload type.
+> deserialized at different steps: the Lambda serializer deserializes the raw CloudWatch Logs
+> event, and the envelope options deserialize the decoded log data into your payload type.
 
 See the [example project](../../examples/AwsLambda.Host.Example.Events/Program.cs) for a complete
 working example.
@@ -116,11 +122,11 @@ working example.
 
 | Package                                                                                               | NuGet                                                                                                                                                            | Downloads                                                                                                                                                              |
 |-------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| [**AwsLambda.Host.Envelopes.Sqs**](../AwsLambda.Host.Envelopes.Sqs/README.md)                         | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Sqs.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sqs)                         | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Sqs.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sqs/)                         |
 | [**AwsLambda.Host.Envelopes.Sns**](../AwsLambda.Host.Envelopes.Sns/README.md)                         | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Sns.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sns)                         | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Sns.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sns/)                         |
 | [**AwsLambda.Host.Envelopes.Kinesis**](../AwsLambda.Host.Envelopes.Kinesis/README.md)                 | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Kinesis.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Kinesis)                 | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Kinesis.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Kinesis/)                 |
 | [**AwsLambda.Host.Envelopes.KinesisFirehose**](../AwsLambda.Host.Envelopes.KinesisFirehose/README.md) | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.KinesisFirehose.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.KinesisFirehose) | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.KinesisFirehose.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.KinesisFirehose/) |
 | [**AwsLambda.Host.Envelopes.Kafka**](../AwsLambda.Host.Envelopes.Kafka/README.md)                     | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Kafka.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Kafka)                     | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Kafka.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Kafka/)                     |
-| [**AwsLambda.Host.Envelopes.CloudWatchLogs**](../AwsLambda.Host.Envelopes.CloudWatchLogs/README.md)   | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.CloudWatchLogs.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.CloudWatchLogs)   | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.CloudWatchLogs.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.CloudWatchLogs/)   |
 | [**AwsLambda.Host.Envelopes.ApiGateway**](../AwsLambda.Host.Envelopes.ApiGateway/README.md)           | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.ApiGateway.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.ApiGateway)           | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.ApiGateway.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.ApiGateway/)           |
 | [**AwsLambda.Host.Envelopes.Alb**](../AwsLambda.Host.Envelopes.Alb/README.md)                         | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Alb.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Alb)                         | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Alb.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Alb/)                         |
 

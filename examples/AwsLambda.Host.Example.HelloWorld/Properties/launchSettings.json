@@ -1,7 +1,7 @@
 {
   "$schema": "http://json.schemastore.org/launchsettings.json",
   "profiles": {
-    "Lambda.Host.Example.HelloWorld": {
+    "Local": {
       "commandName": "Project",
       "environmentVariables": {
         "AWS_LAMBDA_RUNTIME_API": "localhost:5050",

@@ -26,6 +26,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Envelopes\AwsLambda.Host.Envelopes.ApiGateway\AwsLambda.Host.Envelopes.ApiGateway.csproj" />
     <ProjectReference Include="..\..\src\Envelopes\AwsLambda.Host.Envelopes.Alb\AwsLambda.Host.Envelopes.Alb.csproj" />
+    <ProjectReference Include="..\..\src\Envelopes\AwsLambda.Host.Envelopes.CloudWatchLogs\AwsLambda.Host.Envelopes.CloudWatchLogs.csproj" />
     <ProjectReference Include="..\..\src\Envelopes\AwsLambda.Host.Envelopes.Kafka\AwsLambda.Host.Envelopes.Kafka.csproj" />
     <ProjectReference Include="..\..\src\Envelopes\AwsLambda.Host.Envelopes.KinesisFirehose\AwsLambda.Host.Envelopes.KinesisFirehose.csproj" />
     <ProjectReference Include="..\..\src\Envelopes\AwsLambda.Host.Envelopes.Kinesis\AwsLambda.Host.Envelopes.Kinesis.csproj" />
