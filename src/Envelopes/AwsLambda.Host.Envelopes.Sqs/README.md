@@ -8,11 +8,14 @@ This package provides `SqsEnvelope<T>`, which extends the base [
 `SQSEvent`](https://github.com/aws/aws-lambda-dotnet/blob/master/Libraries/src/Amazon.Lambda.SQSEvents/README.md)
 class with a generic `Records` collection that deserializes message bodies into strongly-typed
 objects. Instead of manually parsing JSON from `record.Body`, you access deserialized payloads
-directly via `record.BodyContent`.
+directly via `record.BodyContent`. This package also provides `SqsSnsEnvelope<T>` for handling SNS
+messages delivered via SQS queues
+(SNS-to-SQS subscription pattern).
 
-| Envelope Class   | Base Class | Use Case                                   |
-|------------------|------------|--------------------------------------------|
-| `SqsEnvelope<T>` | `SQSEvent` | SQS event with deserialized message bodies |
+| Envelope Class      | Base Class           | Use Case                                   |
+|---------------------|----------------------|--------------------------------------------|
+| `SqsEnvelope<T>`    | `SQSEvent`           | SQS event with deserialized message bodies |
+| `SqsSnsEnvelope<T>` | `SqsEnvelopeBase<T>` | SQS messages containing SNS notifications  |
 
 ## Quick Start
 
@@ -111,6 +114,32 @@ builder.Services.ConfigureEnvelopeOptions(options =>
 
 See the [example project](../../examples/AwsLambda.Host.Example.Events/Program.cs) for a complete
 working example.
+
+## SqsSnsEnvelope - SNS-to-SQS Subscription Pattern
+
+This package also provides `SqsSnsEnvelope<T>` for handling SNS messages delivered via SQS queues
+(SNS-to-SQS subscription pattern). Unlike `SqsEnvelope<T>` which performs single-stage
+deserialization, `SqsSnsEnvelope<T>` performs two-stage deserialization:
+
+1. The SQS message body is deserialized into an SNS message envelope
+2. The SNS message content is then deserialized into your payload type
+
+This envelope is useful when you have an SNS topic that delivers messages to an SQS queue, and your
+Lambda function processes messages from that queue.
+
+> [!IMPORTANT]  
+> If using JSON source generation with `System.Text.Json`, it is critical that you register the SNS
+> message envelope as well
+> as `SNSEvent.MessageAttribut` and `SQSEvent.MessageAttribute`, eachwith a unique
+`TypeInfoPropertyName` to prevent name a naming collisions. Example:
+> ```csharp
+> [JsonSerializable(typeof(SqsSnsEnvelope<Request>))]
+> [JsonSerializable(typeof(SnsEnvelope<Request>.SnsMessageEnvelope))]
+> [JsonSerializable(typeof(SNSEvent.MessageAttribute), TypeInfoPropertyName = "SnsMessageAttribute")]
+> [JsonSerializable(typeof(SQSEvent.MessageAttribute), TypeInfoPropertyName = "SqsMessageAttribute")]
+> [JsonSerializable(typeof(Request))]
+> internal partial class SerializerContext : JsonSerializerContext;
+> ```
 
 ## Related Packages
 
