@@ -12,11 +12,11 @@ IDE support and compile-time type checking.
 
 **Key benefits:**
 
-- **Type Safety**  Generic type parameter `<T>` ensures compile-time type checking for payloads
-- **Extensibility**  Abstract base classes allow custom serialization formats (JSON, XML, etc.)
-- **Zero Overhead**  Envelopes extend official AWS event types, adding no runtime cost
-- **AOT Ready**  Support for Native AOT compilation via JsonSerializerContext registration
-- **Familiar API**  Works seamlessly with existing AWS Lambda event patterns
+- **Type Safety** Generic type parameter `<T>` ensures compile-time type checking for payloads
+- **Extensibility** Abstract base classes allow custom serialization formats (JSON, XML, etc.)
+- **Zero Overhead** Envelopes extend official AWS event types, adding no runtime cost
+- **AOT Ready** Support for Native AOT compilation via JsonSerializerContext registration
+- **Familiar API** Works seamlessly with existing AWS Lambda event patterns
 
 ## Packages
 
