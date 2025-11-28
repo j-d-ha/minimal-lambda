@@ -36,9 +36,7 @@ public static class RequestEnvelopeMiddleware
         {
             ArgumentNullException.ThrowIfNull(application);
 
-            var settings = application
-                .Services.GetRequiredService<IOptions<EnvelopeOptions>>()
-                .Value;
+            EnvelopeOptions? envelopeOptions = null;
 
             application.Use(next =>
             {
@@ -48,7 +46,7 @@ public static class RequestEnvelopeMiddleware
                         context.Features.TryGet(out IEventFeature? eventFeature)
                         && eventFeature.GetEvent(context) is IRequestEnvelope requestEnvelope
                     )
-                        requestEnvelope.ExtractPayload(settings);
+                        requestEnvelope.ExtractPayload(GetOptions());
 
                     await next(context);
 
@@ -56,11 +54,16 @@ public static class RequestEnvelopeMiddleware
                         context.Features.TryGet(out IResponseFeature? responseFeature)
                         && responseFeature.GetResponse() is IResponseEnvelope responseEnvelope
                     )
-                        responseEnvelope.PackPayload(settings);
+                        responseEnvelope.PackPayload(GetOptions());
                 };
             });
 
             return application;
+
+            EnvelopeOptions GetOptions() =>
+                envelopeOptions ??= application
+                    .Services.GetRequiredService<IOptions<EnvelopeOptions>>()
+                    .Value;
         }
     }
 }
