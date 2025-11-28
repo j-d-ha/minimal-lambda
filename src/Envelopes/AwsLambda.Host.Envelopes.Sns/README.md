@@ -71,7 +71,6 @@ public sealed class SnsXmlEnvelope<T> : SnsEnvelopeBase<T>
 This pattern allows you to support multiple serialization formats while maintaining the same
 envelope interface.
 
-
 ## AOT Support
 
 When using .NET Native AOT, register both the envelope and payload types in your

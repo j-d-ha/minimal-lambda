@@ -7,17 +7,18 @@ namespace AwsLambda.Host.Envelopes.CloudWatchLogs;
 ///     deserialization.
 /// </summary>
 /// <remarks>
-///     Use this envelope when working with string-based log messages. For structured log data that
-///     needs to be deserialized into typed objects, use <see cref="CloudWatchLogsEnvelope{T}" />
+///     Use this envelope when working with string-based log messages. For structured log data
+///     that needs to be deserialized into typed objects, use <see cref="CloudWatchLogsEnvelope{T}" />
 ///     instead.
 /// </remarks>
 public sealed class CloudWatchLogsEnvelope : CloudWatchLogsEnvelopeBase<string>
 {
     /// <inheritdoc />
     /// <remarks>
-    ///     Sets each log event's <see cref="CloudWatchLogsEnvelopeBase{T}.LogEventEnvelope.MessageContent" />
-    ///     to the raw string <see cref="CloudWatchLogsEnvelopeBase{T}.LogEventEnvelope.Message" /> without
-    ///     performing any deserialization.
+    ///     Sets each log event's
+    ///     <see cref="CloudWatchLogsEnvelopeBase{T}.LogEventEnvelope.MessageContent" /> to the raw string
+    ///     <see cref="CloudWatchLogsEnvelopeBase{T}.LogEventEnvelope.Message" /> without performing any
+    ///     deserialization.
     /// </remarks>
     public override void ExtractPayload(EnvelopeOptions options)
     {

@@ -31,8 +31,8 @@ public static class MiddlewareOpenTelemetryExtensions
     ///             </item>
     ///             <item>
     ///                 <description>
-    ///                     Wraps the handler pipeline with tracing middleware that creates a
-    ///                     root span with invocation info.
+    ///                     Wraps the handler pipeline with tracing middleware that creates a root
+    ///                     span with invocation info.
     ///                 </description>
     ///             </item>
     ///         </list>

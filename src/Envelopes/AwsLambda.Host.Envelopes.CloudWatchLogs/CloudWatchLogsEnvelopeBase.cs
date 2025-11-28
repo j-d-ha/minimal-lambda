@@ -7,10 +7,10 @@ namespace AwsLambda.Host.Envelopes.CloudWatchLogs;
 
 /// <inheritdoc cref="CloudWatchLogsEvent" />
 /// <remarks>
-///     This abstract class extends <see cref="CloudWatchLogsEvent" /> and provides a foundation for
-///     strongly typed CloudWatch Logs handling. Derived classes implement <see cref="ExtractPayload" />
-///     to deserialize the CloudWatch Logs data into strongly typed <see cref="AwsLogsEnvelope" />
-///     records using their chosen deserialization strategy.
+///     This abstract class extends <see cref="CloudWatchLogsEvent" /> and provides a foundation
+///     for strongly typed CloudWatch Logs handling. Derived classes implement
+///     <see cref="ExtractPayload" /> to deserialize the CloudWatch Logs data into strongly typed
+///     <see cref="AwsLogsEnvelope" /> records using their chosen deserialization strategy.
 /// </remarks>
 public abstract class CloudWatchLogsEnvelopeBase<T> : CloudWatchLogsEvent, IRequestEnvelope
 {
@@ -35,9 +35,7 @@ public abstract class CloudWatchLogsEnvelopeBase<T> : CloudWatchLogsEvent, IRequ
     /// </summary>
     public class AwsLogsEnvelope
     {
-        /// <summary>
-        ///     Gets or sets the array of log events included in the message.
-        /// </summary>
+        /// <summary>Gets or sets the array of log events included in the message.</summary>
         [JsonPropertyName("logEvents")]
         public required LogEventEnvelope[] LogEvents { get; set; }
 
@@ -49,9 +47,7 @@ public abstract class CloudWatchLogsEnvelopeBase<T> : CloudWatchLogsEvent, IRequ
         [JsonPropertyName("logStream")]
         public required string LogStream { get; set; }
 
-        /// <summary>
-        ///     Gets or sets the type of CloudWatch Logs message.
-        /// </summary>
+        /// <summary>Gets or sets the type of CloudWatch Logs message.</summary>
         [JsonPropertyName("messageType")]
         public required string MessageType { get; set; }
 
