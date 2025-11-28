@@ -25,7 +25,7 @@ public static class ConfigurationServiceCollectionExtensions
             ArgumentNullException.ThrowIfNull(serviceCollection);
             ArgumentNullException.ThrowIfNull(options);
 
-            return serviceCollection.PostConfigure(options);
+            return serviceCollection.Configure(options);
         }
 
         /// <summary>Configures the Lambda Host options in the service collection.</summary>
@@ -51,7 +51,7 @@ public static class ConfigurationServiceCollectionExtensions
             ArgumentNullException.ThrowIfNull(serviceCollection);
             ArgumentNullException.ThrowIfNull(options);
 
-            return serviceCollection.PostConfigure(options);
+            return serviceCollection.Configure(options);
         }
     }
 }
