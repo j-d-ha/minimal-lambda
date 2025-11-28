@@ -35,7 +35,7 @@ var lambda = builder.Build();
 lambda.MapHandler(
     ([Event] SqsEnvelope<Message> envelope, ILogger<Program> logger) =>
     {
-        // Inorder to handle any errors or unprocessed messages, you must return a SQSBatchResponse
+        // In order to handle any errors or unprocessed messages, you must return a SQSBatchResponse
         var batchResponse = new SQSBatchResponse();
 
         foreach (var record in envelope.Records)
@@ -127,11 +127,14 @@ deserialization, `SqsSnsEnvelope<T>` performs two-stage deserialization:
 This envelope is useful when you have an SNS topic that delivers messages to an SQS queue, and your
 Lambda function processes messages from that queue.
 
-> [!IMPORTANT]  
-> If using JSON source generation with `System.Text.Json`, it is critical that you register the SNS
-> message envelope as well
-> as `SNSEvent.MessageAttribut` and `SQSEvent.MessageAttribute`, eachwith a unique
-`TypeInfoPropertyName` to prevent name a naming collisions. Example:
+> [!IMPORTANT]
+> If using JSON source generation with [
+`System.Text.Json`](https://learn.microsoft.com/en-us/dotnet/standard/serialization/system-text-json/source-generation)
+> ,
+> it is critical that you register both `SNSEvent.MessageAttribute` and `SQSEvent.MessageAttribute`,
+> each with
+> a unique
+> `TypeInfoPropertyName` to prevent naming collisions. Example:
 > ```csharp
 > [JsonSerializable(typeof(SqsSnsEnvelope<Request>))]
 > [JsonSerializable(typeof(SnsEnvelope<Request>.SnsMessageEnvelope))]
