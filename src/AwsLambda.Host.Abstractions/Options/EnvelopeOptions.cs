@@ -21,10 +21,16 @@ public class EnvelopeOptions
     ///     <see cref="DefaultLambdaJsonSerializer" />.
     /// </summary>
     /// <remarks>
-    ///     Provides AWS Lambda-specific JSON settings including <see cref="AwsNamingPolicy" /> and
-    ///     specialized converters for DateTime, MemoryStream, ConstantClass, and byte arrays.
+    ///     <para>
+    ///         Provides AWS Lambda-specific JSON settings for deserialization. This is used for complex
+    ///         envelope payloads such as SNS to SQS and CloudWatch Logs.
+    ///     </para>
+    ///     <para>
+    ///         The <see cref="JsonSerializerOptions.TypeInfoResolver" /> from <see cref="JsonOptions" />
+    ///         will be added to these options during post-configuration.
+    ///     </para>
     /// </remarks>
-    public static readonly Lazy<JsonSerializerOptions> LambdaDefaultJsonOptions = new(() =>
+    public readonly Lazy<JsonSerializerOptions> LambdaDefaultJsonOptions = new(() =>
     {
         var options = new JsonSerializerOptions
         {
