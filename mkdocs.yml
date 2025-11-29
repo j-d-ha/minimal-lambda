@@ -8,18 +8,44 @@ site_url: https://j-d-ha.github.io/aws-lambda-host/
 site_author: Jonas Ha
 
 repo_name: j-d-ha/aws-lambda-host
-repo_url: hhttps://github.com/j-d-ha/aws-lambda-host
+repo_url: https://github.com/j-d-ha/aws-lambda-host
 edit_uri: edit/main/docs/
 
 theme:
   name: material
-  
+  features:
+    - content.code.copy
+    - content.tabs.link
+    - navigation.footer
+    - navigation.top
+
+markdown_extensions:
+  # Python Markdown extensions
+  - attr_list
+  - md_in_html
+  - tables
+
+  # PyMdown Extensions
+  - pymdownx.emoji:
+      emoji_index: !!python/name:material.extensions.emoji.twemoji
+      emoji_generator: !!python/name:material.extensions.emoji.to_svg
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.superfences
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.details
+  - admonition
+
 watch:
-  - docs
-  - mkdocs.yml
-    
+  - ./docs/
+
 nav:
-  - Home: index.md
-    
+  - Homepage : index.md
+
 plugins:
   - search
