@@ -78,3 +78,4 @@ nunit-*.xml
 /benchmarks/AwsLambda.Host.Benchmarks/BenchmarkDotNet.Artifacts/
 /nupkg/
 /temp.md
+/.claude/
