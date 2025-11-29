@@ -36,6 +36,9 @@ The framework is divided into multiple NuGet packages:
 
 ### Core Packages
 
+The core packages provide the fundamental hosting framework, abstractions, and observability support
+for building AWS Lambda functions.
+
 | Package                                                                          | NuGet                                                                                                                                    | Downloads                                                                                                                                      |
 |----------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
 | [**AwsLambda.Host**](./src/AwsLambda.Host/README.md)                             | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.svg)](https://www.nuget.org/packages/AwsLambda.Host)                             | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.svg)](https://www.nuget.org/packages/AwsLambda.Host/)                             |
@@ -43,6 +46,9 @@ The framework is divided into multiple NuGet packages:
 | [**AwsLambda.Host.OpenTelemetry**](./src/AwsLambda.Host.OpenTelemetry/README.md) | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.OpenTelemetry.svg)](https://www.nuget.org/packages/AwsLambda.Host.OpenTelemetry) | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.OpenTelemetry.svg)](https://www.nuget.org/packages/AwsLambda.Host.OpenTelemetry/) |
 
 ### Envelopes Packages
+
+Envelope packages provide specialized support for handling different AWS Lambda event sources,
+including SQS, SNS, API Gateway, Kinesis, and more.
 
 | Package                                                                                              | NuGet                                                                                                                                                            | Downloads                                                                                                                                                              |
 |------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
