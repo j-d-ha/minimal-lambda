@@ -39,7 +39,7 @@ public sealed class SqsSnsEnvelope<T> : SqsEnvelopeBase<SnsEnvelopeBase<T>.SnsMe
         {
             record.BodyContent = JsonSerializer.Deserialize<SnsEnvelopeBase<T>.SnsMessageEnvelope>(
                 record.Body,
-                options.LambdaDefaultJsonOptions.Value
+                options.LambdaDefaultJsonOptions
             );
 
             record.BodyContent!.MessageContent = JsonSerializer.Deserialize<T>(

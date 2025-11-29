@@ -429,10 +429,7 @@ public class CloudWatchLogsEnvelopeTests
     {
         var envelopeOptions = new EnvelopeOptions();
 
-        var json = JsonSerializer.Serialize(
-            awslogsData,
-            envelopeOptions.LambdaDefaultJsonOptions.Value
-        );
+        var json = JsonSerializer.Serialize(awslogsData, envelopeOptions.LambdaDefaultJsonOptions);
         var jsonBytes = Encoding.UTF8.GetBytes(json);
 
         using var outputStream = new MemoryStream();
@@ -534,10 +531,7 @@ public class CloudWatchLogsEnvelopeTests
     {
         var envelopeOptions = new EnvelopeOptions();
 
-        var json = JsonSerializer.Serialize(
-            awslogsData,
-            envelopeOptions.LambdaDefaultJsonOptions.Value
-        );
+        var json = JsonSerializer.Serialize(awslogsData, envelopeOptions.LambdaDefaultJsonOptions);
         var jsonBytes = Encoding.UTF8.GetBytes(json);
 
         using var outputStream = new MemoryStream();
