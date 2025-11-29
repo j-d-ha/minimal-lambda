@@ -6,7 +6,8 @@ Strongly-typed API Gateway event handling for the AwsLambda.Host framework.
 
 This package provides strongly-typed envelopes for handling API Gateway events in Lambda functions.
 It contains classes that can be used as input and output types for Lambda functions that process
-REST APIs, HTTP APIs (payload format 1.0), WebSocket APIs, and HTTP APIs (payload format 2.0).
+REST APIs, HTTP APIs (payload format 1.0), WebSocket APIs, HTTP APIs (payload format 2.0), and
+Lambda Function URLs.
 
 The envelopes extend the base [
 `APIGatewayProxyRequest`](https://github.com/aws/aws-lambda-dotnet/tree/master/Libraries/src/Amazon.Lambda.APIGatewayEvents), [
