@@ -2,8 +2,8 @@
 
 # https://github.com/mkdocs/catalog
 
-site_name: AWS Lambda Host
-site_description: A modern .NET framework for building AWS Lambda functions using familiar ASP.NET Core patterns.
+site_name: AwsLambda.Host
+site_description: A modern .NET framework for building AWS Lambda functions using familiar .NET patterns.
 site_url: https://j-d-ha.github.io/aws-lambda-host/
 site_author: Jonas Ha
 

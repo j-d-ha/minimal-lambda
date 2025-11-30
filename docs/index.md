@@ -12,7 +12,7 @@ A modern .NET framework that brings familiar .NET Core patterns to AWS Lambda - 
 
 ---
 
-## Why aws-lambda-host?
+## Why AwsLambda.Host?
 
 Stop writing boilerplate Lambda code. Start building features with patterns you already know.
 
@@ -215,16 +215,16 @@ Envelope packages provide type-safe handling of AWS Lambda event sources with au
 
     [Learn more about envelopes](features/envelopes/){ .md-button }
 
-Available envelope packages:
-
-- [**SQS**](features/envelopes/sqs.md) - Simple Queue Service events with typed message bodies
-- [**SNS**](features/envelopes/sns.md) - Simple Notification Service messages
-- [**API Gateway**](features/envelopes/api-gateway.md) - REST, HTTP, and WebSocket APIs
-- [**Kinesis**](features/envelopes/kinesis.md) - Data Streams with typed records
-- [**Kinesis Firehose**](features/envelopes/kinesis-firehose.md) - Data transformation
-- [**Kafka**](features/envelopes/kafka.md) - MSK and self-managed Kafka
-- [**CloudWatch Logs**](features/envelopes/cloudwatch-logs.md) - Log subscriptions
-- [**ALB**](features/envelopes/alb.md) - Application Load Balancer requests
+| Package | Description | NuGet | Downloads |
+|---------|-------------|-------|-----------|
+| [**AwsLambda.Host.Envelopes.Sqs**](features/envelopes/sqs.md) | Simple Queue Service events with typed message bodies | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Sqs.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sqs) | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Sqs.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sqs/) |
+| [**AwsLambda.Host.Envelopes.Sns**](features/envelopes/sns.md) | Simple Notification Service messages | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Sns.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sns) | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Sns.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sns/) |
+| [**AwsLambda.Host.Envelopes.ApiGateway**](features/envelopes/api-gateway.md) | REST, HTTP, and WebSocket APIs | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.ApiGateway.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.ApiGateway) | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.ApiGateway.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.ApiGateway/) |
+| [**AwsLambda.Host.Envelopes.Kinesis**](features/envelopes/kinesis.md) | Data Streams with typed records | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Kinesis.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Kinesis) | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Kinesis.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Kinesis/) |
+| [**AwsLambda.Host.Envelopes.KinesisFirehose**](features/envelopes/kinesis-firehose.md) | Data transformation | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.KinesisFirehose.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.KinesisFirehose) | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.KinesisFirehose.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.KinesisFirehose/) |
+| [**AwsLambda.Host.Envelopes.Kafka**](features/envelopes/kafka.md) | MSK and self-managed Kafka | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Kafka.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Kafka) | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Kafka.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Kafka/) |
+| [**AwsLambda.Host.Envelopes.CloudWatchLogs**](features/envelopes/cloudwatch-logs.md) | Log subscriptions | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.CloudWatchLogs.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.CloudWatchLogs) | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.CloudWatchLogs.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.CloudWatchLogs/) |
+| [**AwsLambda.Host.Envelopes.Alb**](features/envelopes/alb.md) | Application Load Balancer requests | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Alb.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Alb) | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Alb.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Alb/) |
 
 [Browse all envelope packages](features/envelopes/){ .md-button }
 
