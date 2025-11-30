@@ -3,10 +3,14 @@ name: "Update Changelog"
 on:
   release:
     types: [released]
+  workflow_dispatch:
 
 jobs:
   update:
     runs-on: ubuntu-latest
+    
+    # Check if the event is not triggered by a fork
+    if: github.event.pull_request.head.repo.full_name == github.repository
 
     permissions:
       # Give the default GITHUB_TOKEN write permission to commit and push the
@@ -33,9 +37,8 @@ jobs:
 
       - name: Create Pull Request
         id: cpr
-        uses: peter-evans/create-pull-request@v6
+        uses: peter-evans/create-pull-request@v7
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
           branch: changelog/${{ github.event.release.tag_name }}
           base: ${{ github.event.release.target_commitish }}
           title: "chore: update changelog for ${{ github.event.release.tag_name }}"
@@ -48,6 +51,7 @@ jobs:
           commit-message: "chore: update changelog for ${{ github.event.release.tag_name }}"
           labels: "automated,changelog,chore"
           delete-branch: true
+          sign-commits: true
 
       - name: Enable Auto-merge
         if: steps.cpr.outputs.pull-request-number

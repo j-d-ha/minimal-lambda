@@ -3,9 +3,39 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [Unreleased](https://github.com/j-d-ha/aws-lambda-host/compare/v1.1.0...HEAD)
+## [Unreleased](https://github.com/j-d-ha/aws-lambda-host/compare/v1.2.0...HEAD)
 
-## [v1.1.0](https://github.com/j-d-ha/aws-lambda-host/compare/v1.0.0...v1.1.0) - 2025-11-10
+## [v1.2.0](https://github.com/j-d-ha/aws-lambda-host/compare/v1.1.0...v1.2.0) - 2025-11-29
+
+## 🚀 Features
+
+* feat(envelopes): add SqsSnsEnvelope for SNS-to-SQS subscription pattern (#196) @j-d-ha
+* feat(envelopes): add CloudWatch Logs envelope support (#195) @j-d-ha
+* feat(envelopes): add Kafka envelope support (#194) @j-d-ha
+* feat(envelopes): add Kinesis Firehose envelope support (#193) @j-d-ha
+* feat(envelopes): add Kinesis envelope for strongly-typed message handling (#192) @j-d-ha
+* feat(envelopes): add Application Load Balancer envelope support (#187) @j-d-ha
+* feat(envelopes): expand envelope options for multiple serialization formats (#184) @j-d-ha
+
+## 🐛 Bug Fixes
+
+* fix(ci): add explicit token to checkout and create-pull-request actions (#183) @j-d-ha
+
+## 📚 Documentation
+
+* docs: standardize README documentation across all packages (#200) @j-d-ha
+* feat(envelopes): add SNS envelope for strongly-typed message handling (#190) @j-d-ha
+
+## 🔄 Refactoring
+
+* refactor(abstractions): replace Lazy implementation with property for JSON options (#199) @j-d-ha
+
+## 🔧 Maintenance
+
+* chore: cleanup repository formatting and documentation (#197) @j-d-ha
+* chore(ci): pinned release-drafter action to 6.0.0 (#182) @j-d-ha
+
+## [v1.1.0](https://github.com/j-d-ha/aws-lambda-host/compare/v1.0.0...v1.1.0) - 2025-11-27
 
 ## 🚀 Features
 
@@ -26,7 +56,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 * chore(github): update changelog for v1.0.0 release (#170) @j-d-ha
 
-## [v1.0.0](https://github.com/j-d-ha/aws-lambda-host/compare/v0.1.3...v1.0.0) - 2025-11-10
+## [v1.0.0](https://github.com/j-d-ha/aws-lambda-host/compare/v0.1.3...v1.0.0) - 2025-11-24
 
 ## 🚀 Features
 

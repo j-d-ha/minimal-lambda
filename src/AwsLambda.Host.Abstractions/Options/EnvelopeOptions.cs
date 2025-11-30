@@ -17,36 +17,6 @@ namespace AwsLambda.Host.Options;
 public class EnvelopeOptions
 {
     /// <summary>
-    ///     Gets the default JSON serialization options that match those used by
-    ///     <see cref="DefaultLambdaJsonSerializer" />.
-    /// </summary>
-    /// <remarks>
-    ///     <para>
-    ///         Provides AWS Lambda-specific JSON settings for deserialization. This is used for complex
-    ///         envelope payloads such as SNS to SQS and CloudWatch Logs.
-    ///     </para>
-    ///     <para>
-    ///         The <see cref="JsonSerializerOptions.TypeInfoResolver" /> from <see cref="JsonOptions" />
-    ///         will be added to these options during post-configuration.
-    ///     </para>
-    /// </remarks>
-    public readonly Lazy<JsonSerializerOptions> LambdaDefaultJsonOptions = new(() =>
-    {
-        var options = new JsonSerializerOptions
-        {
-            DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
-            PropertyNameCaseInsensitive = true,
-            PropertyNamingPolicy = new AwsNamingPolicy(),
-        };
-        options.Converters.Add(new DateTimeConverter());
-        options.Converters.Add(new MemoryStreamConverter());
-        options.Converters.Add(new ConstantClassConverter());
-        options.Converters.Add(new ByteArrayConverter());
-
-        return options;
-    });
-
-    /// <summary>
     ///     Gets or sets a dictionary for storing custom extension data associated with envelope
     ///     processing.
     /// </summary>
@@ -71,6 +41,44 @@ public class EnvelopeOptions
     ///     <para>Default is an empty <see cref="JsonSerializerOptions" /> instance.</para>
     /// </remarks>
     public JsonSerializerOptions JsonOptions { get; set; } = new();
+
+    /// <summary>
+    ///     Gets the default JSON serialization options that match those used by
+    ///     <see cref="DefaultLambdaJsonSerializer" />.
+    /// </summary>
+    /// <remarks>
+    ///     <para>
+    ///         Provides AWS Lambda-specific JSON settings for deserialization. This is used for complex
+    ///         envelope payloads such as SNS to SQS and CloudWatch Logs.
+    ///     </para>
+    ///     <para>
+    ///         During post-configuration, the <see cref="JsonSerializerOptions.TypeInfoResolver" /> from
+    ///         <see cref="JsonOptions" /> will be copied to these options if <c>TypeInfoResolver</c> has
+    ///         not been explicitly configured.
+    ///     </para>
+    /// </remarks>
+    public JsonSerializerOptions LambdaDefaultJsonOptions
+    {
+        get
+        {
+            if (field is null)
+            {
+                field = new JsonSerializerOptions
+                {
+                    DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull,
+                    PropertyNameCaseInsensitive = true,
+                    PropertyNamingPolicy = new AwsNamingPolicy(),
+                };
+                field.Converters.Add(new DateTimeConverter());
+                field.Converters.Add(new MemoryStreamConverter());
+                field.Converters.Add(new ConstantClassConverter());
+                field.Converters.Add(new ByteArrayConverter());
+            }
+
+            return field;
+        }
+        set;
+    }
 
     /// <summary>Gets or sets the XML reader settings used when deserializing Lambda event payloads.</summary>
     /// <remarks>

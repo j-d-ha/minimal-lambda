@@ -4,18 +4,25 @@ Thank you for your interest in contributing to the AWS Lambda Host project! This
 
 ## Table of Contents
 
-- [Code of Conduct](#code-of-conduct)
-- [Getting Started](#getting-started)
-- [Development Setup](#development-setup)
-- [Code Formatting](#code-formatting)
-- [Making Changes](#making-changes)
-- [Commit Guidelines](#commit-guidelines)
-- [Pull Request Process](#pull-request-process)
-- [Code Style](#code-style)
-- [Testing](#testing)
-- [Documentation](#documentation)
-- [Release Process](#release-process)
-- [GitHub Actions](#github-actions)
+<!-- TOC -->
+* [Contributing to AWS Lambda Host](#contributing-to-aws-lambda-host)
+  * [Table of Contents](#table-of-contents)
+  * [Code of Conduct](#code-of-conduct)
+  * [Getting Started](#getting-started)
+  * [Development Setup](#development-setup)
+  * [Code Formatting](#code-formatting)
+  * [Making Changes](#making-changes)
+  * [Commit Guidelines](#commit-guidelines)
+  * [Pull Request Process](#pull-request-process)
+  * [Code Style](#code-style)
+  * [Testing](#testing)
+  * [Documentation](#documentation)
+  * [Target Frameworks](#target-frameworks)
+  * [Central Package Management](#central-package-management)
+  * [CI/CD Integration](#cicd-integration)
+  * [Questions or Need Help?](#questions-or-need-help)
+  * [License](#license)
+<!-- TOC -->
 
 ## Code of Conduct
 
@@ -39,7 +46,7 @@ We are committed to providing a welcoming and inclusive environment for all cont
 
 ### Prerequisites
 
-- **.NET SDK 8.0+** (8.0, 9.0, or 10.0 RC)
+- **.NET SDK 10.0+**
 - **Node.js** (for commitlint & husky - local commit validation)
 - **Task** (optional, for running automated tasks) - see [Taskfile.yml](/Taskfile.yml)
 - **Git** with configured `user.name` and `user.email`
@@ -63,16 +70,6 @@ dotnet test
 dotnet clean
 ```
 
-### Using Task Automation
-
-If you have [Task](https://taskfile.dev) installed, you can use:
-
-```bash
-task clean    # Clean NuGet packages
-task pack     # Build NuGet packages
-task lambda-test  # Start AWS Lambda test tool (port 5050)
-```
-
 ## Code Formatting
 
 Code formatting is automated using **CleanupCode** and **CSharpier**, ensuring consistent style across the project. All PRs are checked for formatting compliance in CI/CD.
@@ -90,13 +87,18 @@ The project uses two complementary tools:
    - Enforces consistent formatting (similar to Prettier for C#)
    - Handles spacing, line breaks, and code layout
 
+Tools can be installed using **NuGet**:
+```bash
+dotnet tool restore
+```
+
 ### Running Format Commands
 
 With [Task](https://taskfile.dev) installed:
 
 ```bash
 # Format entire solution (both CleanupCode and CSharpier)
-task format:all
+task format
 
 # Run only CleanupCode
 task format:cleanupcode
@@ -105,35 +107,9 @@ task format:cleanupcode
 task format:csharpier
 ```
 
-Without Task (using dotnet directly):
-
-```bash
-# CleanupCode formatting
-dotnet jb cleanupcode \
-  AwsLambda.Host.sln \
-  --settings="AwsLambda.Host.sln.DotSettings" \
-  --profile="Built-in: Full Cleanup" \
-  --verbosity=WARN \
-  --no-build
-
-# CSharpier formatting
-dotnet csharpier format .
-```
-
-### Before Committing
-
-**Always format your code before committing**:
-
-```bash
-# Format your changes
-task format:all
-
-# Stage and commit the formatted files
-git add .
-git commit -m "style: format code with CleanupCode and CSharpier"
-```
-
-Failing to format code may cause CI/CD checks to fail, as the GitHub Actions workflow (`pr-build.yaml`) includes a code quality check that runs `task format:all` and validates no files were modified.
+Always run `task format` before committing changes. Failing to format code may cause CI/CD checks to
+fail, as the GitHub Actions workflow (`pr-build.yaml`) includes a code quality check that runs 
+`task format` and validates no files were modified.
 
 ### IDE Integration
 
@@ -144,13 +120,6 @@ If you're using **JetBrains Rider** or **Visual Studio** with ReSharper:
 - This ensures consistency even before running Task commands
 
 ## Making Changes
-
-### Task Classification
-
-Before starting work, classify your task:
-
-- **Simple tasks**: Single file edits < 20 lines, documentation, comments, formatting
-- **Complex tasks**: Multi-file changes, new features, architecture changes
 
 ### Branching Strategy
 
@@ -169,35 +138,12 @@ git checkout -b feature/#42-add-custom-serializer
 git checkout -b bug/on-shutdown-generator-trying-to-return-void
 ```
 
-### Planning (Required for Complex Tasks)
-
-For complex tasks, **create a PLAN.md file** before implementation:
-
-```markdown
-# Task: [Description]
-
-## Objective
-[What needs to be accomplished]
-
-## Steps
-1. [Main step 1]
-   - [Sub-step 1.1]
-2. [Main step 2]
-
-## Deliverables
-- [Expected output]
-```
-
-- Break down work into numbered steps and sub-steps
-- Submit plan for review before implementing
-- Wait for approval before proceeding to implementation
-
 ## Commit Guidelines
 
 We follow [Conventional Commits](https://www.conventionalcommits.org/) format:
 
 ```
-<type>[optional scope]: <description>
+<type>(<optional scope>): <description>
 
 [optional body]
 
@@ -221,8 +167,6 @@ feat(source-generators): add OnShutdown support for block lambdas and test cover
 
 Implements support for block lambda syntax in OnShutdown operations.
 Includes comprehensive unit test coverage.
-
-Closes #92
 ```
 
 ```
@@ -289,46 +233,13 @@ when using extension method syntax.
   public static LambdaApplication CreateBuilder(IHostBuilder hostBuilder) { }
   ```
 
-### Code Organization
-
-```csharp
-// File-scoped namespace
-namespace AwsLambda.Host;
-
-// Using statements
-using System;
-using Microsoft.Extensions.DependencyInjection;
-
-// Class/interface declaration
-public sealed class LambdaApplication
-{
-    // Fields
-    private readonly IHost _host;
-
-    // Constructors
-    public LambdaApplication(IHost host)
-    {
-        _host = host ?? throw new ArgumentNullException(nameof(host));
-    }
-
-    // Properties
-    public IHost Host => _host;
-
-    // Public methods
-    public async Task RunAsync(CancellationToken cancellationToken = default) { }
-
-    // Private/internal methods
-    private void ValidateConfiguration() { }
-}
-```
-
 ## Testing
 
 ### Testing Framework
 
 - **Framework**: xUnit v3
 - **Assertions**: AwesomeAssertions (fluent assertions)
-- **Mocking**: NSubstitute
+- **Mocking**: NSubstitute and AutoFixture
 - **Test Location**: `/tests/` directory with project name pattern `*.UnitTests`
 
 ### Test Conventions
@@ -420,9 +331,9 @@ dotnet test /p:CollectCoverage=true
 
 This project supports multiple .NET versions:
 
-- **.NET 8.0** (primary target)
+- **.NET 8.0** (supported)
 - **.NET 9.0** (supported)
-- **.NET 10.0 RC** (experimental)
+- **.NET 10.0 ** (primary target)
 
 Test your changes against all supported frameworks:
 
@@ -445,155 +356,9 @@ All pull requests run through automated checks:
 
 - **Build**: `dotnet build`
 - **Tests**: `dotnet test`
-- **Code analysis**: StyleCop Analyzers, FxCop
+- **Code analysis**: SonarCloud analysis
 
 Ensure your changes pass all checks before requesting review.
-
-## Release Process
-
-The release process is fully automated using Release Drafter, GREN, and GitHub Actions:
-
-1. Changes merged to `main` are automatically included in draft releases
-2. Maintainers publish the draft release on GitHub
-3. Packages are automatically published to NuGet.org
-
-**For detailed information:** See [RELEASE_PROCESS.md](/docs/RELEASE_PROCESS.md)
-
----
-
-## GitHub Actions
-
-### Automated Workflows
-
-The project includes GitHub Actions workflows that run automatically on pull requests and pushes to `main`:
-
-- **pr-build.yaml**: Runs on every PR and push to main
-  - Restores dependencies
-  - Builds the solution
-  - Runs all unit tests
-  - Reports results in the PR
-
-### Running Workflows Locally with `act`
-
-You can test GitHub Actions workflows locally using [act](https://github.com/nektos/act), which runs workflows in Docker containers matching the CI/CD environment.
-
-#### Installation
-
-**macOS** (using Homebrew):
-```bash
-brew install act
-```
-
-**Linux** (using package manager):
-```bash
-# Ubuntu/Debian
-sudo apt-get install act
-
-# Fedora
-sudo dnf install act
-```
-
-**Windows** (using Chocolatey):
-```bash
-choco install act
-```
-
-**Or download** from [GitHub releases](https://github.com/nektos/act/releases)
-
-#### Testing Workflows Locally
-
-Before pushing your changes, run the PR build workflow locally:
-
-```bash
-# Run the default workflow (pr-build)
-act pull_request
-
-# Run a specific workflow by name
-act -W .github/workflows/pr-build.yaml
-
-# Run with verbose output
-act -v pull_request
-
-# Run with specific .NET version
-act pull_request --env DOTNET_VERSION=8.0.x
-```
-
-#### Common `act` Options
-
-```bash
-# List all workflows
-act -l
-
-# Run a specific job
-act pull_request -j build
-
-# Run with custom Docker image (if needed)
-act -P ubuntu-latest=ubuntu:latest
-
-# Run with dry-run mode (shows what would run)
-act --dry-run pull_request
-
-# Set environment variables
-act pull_request -e /path/to/env-file
-```
-
-#### Troubleshooting `act`
-
-**Issue**: "Cannot connect to Docker daemon"
-- Solution: Ensure Docker is installed and running
-  ```bash
-  docker ps  # Verify Docker is working
-  ```
-
-**Issue**: "Workflow not found"
-- Solution: Check that workflow files are in `.github/workflows/` directory
-  ```bash
-  ls -la .github/workflows/
-  ```
-
-**Issue**: "Permission denied" errors
-- Solution: Ensure your user is in the `docker` group (Linux)
-  ```bash
-  sudo usermod -aG docker $USER
-  newgrp docker
-  ```
-
-**Issue**: Container image pull failures
-- Solution: Ensure you have internet connectivity and Docker image registry access
-
-### Understanding Workflow Results
-
-When a workflow runs (locally or on GitHub):
-
-1. **Build Phase**: Compiles all projects
-   - Failure here means syntax or compilation errors
-   - Check output for error details
-
-2. **Test Phase**: Executes all unit tests
-   - Failure here means a test assertion failed
-   - Review test output for specific failure
-
-3. **Results**: Summary of what passed/failed
-   - All steps must succeed for the workflow to pass
-   - If any step fails, the PR cannot be merged
-
-### Workflow Best Practices
-
-- **Run locally first**: Use `act` to test before pushing
-- **Check all frameworks**: Test against supported .NET versions
-- **Review logs carefully**: GitHub Actions logs show detailed information
-- **Push early, push often**: Get feedback from CI/CD early in development
-- **Don't ignore failures**: Address workflow failures immediately
-
-### Adding New Workflows
-
-If you need to add a new GitHub Actions workflow:
-
-1. Create the workflow file in `.github/workflows/`
-2. Follow GitHub Actions YAML syntax
-3. Test locally with `act`
-4. Document the workflow in this section
-5. Ensure it adds clear value to the development process
 
 ## Questions or Need Help?
 
