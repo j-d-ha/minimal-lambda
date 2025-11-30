@@ -24,18 +24,22 @@ theme:
     - navigation.path
     - navigation.prune
     - navigation.indexes
-    - toc.integrate
     - navigation.top
     
   palette:
     # Palette toggle for light mode
     - scheme: default
+      primary: orange
+      accent: orange
       toggle:
         icon: material/brightness-7
         name: Switch to dark mode
     
+    
     # Palette toggle for dark mode
     - scheme: slate
+      primary: orange
+      accent: orange
       toggle:
         icon: material/brightness-4
         name: Switch to light mode
@@ -77,6 +81,19 @@ nav:
     - Your First Lambda: getting-started/first-lambda.md
     - Core Concepts: getting-started/core-concepts.md
     - Project Structure: getting-started/project-structure.md
+  - Guides:
+      - guides/index.md
+      - Dependency Injection: guides/dependency-injection.md
+      - Middleware: guides/middleware.md
+      - Lifecycle Management: guides/lifecycle-management.md
+      - Handler Registration: guides/handler-registration.md
+      - Configuration: guides/configuration.md
+      - Error Handling: guides/error-handling.md
+      - Testing: guides/testing.md
+      - Deployment: guides/deployment.md
 
 plugins:
   - search
+
+#extra_css:
+#  - stylesheets/extra.css
