@@ -19,7 +19,7 @@ tasks:
         dotnet jb cleanupcode  \
           AwsLambda.Host.sln \
           --settings="AwsLambda.Host.sln.DotSettings" \
-          --profile="Built-in: Full Cleanup" \
+          --profile="Full Cleanup Custom" \
           --verbosity=INFO \
           --no-build
       - echo "✅ CleanupCode completed successfully!"
