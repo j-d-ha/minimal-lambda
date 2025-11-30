@@ -1,6 +1,6 @@
 <Project>
   <PropertyGroup>
-    <VersionPrefix>1.0.1-beta.5</VersionPrefix>
+    <Version>1.2.1-beta.2</Version>
     <!-- SPDX license identifier for MIT -->
     <PackageLicenseExpression>MIT</PackageLicenseExpression>
     <!-- Other useful metadata -->

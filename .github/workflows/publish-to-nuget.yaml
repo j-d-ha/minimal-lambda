@@ -45,7 +45,7 @@ jobs:
           fi
 
       - name: Pack NuGet packages
-        run: dotnet pack --configuration Release --no-build --output ./nupkg /p:VersionPrefix=${{ steps.version.outputs.version }}
+        run: dotnet pack --configuration Release --no-build --output ./nupkg /p:Version=${{ steps.version.outputs.version }}
 
       - name: Publish to NuGet.org
         env:

@@ -1,4 +1,3 @@
-using System.Linq;
 using System.Reflection;
 using AwsLambda.Host.SourceGenerators.Models;
 using AwsLambda.Host.SourceGenerators.Types;
@@ -15,18 +14,10 @@ public class MapHandlerIncrementalGenerator : IIncrementalGenerator
 
     public MapHandlerIncrementalGenerator()
     {
-        // Get the embedded metadata attributes
-        var metadataAttributes = typeof(MapHandlerIncrementalGenerator)
-            .Assembly.GetCustomAttributes<AssemblyMetadataAttribute>()
-            .ToList();
+        var assembly = Assembly.GetExecutingAssembly();
 
-        _generatorName =
-            metadataAttributes.FirstOrDefault(a => a.Key == "SourceGeneratorName")?.Value
-            ?? "UNKNOWN";
-
-        _generatorVersion =
-            metadataAttributes.FirstOrDefault(a => a.Key == "SourceGeneratorVersion")?.Value
-            ?? "UNKNOWN";
+        _generatorName = assembly.GetName().FullName;
+        _generatorVersion = assembly.GetName().Version.ToString();
     }
 
     /// <summary>This constructor is only used for testing.</summary>
