@@ -111,7 +111,7 @@ nav:
           - CloudWatch Logs: features/envelopes/cloudwatch-logs.md
           - ALB: features/envelopes/alb.md
           - Custom Envelopes: features/envelopes/custom-envelopes.md
-      - OpenTelemetry: features/opentelemetry.md
+      - OpenTelemetry: features/open_telemetry.md
 
 plugins:
   - search
