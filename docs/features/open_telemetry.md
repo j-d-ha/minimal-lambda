@@ -21,6 +21,27 @@ At compile time, it wraps your handler invocation in a root trace span, providin
 
 ## Quick Start
 
+### Installation
+
+Install the OpenTelemetry integration package and any required exporter packages.
+
+```bash
+# Core integration package
+dotnet add package AwsLambda.Host.OpenTelemetry
+
+# Official AWS Lambda Instrumentation
+dotnet add package OpenTelemetry.Instrumentation.AWSLambda
+
+# Common packages for OTLP export
+dotnet add package OpenTelemetry.Exporter.Otlp
+dotnet add package OpenTelemetry.Extensions.Hosting
+
+# Packages for X-Ray integration
+dotnet add package OpenTelemetry.Contrib.Extensions.AWSXRay
+```
+
+### MVP Code Example
+
 This example demonstrates how to add basic OpenTelemetry instrumentation to your Lambda function.
 
 ```csharp title="Program.cs" linenums="1"
@@ -60,11 +81,11 @@ lambda.OnShutdownFlushOpenTelemetry();
 
 // 4. Write your Lambda handler like normal.
 lambda.MapHandler(
-    async ([Event] Request request, ILogger<Program> logger) =>
+    async ([Event] Request request, ILogger<Program> logger, CancellationToken cancellationToken) =>
     {
         logger.LogInformation("Responding to {Name}", request.Name);
 
-        await Task.Delay(100); // Simulate work
+        await Task.Delay(100, cancellationToken); // Simulate work
 
         return new Response($"Hello {request.Name}!");
     }
@@ -247,24 +268,3 @@ Refresh the Jaeger UI. You should see a new trace for the service. Clicking on i
 
 !!! warning "Traces Not Appearing?"
     It may take a few seconds for traces to be exported. If they don't appear, stop the running Lambda function (`Ctrl+C`). This triggers the shutdown hook, which forces a flush of any buffered telemetry.
-
----
-
-## Installation
-
-Install the OpenTelemetry integration package and any required exporter packages.
-
-```bash
-# Core integration package
-dotnet add package AwsLambda.Host.OpenTelemetry
-
-# Official AWS Lambda Instrumentation
-dotnet add package OpenTelemetry.Instrumentation.AWSLambda
-
-# Common packages for OTLP export
-dotnet add package OpenTelemetry.Exporter.Otlp
-dotnet add package OpenTelemetry.Extensions.Hosting
-
-# Packages for X-Ray integration
-dotnet add package OpenTelemetry.Contrib.Extensions.AWSXRay
-```
