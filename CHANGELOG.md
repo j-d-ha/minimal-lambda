@@ -3,7 +3,24 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [Unreleased](https://github.com/j-d-ha/aws-lambda-host/compare/v1.2.0...HEAD)
+## [Unreleased](https://github.com/j-d-ha/aws-lambda-host/compare/v1.2.1...HEAD)
+
+## [v1.2.1](https://github.com/j-d-ha/aws-lambda-host/compare/v1.2.0...v1.2.1) - 2025-11-30
+
+## 🐛 Bug Fixes
+
+* fix: update build versioning (#206) @j-d-ha
+* feat(ci): fixed interceptor namespace (#205) @ncipollina
+* feat(ci): add transitive builds (#202) @ncipollina
+
+## 📚 Documentation
+
+* docs: add GitHub Pages landing page with MkDocs (#203) @j-d-ha
+
+## 🔧 Maintenance
+
+* ci: skip build workflows for docs-only changes (#204) @j-d-ha
+* chore(github): enhance changelog update workflow (#201) @j-d-ha
 
 ## [v1.2.0](https://github.com/j-d-ha/aws-lambda-host/compare/v1.1.0...v1.2.0) - 2025-11-29
 
