@@ -19,111 +19,84 @@ Stop writing boilerplate Lambda code. Start building features with patterns you 
 === "Traditional Lambda"
 
     ```csharp
-    using Amazon.Lambda.RuntimeSupport;
-    using Amazon.Lambda.Serialization.SystemTextJson;
-    using Microsoft.Extensions.DependencyInjection;
-    
-    // Manual DI container setup
+    // ❌ Manual DI container setup
     var services = new ServiceCollection();
     services.AddScoped<IGreetingService, GreetingService>();
 
     await using var rootProvider = services.BuildServiceProvider();
 
-    // Manual bootstrap initialization
     await LambdaBootstrapBuilder
-        .Create<GreetingRequest, GreetingResponse>(
+        .Create<APIGatewayProxyRequest, APIGatewayProxyResponse>(
             async (request, context) =>
             {
-                // ⚠️ Manual scope creation for each invocation
+                // ❌ Manual scope creation for each invocation
                 using var scope = rootProvider.CreateScope();
 
-                // ⚠️ Manual service resolution from scope
+                // ❌ Manual service resolution from scope
                 var service = scope.ServiceProvider.GetRequiredService<IGreetingService>();
 
-                // ⚠️ Manual cancellation token creation from context
+                // ❌ Manual cancellation token creation from context
                 using var cts = new CancellationTokenSource(
                     context.RemainingTime - TimeSpan.FromMilliseconds(500)
                 );
 
-                var greeting = await service.GreetAsync(request.Name, cts.Token);
+                // ❌ Manual JSON deserialization
+                var requestContent = JsonSerializer.Deserialize<GreetingRequest>(request.Body);
 
-                return new GreetingResponse(greeting, DateTime.UtcNow);
+                var greeting = await service.GreetAsync(requestContent.Name, cts.Token);
+
+                // ❌ Manual JSON serialization
+                var responseJson = JsonSerializer.Serialize(
+                    new GreetingResponse(greeting, DateTime.UtcNow)
+                );
+
+                return new APIGatewayProxyResponse
+                {
+                    Body = responseJson,
+                    StatusCode = 200,
+                    Headers = new Dictionary<string, string> { ["Content-Type"] = "application/json" },
+                };
             },
             new DefaultLambdaJsonSerializer()
         )
         .Build()
         .RunAsync();
-    
-    // Models
-    public record GreetingRequest(string Name);
-    
-    public record GreetingResponse(string Message, DateTime Timestamp);
-    
-    // Service interface and implementation
-    public interface IGreetingService
-    {
-        Task<string> GreetAsync(string name, CancellationToken cancellationToken);
-    }
-    
-    public class GreetingService : IGreetingService
-    {
-        public async Task<string> GreetAsync(string name, CancellationToken cancellationToken)
-        {
-            await Task.Delay(10, cancellationToken); // Simulate async work
-            return $"Hello {name}!";
-        }
-    }
+
     ```
 
 === "aws-lambda-host"
 
     ```csharp
-    using AwsLambda.Host.Builder;
-    using Microsoft.Extensions.DependencyInjection;
-    using Microsoft.Extensions.Hosting;
-    
+    // ✅ Familiar ASP.NET Core builder pattern
     var builder = LambdaApplication.CreateBuilder();
-    
-    // Register services with DI
+
     builder.Services.AddScoped<IGreetingService, GreetingService>();
-    
+
     var lambda = builder.Build();
-    
-    // ✅ Clean handler with automatic DI and cancellation token injection
+
     lambda.MapHandler(
         async (
-            [Event] GreetingRequest request,
+            // ✅ Automatic envelope deserialization with strong typing
+            [Event] ApiGatewayRequestEnvelope<GreetingRequest> request,
+            // ✅ Automatic DI injection - proper scoped lifetime per invocation
             IGreetingService service,
+            // ✅ Automatic cancellation token - framework manages timeout
             CancellationToken cancellationToken
         ) =>
         {
-            // ✅ Cancellation token automatically provided by the framework
-            var greeting = await service.GreetAsync(request.Name, cancellationToken);
-            return new GreetingResponse(greeting, DateTime.UtcNow);
+            var greeting = await service.GreetAsync(request.BodyContent.Name, cancellationToken);
+
+            // ✅ Type-safe response - automatic JSON serialization
+            return new ApiGatewayResponseEnvelope<GreetingResponse>
+            {
+                BodyContent = new GreetingResponse(greeting, DateTime.UtcNow),
+                StatusCode = 200,
+                Headers = new Dictionary<string, string> { ["Content-Type"] = "application/json" },
+            };
         }
     );
-    
+
     await lambda.RunAsync();
-    
-    // Models
-    public record GreetingRequest(string Name);
-    
-    public record GreetingResponse(string Message, DateTime Timestamp);
-    
-    // Service interface and implementation
-    public interface IGreetingService
-    {
-        Task<string> GreetAsync(string name, CancellationToken cancellationToken);
-    }
-    
-    public class GreetingService : IGreetingService
-    {
-        public async Task<string> GreetAsync(string name, CancellationToken cancellationToken)
-        {
-            await Task.Delay(10, cancellationToken); // Simulate async work
-            return $"Hello {name}!";
-        }
-    }
     ```
 
 ---
