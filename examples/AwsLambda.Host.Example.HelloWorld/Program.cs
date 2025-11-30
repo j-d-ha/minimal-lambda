@@ -1,40 +1,18 @@
-﻿using System;
-using System.Text.Json.Serialization;
+﻿#region
+
 using AwsLambda.Host.Builder;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
+#endregion
+
+// Create the application builder
 var builder = LambdaApplication.CreateBuilder();
 
-builder.Services.AddSingleton<IService, Service>();
-
+// Build the Lambda application
 var lambda = builder.Build();
 
-lambda.UseMiddleware(
-    async (context, next) =>
-    {
-        Console.WriteLine("[Middleware 1]: Before");
-        await next(context);
-        Console.WriteLine("[Middleware 1]: After");
-    }
-);
+// Map your handler - the event is automatically injected
+lambda.MapHandler(([Event] string name) => $"Hello {name}!");
 
-lambda.MapHandler(
-    ([Event] Request request, IService service) => new Response(service.GetMessage(request.Name))
-);
-
+// Run the Lambda
 await lambda.RunAsync();
-
-internal record Response([property: JsonPropertyName("message")] string Message);
-
-internal record Request([property: JsonPropertyName("name")] string Name);
-
-internal interface IService
-{
-    string GetMessage(string name);
-}
-
-internal class Service : IService
-{
-    public string GetMessage(string name) => $"hello {name}";
-}

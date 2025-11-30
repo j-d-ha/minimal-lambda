@@ -180,8 +180,8 @@ await lambda.RunAsync();
 ```
 
 !!! tip "Next Steps"
-Ready to dive deeper? Check out the [Getting Started Guide](getting-started/) for a complete
-tutorial, or explore the [Examples](examples/) to see real-world applications.
+    Ready to dive deeper? Check out the [Getting Started Guide](getting-started/) for a complete
+    tutorial, or explore the [Examples](examples/) to see real-world applications.
 
 ---
 
@@ -204,9 +204,9 @@ Envelope packages provide type-safe handling of AWS Lambda event sources with au
 deserialization.
 
 !!! info "What are Envelopes?"
-Envelopes wrap AWS Lambda events with strongly-typed payload handling, giving you compile-time type
-safety and automatic deserialization of message bodies from SQS, SNS, Kinesis, and other event
-sources.
+    Envelopes wrap AWS Lambda events with strongly-typed payload handling, giving you compile-time type
+    safety and automatic deserialization of message bodies from SQS, SNS, Kinesis, and other event
+    sources.
 
     [Learn more about envelopes](features/envelopes/){ .md-button }
 
