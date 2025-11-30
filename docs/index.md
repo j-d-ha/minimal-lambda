@@ -6,7 +6,7 @@
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/j-d-ha/aws-lambda-host/blob/main/LICENSE)
 
 A modern .NET framework that brings familiar .NET Core patterns to AWS Lambda - middleware,
-dependency injection, lifecycle hooks, and async-first design.
+dependency injection, and lifecycle hooks.
 
 [Get Started](getting-started/){ .md-button .md-button--primary }
 [View Examples](examples/){ .md-button }
@@ -111,7 +111,7 @@ scoped lifetime management per invocation.
 
 [Learn about DI](guides/dependency-injection.md){ .md-button }
 
-### :material-lightning-bolt-outline: Async-First Design
+### :material-calendar-sync-outline: Lifecycle Management
 
 Native support for async/await with proper Lambda timeout and cancellation handling built-in.
 
