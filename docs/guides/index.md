@@ -21,6 +21,7 @@ Learn service registration patterns, understand Singleton vs Scoped lifetimes, a
 Build middleware pipelines for cross-cutting concerns like logging, metrics, validation, and error handling.
 
 **Topics covered:**
+
 - Middleware pipeline composition
 - Common middleware patterns
 - Context and state management
@@ -106,9 +107,9 @@ After mastering the guides, explore [Advanced Topics](/advanced/) for AOT compil
 
 ## Additional Resources
 
-- **[Examples](/examples/)** – Repository sample projects (more coming soon)
-- **[Features](/features/)** – Envelope packages and OpenTelemetry add-ons
-- **[Advanced Topics](/advanced/)** – Placeholder for Native AOT, generators, and performance deep dives
+- **[Examples (Coming Soon)](/examples/)** – Guided sample apps covering middleware, envelopes, and DI wiring.
+- **[Features](/features/)** – Envelope packages and OpenTelemetry add-ons.
+- **[Advanced Topics (Coming Soon)](/advanced/)** – Native AOT, generator internals, and performance deep dives.
 
 ## Getting Help
 
