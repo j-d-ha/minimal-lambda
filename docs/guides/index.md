@@ -10,6 +10,7 @@ Master the essential framework features that power your Lambda functions.
 Learn service registration patterns, understand Singleton vs Scoped lifetimes, and master dependency injection in handlers and lifecycle methods.
 
 **Topics covered:**
+
 - Service lifetime management (Singleton, Scoped)
 - Service registration patterns
 - Injectable parameter types
@@ -30,6 +31,7 @@ Build middleware pipelines for cross-cutting concerns like logging, metrics, val
 Understand and control the Lambda lifecycle phases: OnInit, Invocation, and OnShutdown.
 
 **Topics covered:**
+
 - OnInit phase for cold start setup
 - OnShutdown phase for cleanup
 - Multiple lifecycle handlers
@@ -40,6 +42,7 @@ Understand and control the Lambda lifecycle phases: OnInit, Invocation, and OnSh
 Register type-safe Lambda handlers with automatic dependency injection and source generation.
 
 **Topics covered:**
+
 - MapHandler method usage
 - `[Event]` attribute requirements
 - Injectable parameter types
@@ -51,6 +54,7 @@ Register type-safe Lambda handlers with automatic dependency injection and sourc
 Configure framework behavior with LambdaHostOptions and application settings.
 
 **Topics covered:**
+
 - LambdaHostOptions reference
 - Timeout and cancellation configuration
 - Application configuration patterns
@@ -66,6 +70,7 @@ Build robust, testable, and deployable Lambda functions.
 Implement resilient error handling with retries, graceful degradation, and proper exception management.
 
 **Topics covered:**
+
 - Exception handling in handlers
 - Middleware error handling
 - Cancellation token usage
@@ -77,22 +82,13 @@ Implement resilient error handling with retries, graceful degradation, and prope
 Write comprehensive tests for your Lambda functions using xUnit, NSubstitute, and AutoFixture.
 
 **Topics covered:**
+
 - Testing framework setup
 - Unit testing services
 - AutoNSubstituteData pattern
 - Testing handlers and middleware
 - Integration testing
 - Test naming conventions
-
-## Guide Features
-
-Each guide includes:
-
-- ✅ **Complete working examples** – Copy-paste ready code
-- ✅ **Best practices** – Proven patterns from production use
-- ✅ **Anti-patterns** – Common mistakes to avoid
-- ✅ **Troubleshooting** – Solutions to common issues
-- ✅ **Cross-references** – Links to related topics
 
 ## Learning Path
 
@@ -110,18 +106,14 @@ After mastering the guides, explore [Advanced Topics](/advanced/) for AOT compil
 
 ## Additional Resources
 
-- **[Examples](/examples/)** – Complete example projects
-- **[Features](/features/)** – Envelope packages and OpenTelemetry
-- **[API Reference](/api-reference/)** – Detailed API documentation
-- **[FAQ](/resources/faq.md)** – Common questions and answers
-- **[Troubleshooting](/resources/troubleshooting.md)** – Solutions to common problems
+- **[Examples](/examples/)** – Repository sample projects (more coming soon)
+- **[Features](/features/)** – Envelope packages and OpenTelemetry add-ons
+- **[Advanced Topics](/advanced/)** – Placeholder for Native AOT, generators, and performance deep dives
 
 ## Getting Help
 
 If you encounter issues not covered in these guides:
 
-- Check the [FAQ](/resources/faq.md) for common questions
-- Review [Troubleshooting](/resources/troubleshooting.md) for solutions
 - Search or ask in [GitHub Discussions](https://github.com/j-d-ha/aws-lambda-host/discussions)
 - Report bugs in [GitHub Issues](https://github.com/j-d-ha/aws-lambda-host/issues)
 
