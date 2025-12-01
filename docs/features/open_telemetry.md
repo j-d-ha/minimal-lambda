@@ -29,11 +29,8 @@ Install the OpenTelemetry integration package and any required exporter packages
 # Core integration package
 dotnet add package AwsLambda.Host.OpenTelemetry
 
-# Official AWS Lambda Instrumentation
-dotnet add package OpenTelemetry.Instrumentation.AWSLambda
-
 # Common packages for OTLP export
-dotnet add package OpenTelemetry.Exporter.Otlp
+dotnet add package OpenTelemetry.Exporter.OpenTelemetryProtocol
 dotnet add package OpenTelemetry.Extensions.Hosting
 
 # Packages for X-Ray integration
@@ -102,81 +99,39 @@ internal record Response(string Message);
 !!! tip
     OpenTelemetry tracing can be configured in multiple ways, including manually creating a trace provider using the [OpenTelemetry](https://www.nuget.org/packages/OpenTelemetry), or through registering OpenTelemetry services in your DI container using [OpenTelemetry.Extensions.Hosting](https://www.nuget.org/packages/OpenTelemetry.Extensions.Hosting). 
 
-     When working with  `AwsLambda.Host`, its recommended to the latter approach.
+     When working with  `AwsLambda.Host`, its recommended to the latter approach and as such, this documentation focuses on it.
 
 ---
 
-## How It Works: Compile-Time Magic
+## How It Works: Source Generation and Interceptors
 
-The `UseOpenTelemetryTracing()` method is the key to this integration. While it looks like a simple method call, it's actually an empty stub that acts as a hook for the `AwsLambda.Host` source generator.
+`AwsLambda.Host` relies on C# source generators to avoid runtime reflection and improve performance. The `UseOpenTelemetryTracing()` method is a key part of this system.
 
-At compile time, the generator finds this call and **intercepts** it. It then generates code that wraps your handler delegate inside the root tracing logic provided by `OpenTelemetry.Instrumentation.AWSLambda`. This means your handler is automatically timed and traced with no runtime performance penalty from reflection.
+Here's the step-by-step process:
 
-The `OnShutdownFlushOpenTelemetry()` method registers a lifecycle hook that gracefully flushes the OpenTelemetry `TracerProvider` and `MeterProvider`, ensuring all buffered telemetry is sent before the Lambda terminates.
+1. The `UseOpenTelemetryTracing()` method itself is an empty placeholder.
+2. At compile time, a source generator finds all calls to this method.
+3. For each call it finds, it emits a C# 12 Interceptor. This interceptor replaces the empty method call with code that adds a middleware delegate to the Lambda invocation pipeline.
+4. This generated middleware calls an adapter in the `AwsLambda.Host.OpenTelemetry` package, which in turn uses the official `OpenTelemetry.Instrumentation.AWSLambda` package to wrap the Lambda handler execution in a root trace span.
+
+This entire process happens during compilation, resulting in highly optimized code that instruments your handler without any reflection overhead at runtime.
+
+Similarly, `OnShutdownFlushOpenTelemetry()` is an interceptor that registers a shutdown hook. This hook flushes the OpenTelemetry providers, ensuring buffered telemetry is sent before the Lambda execution environment terminates.
 
 ---
 
 ## Configuration
 
-Configuration is done using the standard OpenTelemetry .NET SDK extension methods on `IServiceCollection`.
-
-### Basic Configuration (OTLP Exporter)
-
-The most common scenario is exporting telemetry to an observability platform via the OpenTelemetry Protocol (OTLP).
-
-```csharp title="Program.cs" linenums="1"
-var lambda = LambdaApplication.Create();
-
-lambda.Services.AddOpenTelemetry()
-    .WithTracing(tracing => tracing
-        .AddAWSLambdaConfigurations() // Adds Lambda-specific resource attributes
-        .AddOtlpExporter()) // Exports traces via OTLP
-    .WithMetrics(metrics => metrics
-        .AddAWSLambdaConfigurations() // Adds Lambda-specific resource attributes
-        .AddOtlpExporter()); // Exports metrics via OTLP
-
-lambda.UseOpenTelemetryTracing();
-lambda.OnShutdownFlushOpenTelemetry();
-
-var app = lambda.Build();
-// ...
-```
-
-!!! tip "OTLP Endpoint Configuration"
-    The OTLP exporter endpoint is configured via the `OTEL_EXPORTER_OTLP_ENDPOINT` environment variable.
-
-### AWS X-Ray Integration
-
-To integrate with AWS X-Ray, use the AWS-provided instrumentation and propagator.
-
-```csharp title="Program.cs" linenums="1"
-using OpenTelemetry.Trace;
-using OpenTelemetry.Contrib.Extensions.AWSXRay; // AWS X-Ray Propagator
-
-// ...
-
-lambda.Services.AddOpenTelemetry()
-    .WithTracing(tracing =>
-    {
-        tracing
-            .AddAWSLambdaConfigurations()
-            .AddAWSXRayTraceId() // Use X-Ray format for Trace IDs
-            .AddOtlpExporter();
-
-        // Propagate X-Ray context
-        Sdk.SetDefaultTextMapPropagator(new AWSXRayPropagator());
-    });
-
-lambda.UseOpenTelemetryTracing();
-lambda.OnShutdownFlushOpenTelemetry();
-// ...
-```
+Configuration is done using the standard OpenTelemetry .NET SDK extension methods on `IServiceCollection`. Official documentation for these methods can be found [here](https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/src/OpenTelemetry.Extensions.Hosting/README.md).
 
 ---
 
 ## Custom Instrumentation
 
-To get the most out of observability, you should add custom instrumentation to your application code.
+`AwsLambda.Host.OpenTelemetry` helps you instrement your Lambda handlers with [OpenTelemetry.Instrumentation.AWSLambda](https://www.nuget.org/packages/OpenTelemetry.Instrumentation.AWSLambda), but to get the most out of observability, you should add custom instrumentation to your application code. In this section we cover how this can be done. 
+
+!!! note
+    This code is not specific to `AwsLambda.Host.OpenTelemetry` and follows the guidlines provided by Microsoft's [.NET distributed tracing documetation](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/distributed-tracing).
 
 ### Custom Spans (Activities)
 

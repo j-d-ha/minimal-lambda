@@ -74,6 +74,9 @@ markdown_extensions:
       alternate_style: true
   - pymdownx.details
   - admonition
+  - def_list
+  - pymdownx.tasklist:
+      custom_checkbox: true
 
 watch:
   - ./docs/
