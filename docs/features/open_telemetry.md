@@ -180,6 +180,8 @@ A full working example of an instrumented Lambda application can be found in [he
 
 ### Custom Instrumentation Class
 
+The [.NET distributed tracing guidance](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/distributed-tracing) recommends creating a dedicated `ActivitySource` per service or bounded context, then sharing it through dependency injection. This keeps source names consistent and avoids collisions when multiple libraries emit spans.
+
 ```csharp title="Instrumentation.cs" linenums="1"
 using System.Diagnostics;
 
@@ -201,7 +203,11 @@ internal class Instrumentation : IDisposable
 }
 ```
 
+Register this class (typically as a singleton) so that services can request an `Instrumentation` instance and start spans with a stable `ActivitySourceName`. Keeping the type disposable mirrors the official walkthrough for manual instrumentation and ensures underlying event listeners are released when the Lambda host shuts down.
+
 ### Custom Metrics Class
+
+Metrics follow a similar pattern: create a class that receives an `IMeterFactory`, then build strongly typed instruments. This matches the [instrumentation walkthroughs](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/distributed-tracing-instrumentation-walkthroughs) where meters and counters are grouped by concern.
 
 ```csharp title="NameMetrics.cs" linenums="1"
 using System.Diagnostics.Metrics;
@@ -223,8 +229,11 @@ public class NameMetrics
 }
 ```
 
+By injecting `NameMetrics` into your services you can increment counters, attach semantic tags (in this case the processed `name`), and have the values exported alongside traces through whatever OTLP or X-Ray exporter you registered earlier.
 
 ### Instrument A Service
+
+Once the reusable helpers exist, wrap service logic in spans to capture timing, tags, and exceptions. The following `NameService` starts a child activity every time it generates a value, enriching it with both input and output information.
 
 ```csharp title="NameService.cs" linenums="1"
 using System.Diagnostics;
@@ -248,7 +257,11 @@ public class NameService
 }
 ```
 
+The `using var activity = ...` pattern mirrors the BCL samples and guarantees spans finish even when exceptions are thrown. You can call into `NameMetrics.ProcessName` inside the same scope so traces and metrics share correlated attributes.
+
 ### Instrument A Handler
+
+Finally, surface the custom instrumentation inside your Lambda handler. `AwsLambda.Host` injects any registered services, so you can receive both `IService` and `Instrumentation` directly in the handler signature.
 
 ```csharp title="Function.cs" linenums="1"
 using AwsLambda.Host.Builder;
@@ -272,3 +285,5 @@ internal static class Function
     }
 }
 ```
+
+The handler starts a root `Activity` before invoking downstream services, ensuring any spans produced inside `Service.GetMessage` automatically nest beneath it. Because `UseOpenTelemetryTracing()` already wires up the Lambda envelope instrumentation, your manual spans flow into the same trace, giving full visibility from the trigger event through your business logic and custom metrics.
