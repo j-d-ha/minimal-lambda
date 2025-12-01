@@ -1,5 +1,7 @@
 # AwsLambda.Host.Example.OpenTelemetry
 
+> 📚 **Full Documentation:** https://j-d-ha.github.io/aws-lambda-host/
+
 ## Getting Started
 
 You may need to CD into this directory before running the following commands.

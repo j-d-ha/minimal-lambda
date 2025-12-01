@@ -5,6 +5,8 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=j-d-ha_aws-lambda-host&metric=alert_status&token=9fb519975d91379dcfbc6c13a4bd4207131af6e3)](https://sonarcloud.io/summary/new_code?id=j-d-ha_aws-lambda-host)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
+> 📚 **Full Documentation:** https://j-d-ha.github.io/aws-lambda-host/
+
 A modern .NET framework for building AWS Lambda functions using familiar .NET patterns.
 
 ## Overview

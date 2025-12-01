@@ -3,6 +3,8 @@
 Core framework for building AWS Lambda functions with dependency injection, middleware, and source
 generation.
 
+> 📚 **Full Documentation:** https://j-d-ha.github.io/aws-lambda-host/
+
 ## Overview
 
 A modern .NET framework for building AWS Lambda functions using familiar ASP.NET Core patterns. The
