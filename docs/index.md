@@ -65,7 +65,7 @@ Stop writing boilerplate Lambda code. Start building features with patterns you 
 
     ```
 
-=== "aws-lambda-host"
+=== "`AwsLambda.Host`"
 
     ```csharp
     // ✅ Familiar .NET Core builder pattern

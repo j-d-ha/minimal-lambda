@@ -123,7 +123,7 @@ Common features:
 
 ### Feature Providers in Practice
 
-When `context.Features.Get<T>()` runs, aws-lambda-host walks through every registered `IFeatureProvider`
+When `context.Features.Get<T>()` runs, `AwsLambda.Host` walks through every registered `IFeatureProvider`
 until one returns the requested feature. Built-in providers handle common cases such as response
 serialization. Use the same pattern for your features.
 

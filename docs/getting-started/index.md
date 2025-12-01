@@ -1,8 +1,8 @@
 # Getting Started
 
-**aws-lambda-host** brings ASP.NET Core–style hosting, dependency injection, and middleware to AWS Lambda. Instead of wiring up serialization and context handling manually, you configure a Lambda-specific host that manages scopes, middleware, and strongly typed handlers at compile time.
+**`AwsLambda.Host`** brings ASP.NET Core–style hosting, dependency injection, and middleware to AWS Lambda. Instead of wiring up serialization and context handling manually, you configure a Lambda-specific host that manages scopes, middleware, and strongly typed handlers at compile time.
 
-### Why aws-lambda-host?
+### Why `AwsLambda.Host`?
 
 - **Familiar patterns** – Builder APIs, DI, and middleware mirror ASP.NET Core.
 - **Source-generated handlers** – Avoid reflection while staying AOT ready.

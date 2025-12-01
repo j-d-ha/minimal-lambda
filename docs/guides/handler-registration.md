@@ -39,7 +39,7 @@ interface IGreetingService
 
 ## Handler Signatures and the `[Event]` Parameter
 
-Handlers that receive an incoming payload must identify exactly one parameter with `[Event]`. The generator uses that marker to synthesize deserialization logic (JSON by default, or whatever envelope/serializer is active). If your Lambda does **not** expect input (e.g., scheduled jobs, health checks, etc.), you can omit the `[Event]` attribute entirely—just define a handler with no payload parameter and aws-lambda-host skips the event binding phase.
+Handlers that receive an incoming payload must identify exactly one parameter with `[Event]`. The generator uses that marker to synthesize deserialization logic (JSON by default, or whatever envelope/serializer is active). If your Lambda does **not** expect input (e.g., scheduled jobs, health checks, etc.), you can omit the `[Event]` attribute entirely—just define a handler with no payload parameter and `AwsLambda.Host` skips the event binding phase.
 
 - `[Event]` may appear on reference types, structs, records, collection types, or envelope types such as `ApiGatewayRequestEnvelope<T>`.
 - Handlers without payloads can simply omit `[Event]` by not declaring an event parameter at all.

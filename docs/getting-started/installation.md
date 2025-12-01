@@ -1,6 +1,6 @@
 # Installation
 
-This guide walks you through installing aws-lambda-host and configuring your project to build Lambda functions.
+This guide walks you through installing `AwsLambda.Host` and configuring your project to build Lambda functions.
 
 ## System Requirements
 
@@ -174,7 +174,7 @@ Build succeeded.
 
 ## Package Overview
 
-The aws-lambda-host framework includes multiple packages for different use cases:
+The `AwsLambda.Host` framework includes multiple packages for different use cases:
 
 ### Core Packages
 
@@ -238,7 +238,7 @@ If you encounter issues not covered here:
 
 ## Next Steps
 
-Now that you have aws-lambda-host installed and verified, you're ready to build your first Lambda function!
+Now that you have `AwsLambda.Host` installed and verified, you're ready to build your first Lambda function!
 
 **→ Continue to [Your First Lambda](first-lambda.md)** to build a complete Lambda function step-by-step.
 

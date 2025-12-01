@@ -1,6 +1,6 @@
 # Your First Lambda Function
 
-This tutorial walks you through building, testing, and deploying a complete Lambda function using aws-lambda-host. You'll create a greeting service that demonstrates dependency injection, middleware, and type-safe handlers.
+This tutorial walks you through building, testing, and deploying a complete Lambda function using `AwsLambda.Host`. You'll create a greeting service that demonstrates dependency injection, middleware, and type-safe handlers.
 
 ## What We'll Build
 
@@ -17,7 +17,7 @@ A greeting service Lambda function with:
 
 Before starting, ensure you've completed the [Installation](installation.md) guide and have:
 
-- aws-lambda-host NuGet package installed
+- `AwsLambda.Host` NuGet package installed
 - Project file properly configured
 - .NET 8 SDK installed
 
@@ -594,7 +594,7 @@ sequenceDiagram
 
 Congratulations! You've built and deployed a complete Lambda function. You now understand:
 
-- ✅ How to structure Lambda functions with aws-lambda-host
+- ✅ How to structure Lambda functions with `AwsLambda.Host`
 - ✅ Defining strongly-typed request/response models
 - ✅ Creating and registering services with dependency injection
 - ✅ Adding middleware for cross-cutting concerns

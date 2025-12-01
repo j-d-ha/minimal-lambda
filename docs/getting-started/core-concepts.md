@@ -1,10 +1,10 @@
 # Core Concepts
 
-This guide explains how aws-lambda-host stitches together the Lambda lifecycle, dependency injection, middleware, and source generation. Knowing these building blocks makes it easier to reason about performance, testing, and extensibility as your functions grow.
+This guide explains how `AwsLambda.Host` stitches together the Lambda lifecycle, dependency injection, middleware, and source generation. Knowing these building blocks makes it easier to reason about performance, testing, and extensibility as your functions grow.
 
 ## The Lambda Lifecycle
 
-An execution environment progresses through distinct stages. aws-lambda-host exposes each one so you can opt into work at the right time.
+An execution environment progresses through distinct stages. `AwsLambda.Host` exposes each one so you can opt into work at the right time.
 
 ```
 Cold Start → OnInit → Invocation 1..N → OnShutdown → Termination
@@ -43,13 +43,13 @@ lambda.OnInit(async (
 
 ### Invocation Pipeline
 
-Every event runs through the middleware pipeline and handler you registered with `MapHandler`. aws-lambda-host creates a scoped service provider, sets up features, and links the cancellation token to the Lambda timeout.
+Every event runs through the middleware pipeline and handler you registered with `MapHandler`. `AwsLambda.Host` creates a scoped service provider, sets up features, and links the cancellation token to the Lambda timeout.
 
 **Invocation steps:**
 
 1. Lambda runtime delivers the JSON payload.
 2. The generated handler deserializes it (if you marked a parameter with `[Event]`).
-3. aws-lambda-host creates a scoped `IServiceProvider` for the invocation.
+3. `AwsLambda.Host` creates a scoped `IServiceProvider` for the invocation.
 4. Middleware executes in the order it was registered.
 5. Your handler runs and can resolve services/contexts from DI.
 6. The response is captured through `IResponseFeature<T>` and serialized via the configured `ILambdaSerializer`.
@@ -104,7 +104,7 @@ graph LR
 
 ## Dependency Injection Fundamentals
 
-aws-lambda-host uses the standard `Microsoft.Extensions.DependencyInjection` container. Registrations happen before `builder.Build()`, and the framework aligns service lifetimes with the Lambda lifecycle.
+`AwsLambda.Host` uses the standard `Microsoft.Extensions.DependencyInjection` container. Registrations happen before `builder.Build()`, and the framework aligns service lifetimes with the Lambda lifecycle.
 
 | Lifetime  | Created                              | Disposed                                  | Use for                                     |
 |-----------|--------------------------------------|-------------------------------------------|---------------------------------------------|
@@ -158,7 +158,7 @@ Handlers and lifecycle hooks can request multiple parameter types simultaneously
 
 ## Middleware Pipeline
 
-Middleware composes the invocation pipeline. Register delegates before `MapHandler`; aws-lambda-host wraps them around the handler in the order you specify.
+Middleware composes the invocation pipeline. Register delegates before `MapHandler`; `AwsLambda.Host` wraps them around the handler in the order you specify.
 
 ```csharp title="Program.cs" linenums="1"
 lambda.UseMiddleware(async (context, next) =>

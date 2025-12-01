@@ -147,4 +147,4 @@ lambda.MapHandler((
 - Use the options pattern for config and keyed services for multiple implementations.
 - For fundamentals, refer back to the [official DI docs](https://learn.microsoft.com/en-us/dotnet/core/extensions/dependency-injection).
 
-With these patterns, aws-lambda-host feels just like ASP.NET Core, but tuned for the Lambda lifecycle.
+With these patterns, `AwsLambda.Host` feels just like ASP.NET Core, but tuned for the Lambda lifecycle.

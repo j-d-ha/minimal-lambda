@@ -1,6 +1,6 @@
 # Guides
 
-Comprehensive guides for building production Lambda functions with aws-lambda-host. Each guide provides in-depth coverage of a specific framework feature with complete examples, best practices, and troubleshooting.
+Comprehensive guides for building production Lambda functions with `AwsLambda.Host`. Each guide provides in-depth coverage of a specific framework feature with complete examples, best practices, and troubleshooting.
 
 ## Core Framework Guides
 
@@ -93,7 +93,7 @@ Write comprehensive tests for your Lambda functions using xUnit, NSubstitute, an
 
 ## Learning Path
 
-### New to aws-lambda-host?
+### New to `AwsLambda.Host`?
 
 Start with [Getting Started](/getting-started/) to build your first Lambda function, then return here for deeper coverage of specific features.
 
