@@ -2,8 +2,6 @@
 
 OpenTelemetry integration for distributed tracing and observability in AWS Lambda functions.
 
-> 📚 **Full Documentation:** https://j-d-ha.github.io/aws-lambda-host/
-
 ## Overview
 
 An extension package for the [AwsLambda.Host](../AwsLambda.Host/README.md) framework that provides
@@ -23,6 +21,8 @@ comprehensive observability integration. This package enables:
 > Requires AwsLambda.Host – this package extends that framework and cannot be used
 > standalone. Configure exporters to send traces and metrics to your observability backend (e.g.,
 > Datadog, New Relic, Jaeger, CloudWatch).
+
+> 📚 **[View Full Documentation](https://j-d-ha.github.io/aws-lambda-host/)**
 
 ## Installation
 

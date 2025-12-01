@@ -3,8 +3,6 @@
 Envelopes extend AWS Lambda event types with strongly-typed payload handling, making it easier to
 work with JSON (or other formats) in Lambda function handlers.
 
-> 📚 **Full Documentation:** https://j-d-ha.github.io/aws-lambda-host/
-
 ## Overview
 
 Envelope packages wrap official AWS Lambda event classes (like `SQSEvent`, `APIGatewayProxyRequest`)
@@ -19,6 +17,8 @@ IDE support and compile-time type checking.
 - **Zero Overhead** Envelopes extend official AWS event types, adding no runtime cost
 - **AOT Ready** Support for Native AOT compilation via JsonSerializerContext registration
 - **Familiar API** Works seamlessly with existing AWS Lambda event patterns
+
+> 📚 **[View Full Documentation](https://j-d-ha.github.io/aws-lambda-host/)**
 
 ## Packages
 

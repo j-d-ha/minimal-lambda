@@ -1,6 +1,6 @@
 # AwsLambda.Host.Example.OpenTelemetry
 
-> 📚 **Full Documentation:** https://j-d-ha.github.io/aws-lambda-host/
+> 📚 **[View Full Documentation](https://j-d-ha.github.io/aws-lambda-host/)**
 
 ## Getting Started
 
