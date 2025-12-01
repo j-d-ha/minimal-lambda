@@ -90,7 +90,6 @@ nav:
       - Installation: getting-started/installation.md
       - Your First Lambda: getting-started/first-lambda.md
       - Core Concepts: getting-started/core-concepts.md
-      - Project Structure: getting-started/project-structure.md
   - Guides:
       - guides/index.md
       - Dependency Injection: guides/dependency-injection.md
@@ -100,7 +99,6 @@ nav:
       - Configuration: guides/configuration.md
       - Error Handling: guides/error-handling.md
       - Testing: guides/testing.md
-      - Deployment: guides/deployment.md
   - Features:
       - features/index.md
       - Envelopes: features/envelopes.md
