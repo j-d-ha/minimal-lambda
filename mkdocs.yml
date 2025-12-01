@@ -99,13 +99,13 @@ nav:
       - Configuration: guides/configuration.md
       - Error Handling: guides/error-handling.md
       - Testing: guides/testing.md
-  - Examples:
+  - Examples (Coming Soon):
       - examples/index.md
   - Features:
       - features/index.md
       - Envelopes: features/envelopes.md
       - OpenTelemetry: features/open_telemetry.md
-  - Advanced:
+  - Advanced (Coming Soon):
       - advanced/index.md
 
 plugins:
