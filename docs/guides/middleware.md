@@ -86,7 +86,9 @@ so for now keep middleware logic inside the lambda or extract helper services fo
 
 Features are type-keyed adapters stored inside `ILambdaHostContext.Features` (an
 `IFeatureCollection`). They decouple middleware from handlers: a handler (or the framework) populates a
-feature, middleware reads or mutates it, and nobody needs to inject each other through DI.
+feature, middleware reads or mutates it, and nobody needs to inject each other through DI. The
+collection lazily creates features by asking every registered `IFeatureProvider` to build them when
+first requested.
 
 ```csharp title="Program.cs"
 using AwsLambda.Host.Abstractions.Features;
@@ -117,8 +119,7 @@ Common features:
 
 - Middleware can extract values set by handlers (or other middleware) without DI fan-out.
 - Handlers remain free of middleware-specific dependencies; they just work with the event/response types.
-- Custom features are easy to add—define an interface, set it on `context.Features`, and retrieve it
-  downstream when needed.
+- Custom features are easy to add—Just add an implementation of `IFeatureProvider` and register it. It will then be available to all middleware.
 
 ```csharp title="Custom feature"
 public interface ICorrelationFeature
@@ -134,18 +135,23 @@ public sealed class CorrelationFeature : ICorrelationFeature
 lambda.UseMiddleware(async (context, next) =>
 {
     var feature = context.Features.Get<ICorrelationFeature>() ?? new CorrelationFeature();
-    context.Features.Set<ICorrelationFeature>(feature); // make it visible to downstream components
-
+    
     context.Items["CorrelationId"] = feature.CorrelationId;
     await next(context);
 });
 
-lambda.UseMiddleware(async (context, next) =>
+public sealed class CorrelationFeatureProvider : IFeatureProvider
 {
-    var correlation = context.Features.Get<ICorrelationFeature>()?.CorrelationId;
-    Console.WriteLine($"Tracking {correlation}");
-    await next(context);
-});
+    private static readonly Type FeatureType = typeof(ICorrelationFeature);
+
+    public bool TryCreate(Type type, out object? feature)
+    {
+        feature = type == FeatureType ? new CorrelationFeature() : null;
+        return feature is not null;
+    }
+}
+
+builder.Services.AddSingleton<IFeatureProvider, CorrelationFeatureProvider>();
 ```
 
 ## Short-Circuiting and Error Handling
