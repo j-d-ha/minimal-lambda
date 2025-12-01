@@ -2,7 +2,7 @@
 
 ## What is OpenTelemetry Integration?
 
-The `AwsLambda.Host.OpenTelemetry` package provides seamless integration with the official [OpenTelemetry.Instrumentation.AWSLambda](https://www.nuget.org/packages/OpenTelemetry.Instrumentation.AWSLambda) package. It acts as a smart adapter layer for `AwsLambda.Host`, using **C# 12 interceptors and source generation** to automatically instrument your Lambda handlers with minimal overhead.
+The `AwsLambda.Host.OpenTelemetry` package provides seamless integration with the official [`OpenTelemetry.Instrumentation.AWSLambda`](https://www.nuget.org/packages/OpenTelemetry.Instrumentation.AWSLambda) package. It acts as a smart adapter layer for `AwsLambda.Host`, using **C# 12 interceptors and source generation** to automatically instrument your Lambda handlers with minimal overhead.
 
 At compile time, it wraps your handler invocation in a root trace span, providing reflection-free, high-performance distributed tracing.
 
@@ -126,9 +126,17 @@ Similarly, `OnShutdownFlushOpenTelemetry()` is an interceptor that registers a s
 
 Configuration is done using the standard OpenTelemetry .NET SDK extension methods on `IServiceCollection`. Official documentation for these methods can be found [here](https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/src/OpenTelemetry.Extensions.Hosting/README.md).
 
+`AwsLambda.Host.OpenTelemetry` expectes for an instance of `TracerProvider` to be registered in the DI container as this provider is used by `OpenTelemetry.Instrumentation.AWSLambda`. As such, it is your responsibility to configure the OpenTelemetry provider and ensure it is registered in the DI container. If it is not, an exception will be thrown at startup.
+
 ### Instrumenting The Invocation Pipeline 
 
+
 ### Gracefully Shutting & Cleaning Up
+
+Since it is expected that the trace provider is added to the DI container and since trace provider implements IDisposable, when the application shuts down and the dependency injection container is disposed of, the trace provider should automatically flush all of its data. If you experience issues where traces are not being properly flushed on shutdown and you are seeing traces dropped or not properly propagated, `AwsLambda.Host.OpenTelemetry` prvides a couple of helper methods:
+
+!!! Warning
+    When shutting down, Lambda only allocated up to 500ms of time for the execution environment to shut down. As such, it is important to make sure that shutdown logic such as flushing traces is executed as quickly as possible. More information about the Lambda execution environment lifecycle can be found [here](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html).
 
 ---
 
