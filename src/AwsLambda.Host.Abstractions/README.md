@@ -2,6 +2,8 @@
 
 Core interfaces and abstractions for the aws-lambda-host framework.
 
+> 📚 **[View Full Documentation](https://j-d-ha.github.io/aws-lambda-host/)**
+
 ## Overview
 
 Core interfaces and delegates that define the AwsLambda.Host framework contract. This package
@@ -17,8 +19,6 @@ provides:
 This package is typically used implicitly by [AwsLambda.Host](../AwsLambda.Host/README.md), but is
 essential if you're building custom integrations, middleware components, or extensions to the
 framework.
-
-> 📚 **[View Full Documentation](https://j-d-ha.github.io/aws-lambda-host/)**
 
 ## Installation
 

@@ -7,6 +7,8 @@
 
 A modern .NET framework for building AWS Lambda functions using familiar .NET patterns.
 
+> 📚 **[View Full Documentation](https://j-d-ha.github.io/aws-lambda-host/)**
+
 ## Overview
 
 **aws-lambda-host** is a .NET hosting framework that simplifies AWS Lambda development by following
@@ -15,8 +17,6 @@ events, context, and serialization, you get a clean, declarative API for definin
 with dependency injection (similar to minimal APIs), middleware support, and modern async/await
 patterns. Built on the generic host from Microsoft.Extensions, it provides a .NET hosting experience
 similar to ASP.NET Core but tailored specifically for Lambda.
-
-> 📚 **[View Full Documentation](https://j-d-ha.github.io/aws-lambda-host/)**
 
 ## Key Features
 
