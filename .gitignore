@@ -80,3 +80,4 @@ nunit-*.xml
 /temp.md
 /.claude/
 /site/
+/.cache/

@@ -617,17 +617,7 @@ Now that you have a working Lambda function, dive deeper into the framework:
 - **[Testing Strategies](/guides/testing.md)** – Unit and integration testing
 - **[Deployment Best Practices](/guides/deployment.md)** – CI/CD and production deployments
 
-### Add Type-Safe Event Handling
+### Extend the Framework
 
-- **[SQS Envelope](/features/envelopes/sqs.md)** – Process SQS messages
-- **[API Gateway Envelope](/features/envelopes/api-gateway.md)** – Build HTTP APIs
-- **[SNS Envelope](/features/envelopes/sns.md)** – Handle SNS notifications
-
-### Enhance Observability
-
-- **[OpenTelemetry Integration](/features/opentelemetry.md)** – Add distributed tracing and metrics
-
-### Optimize Performance
-
-- **[AOT Compilation](/advanced/aot-compilation.md)** – Achieve fastest cold starts
-- **[Performance Optimization](/advanced/performance-optimization.md)** – Profiling and tuning
+- **[Envelopes](/features/envelopes.md)** – Type-safe event handling for SQS, SNS, API Gateway, and more.
+- **[OpenTelemetry Integration](/features/open_telemetry.md)** – Add distributed tracing and metrics.
