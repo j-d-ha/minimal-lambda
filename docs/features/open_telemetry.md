@@ -62,15 +62,20 @@ builder
             ResourceBuilder.CreateDefault().AddService("MyService", serviceVersion: "1.0.0")
         );
         tracing.AddConsoleExporter();// (4)!
+    })
+    .WithMetrics(metrics =>
+    {
+        metrics.AddMeter("MyService");// (5)!
+        metrics.AddConsoleExporter();// (6)!
     });
 
 await using var lambda = builder.Build();
 
-lambda.UseOpenTelemetryTracing();// (5)!
+lambda.UseOpenTelemetryTracing();// (7)!
 
-lambda.OnShutdownFlushOpenTelemetry();// (6)!
+lambda.OnShutdownFlushOpenTelemetry();// (8)!
 
-lambda.MapHandler(// (7)!
+lambda.MapHandler(// (9)!
     async ([Event] Request request, ILogger<Program> logger, CancellationToken cancellationToken) =>
     {
         logger.LogInformation("Responding to {Name}", request.Name);
@@ -92,9 +97,11 @@ internal record Response(string Message);
 2. Enable AWS Lambda configurations
 3. Add a custom source for tracing
 4. Export traces to a collector, in this case the console
-5. Enable OpenTelemetry tracing in the Lambda host through middleware.
-6. (Optional) Flush the OpenTelemetry traces at the end of the Lambda execution.
-7. Write your Lambda handler like normal.
+5. Register a named meter so custom metrics (like `NameMetrics`) can emit data
+6. Export metrics alongside traces
+7. Enable OpenTelemetry tracing in the Lambda host through middleware.
+8. (Optional) Flush the OpenTelemetry traces at the end of the Lambda execution.
+9. Write your Lambda handler like normal.
 
 !!! tip
     OpenTelemetry tracing can be configured in multiple ways, including manually creating a trace provider using the [OpenTelemetry](https://www.nuget.org/packages/OpenTelemetry), or through registering OpenTelemetry services in your DI container using [OpenTelemetry.Extensions.Hosting](https://www.nuget.org/packages/OpenTelemetry.Extensions.Hosting). 
@@ -116,7 +123,7 @@ Here's the step-by-step process:
 
 This entire process happens during compilation, resulting in highly optimized code that instruments your handler without any reflection overhead at runtime.
 
-Similarly, `OnShutdownFlushOpenTelemetry()` is an interceptor that registers a shutdown hook. This hook flushes the OpenTelemetry providers, ensuring buffered telemetry is sent before the Lambda execution environment terminates.
+In contrast, the shutdown helpers (`OnShutdownFlushOpenTelemetry`, `OnShutdownFlushTracer`, and `OnShutdownFlushMeter`) are regular extension methods. They execute as-is at runtime and use the registered `TracerProvider`/`MeterProvider` instances to force-flush telemetry before Lambda freezes the environment.
 
 ---
 
@@ -161,6 +168,9 @@ The following methods are available to be called on the `LambdaApplication` inst
 | `OnShutdownFlushMeter()`         | Registers a shutdown hook to force-flush only the `MeterProvider`. Use this if you are only collecting metrics and not tracing.                                                                                  |
 
 For most applications, calling `lambda.OnShutdownFlushOpenTelemetry()` is sufficient to ensure all telemetry is flushed. If your application only uses tracing or metrics, but not both, you can use the more specific methods for clarity.
+
+!!! note
+    These methods call `GetRequiredService<TracerProvider>()` and `GetRequiredService<MeterProvider>()`. Make sure those providers are registered (via `.AddOpenTelemetry().WithTracing(...)` / `.WithMetrics(...)`) before invoking the shutdown helpers, otherwise the application will throw during startup.
 
 All three methods also accept an optional `timeoutMilliseconds` parameter. This allows you to specify a maximum duration for the flush operation. Importantly, these flush operations are non-blocking and respect the provided `CancellationToken`, ensuring they can gracefully exit if the Lambda execution environment signals a shutdown before the timeout elapses. This combined approach offers robust control over the flush duration within the limited time available during a Lambda shutdown.
 
@@ -238,26 +248,30 @@ Once the reusable helpers exist, wrap service logic in spans to capture timing, 
 ```csharp title="NameService.cs" linenums="1"
 using System.Diagnostics;
 
-public class NameService
-{
-    private static readonly ActivitySource Source = new("MyApplication.NameService");
+namespace AwsLambda.Host.Example.OpenTelemetry;
 
-    public string GetFullName(string name)
+internal class NameService(Instrumentation instrumentation, NameMetrics nameMetrics)
+{
+    private readonly ActivitySource _activitySource = instrumentation.ActivitySource;
+
+    public async Task<string> GetFullName(string name, CancellationToken cancellationToken = default)
     {
-        using var activity = Source.StartActivity("GetFullName");
+        using var activity = _activitySource.StartActivity("GetFullName");
         activity?.SetTag("input.name", name);
 
-        // ... some work ...
+        await Task.Delay(TimeSpan.FromMilliseconds(200), cancellationToken);
 
         var fullName = $"{name} Smith";
         activity?.SetTag("output.fullname", fullName);
+
+        nameMetrics.ProcessName(name);
 
         return fullName;
     }
 }
 ```
 
-The `using var activity = ...` pattern mirrors the BCL samples and guarantees spans finish even when exceptions are thrown. You can call into `NameMetrics.ProcessName` inside the same scope so traces and metrics share correlated attributes.
+The `using var activity = ...` pattern mirrors the BCL samples and guarantees spans finish even when exceptions are thrown. Because the service receives both `Instrumentation` and `NameMetrics` through DI, every span and counter entry shares the same source name and tags, keeping traces and metrics correlated.
 
 ### Instrument A Handler
 
