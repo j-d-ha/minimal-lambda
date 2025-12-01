@@ -6,12 +6,12 @@ This guide walks you through installing aws-lambda-host and configuring your pro
 
 Before you begin, ensure your development environment meets these requirements:
 
-| Requirement | Minimum Version | Recommended |
-|------------|----------------|-------------|
-| .NET SDK | 8.0 | Latest LTS |
-| C# Language Version | 11 | latest |
-| IDE | Visual Studio 2022 (17.8+), Rider 2023.3+, or VS Code | Latest |
-| AWS CLI | 2.0+ (optional) | Latest |
+| Requirement         | Minimum Version                                       | Recommended |
+|---------------------|-------------------------------------------------------|-------------|
+| .NET SDK            | 8.0                                                   | Latest LTS  |
+| C# Language Version | 11                                                    | latest      |
+| IDE                 | Visual Studio 2022 (17.8+), Rider 2023.3+, or VS Code | Latest      |
+| AWS CLI             | 2.0+ (optional)                                       | Latest      |
 
 !!! note "C# 11 Requirement"
     C# 11 or later is required for source generators and interceptors that power the framework's compile-time optimizations.
@@ -31,6 +31,8 @@ Choose your preferred installation method:
     dotnet add package AwsLambda.Host
     ```
 
+    *Tip: the `examples/AwsLambda.Host.Example.HelloWorld` project in this repo shows a fully configured Lambda app if you prefer copying a working template.*
+
 === "Visual Studio"
 
     1. Right-click on your project in Solution Explorer
@@ -44,7 +46,7 @@ Choose your preferred installation method:
 
     ```xml
     <ItemGroup>
-      <PackageReference Include="AwsLambda.Host" Version="1.0.1-beta.5" />
+      <PackageReference Include="AwsLambda.Host" Version="1.2.1-beta.1" />
     </ItemGroup>
     ```
 
@@ -80,20 +82,6 @@ Open your `.csproj` file and ensure these properties are set:
 </Project>
 ```
 
-### Source Generator Configuration
-
-Add this property to enable source generators and interceptors:
-
-```xml title="MyFirstLambda.csproj"
-<PropertyGroup>
-  <!-- Enable source generator interceptors -->
-  <InterceptorsNamespaces>$(InterceptorsNamespaces);AwsLambda.Host</InterceptorsNamespaces>
-</PropertyGroup>
-```
-
-!!! warning "InterceptorsNamespaces Required"
-    Without this setting, the framework's source generators won't work correctly and you'll get compilation errors.
-
 ### Optional Settings (Recommended)
 
 These optional settings improve the Lambda development experience:
@@ -124,16 +112,19 @@ Here's a complete, minimal `.csproj` file for a Lambda function:
     <ImplicitUsings>disable</ImplicitUsings>
     <Nullable>enable</Nullable>
     <AWSProjectType>Lambda</AWSProjectType>
+    <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <PublishReadyToRun>true</PublishReadyToRun>
-    <InterceptorsNamespaces>$(InterceptorsNamespaces);AwsLambda.Host</InterceptorsNamespaces>
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AwsLambda.Host" Version="1.0.1-beta.5" />
+    <PackageReference Include="AwsLambda.Host" Version="1.2.1-beta.1" />
   </ItemGroup>
 </Project>
 ```
+
+!!! info "Source Generators"
+    The `AwsLambda.Host` package ships an MSBuild target that automatically registers the required interceptor namespaces. No additional configuration is needed in your project file.
 
 ## Verifying Installation
 
@@ -220,16 +211,6 @@ Envelope packages provide type-safe, strongly-typed event handling for specific 
 **Error**: `Feature 'interceptors' is not available in C# 10`
 
 **Solution**: Set `<LangVersion>latest</LangVersion>` in your `.csproj` file.
-
-#### Source Generator Warning
-
-**Warning**: `Interceptor must be in a namespace annotated with 'InterceptsLocationAttribute'`
-
-**Solution**: Add the `InterceptorsNamespaces` property to your `.csproj`:
-
-```xml
-<InterceptorsNamespaces>$(InterceptorsNamespaces);AwsLambda.Host</InterceptorsNamespaces>
-```
 
 #### Build Errors After Installation
 
