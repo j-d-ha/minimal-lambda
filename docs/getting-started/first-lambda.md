@@ -307,7 +307,7 @@ Click **Execute Function** and verify the response:
 ```json title="Expected Response"
 {
   "message": "Hello, World!",
-  "timestamp": "2025-11-29T12:34:56.789Z"
+  "timestamp": "2016-08-12T07:24:18.456Z"
 }
 ```
 
@@ -525,7 +525,7 @@ Expected output in `response.json`:
 ```json
 {
   "message": "Hola, World!",
-  "timestamp": "2025-11-29T12:34:56.789Z"
+  "timestamp": "2016-08-12T07:24:18.456Z"
 }
 ```
 
