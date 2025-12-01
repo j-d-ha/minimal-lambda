@@ -25,7 +25,11 @@ Before starting, ensure you've completed the [Installation](installation.md) gui
 
 Create strongly-typed models for your Lambda's input and output using C# records.
 
-Add this code to your `Program.cs`:
+!!! note "Keep supporting types at the bottom"
+    Place records, interfaces, and service implementations **after** the main pipeline (after `await lambda.RunAsync();`).
+    This keeps startup logic together at the top while still shipping everything as a single file.
+
+Add this code to the end of your `Program.cs`:
 
 ```csharp title="Program.cs" linenums="1"
 using System;
@@ -52,7 +56,8 @@ public record GreetingResponse(
 
 ## Step 2: Create a Service Interface
 
-Define an interface for your business logic. This enables dependency injection and testability.
+Define an interface for your business logic. This enables dependency injection and testability. Keep
+this with your other supporting types at the bottom of `Program.cs`.
 
 ```csharp title="Program.cs (continued)"
 // Service interface
@@ -64,7 +69,7 @@ public interface IGreetingService
 
 ## Step 3: Implement the Service
 
-Implement your service with the actual greeting logic.
+Implement your service with the actual greeting logic (also placed after the main pipeline).
 
 ```csharp title="Program.cs (continued)"
 // Service implementation

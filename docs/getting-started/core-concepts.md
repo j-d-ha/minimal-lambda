@@ -13,12 +13,14 @@ AWS Lambda functions go through three distinct phases during their execution. Un
 The OnInit phase runs **once** when a Lambda container starts (cold start). This is your opportunity to perform expensive setup operations that can be reused across multiple invocations.
 
 **Characteristics:**
+
 - Runs only once per container lifecycle
 - Singleton services are created during this phase
 - Exceptions here prevent the Lambda from starting
 - Should complete quickly to minimize cold start time
 
 **Perfect for:**
+
 - Opening database connections
 - Loading configuration
 - Warming caches
@@ -42,6 +44,7 @@ lambda.OnInit(async (services, cancellationToken) =>
 The Invocation phase runs **for each Lambda event**. This is where your business logic executes.
 
 **Characteristics:**
+
 - Runs for every invocation
 - New DI scope created per invocation
 - Scoped services are instantiated
@@ -49,6 +52,7 @@ The Invocation phase runs **for each Lambda event**. This is where your business
 - Exceptions are returned as error responses
 
 **What happens:**
+
 1. Lambda Runtime receives event
 2. Event is deserialized to your model
 3. New DI scope created
@@ -62,12 +66,16 @@ The Invocation phase runs **for each Lambda event**. This is where your business
 The OnShutdown phase runs **once** before the Lambda container terminates. Use this for cleanup and flushing data.
 
 **Characteristics:**
+
 - Runs once before container shutdown
-- Limited time window (configurable, default 2 seconds)
+- Limited time window (configurable, default 500ms with a 50ms safety buffer)
 - Perfect for flushing metrics, logs, or buffers
 - Services are still available for injection
 
+By default `LambdaHostOptions` sets `ShutdownDuration` to `ShutdownDuration.ExternalExtensions` (500ms) and subtracts `ShutdownDurationBuffer` (50ms). Increase those values if your cleanup needs a longer runway.
+
 **Perfect for:**
+
 - Flushing telemetry data
 - Closing database connections
 - Final cleanup operations
@@ -105,9 +113,9 @@ graph LR
 
 ```csharp
 using System;
-using System.Threading.Tasks;
-using AwsLambda.Host;
+using AwsLambda.Host.Builder;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 
 var builder = LambdaApplication.CreateBuilder();
 
@@ -162,7 +170,7 @@ Dependency injection (DI) is a core feature of aws-lambda-host. It enables testa
 
 ### Service Lifetimes
 
-The framework supports two service lifetimes, matching Lambda's execution model:
+`aws-lambda-host` uses the standard `Microsoft.Extensions.DependencyInjection` container, so you can register **singleton**, **scoped**, and **transient** services. Lambda's execution model makes singleton and scoped the most common choices, but transients work too when you need a fresh instance every time a dependency is resolved.
 
 #### Singleton (Container Level)
 
@@ -184,7 +192,7 @@ Singleton services are created **once** during the OnInit phase and **reused acr
 **Example:**
 
 ```csharp
-builder.Services.AddSingleton<IHttpClientFactory, HttpClientFactory>();
+builder.Services.AddHttpClient(); // registers IHttpClientFactory + typed clients
 builder.Services.AddSingleton<ICache, MemoryCache>();
 builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
 ```
@@ -217,6 +225,26 @@ builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IRequestLogger, RequestLogger>();
 ```
 
+#### Transient (Per Resolve)
+
+Transient services are created **every time** they are requested from the container.
+
+**Characteristics:**
+- New instance per resolution (even within the same invocation)
+- Great for lightweight, stateless helpers
+- Avoid expensive setup logic here—prefer scoped/singleton for that
+
+**Use carefully for:**
+- Simple mappers/formatters
+- Stateless validators
+- Small wrappers around third-party SDK calls
+
+Register them the same way you would in ASP.NET Core:
+
+```csharp
+builder.Services.AddTransient<IIdGenerator, GuidIdGenerator>();
+```
+
 ### DI Scope Visualization
 
 ```mermaid
@@ -240,6 +268,8 @@ Handlers can inject various types of parameters:
 | Registered Services | Any service registered in DI container | No |
 | `ILambdaHostContext` | Framework context with Lambda metadata | No |
 | `CancellationToken` | For cancellation and timeout handling | No |
+
+If your handler doesn't need an event payload, simply leave the `[Event]` row out of the parameter list and inject only the services you need.
 
 **Example:**
 
@@ -276,7 +306,7 @@ lambda.MapHandler(async (
 var builder = LambdaApplication.CreateBuilder();
 
 // === Singleton Services (shared) ===
-builder.Services.AddSingleton<IHttpClientFactory, HttpClientFactory>();
+builder.Services.AddHttpClient();
 builder.Services.AddSingleton<ICache, MemoryCache>();
 
 // Singleton with factory
@@ -529,24 +559,24 @@ lambda.MapHandler(([Event] Request request, ILambdaHostContext context) =>
 
 ### The [Event] Attribute
 
-The `[Event]` attribute is **required** on exactly one parameter to mark the Lambda event.
+Use `[Event]` to tell the source generator which parameter should receive the deserialized Lambda payload. Handlers can have zero or one `[Event]` parameters:
 
-**Rules:**
-- Must be used on exactly one parameter
-- Marks the parameter that receives the deserialized Lambda event
-- Triggers source generation for type-safe deserialization
-- Enables compile-time validation
+- ✅ Mark exactly one parameter if you want the framework to deserialize the incoming event.
+- ✅ Omit the attribute entirely for DI-only handlers (scheduled jobs, Queue pollers, etc.). The parameter list can consist solely of injected services.
+- ❌ Do not decorate multiple parameters—the generator emits `LH0002` if you try.
 
-**Example:**
+If you accidentally leave `[Event]` off a parameter that should receive the payload, the framework assumes it's a DI service and no event data is bound, so you'll spot the issue quickly during testing.
+
+**Examples:**
 
 ```csharp
-// ✅ CORRECT: One [Event] parameter
-lambda.MapHandler(([Event] Order order, IService service) => { ... });
+// Typical case: bind the event payload
+lambda.MapHandler(([Event] Order order, IService service) => service.Process(order));
 
-// ❌ WRONG: No [Event] parameter
-lambda.MapHandler((Order order, IService service) => { ... });
+// DI-only handler: no event payload required
+lambda.MapHandler((IMaintenanceJob job, ILogger logger) => job.RunAsync(logger));
 
-// ❌ WRONG: Multiple [Event] parameters
+// Compile-time error: multiple [Event] attributes
 lambda.MapHandler(([Event] Order order, [Event] string id) => { ... });
 ```
 
@@ -642,11 +672,109 @@ using System;
 using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
-using AwsLambda.Host;
+using AwsLambda.Host.Builder;
+using AwsLambda.Host.Core;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
+
+// === SETUP ===
+var builder = LambdaApplication.CreateBuilder();
+
+// Register services with appropriate lifetimes
+builder.Services.AddSingleton<ICache, MemoryCache>(); // Shared across invocations
+builder.Services.AddScoped<IOrderRepository, OrderRepository>(); // Per invocation
+
+var lambda = builder.Build();
+
+// === LIFECYCLE: OnInit (runs once) ===
+lambda.OnInit(
+    async (services, cancellationToken) =>
+    {
+        Console.WriteLine("=== Initializing Lambda ===");
+        var cache = services.GetRequiredService<ICache>();
+        await cache.WarmupAsync(cancellationToken);
+        Console.WriteLine("=== Initialization Complete ===");
+        return true;
+    }
+);
+
+// === MIDDLEWARE 1: Logging ===
+lambda.UseMiddleware(
+    async (context, next) =>
+    {
+        Console.WriteLine($"[{DateTime.UtcNow}] Request started");
+        await next(context);
+        Console.WriteLine($"[{DateTime.UtcNow}] Request completed");
+    }
+);
+
+// === MIDDLEWARE 2: Timing ===
+lambda.UseMiddleware(
+    async (context, next) =>
+    {
+        var stopwatch = Stopwatch.StartNew();
+        await next(context);
+        stopwatch.Stop();
+        Console.WriteLine($"Duration: {stopwatch.ElapsedMilliseconds}ms");
+    }
+);
+
+// === MIDDLEWARE 3: Correlation ID ===
+lambda.UseMiddleware(
+    async (context, next) =>
+    {
+        var correlationId = Guid.NewGuid().ToString();
+        context.Items["CorrelationId"] = correlationId;
+        Console.WriteLine($"Correlation ID: {correlationId}");
+        await next(context);
+    }
+);
+
+// === HANDLER: Business Logic with DI ===
+lambda.MapHandler(
+    async (
+        [Event] Order order, // Lambda event
+        IOrderRepository repository, // Scoped service
+        ICache cache, // Singleton service
+        ILambdaHostContext context, // Framework context
+        CancellationToken cancellationToken // Cancellation token
+    ) =>
+    {
+        // Check cache first
+        if (cache.TryGet(order.Id, out var cached))
+        {
+            Console.WriteLine($"Cache hit for order {order.Id}");
+            return cached;
+        }
+
+        // Process order
+        Console.WriteLine($"Processing order {order.Id}");
+        var result = await repository.ProcessAsync(order, cancellationToken);
+
+        // Update cache
+        cache.Set(order.Id, result);
+
+        return result;
+    }
+);
+
+// === LIFECYCLE: OnShutdown (runs once) ===
+lambda.OnShutdown(
+    async (services, cancellationToken) =>
+    {
+        Console.WriteLine("=== Shutting Down Lambda ===");
+        var cache = services.GetRequiredService<ICache>();
+        // Flush cache or perform cleanup
+        Console.WriteLine("=== Shutdown Complete ===");
+    }
+);
+
+// === RUN ===
+await lambda.RunAsync();
 
 // === MODELS ===
 public record Order(string Id, decimal Amount);
+
 public record OrderResult(string OrderId, bool Success);
 
 // === SERVICES ===
@@ -661,89 +789,6 @@ public interface IOrderRepository
 {
     Task<OrderResult> ProcessAsync(Order order, CancellationToken ct);
 }
-
-// === SETUP ===
-var builder = LambdaApplication.CreateBuilder();
-
-// Register services with appropriate lifetimes
-builder.Services.AddSingleton<ICache, MemoryCache>();      // Shared across invocations
-builder.Services.AddScoped<IOrderRepository, OrderRepository>();  // Per invocation
-
-var lambda = builder.Build();
-
-// === LIFECYCLE: OnInit (runs once) ===
-lambda.OnInit(async (services, cancellationToken) =>
-{
-    Console.WriteLine("=== Initializing Lambda ===");
-    var cache = services.GetRequiredService<ICache>();
-    await cache.WarmupAsync(cancellationToken);
-    Console.WriteLine("=== Initialization Complete ===");
-    return true;
-});
-
-// === MIDDLEWARE 1: Logging ===
-lambda.UseMiddleware(async (context, next) =>
-{
-    Console.WriteLine($"[{DateTime.UtcNow}] Request started");
-    await next(context);
-    Console.WriteLine($"[{DateTime.UtcNow}] Request completed");
-});
-
-// === MIDDLEWARE 2: Timing ===
-lambda.UseMiddleware(async (context, next) =>
-{
-    var stopwatch = Stopwatch.StartNew();
-    await next(context);
-    stopwatch.Stop();
-    Console.WriteLine($"Duration: {stopwatch.ElapsedMilliseconds}ms");
-});
-
-// === MIDDLEWARE 3: Correlation ID ===
-lambda.UseMiddleware(async (context, next) =>
-{
-    var correlationId = Guid.NewGuid().ToString();
-    context.Items["CorrelationId"] = correlationId;
-    Console.WriteLine($"Correlation ID: {correlationId}");
-    await next(context);
-});
-
-// === HANDLER: Business Logic with DI ===
-lambda.MapHandler(async (
-    [Event] Order order,                    // Lambda event
-    IOrderRepository repository,             // Scoped service
-    ICache cache,                            // Singleton service
-    ILambdaHostContext context,             // Framework context
-    CancellationToken cancellationToken     // Cancellation token
-) =>
-{
-    // Check cache first
-    if (cache.TryGet(order.Id, out var cached))
-    {
-        Console.WriteLine($"Cache hit for order {order.Id}");
-        return cached;
-    }
-
-    // Process order
-    Console.WriteLine($"Processing order {order.Id}");
-    var result = await repository.ProcessAsync(order, cancellationToken);
-
-    // Update cache
-    cache.Set(order.Id, result);
-
-    return result;
-});
-
-// === LIFECYCLE: OnShutdown (runs once) ===
-lambda.OnShutdown(async (services, cancellationToken) =>
-{
-    Console.WriteLine("=== Shutting Down Lambda ===");
-    var cache = services.GetRequiredService<ICache>();
-    // Flush cache or perform cleanup
-    Console.WriteLine("=== Shutdown Complete ===");
-});
-
-// === RUN ===
-await lambda.RunAsync();
 ```
 
 ## Key Takeaways
@@ -774,12 +819,6 @@ Now you understand the core concepts of aws-lambda-host:
    - Zero runtime reflection
    - AOT compilation ready
    - Compile-time validation
-
-## Next Steps
-
-Now that you understand the core concepts, learn how to organize your Lambda projects effectively:
-
-**→ [Project Structure](project-structure.md)** – Learn best practices for organizing your code, managing configuration, and structuring tests.
 
 ### Explore Further
 
