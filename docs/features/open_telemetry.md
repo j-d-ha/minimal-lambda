@@ -153,7 +153,7 @@ This method call acts as a compile-time trigger for a source generator. The gene
 Under the covers, the source generator performs a critical task. It inspects the delegate you provided to `MapHandler` to determine the specific input and output types of your function (e.g., `APIGatewayProxyRequest`, `SQSEvent`). It then uses these types to generate a call to a generic helper method. This ensures that the underlying `OpenTelemetry.Instrumentation.AWSLambda` package receives a strongly-typed request object. By preserving the specific event type, the OpenTelemetry instrumentation can correctly extract context and attributes, such as trace parent headers from an API Gateway request, ensuring proper distributed trace propagation.
 
 
-### Gracefully Shutting & Cleaning Up
+### Gracefully Shutdown & Cleaning Up
 
 The OpenTelemetry `TracerProvider` and `MeterProvider` services both implement `IDisposable`. When the dependency injection container is disposed of during a normal application shutdown, it should trigger these providers to automatically flush any buffered telemetry. However, in a serverless environment where the lifecycle can be abrupt, this disposal is not always guaranteed to complete before the execution environment is frozen.
 
