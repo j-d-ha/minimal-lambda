@@ -133,10 +133,24 @@ Configuration is done using the standard OpenTelemetry .NET SDK extension method
 
 ### Gracefully Shutting & Cleaning Up
 
-Since it is expected that the trace provider is added to the DI container and since trace provider implements IDisposable, when the application shuts down and the dependency injection container is disposed of, the trace provider should automatically flush all of its data. If you experience issues where traces are not being properly flushed on shutdown and you are seeing traces dropped or not properly propagated, `AwsLambda.Host.OpenTelemetry` prvides a couple of helper methods:
+The OpenTelemetry `TracerProvider` and `MeterProvider` services both implement `IDisposable`. When the dependency injection container is disposed of during a normal application shutdown, it should trigger these providers to automatically flush any buffered telemetry. However, in a serverless environment where the lifecycle can be abrupt, this disposal is not always guaranteed to complete before the execution environment is frozen.
+
+For situations where you notice data being dropped, or if you want to guarantee a flush attempt is made, `AwsLambda.Host.OpenTelemetry` provides the following explicit helper methods. They register a function during the application's shutdown phase to manually force-flush pending telemetry.
+
+The following methods are available to be called on the `LambdaApplication` instance:
+
+| Method                             | Description                                                                                                                                  |
+| ---------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------- |
+| `OnShutdownFlushOpenTelemetry()`   | A convenience method that registers shutdown hooks to flush both traces and metrics. It calls both `OnShutdownFlushTracer` and `OnShutdownFlushMeter` internally. This is the recommended method for most users. |
+| `OnShutdownFlushTracer()`          | Registers a shutdown hook to force-flush only the `TracerProvider`. Use this if you are only tracing and not collecting metrics, or if you need separate control over flushing traces. |
+| `OnShutdownFlushMeter()`           | Registers a shutdown hook to force-flush only the `MeterProvider`. Use this if you are only collecting metrics and not tracing.            |
+
+For most applications, calling `lambda.OnShutdownFlushOpenTelemetry()` is sufficient to ensure all telemetry is flushed. If your application only uses tracing or metrics, but not both, you can use the more specific methods for clarity.
+
+All three methods also accept an optional `timeoutMilliseconds` parameter. This allows you to specify a maximum duration for the flush operation. Importantly, these flush operations are non-blocking and respect the provided `CancellationToken`, ensuring they can gracefully exit if the Lambda execution environment signals a shutdown before the timeout elapses. This combined approach offers robust control over the flush duration within the limited time available during a Lambda shutdown.
 
 !!! Warning
-    When shutting down, Lambda only allocated up to 500ms of time for the execution environment to shut down. As such, it is important to make sure that shutdown logic such as flushing traces is executed as quickly as possible. More information about the Lambda execution environment lifecycle can be found [here](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html).
+    When shutting down, Lambda only allocates up to 500ms of time for the execution environment to shut down. As such, it is important to make sure that shutdown logic such as flushing traces is executed as quickly as possible. More information about the Lambda execution environment lifecycle can be found [here](https://docs.aws.amazon.com/lambda/latest/dg/lambda-runtime-environment.html).
 
 ---
 
