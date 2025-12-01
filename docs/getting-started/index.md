@@ -29,7 +29,7 @@ Before you begin, ensure you have:
 - **[Your First Lambda](first-lambda.md)** – Walk through a handler, DI setup, and local testing.
 - **[Core Concepts](core-concepts.md)** – Learn about the host lifecycle, middleware, and source generation.
 
-Prefer to explore? Head directly to **[Guides](/guides/)**, **[Examples](/examples/)**, or the **[API Reference](/api-reference/)** for deeper dives.
+Prefer to explore? Head directly to **[Guides](../guides/index.md)** or **[Examples](../examples/index.md)** for deeper dives.
 
 ## Framework Highlights
 
@@ -40,19 +40,15 @@ Prefer to explore? Head directly to **[Guides](/guides/)**, **[Examples](/exampl
 
 ## Explore Features
 
-- **[Envelopes](/features/envelopes/)** – Type-safe event source integration (SQS, SNS, API Gateway, etc.)
-- **[OpenTelemetry](/features/open_telemetry.md)** – Distributed tracing and observability
-- **[AOT Compilation](/advanced/aot-compilation.md)** – Optimize for fastest cold starts
-- **[Source Generators](/advanced/source-generators.md)** – Understand compile-time optimizations
-
-## Need Help
+- **[Envelopes](../features/envelopes.md)** – Type-safe event source integration (SQS, SNS, API Gateway, etc.)
+- **[OpenTelemetry](../features/open_telemetry.md)** – Distributed tracing and observability
+- **[AOT Compilation](../advanced/index.md)** – Optimize for fastest cold starts (coming soon)
+- **[Source Generators](../advanced/index.md)** – Understand compile-time optimizations (coming soon)
 
 ## Getting Help
 
 If you run into issues or have questions:
 
-- **[FAQ](/resources/faq.md)** – Common questions and answers
-- **[Troubleshooting](/resources/troubleshooting.md)** – Solutions to common problems
 - **[GitHub Issues](https://github.com/j-d-ha/aws-lambda-host/issues)** – Report bugs or request features
 - **[GitHub Discussions](https://github.com/j-d-ha/aws-lambda-host/discussions)** – Ask questions and share ideas
 

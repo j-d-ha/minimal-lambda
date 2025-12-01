@@ -11,9 +11,9 @@ scopes, serializers, and cancellation tokens by hand, you map strongly typed han
 source-generated pipeline handle the plumbing. The result: less boilerplate, better testability, and
 handlers that feel like the rest of your .NET codebase.
 
-[Get Started](getting-started/){ .md-button .md-button--primary }
-[Guides](guides/){ .md-button }
-[Examples (Coming Soon)](examples/){ .md-button }
+[Get Started](getting-started/index.md){ .md-button .md-button--primary }
+[Guides](guides/index.md){ .md-button }
+[Examples (Coming Soon)](examples/index.md){ .md-button }
 
 ---
 
@@ -139,7 +139,7 @@ Source generation plus System.Text.Json contexts keep handlers ready for Native 
 
 OpenTelemetry integration emits traces and metrics without bolting on custom shims.
 
-[OpenTelemetry setup](features/opentelemetry.md){ .md-button }
+[OpenTelemetry setup](features/open_telemetry.md){ .md-button }
 
 ### :material-code-json: Flexible Handler Registration
 
@@ -177,8 +177,8 @@ await lambda.RunAsync();
 ```
 
 !!! tip "Next Steps"
-    Ready to dive deeper? Check out the [Getting Started Guide](getting-started/) for a complete
-    tutorial, or explore the [Examples](examples/) to see real-world applications.
+    Ready to dive deeper? Check out the [Getting Started Guide](getting-started/index.md) for a complete
+    tutorial, or explore the [Examples](examples/index.md) to see real-world applications.
 
 ---
 
@@ -191,9 +191,9 @@ for building AWS Lambda functions.
 
 | Package                                                          | Description                                   | NuGet                                                                                                                                    | Downloads                                                                                                                                      |
 |------------------------------------------------------------------|-----------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
-| [**AwsLambda.Host**](api-reference/host.md)                      | Core hosting framework with middleware and DI | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.svg)](https://www.nuget.org/packages/AwsLambda.Host)                             | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.svg)](https://www.nuget.org/packages/AwsLambda.Host/)                             |
-| [**AwsLambda.Host.Abstractions**](api-reference/abstractions.md) | Core interfaces and contracts                 | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Abstractions.svg)](https://www.nuget.org/packages/AwsLambda.Host.Abstractions)   | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Abstractions.svg)](https://www.nuget.org/packages/AwsLambda.Host.Abstractions/)   |
-| [**AwsLambda.Host.OpenTelemetry**](features/opentelemetry.md)    | Distributed tracing and observability         | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.OpenTelemetry.svg)](https://www.nuget.org/packages/AwsLambda.Host.OpenTelemetry) | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.OpenTelemetry.svg)](https://www.nuget.org/packages/AwsLambda.Host.OpenTelemetry/) |
+| [**AwsLambda.Host**](https://github.com/j-d-ha/aws-lambda-host/tree/main/src/AwsLambda.Host)                      | Core hosting framework with middleware and DI | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.svg)](https://www.nuget.org/packages/AwsLambda.Host)                             | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.svg)](https://www.nuget.org/packages/AwsLambda.Host/)                             |
+| [**AwsLambda.Host.Abstractions**](https://github.com/j-d-ha/aws-lambda-host/tree/main/src/AwsLambda.Host.Abstractions) | Core interfaces and contracts                 | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Abstractions.svg)](https://www.nuget.org/packages/AwsLambda.Host.Abstractions)   | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Abstractions.svg)](https://www.nuget.org/packages/AwsLambda.Host.Abstractions/)   |
+| [**AwsLambda.Host.OpenTelemetry**](features/open_telemetry.md)    | Distributed tracing and observability         | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.OpenTelemetry.svg)](https://www.nuget.org/packages/AwsLambda.Host.OpenTelemetry) | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.OpenTelemetry.svg)](https://www.nuget.org/packages/AwsLambda.Host.OpenTelemetry/) |
 
 ### Envelope Packages
 
@@ -205,29 +205,29 @@ deserialization.
     safety and automatic deserialization of message bodies from SQS, SNS, Kinesis, and other event
     sources.
 
-    [Learn more about envelopes](features/envelopes/){ .md-button }
+    [Learn more about envelopes](features/envelopes.md){ .md-button }
 
 | Package                                                                                | Description                                           | NuGet                                                                                                                                                            | Downloads                                                                                                                                                              |
 |----------------------------------------------------------------------------------------|-------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| [**AwsLambda.Host.Envelopes.Sqs**](features/envelopes/sqs.md)                          | Simple Queue Service events with typed message bodies | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Sqs.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sqs)                         | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Sqs.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sqs/)                         |
-| [**AwsLambda.Host.Envelopes.Sns**](features/envelopes/sns.md)                          | Simple Notification Service messages                  | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Sns.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sns)                         | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Sns.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sns/)                         |
-| [**AwsLambda.Host.Envelopes.ApiGateway**](features/envelopes/api-gateway.md)           | REST, HTTP, and WebSocket APIs                        | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.ApiGateway.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.ApiGateway)           | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.ApiGateway.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.ApiGateway/)           |
-| [**AwsLambda.Host.Envelopes.Kinesis**](features/envelopes/kinesis.md)                  | Data Streams with typed records                       | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Kinesis.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Kinesis)                 | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Kinesis.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Kinesis/)                 |
-| [**AwsLambda.Host.Envelopes.KinesisFirehose**](features/envelopes/kinesis-firehose.md) | Data transformation                                   | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.KinesisFirehose.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.KinesisFirehose) | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.KinesisFirehose.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.KinesisFirehose/) |
-| [**AwsLambda.Host.Envelopes.Kafka**](features/envelopes/kafka.md)                      | MSK and self-managed Kafka                            | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Kafka.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Kafka)                     | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Kafka.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Kafka/)                     |
-| [**AwsLambda.Host.Envelopes.CloudWatchLogs**](features/envelopes/cloudwatch-logs.md)   | Log subscriptions                                     | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.CloudWatchLogs.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.CloudWatchLogs)   | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.CloudWatchLogs.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.CloudWatchLogs/)   |
-| [**AwsLambda.Host.Envelopes.Alb**](features/envelopes/alb.md)                          | Application Load Balancer requests                    | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Alb.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Alb)                         | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Alb.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Alb/)                         |
+| **AwsLambda.Host.Envelopes.Sqs**                          | Simple Queue Service events with typed message bodies | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Sqs.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sqs)                         | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Sqs.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sqs/)                         |
+| **AwsLambda.Host.Envelopes.Sns**                          | Simple Notification Service messages                  | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Sns.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sns)                         | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Sns.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sns/)                         |
+| **AwsLambda.Host.Envelopes.ApiGateway**           | REST, HTTP, and WebSocket APIs                        | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.ApiGateway.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.ApiGateway)           | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.ApiGateway.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.ApiGateway/)           |
+| **AwsLambda.Host.Envelopes.Kinesis**                  | Data Streams with typed records                       | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Kinesis.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Kinesis)                 | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Kinesis.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Kinesis/)                 |
+| **AwsLambda.Host.Envelopes.KinesisFirehose** | Data transformation                                   | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.KinesisFirehose.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.KinesisFirehose) | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.KinesisFirehose.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.KinesisFirehose/) |
+| **AwsLambda.Host.Envelopes.Kafka**                      | MSK and self-managed Kafka                            | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Kafka.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Kafka)                     | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Kafka.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Kafka/)                     |
+| **AwsLambda.Host.Envelopes.CloudWatchLogs**   | Log subscriptions                                     | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.CloudWatchLogs.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.CloudWatchLogs)   | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.CloudWatchLogs.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.CloudWatchLogs/)   |
+| **AwsLambda.Host.Envelopes.Alb**                          | Application Load Balancer requests                    | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Alb.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Alb)                         | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Alb.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Alb/)                         |
 
-[Browse all envelope packages](features/envelopes/){ .md-button }
+[Browse all envelope packages](features/envelopes.md){ .md-button }
 
 ---
 
 ## Examples & Use Cases
 
-Explore the repository’s `examples/` folder and the docs’ [Examples](examples/) page (content coming
+Explore the repository’s `examples/` folder and the docs’ [Examples](examples/index.md) page (content coming
 soon) for end-to-end Lambda samples that wire up middleware, envelopes, and DI.
 
-[Examples (Coming Soon)](examples/){ .md-button }
+[Examples (Coming Soon)](examples/index.md){ .md-button }
 
 ---
 
@@ -241,10 +241,10 @@ soon) for end-to-end Lambda samples that wire up middleware, envelopes, and DI.
 
 ### Documentation
 
-- **[Getting Started](getting-started/)** – Installation and first Lambda tutorial.
-- **[Guides](guides/)** – In-depth docs on DI, middleware, lifecycle, configuration, and more.
-- **[Features](features/)** – Envelopes, OpenTelemetry integration, and other add-ons.
-- **[Advanced Topics](advanced/)** – Coming soon: AOT, source generators, performance tuning.
+- **[Getting Started](getting-started/index.md)** – Installation and first Lambda tutorial.
+- **[Guides](guides/index.md)** – In-depth docs on DI, middleware, lifecycle, configuration, and more.
+- **[Features](features/index.md)** – Envelopes, OpenTelemetry integration, and other add-ons.
+- **[Advanced Topics](advanced/index.md)** – Coming soon: AOT, source generators, performance tuning.
 
 ### Support
 
@@ -253,4 +253,4 @@ soon) for end-to-end Lambda samples that wire up middleware, envelopes, and DI.
 
 ---
 
-**Ready to modernize your Lambda development?** [Get started now](getting-started/){ .md-button .md-button--primary }
+**Ready to modernize your Lambda development?** [Get started now](getting-started/index.md){ .md-button .md-button--primary }

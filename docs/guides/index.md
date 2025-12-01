@@ -106,7 +106,7 @@ Write comprehensive tests for your Lambda functions using xUnit, NSubstitute, an
 
 ### New to `AwsLambda.Host`?
 
-Start with [Getting Started](/getting-started/) to build your first Lambda function, then return here for deeper coverage of specific features.
+Start with [Getting Started](../getting-started/index.md) to build your first Lambda function, then return here for deeper coverage of specific features.
 
 ### Building Production Lambda Functions?
 
@@ -114,13 +114,13 @@ Use these guides as reference documentation when implementing specific features.
 
 ### Optimizing Performance?
 
-After mastering the guides, explore [Advanced Topics](/advanced/) for AOT compilation, source generators, and performance optimization.
+After mastering the guides, explore [Advanced Topics](../advanced/index.md) for AOT compilation, source generators, and performance optimization.
 
 ## Additional Resources
 
-- **[Examples (Coming Soon)](/examples/)** – Guided sample apps covering middleware, envelopes, and DI wiring.
-- **[Features](/features/)** – Envelope packages and OpenTelemetry add-ons.
-- **[Advanced Topics (Coming Soon)](/advanced/)** – Native AOT, generator internals, and performance deep dives.
+- **[Examples (Coming Soon)](../examples/index.md)** – Guided sample apps covering middleware, envelopes, and DI wiring.
+- **[Features](../features/index.md)** – Envelope packages and OpenTelemetry add-ons.
+- **[Advanced Topics (Coming Soon)](../advanced/index.md)** – Native AOT, generator internals, and performance deep dives.
 
 ## Getting Help
 

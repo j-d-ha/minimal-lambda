@@ -200,7 +200,7 @@ Envelope packages provide type-safe, strongly-typed event handling for specific 
 | **AwsLambda.Host.Envelopes.Alb**             | Application Load Balancer | ALB target Lambda functions   |
 
 !!! info "Envelope Packages"
-    You only need envelope packages if you're working with those specific event sources. For simple use cases, just `AwsLambda.Host` is sufficient. Learn more in the [Envelopes documentation](/features/envelopes/).
+    You only need envelope packages if you're working with those specific event sources. For simple use cases, just `AwsLambda.Host` is sufficient. Learn more in the [Envelopes documentation](../features/envelopes.md).
 
 ## Troubleshooting
 
@@ -231,8 +231,6 @@ Envelope packages provide type-safe, strongly-typed event handling for specific 
 
 If you encounter issues not covered here:
 
-- Check the [Troubleshooting Guide](/resources/troubleshooting.md)
-- Review [Common Questions](/resources/faq.md)
 - Search or ask in [GitHub Discussions](https://github.com/j-d-ha/aws-lambda-host/discussions)
 - Report bugs in [GitHub Issues](https://github.com/j-d-ha/aws-lambda-host/issues)
 
@@ -245,6 +243,4 @@ Now that you have `AwsLambda.Host` installed and verified, you're ready to build
 ### Additional Resources
 
 - [Core Concepts](core-concepts.md) – Understand the framework architecture
-- [Project Structure](project-structure.md) – Learn how to organize your code
-- [Examples](/examples/) – Browse complete working examples
-- [API Reference](/api-reference/) – Detailed API documentation
+- [Examples](../examples/index.md) – Browse complete working examples

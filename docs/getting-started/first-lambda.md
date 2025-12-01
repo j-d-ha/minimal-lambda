@@ -612,12 +612,11 @@ Now that you have a working Lambda function, dive deeper into the framework:
 
 ### Explore Advanced Features
 
-- **[Middleware Patterns](/guides/middleware.md)** – Build reusable middleware components
-- **[Handler Registration](/guides/handler-registration.md)** – Advanced handler patterns
-- **[Testing Strategies](/guides/testing.md)** – Unit and integration testing
-- **[Deployment Best Practices](/guides/deployment.md)** – CI/CD and production deployments
+- **[Middleware Patterns](../guides/middleware.md)** – Build reusable middleware components
+- **[Handler Registration](../guides/handler-registration.md)** – Advanced handler patterns
+- **[Testing Strategies](../guides/testing.md)** – Unit and integration testing
 
 ### Extend the Framework
 
-- **[Envelopes](/features/envelopes.md)** – Type-safe event handling for SQS, SNS, API Gateway, and more.
-- **[OpenTelemetry Integration](/features/open_telemetry.md)** – Add distributed tracing and metrics.
+- **[Envelopes](../features/envelopes.md)** – Type-safe event handling for SQS, SNS, API Gateway, and more.
+- **[OpenTelemetry Integration](../features/open_telemetry.md)** – Add distributed tracing and metrics.
