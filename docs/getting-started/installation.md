@@ -118,7 +118,7 @@ Here's a complete, minimal `.csproj` file for a Lambda function:
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AwsLambda.Host" Version="1.2.1-beta.1" />
+    <PackageReference Include="AwsLambda.Host" Version="1.2.0" />
   </ItemGroup>
 </Project>
 ```
@@ -178,26 +178,26 @@ The aws-lambda-host framework includes multiple packages for different use cases
 
 ### Core Packages
 
-| Package | Purpose | When to Use |
-|---------|---------|-------------|
-| **AwsLambda.Host** | Core framework | Required for all Lambda functions |
-| **AwsLambda.Host.Abstractions** | Interfaces and contracts | When creating custom extensions or middleware |
+| Package                          | Purpose                   | When to Use                                   |
+|----------------------------------|---------------------------|-----------------------------------------------|
+| **AwsLambda.Host**               | Core framework            | Required for all Lambda functions             |
+| **AwsLambda.Host.Abstractions**  | Interfaces and contracts  | When creating custom extensions or middleware |
 | **AwsLambda.Host.OpenTelemetry** | Observability integration | When you need distributed tracing and metrics |
 
 ### Envelope Packages
 
 Envelope packages provide type-safe, strongly-typed event handling for specific AWS event sources:
 
-| Package | Event Source | When to Use |
-|---------|--------------|-------------|
-| **AwsLambda.Host.Envelopes.Sqs** | Amazon SQS | Processing SQS queue messages |
-| **AwsLambda.Host.Envelopes.Sns** | Amazon SNS | Handling SNS notifications |
-| **AwsLambda.Host.Envelopes.ApiGateway** | API Gateway | Building REST/HTTP APIs |
-| **AwsLambda.Host.Envelopes.Kinesis** | Kinesis Data Streams | Processing stream records |
-| **AwsLambda.Host.Envelopes.KinesisFirehose** | Kinesis Firehose | Transforming Firehose data |
-| **AwsLambda.Host.Envelopes.Kafka** | Apache Kafka / MSK | Processing Kafka messages |
-| **AwsLambda.Host.Envelopes.CloudWatchLogs** | CloudWatch Logs | Processing log subscriptions |
-| **AwsLambda.Host.Envelopes.Alb** | Application Load Balancer | ALB target Lambda functions |
+| Package                                      | Event Source              | When to Use                   |
+|----------------------------------------------|---------------------------|-------------------------------|
+| **AwsLambda.Host.Envelopes.Sqs**             | Amazon SQS                | Processing SQS queue messages |
+| **AwsLambda.Host.Envelopes.Sns**             | Amazon SNS                | Handling SNS notifications    |
+| **AwsLambda.Host.Envelopes.ApiGateway**      | API Gateway               | Building REST/HTTP APIs       |
+| **AwsLambda.Host.Envelopes.Kinesis**         | Kinesis Data Streams      | Processing stream records     |
+| **AwsLambda.Host.Envelopes.KinesisFirehose** | Kinesis Firehose          | Transforming Firehose data    |
+| **AwsLambda.Host.Envelopes.Kafka**           | Apache Kafka / MSK        | Processing Kafka messages     |
+| **AwsLambda.Host.Envelopes.CloudWatchLogs**  | CloudWatch Logs           | Processing log subscriptions  |
+| **AwsLambda.Host.Envelopes.Alb**             | Application Load Balancer | ALB target Lambda functions   |
 
 !!! info "Envelope Packages"
     You only need envelope packages if you're working with those specific event sources. For simple use cases, just `AwsLambda.Host` is sufficient. Learn more in the [Envelopes documentation](/features/envelopes/).
