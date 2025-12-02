@@ -19,7 +19,6 @@ theme:
     - navigation.footer
     - navigation.top
     - navigation.tabs
-    - navigation.tabs.sticky
     - navigation.expand
     - navigation.path
     - navigation.indexes
@@ -32,12 +31,19 @@ theme:
     - content.code.annotate
 
   palette:
+    # Palette toggle for automatic mode
+    - media: "(prefers-color-scheme)"
+      toggle:
+        icon: material/lightbulb-auto
+        name: Switch to light mode
+    
     # Palette toggle for light mode
     - scheme: default
       primary: orange
       accent: orange
+      media: "(prefers-color-scheme: light)"
       toggle:
-        icon: material/brightness-7
+        icon: material/lightbulb
         name: Switch to dark mode
     
     
@@ -45,8 +51,9 @@ theme:
     - scheme: slate
       primary: black
       accent: orange
+      media: "(prefers-color-scheme: dark)"
       toggle:
-        icon: material/brightness-4
+        icon: material/lightbulb-outline
         name: Switch to light mode
   font:
     code: JetBrains Mono
