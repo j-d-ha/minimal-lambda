@@ -13,7 +13,7 @@ public sealed class ApiGatewayResult : APIGatewayProxyResponse, IResponseEnvelop
     private ApiGatewayResult(APIGatewayProxyResponse response)
     {
         _inner = response as IResponseEnvelope;
-        StatusCode = response.StatusCode;
+        base.StatusCode = response.StatusCode;
         Headers = response.Headers;
         MultiValueHeaders = response.MultiValueHeaders;
         Body = response.Body;
@@ -111,25 +111,62 @@ public sealed class ApiGatewayResult : APIGatewayProxyResponse, IResponseEnvelop
             }
         );
 
-    public static ApiGatewayResult Status(int statusCode) =>
+    public static ApiGatewayResult StatusCode(int statusCode) =>
         Create(new APIGatewayProxyResponse { StatusCode = statusCode });
 
     //      ┌──────────────────────────────────────────────────────────┐
-    //      │                  Status Code Factories                   │
+    //      │                  StatusCode Code Factories               │
     //      └──────────────────────────────────────────────────────────┘
 
-    public static ApiGatewayResult Ok() => Status(StatusCodes.Status200OK);
+    // ── 200 Ok ───────────────────────────────────────────────────────────────────────
+
+    public static ApiGatewayResult Ok() => StatusCode(StatusCodes.Status200OK);
 
     public static ApiGatewayResult Ok<T>(T bodyContent) =>
         Json(StatusCodes.Status200OK, bodyContent);
 
-    public static ApiGatewayResult BadRequest() => Status(StatusCodes.Status400BadRequest);
+    // ── 201 No Content ───────────────────────────────────────────────────────────────
+
+    public static ApiGatewayResult NoContent() => StatusCode(StatusCodes.Status204NoContent);
+
+    // ── 401 Unauthorized ─────────────────────────────────────────────────────────────
+
+    public static ApiGatewayResult Unauthorized() => StatusCode(StatusCodes.Status401Unauthorized);
+
+    // ── 404 Not Found ────────────────────────────────────────────────────────────────
+
+    public static ApiGatewayResult NotFound() => StatusCode(StatusCodes.Status404NotFound);
+
+    public static ApiGatewayResult NotFound<T>(T bodyContent) =>
+        Json(StatusCodes.Status404NotFound, bodyContent);
+
+    // ── 404 Bad Request ──────────────────────────────────────────────────────────────
+
+    public static ApiGatewayResult BadRequest() => StatusCode(StatusCodes.Status400BadRequest);
 
     public static ApiGatewayResult BadRequest<T>(T bodyContent) =>
         Json(StatusCodes.Status400BadRequest, bodyContent);
 
+    // ── 409 Conflict ─────────────────────────────────────────────────────────────────
+
+    public static ApiGatewayResult Conflict() =>
+        StatusCode(StatusCodes.Status500InternalServerError);
+
+    public static ApiGatewayResult Conflict<T>(T bodyContent) =>
+        Json(StatusCodes.Status409Conflict, bodyContent);
+
+    // ── 422 Unprocessable Entity ─────────────────────────────────────────────────────
+
+    public static ApiGatewayResult UnprocessableEntity() =>
+        StatusCode(StatusCodes.Status422UnprocessableEntity);
+
+    public static ApiGatewayResult UnprocessableEntity<T>(T bodyContent) =>
+        Json(StatusCodes.Status422UnprocessableEntity, bodyContent);
+
+    // ── 500 Internal Server Error ────────────────────────────────────────────────────
+
     public static ApiGatewayResult InternalServerError() =>
-        Status(StatusCodes.Status500InternalServerError);
+        StatusCode(StatusCodes.Status500InternalServerError);
 
     public static ApiGatewayResult InternalServerError<T>(T bodyContent) =>
         Json(StatusCodes.Status500InternalServerError, bodyContent);
