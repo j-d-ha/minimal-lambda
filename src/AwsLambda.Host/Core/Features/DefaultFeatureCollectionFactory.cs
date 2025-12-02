@@ -8,4 +8,7 @@ internal class DefaultFeatureCollectionFactory : IFeatureCollectionFactory
         _featureProviders = featureProviders.Where(x => x is not null).Select(x => x!).ToArray();
 
     public IFeatureCollection Create() => new DefaultFeatureCollection(_featureProviders);
+
+    public IFeatureCollection Create(IEnumerable<IFeatureProvider> featureProviders) =>
+        new DefaultFeatureCollection(_featureProviders.Concat(featureProviders));
 }
