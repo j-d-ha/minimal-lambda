@@ -2,6 +2,8 @@ namespace AwsLambda.Host.Builder;
 
 internal class LambdaInvocationBuilder : ILambdaInvocationBuilder
 {
+    internal const string FeatureProvidersKey = "__FeatureProviders";
+
     private readonly List<Func<LambdaInvocationDelegate, LambdaInvocationDelegate>> _middleware =
     [];
 
