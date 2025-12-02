@@ -30,7 +30,7 @@ builder.Services.AddLambdaSerializerWithContext<SerializerContext>();
 var lambda = builder.Build();
 
 lambda.MapHandler(
-    ApiGatewayResponseEnvelopes<Response, ErrorDetails> (
+    ApiGatewayResult<Response, ErrorDetails, BadErrorDetails> (
         [Event] ApiGatewayRequestEnvelope<Request> request,
         ILogger<Program> logger
     ) =>
@@ -38,9 +38,12 @@ lambda.MapHandler(
         logger.LogInformation("In Handler. Payload: {Payload}", request.Body);
 
         if (request.BodyContent == null)
-            return ApiGatewayResponse.BadRequest(new ErrorDetails("bummer"));
+            return ApiGatewayResult.InternalServerError(new BadErrorDetails("Bad error"));
 
-        return ApiGatewayResponse.Ok(
+        if (request.BodyContent.Name == "error")
+            return ApiGatewayResult.BadRequest(new ErrorDetails("bummer"));
+
+        return ApiGatewayResult.Ok(
             new Response($"Hello {request.BodyContent?.Name}!", DateTime.UtcNow)
         );
     }
@@ -48,34 +51,47 @@ lambda.MapHandler(
 
 await lambda.RunAsync();
 
+public static class ApiGatewayResultExtensions
+{
+    extension(ApiGatewayResult)
+    {
+        public static ApiGatewayResult<T> Ok<T>(T bodyContent) =>
+            new()
+            {
+                BodyContent = bodyContent,
+                StatusCode = 200,
+                Headers = new Dictionary<string, string> { ["Content-Type"] = "application/json" },
+            };
+
+        public static ApiGatewayResult<T> BadRequest<T>(T bodyContent) =>
+            new()
+            {
+                BodyContent = bodyContent,
+                StatusCode = 400,
+                Headers = new Dictionary<string, string> { ["Content-Type"] = "application/json" },
+            };
+
+        public static ApiGatewayResult<T> InternalServerError<T>(T bodyContent) =>
+            new()
+            {
+                BodyContent = bodyContent,
+                StatusCode = 500,
+                Headers = new Dictionary<string, string> { ["Content-Type"] = "application/json" },
+            };
+    }
+}
+
 internal record Response(string Message, DateTime TimestampUtc);
 
 internal record ErrorDetails(string Message);
 
+internal record BadErrorDetails(string Message);
+
 internal record Request(string Name);
 
 [JsonSerializable(typeof(ApiGatewayRequestEnvelope<Request>))]
-[JsonSerializable(typeof(ApiGatewayResponseEnvelopes<Response, ErrorDetails>))]
+[JsonSerializable(typeof(ApiGatewayResult<Response, ErrorDetails>))]
 [JsonSerializable(typeof(Request))]
 [JsonSerializable(typeof(ErrorDetails))]
 [JsonSerializable(typeof(Response))]
 internal partial class SerializerContext : JsonSerializerContext;
-
-public static class ApiGatewayResponse
-{
-    public static ApiGatewayResponseEnvelope<T> Ok<T>(T bodyContent) =>
-        new()
-        {
-            BodyContent = bodyContent,
-            StatusCode = 200,
-            Headers = new Dictionary<string, string> { ["Content-Type"] = "application/json" },
-        };
-
-    public static ApiGatewayResponseEnvelope<T> BadRequest<T>(T bodyContent) =>
-        new()
-        {
-            BodyContent = bodyContent,
-            StatusCode = 400,
-            Headers = new Dictionary<string, string> { ["Content-Type"] = "application/json" },
-        };
-}
