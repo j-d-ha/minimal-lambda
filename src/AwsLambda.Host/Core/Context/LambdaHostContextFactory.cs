@@ -1,9 +1,5 @@
-#region
-
 using Amazon.Lambda.Core;
 using Microsoft.Extensions.DependencyInjection;
-
-#endregion
 
 namespace AwsLambda.Host.Core;
 
@@ -55,22 +51,19 @@ internal class LambdaHostContextFactory : ILambdaHostContextFactory
     {
         var list = new List<IFeatureProvider>(2);
 
-        if (
-            properties.TryGetValue(
-                LambdaInvocationBuilder.EventFeatureProviderKey,
-                out var eventObj
-            ) && eventObj is IFeatureProvider eventFeatureProvider
-        )
-            list.Add(eventFeatureProvider);
-
-        if (
-            properties.TryGetValue(
-                LambdaInvocationBuilder.ResponseFeatureProviderKey,
-                out var responseObj
-            ) && responseObj is IFeatureProvider responseFeatureProvider
-        )
-            list.Add(responseFeatureProvider);
+        AddIfPresent(properties, LambdaInvocationBuilder.EventFeatureProviderKey, list);
+        AddIfPresent(properties, LambdaInvocationBuilder.ResponseFeatureProviderKey, list);
 
         return list.ToArray();
+    }
+
+    private static void AddIfPresent(
+        IDictionary<string, object?> properties,
+        string key,
+        ICollection<IFeatureProvider> target
+    )
+    {
+        if (properties.TryGetValue(key, out var value) && value is IFeatureProvider provider)
+            target.Add(provider);
     }
 }
