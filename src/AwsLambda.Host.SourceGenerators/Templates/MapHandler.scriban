@@ -2,7 +2,9 @@ namespace AwsLambda.Host.Core.Generated
 {
     using System;
     using System.CodeDom.Compiler;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
     using Amazon.Lambda.Core;
@@ -25,7 +27,7 @@ namespace AwsLambda.Host.Core.Generated
             var castHandler = ({{ handler_signature }})handler;
 
             {{~ if (input_event != null && !input_event.is_stream) || (output_response != null && !output_response.response_is_stream) ~}}
-            application.Properties[FeatureProvidersKey] = new IFeatureProvider[]
+            var providersToAdd = new IFeatureProvider[]
             {
                 {{~ if input_event != null && !input_event.is_stream ~}}
                 application.Services.GetRequiredService<IEventFeatureProviderFactory>().Create<{{ input_event.type }}>(),
@@ -34,6 +36,12 @@ namespace AwsLambda.Host.Core.Generated
                 application.Services.GetRequiredService<IResponseFeatureProviderFactory>().Create<{{ output_response.response_type }}>(),
                 {{~ end ~}}
             };
+            
+            application.Properties[FeatureProvidersKey] =
+                application.Properties.TryGetValue(FeatureProvidersKey, out var existing)
+                && existing is IEnumerable<IFeatureProvider> existingProviders
+                    ? existingProviders.Concat(providersToAdd).ToArray()
+                    : providersToAdd;
             
             {{~ end ~}}
             return application.Handle(InvocationDelegate);
