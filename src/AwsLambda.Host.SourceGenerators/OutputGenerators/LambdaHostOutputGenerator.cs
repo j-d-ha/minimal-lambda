@@ -45,15 +45,18 @@ internal static class LambdaHostOutputGenerator
                 )
             );
 
-        // // if UseOpenTelemetryTracing calls found, generate the source code.
-        // if (compilationInfo.UseOpenTelemetryTracingInfos.Count >= 1)
-        //     outputs.Add(
-        //         OpenTelemetrySources.Generate(
-        //             compilationInfo.UseOpenTelemetryTracingInfos,
-        //             mapHandlerInvocationInfo.DelegateInfo,
-        //             generatedCodeAttribute
-        //         )
-        //     );
+        // add OnInit interceptors
+        if (compilationInfo.OnInitInvocationInfos.Count >= 1)
+            outputs.Add(
+                GenericHandlerSources.Generate(
+                    compilationInfo.OnInitInvocationInfos,
+                    "OnInit",
+                    "bool",
+                    "true",
+                    "ILambdaOnInitBuilder",
+                    generatedCodeAttribute
+                )
+            );
 
         // add OnShutdown interceptors
         if (compilationInfo.OnShutdownInvocationInfos.Count >= 1)
@@ -64,19 +67,6 @@ internal static class LambdaHostOutputGenerator
                     null,
                     null,
                     "ILambdaOnShutdownBuilder",
-                    generatedCodeAttribute
-                )
-            );
-
-        // add OnInit interceptors
-        if (compilationInfo.OnInitInvocationInfos.Count >= 1)
-            outputs.Add(
-                GenericHandlerSources.Generate(
-                    compilationInfo.OnInitInvocationInfos,
-                    "OnInit",
-                    "bool",
-                    "true",
-                    "ILambdaOnInitBuilder",
                     generatedCodeAttribute
                 )
             );
