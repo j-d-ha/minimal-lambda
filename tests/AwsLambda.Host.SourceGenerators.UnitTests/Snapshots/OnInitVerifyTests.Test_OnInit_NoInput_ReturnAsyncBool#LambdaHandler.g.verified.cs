@@ -35,7 +35,6 @@ namespace AwsLambda.Host.Core.Generated
     using System.Threading.Tasks;
     using Microsoft.Extensions.DependencyInjection;
     using AwsLambda.Host.Builder;
-    using AwsLambda.Host.Core;
     
     [GeneratedCode("AwsLambda.Host.SourceGenerators", "0.0.0")]
     file static class GeneratedLambdaOnInitBuilderExtensions
