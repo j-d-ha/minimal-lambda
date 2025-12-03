@@ -110,20 +110,27 @@ internal record Response(string Message);
 
 ---
 
-## How It Works: Source Generation and Interceptors
+## How It Works: Feature-Based Middleware
 
-`AwsLambda.Host` relies on C# source generators to avoid runtime reflection and improve performance. The `UseOpenTelemetryTracing()` method is a key part of this system.
+The `UseOpenTelemetryTracing()` method adds middleware to the Lambda invocation pipeline that automatically instruments your handlers with distributed tracing.
 
 Here's the step-by-step process:
 
-1. The `UseOpenTelemetryTracing()` method itself is an empty placeholder.
-2. At compile time, a source generator finds all calls to this method.
-3. For each call it finds, it emits a C# 12 Interceptor. This interceptor replaces the empty method call with code that adds a middleware delegate to the Lambda invocation pipeline.
-4. This generated middleware calls an adapter in the `AwsLambda.Host.OpenTelemetry` package, which in turn uses the official `OpenTelemetry.Instrumentation.AWSLambda` package to wrap the Lambda handler execution in a root trace span.
+1. The `UseOpenTelemetryTracing()` middleware is registered in the invocation pipeline when you call the method on your Lambda application.
+2. During each Lambda invocation, the middleware executes before your handler runs.
+3. The middleware dynamically detects the event and response types by reading from the feature collection:
+   - It checks for an `IEventFeature` to get the incoming event object
+   - It checks for an `IResponseFeature` to get the outgoing response object
+4. These event and response objects are passed to the official `OpenTelemetry.Instrumentation.AWSLambda` package, which wraps the handler execution in a root trace span.
+5. The OpenTelemetry instrumentation automatically extracts trace context from supported event types (like API Gateway requests), ensuring proper distributed trace propagation across services.
 
-This entire process happens during compilation, resulting in highly optimized code that instruments your handler without any reflection overhead at runtime.
+This approach is both efficient and flexible. Because event and response types are determined at runtime from the feature collection, the same middleware works seamlessly with:
 
-In contrast, the shutdown helpers (`OnShutdownFlushOpenTelemetry`, `OnShutdownFlushTracer`, and `OnShutdownFlushMeter`) are regular extension methods. They execute as-is at runtime and use the registered `TracerProvider`/`MeterProvider` instances to force-flush telemetry before Lambda freezes the environment.
+- Multiple handlers registered via `MapHandler()` with different event/response types
+- Handlers with or without events/responses
+- Any AWS Lambda event source type
+
+The shutdown helpers (`OnShutdownFlushOpenTelemetry`, `OnShutdownFlushTracer`, and `OnShutdownFlushMeter`) are regular extension methods that execute at runtime and use the registered `TracerProvider`/`MeterProvider` instances to force-flush telemetry before Lambda freezes the environment.
 
 ---
 
@@ -148,9 +155,15 @@ lambda.UseOpenTelemetryTracing();
 // ... MapHandler, OnShutdown, etc. ...
 ```
 
-This method call acts as a compile-time trigger for a source generator. The generator intercepts the call and injects middleware into the request pipeline. This middleware is responsible for creating the root trace span for each Lambda invocation.
+This method registers middleware in the invocation pipeline that wraps each handler execution in a root trace span. The middleware is responsible for:
 
-Under the covers, the source generator performs a critical task. It inspects the delegate you provided to `MapHandler` to determine the specific input and output types of your function (e.g., `APIGatewayProxyRequest`, `SQSEvent`). It then uses these types to generate a call to a generic helper method. This ensures that the underlying `OpenTelemetry.Instrumentation.AWSLambda` package receives a strongly-typed request object. By preserving the specific event type, the OpenTelemetry instrumentation can correctly extract context and attributes, such as trace parent headers from an API Gateway request, ensuring proper distributed trace propagation.
+- Retrieving the event object from the `IEventFeature` in the feature collection (if present)
+- Executing the handler and capturing the response from `IResponseFeature` (if present)
+- Passing both the event and response to the underlying `OpenTelemetry.Instrumentation.AWSLambda` package
+
+Because the middleware reads event and response types dynamically from the feature collection, it works seamlessly with any Lambda event source type. The OpenTelemetry instrumentation can correctly extract context and attributes from strongly-typed event objects (such as trace parent headers from an API Gateway request), ensuring proper distributed trace propagation across your services.
+
+This dynamic approach also enables you to register multiple handlers with different event types in the same Lambda function—the middleware automatically adapts to whichever handler executes.
 
 
 ### Gracefully Shutdown & Cleaning Up
