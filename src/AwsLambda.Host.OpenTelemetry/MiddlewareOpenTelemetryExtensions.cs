@@ -1,6 +1,13 @@
+#region
+
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
+using AwsLambda.Host.Core;
+using Microsoft.Extensions.DependencyInjection;
+using OpenTelemetry.Instrumentation.AWSLambda;
 using OpenTelemetry.Trace;
+
+#endregion
 
 namespace AwsLambda.Host.Builder;
 
@@ -80,11 +87,38 @@ public static class MiddlewareOpenTelemetryExtensions
     ///     record Response(string Message);
     ///     </code>
     /// </example>
-    public static ILambdaInvocationBuilder UseOpenTelemetryTracing(
+    public static ILambdaInvocationBuilder UseOpenTelemetryTracing_old(
         this ILambdaInvocationBuilder application
     )
     {
         Debug.Fail("This method should have been intercepted at compile time!");
         throw new InvalidOperationException("This method is replaced at compile time.");
+    }
+
+    extension(ILambdaInvocationBuilder builder)
+    {
+        public ILambdaInvocationBuilder UseOpenTelemetryTracing()
+        {
+            ArgumentNullException.ThrowIfNull(builder);
+
+            var tracerProvider = builder.Services.GetRequiredService<TracerProvider>();
+
+            return builder.Use(next =>
+                async context =>
+                {
+                    await AWSLambdaWrapper.TraceAsync(
+                        tracerProvider,
+                        async Task<object?> (_, _) =>
+                        {
+                            await next(context);
+
+                            return context.Features.Get<IResponseFeature>()?.GetResponse();
+                        },
+                        context.Features.Get<IEventFeature>()?.GetEvent(context),
+                        context
+                    );
+                }
+            );
+        }
     }
 }
