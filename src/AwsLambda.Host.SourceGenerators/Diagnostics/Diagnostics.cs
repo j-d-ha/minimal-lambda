@@ -7,15 +7,6 @@ internal static class Diagnostics
     private const string UsageCategory = "AwsLambda.Host.Usage";
     private const string ConfigurationCategory = "AwsLambda.Host.Configuration";
 
-    internal static readonly DiagnosticDescriptor MultipleMethodCalls = new(
-        "LH0001",
-        "Multiple method calls detected",
-        "Method '{0}' can only be invoked once per project. Remove this duplicate invocation.",
-        UsageCategory,
-        DiagnosticSeverity.Error,
-        true
-    );
-
     internal static readonly DiagnosticDescriptor MultipleParametersUseAttribute = new(
         "LH0002",
         "Multiple parameters use attribute",
