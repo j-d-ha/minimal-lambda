@@ -104,9 +104,8 @@ public static class MiddlewareOpenTelemetryExtensions
             var tracerProvider = builder.Services.GetRequiredService<TracerProvider>();
 
             return builder.Use(next =>
-                async context =>
-                {
-                    await AWSLambdaWrapper.TraceAsync(
+                context =>
+                    AWSLambdaWrapper.TraceAsync(
                         tracerProvider,
                         async Task<object?> (_, _) =>
                         {
@@ -116,8 +115,7 @@ public static class MiddlewareOpenTelemetryExtensions
                         },
                         context.Features.Get<IEventFeature>()?.GetEvent(context),
                         context
-                    );
-                }
+                    )
             );
         }
     }
