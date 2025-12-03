@@ -30,7 +30,9 @@ namespace AwsLambda.Host.Core.Generated
 {
     using System;
     using System.CodeDom.Compiler;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
     using Amazon.Lambda.Core;
@@ -41,16 +43,21 @@ namespace AwsLambda.Host.Core.Generated
     [GeneratedCode("AwsLambda.Host.SourceGenerators", "0.0.0")]
     file static class MapHandlerLambdaApplicationExtensions
     {
+        private const string EventFeatureProviderKey = "__EventFeatureProvider";
+        private const string ResponseFeatureProviderKey = "__ResponseFeatureProvider";
+    
         // Location: InputFile.cs(10,8)
         [InterceptsLocation(1, "6HO/UYhbMUo2aMF5OFFj3scAAABJbnB1dEZpbGUuY3M=")]
-        internal static ILambdaInvocationBuilder MapHandlerInterceptor(
+        internal static ILambdaInvocationBuilder MapHandlerInterceptor0(
             this ILambdaInvocationBuilder application,
             Delegate handler
         )
         {
             var castHandler = (global::System.Func<global::System.IO.Stream>)handler;
-
-            return application.Handle(InvocationDelegate);
+            
+            application.Handle(InvocationDelegate);
+            
+            return application;
 
             Task InvocationDelegate(ILambdaHostContext context)
             {
@@ -58,12 +65,6 @@ namespace AwsLambda.Host.Core.Generated
                 context.Features.GetRequired<IInvocationDataFeature>().ResponseStream = response;
                 return Task.CompletedTask; 
             }
-        }
-        
-        [InterceptsLocation(1, "6HO/UYhbMUo2aMF5OFFj3rYAAABJbnB1dEZpbGUuY3M=")] // Location: InputFile.cs(8,22)
-        internal static LambdaApplication BuildInterceptor(this LambdaApplicationBuilder builder)
-        {
-            return builder.Build();
         }
     }
 }

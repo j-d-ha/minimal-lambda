@@ -30,7 +30,9 @@ namespace AwsLambda.Host.Core.Generated
 {
     using System;
     using System.CodeDom.Compiler;
+    using System.Collections.Generic;
     using System.IO;
+    using System.Linq;
     using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
     using Amazon.Lambda.Core;
@@ -41,16 +43,26 @@ namespace AwsLambda.Host.Core.Generated
     [GeneratedCode("AwsLambda.Host.SourceGenerators", "0.0.0")]
     file static class MapHandlerLambdaApplicationExtensions
     {
+        private const string EventFeatureProviderKey = "__EventFeatureProvider";
+        private const string ResponseFeatureProviderKey = "__ResponseFeatureProvider";
+    
         // Location: InputFile.cs(8,8)
         [InterceptsLocation(1, "XdsFhkLY1aZYCRYD2HXHFrUAAABJbnB1dEZpbGUuY3M=")]
-        internal static ILambdaInvocationBuilder MapHandlerInterceptor(
+        internal static ILambdaInvocationBuilder MapHandlerInterceptor0(
             this ILambdaInvocationBuilder application,
             Delegate handler
         )
         {
             var castHandler = (global::System.Func<global::Response<global::Data>>)handler;
-
-            return application.Handle(InvocationDelegate);
+            
+            application.Handle(InvocationDelegate);
+            
+            if (!application.Properties.ContainsKey(ResponseFeatureProviderKey))
+                application.Properties[ResponseFeatureProviderKey] = application.
+                    Services.GetRequiredService<IResponseFeatureProviderFactory>()
+                    .Create<global::Response<global::Data>>();
+            
+            return application;
 
             Task InvocationDelegate(ILambdaHostContext context)
             {
@@ -62,13 +74,6 @@ namespace AwsLambda.Host.Core.Generated
                 responseFeature.SetResponse(response);
                 return Task.CompletedTask; 
             }
-        }
-        
-        [InterceptsLocation(1, "XdsFhkLY1aZYCRYD2HXHFqQAAABJbnB1dEZpbGUuY3M=")] // Location: InputFile.cs(6,22)
-        internal static LambdaApplication BuildInterceptor(this LambdaApplicationBuilder builder)
-        {
-            builder.Services.AddSingleton<IFeatureProvider, DefaultResponseFeatureProvider<global::Response<global::Data>>>();
-            return builder.Build();
         }
     }
 }

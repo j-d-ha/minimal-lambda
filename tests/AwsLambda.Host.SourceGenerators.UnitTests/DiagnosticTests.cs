@@ -50,13 +50,7 @@ public class MapHandlerIncrementalGeneratorDiagnosticTests
             """
         );
 
-        diagnostics.Length.Should().Be(2);
-
-        foreach (var diagnostic in diagnostics)
-        {
-            diagnostic.Id.Should().Be("LH0001");
-            diagnostic.Severity.Should().Be(DiagnosticSeverity.Error);
-        }
+        diagnostics.Length.Should().Be(0);
     }
 
     [Fact]
