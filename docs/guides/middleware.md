@@ -121,6 +121,52 @@ Common features:
 - Handlers remain free of middleware-specific dependencies; they just work with the event/response types.
 - Custom features are easy to add—register an implementation of `IFeatureProvider` and it becomes available to all middleware.
 
+### Type-Safe Feature Access
+
+The framework provides convenient extension methods on `ILambdaHostContext` for type-safe event and response access, simplifying the feature access pattern shown above:
+
+```csharp title="Program.cs"
+lambda.UseMiddleware(async (context, next) =>
+{
+    // Nullable access - returns null if not found
+    var request = context.GetEvent<OrderRequest>();
+    if (request is not null)
+        Console.WriteLine($"Processing order {request.OrderId}");
+
+    // Try pattern - safe null checking
+    if (context.TryGetEvent<OrderRequest>(out var order))
+    {
+        // Use order safely without additional null checks
+        Console.WriteLine($"Order {order.OrderId} has {order.Items.Count} items");
+    }
+
+    await next(context);
+
+    // Required access - throws if not found
+    var response = context.GetRequiredResponse<OrderResponse>();
+    Console.WriteLine($"Status: {response.Status}");
+});
+```
+
+**Available Methods:**
+
+| Method | Description | Returns |
+|--------|-------------|---------|
+| `GetEvent<T>()` | Returns event or `null` if not found | `T?` |
+| `GetResponse<T>()` | Returns response or `null` if not found | `T?` |
+| `TryGetEvent<T>(out T)` | Try-pattern for safe event access | `bool` |
+| `TryGetResponse<T>(out T)` | Try-pattern for safe response access | `bool` |
+| `GetRequiredEvent<T>()` | Returns event or throws | `T` (throws `InvalidOperationException`) |
+| `GetRequiredResponse<T>()` | Returns response or throws | `T` (throws `InvalidOperationException`) |
+
+**When to use each:**
+
+- **Nullable methods** (`GetEvent<T>()`) – When the event/response might not exist and you'll handle null gracefully
+- **Try pattern** (`TryGetEvent<T>()`) – When you want explicit null checking without additional conditionals
+- **Required methods** (`GetRequiredEvent<T>()`) – When the event/response must exist and missing it is an error condition
+
+These methods are equivalent to calling `context.Features.Get<IEventFeature<T>>()` and accessing the event/response, but provide cleaner syntax and better null-safety annotations.
+
 ### Feature Providers in Practice
 
 When `context.Features.Get<T>()` runs, `AwsLambda.Host` walks through every registered `IFeatureProvider`
