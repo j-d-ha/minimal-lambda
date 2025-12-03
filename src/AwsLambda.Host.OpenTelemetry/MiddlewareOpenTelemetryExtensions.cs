@@ -1,13 +1,7 @@
-#region
-
-using System.Diagnostics;
-using System.Diagnostics.CodeAnalysis;
 using AwsLambda.Host.Core;
 using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry.Instrumentation.AWSLambda;
 using OpenTelemetry.Trace;
-
-#endregion
 
 namespace AwsLambda.Host.Builder;
 
@@ -15,88 +9,28 @@ namespace AwsLambda.Host.Builder;
 ///     Provides extension methods for enabling OpenTelemetry tracing in the Lambda invocation
 ///     pipeline.
 /// </summary>
-[ExcludeFromCodeCoverage]
 public static class MiddlewareOpenTelemetryExtensions
 {
-    /// <summary>Enables OpenTelemetry tracing for the AWS Lambda handler.</summary>
-    /// <remarks>
-    ///     <para>
-    ///         This method is as a no-op that is intercepted and replaced at compile time It uses the
-    ///         OpenTelemetry instrumentation provided by the
-    ///         <see href="https://www.nuget.org/packages/OpenTelemetry.Instrumentation.AWSLambda">OpenTelemetry.Instrumentation.AWSLambda</see>
-    ///         package to instrument the Lambda handler invocations with distributed tracing.
-    ///     </para>
-    ///     <para>
-    ///         When this method is called, the source generator creates an interceptor that:
-    ///         <list type="bullet">
-    ///             <item>
-    ///                 <description>
-    ///                     At startup, pulls an instance of <see cref="TracerProvider" /> from
-    ///                     the dependency injection container. This will be used for the lifetime of the
-    ///                     Lambda.
-    ///                 </description>
-    ///             </item>
-    ///             <item>
-    ///                 <description>
-    ///                     Wraps the handler pipeline with tracing middleware that creates a
-    ///                     root span with invocation info.
-    ///                 </description>
-    ///             </item>
-    ///         </list>
-    ///     </para>
-    ///     <para>
-    ///         <b>Middleware Placement:</b> For the most accurate trace data, this method should be
-    ///         called at the top of the middleware pipeline, before other middleware where possible. This
-    ///         ensures that tracing captures as much of the invocation as possible, including the
-    ///         execution time of subsequent middleware components.
-    ///     </para>
-    ///     <para>
-    ///         <b>TracerProvider Registration Required:</b> A <see cref="TracerProvider" /> instance
-    ///         must be registered in the dependency injection container before calling this method. If no
-    ///         instance is registered, an <see cref="InvalidOperationException" /> will be thrown at
-    ///         startup.
-    ///     </para>
-    /// </remarks>
-    /// <param name="application">The <see cref="ILambdaInvocationBuilder" /> instance.</param>
-    /// <returns>The same <see cref="ILambdaInvocationBuilder" /> instance for method chaining.</returns>
-    /// <example>
-    ///     <para>
-    ///         First, register OpenTelemetry in the dependency injection container using AWS Lambda
-    ///         configurations:
-    ///     </para>
-    ///     <code language="csharp">
-    ///     var builder = LambdaApplication.CreateBuilder();
-    ///
-    ///     builder
-    ///         .Services.AddOpenTelemetry()
-    ///         .WithTracing(configure =&gt; configure
-    ///             .AddAWSLambdaConfigurations()
-    ///             .AddConsoleExporter());
-    ///     </code>
-    ///     <para>Then call this method in your Lambda handler setup to enable tracing:</para>
-    ///     <code language="csharp">
-    ///     var lambda = builder.Build();
-    ///
-    ///     lambda.UseOpenTelemetryTracing();
-    ///
-    ///     lambda.MapHandler(([Event] Request request) =&gt; new Response($"Hello {request.Name}!"));
-    ///
-    ///     await lambda.RunAsync();
-    ///
-    ///     record Request(string Name);
-    ///     record Response(string Message);
-    ///     </code>
-    /// </example>
-    public static ILambdaInvocationBuilder UseOpenTelemetryTracing_old(
-        this ILambdaInvocationBuilder application
-    )
-    {
-        Debug.Fail("This method should have been intercepted at compile time!");
-        throw new InvalidOperationException("This method is replaced at compile time.");
-    }
-
     extension(ILambdaInvocationBuilder builder)
     {
+        /// <summary>Enables OpenTelemetry tracing for AWS Lambda handler invocations.</summary>
+        /// <remarks>
+        ///     <para>
+        ///         Adds middleware that wraps each Lambda invocation with distributed tracing using the
+        ///        <see cref="AWSLambdaWrapper" /> from the OpenTelemetry AWS Lambda instrumentation
+        ///         package. A root span is created for each invocation with Lambda context information.
+        ///     </para>
+        ///     <para>
+        ///         <b>Middleware Placement:</b> Call this method early in the middleware pipeline to
+        ///         capture the execution time of all subsequent middleware and handler logic.
+        ///     </para>
+        ///     <para>
+        ///         <b>TracerProvider Registration Required:</b> A <see cref="TracerProvider" /> must be
+        ///         registered in the dependency injection container. If not found, an
+        ///         <see cref="InvalidOperationException" /> is thrown at startup.
+        ///     </para>
+        /// </remarks>
+        /// <returns>The same <see cref="ILambdaInvocationBuilder" /> instance for method chaining.</returns>
         public ILambdaInvocationBuilder UseOpenTelemetryTracing()
         {
             ArgumentNullException.ThrowIfNull(builder);
