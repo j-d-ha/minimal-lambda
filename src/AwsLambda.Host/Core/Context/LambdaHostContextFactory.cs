@@ -12,7 +12,7 @@ internal class LambdaHostContextFactory : ILambdaHostContextFactory
     private readonly ILambdaHostContextAccessor? _contextAccessor;
     private readonly IFeatureCollectionFactory _featureCollectionFactory;
     private readonly IServiceScopeFactory _serviceScopeFactory;
-    private IEnumerable<IFeatureProvider>? _featureProviders;
+    private IFeatureProvider[]? _featureProviders;
 
     public LambdaHostContextFactory(
         IServiceScopeFactory serviceScopeFactory,
@@ -34,11 +34,7 @@ internal class LambdaHostContextFactory : ILambdaHostContextFactory
         CancellationToken cancellationToken
     )
     {
-        _featureProviders ??=
-            properties.TryGetValue(LambdaInvocationBuilder.FeatureProvidersKey, out var value)
-            && value is IEnumerable<IFeatureProvider> providers
-                ? providers
-                : [];
+        _featureProviders ??= CreateFeatureProviders(properties);
 
         var context = new DefaultLambdaHostContext(
             lambdaContext,
@@ -51,5 +47,30 @@ internal class LambdaHostContextFactory : ILambdaHostContextFactory
         _contextAccessor?.LambdaHostContext = context;
 
         return context;
+    }
+
+    private static IFeatureProvider[] CreateFeatureProviders(
+        IDictionary<string, object?> properties
+    )
+    {
+        var list = new List<IFeatureProvider>(2);
+
+        if (
+            properties.TryGetValue(
+                LambdaInvocationBuilder.EventFeatureProviderKey,
+                out var eventObj
+            ) && eventObj is IFeatureProvider eventFeatureProvider
+        )
+            list.Add(eventFeatureProvider);
+
+        if (
+            properties.TryGetValue(
+                LambdaInvocationBuilder.ResponseFeatureProviderKey,
+                out var responseObj
+            ) && responseObj is IFeatureProvider responseFeatureProvider
+        )
+            list.Add(responseFeatureProvider);
+
+        return list.ToArray();
     }
 }
