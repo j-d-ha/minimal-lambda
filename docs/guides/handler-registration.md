@@ -33,9 +33,54 @@ interface IGreetingService
 }
 ```
 
-- Register middleware (via `lambda.Use(...)`) before calling `MapHandler`; the handler is always the last piece of the pipeline.
-- Only one handler can be mapped. If you call `MapHandler` twice, the generator emits error `LH0001` so you catch the issue before publishing.
+- While you can have multiple `MapHandler` calls in your code, only one can be registered at runtime (see [Multiple MapHandler Calls](#multiple-maphandler-calls) below).
 - The generated handler feeds into the normal invocation builder, so all middleware, features, and diagnostics apply equally to handlers created via `Handle` or `MapHandler`.
+
+## Multiple MapHandler Calls
+
+You can have multiple `MapHandler` calls in your code, but **only one handler can be registered per Lambda execution**. If more than one `MapHandler` is called at runtime, an exception will be thrown.
+
+This design enables several useful patterns:
+
+### Use Cases
+
+**Library-Provided Handlers**
+
+Libraries can expose pre-configured handlers that applications can opt into:
+
+```csharp title="MyLibrary.cs" linenums="1"
+namespace MyLibrary;
+
+public static class OrderHandlers
+{
+    public static void MapOrderHandler(this ILambdaInvocationBuilder app)
+    {
+        app.MapHandler(([Event] OrderRequest req, IOrderService orders) =>
+            orders.ProcessAsync(req)
+        );
+    }
+}
+```
+
+```csharp title="Program.cs" linenums="1"
+using MyLibrary;
+
+var builder = LambdaApplication.CreateBuilder();
+builder.Services.AddOrderServices(); // Library-provided services
+
+var lambda = builder.Build();
+
+// Use the library's handler
+lambda.MapOrderHandler();
+
+await lambda.RunAsync();
+```
+
+### Important Notes
+
+- Only **one** `MapHandler` can execute at runtime—calling multiple will throw an `InvalidOperationException`
+- Feature providers are registered when `MapHandler` is called, so ensure the registered handler matches your expected event/response types
+- This pattern is designed for **conditional registration**, not for handling multiple event types in a single Lambda (which requires a custom routing solution)
 
 ## Handler Signatures and the `[Event]` Parameter
 
@@ -133,11 +178,15 @@ lambda.MapHandler(async (
 `MapHandler` is decorated as a C# 12 interceptor target. During compilation the generator:
 
 1. Ensures the project is built with C# 11+ so interceptors are available (otherwise `LH0004`).
-2. Verifies there is exactly one handler and, when a payload parameter exists, exactly one `[Event]` annotation.
+2. When a payload parameter exists, verifies exactly one `[Event]` annotation is present.
 3. Validates keyed service metadata so the requested key matches the DI container's capabilities (`LH0003` when the key uses an unsupported type such as arrays).
 4. Emits a strongly typed `Handle` call that deserializes the payload (if any), resolves services via generated code, sets up features, and serializes the response.
 
-At runtime the stub `MapHandler` method would throw if invoked, but the interception step guarantees that never happens. You get ahead-of-time compatible, reflection-free code with compile-time errors if the signature is invalid.
+At runtime:
+
+- The stub `MapHandler` method would throw if invoked, but the interception step guarantees that never happens
+- Only one handler can be registered—calling `MapHandler` multiple times in the same execution throws an `InvalidOperationException`
+- You get ahead-of-time compatible, reflection-free code with compile-time errors if the signature is invalid
 
 ## Patterns and Best Practices
 
@@ -173,10 +222,6 @@ At runtime the stub `MapHandler` method would throw if invoked, but the intercep
     ```
 
 ## Troubleshooting
-
-**`LH0001: Multiple handlers registered`**
-
-Make sure you call `MapHandler` only once. If you need to branch by trigger type, create separate Lambda projects or use envelope dispatching.
 
 **`LH0002: No parameter marked with [Event]`**
 
