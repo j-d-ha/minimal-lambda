@@ -29,13 +29,13 @@ namespace AwsLambda.Host.Core.Generated
             
             application.Handle(InvocationDelegate);
 
-            {{~ if (call.input_event != null && !call.input_event.is_stream) || (call.output_response != null && !call.output_response.response_is_stream) ~}}
+            {{~ if call.is_event_feature_required || call.is_response_feature_required ~}}
             var providersToAdd = new IFeatureProvider[]
             {
-                {{~ if call.input_event != null && !call.input_event.is_stream ~}}
+                {{~ if call.is_event_feature_required ~}}
                 application.Services.GetRequiredService<IEventFeatureProviderFactory>().Create<{{ call.input_event.type }}>(),
                 {{~ end ~}}
-                {{~ if call.output_response != null && !call.output_response.response_is_stream ~}}
+                {{~ if call.is_response_feature_required ~}}
                 application.Services.GetRequiredService<IResponseFeatureProviderFactory>().Create<{{ call.output_response.response_type }}>(),
                 {{~ end ~}}
             };

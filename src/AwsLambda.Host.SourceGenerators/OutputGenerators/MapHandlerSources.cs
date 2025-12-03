@@ -46,10 +46,18 @@ internal static class MapHandlerSources
                 }
                 : null;
 
+            // determine if event feature is required
+            var isEventFeatureRequired = inputEvent is { IsStream: false };
+
+            // determine if response feature is required
+            var isResponseFeatureRequired = outputResponse is { ResponseIsStream: false };
+
             return new
             {
                 Location = mapHandlerInvocationInfo.InterceptableLocationInfo,
                 HandlerSignature = handlerSignature,
+                IsEventFeatureRequired = isEventFeatureRequired,
+                IsResponseFeatureRequired = isResponseFeatureRequired,
                 delegateInfo.HasAnyKeyedServiceParameter,
                 HandlerArgs = handlerArgs,
                 ShouldAwait = delegateInfo.IsAwaitable,
