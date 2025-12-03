@@ -70,7 +70,7 @@ public class LambdaHostContextFactoryTests
         _ = factory.Create(lambdaContext, properties, CancellationToken.None);
 
         // Assert
-        featureCollectionFactory.Received(1).Create();
+        featureCollectionFactory.Received(1).Create(Arg.Any<IEnumerable<IFeatureProvider>>());
     }
 
     [Theory]
