@@ -1,7 +1,11 @@
+#region
+
 using System.Collections.Generic;
 using System.Linq;
 using AwsLambda.Host.SourceGenerators.Models;
 using Microsoft.CodeAnalysis;
+
+#endregion
 
 namespace AwsLambda.Host.SourceGenerators;
 
@@ -30,28 +34,23 @@ internal static class LambdaHostOutputGenerator
 
         // if MapHandler calls found, generate the source code. Will always be 0 or 1 at this point.
         // Anything that needs to know types from the handler must be generated here.
-        if (compilationInfo.MapHandlerInvocationInfos.Count(x => x.Name != "Handle") == 1)
-        {
-            var mapHandlerInvocationInfo = compilationInfo.MapHandlerInvocationInfos.First();
+        outputs.Add(
+            MapHandlerSources.Generate(
+                compilationInfo.MapHandlerInvocationInfos,
+                compilationInfo.BuilderInfos,
+                generatedCodeAttribute
+            )
+        );
 
-            outputs.Add(
-                MapHandlerSources.Generate(
-                    mapHandlerInvocationInfo,
-                    compilationInfo.BuilderInfos,
-                    generatedCodeAttribute
-                )
-            );
-
-            // if UseOpenTelemetryTracing calls found, generate the source code.
-            if (compilationInfo.UseOpenTelemetryTracingInfos.Count >= 1)
-                outputs.Add(
-                    OpenTelemetrySources.Generate(
-                        compilationInfo.UseOpenTelemetryTracingInfos,
-                        mapHandlerInvocationInfo.DelegateInfo,
-                        generatedCodeAttribute
-                    )
-                );
-        }
+        // // if UseOpenTelemetryTracing calls found, generate the source code.
+        // if (compilationInfo.UseOpenTelemetryTracingInfos.Count >= 1)
+        //     outputs.Add(
+        //         OpenTelemetrySources.Generate(
+        //             compilationInfo.UseOpenTelemetryTracingInfos,
+        //             mapHandlerInvocationInfo.DelegateInfo,
+        //             generatedCodeAttribute
+        //         )
+        //     );
 
         // add OnShutdown interceptors
         if (compilationInfo.OnShutdownInvocationInfos.Count >= 1)
