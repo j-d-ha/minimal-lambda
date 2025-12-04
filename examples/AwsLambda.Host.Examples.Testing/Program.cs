@@ -12,3 +12,5 @@ lambda.MapHandler(([Event] string name) => $"Hello {name}!");
 
 // Run the Lambda
 await lambda.RunAsync();
+
+public partial class Program;
