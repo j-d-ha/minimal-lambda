@@ -150,14 +150,14 @@ lambda.UseMiddleware(async (context, next) =>
 
 **Available Methods:**
 
-| Method | Description | Returns |
-|--------|-------------|---------|
-| `GetEvent<T>()` | Returns event or `null` if not found | `T?` |
-| `GetResponse<T>()` | Returns response or `null` if not found | `T?` |
-| `TryGetEvent<T>(out T)` | Try-pattern for safe event access | `bool` |
-| `TryGetResponse<T>(out T)` | Try-pattern for safe response access | `bool` |
-| `GetRequiredEvent<T>()` | Returns event or throws | `T` (throws `InvalidOperationException`) |
-| `GetRequiredResponse<T>()` | Returns response or throws | `T` (throws `InvalidOperationException`) |
+| Method                     | Description                             | Returns                                  |
+|----------------------------|-----------------------------------------|------------------------------------------|
+| `GetEvent<T>()`            | Returns event or `null` if not found    | `T?`                                     |
+| `GetResponse<T>()`         | Returns response or `null` if not found | `T?`                                     |
+| `TryGetEvent<T>(out T)`    | Try-pattern for safe event access       | `bool`                                   |
+| `TryGetResponse<T>(out T)` | Try-pattern for safe response access    | `bool`                                   |
+| `GetRequiredEvent<T>()`    | Returns event or throws                 | `T` (throws `InvalidOperationException`) |
+| `GetRequiredResponse<T>()` | Returns response or throws              | `T` (throws `InvalidOperationException`) |
 
 **When to use each:**
 
