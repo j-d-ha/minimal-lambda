@@ -17,6 +17,24 @@ shutdown windows, serializer choices, etc.). This guide covers both layers.
 !!! warning "`ASPNETCORE_` Prefixed Environment Variable"
     Enviroment variables with the `ASPNETCORE_` prefix are not automatically loaded by `CreateBuilder()` and must be added manually. As such, the enviroment cannot be set using the `ASPNETCORE_ENVIRONMENT` environment variable.
 
+    To load environment variables prefixed with `ASPNETCORE_` after calling `CreateBuilder()`, you can add the following code:
+
+    ```csharp
+    var builder = LambdaApplication.CreateBuilder();
+    builder.Configuration.AddEnvironmentVariables("ASPNETCORE_");
+    ```
+  
+    If you need to use `ASPNETCORE_` prefixed environment variables when creating the `LambdaApplicationBuilder`, you can add the following code:
+
+    ```csharp
+    var configuration = new ConfigurationManager();
+    configuration.AddEnvironmentVariables("ASPNETCORE_");
+    
+    var builder = LambdaApplication.CreateBuilder(
+        new LambdaApplicationOptions { Configuration = configuration }
+    );
+    ```
+
 The builder also binds the `AwsLambdaHost` section (from JSON or environment variables) into
 `LambdaHostOptions` so framework settings can live next to your app configuration.
 
