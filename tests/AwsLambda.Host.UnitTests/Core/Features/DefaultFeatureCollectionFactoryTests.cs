@@ -3,35 +3,38 @@ namespace AwsLambda.Host.UnitTests.Core.Features;
 [TestSubject(typeof(DefaultFeatureCollectionFactory))]
 public class DefaultFeatureCollectionFactoryTest
 {
-    [Fact]
-    public void Create_ReturnsIFeatureCollection()
+    [Theory]
+    [AutoNSubstituteData]
+    public void Create_ReturnsIFeatureCollection(IEnumerable<IFeatureProvider> featureProviders)
     {
         // Arrange
         var factory = new DefaultFeatureCollectionFactory([]);
 
         // Act
-        var collection = factory.Create();
+        var collection = factory.Create(featureProviders);
 
         // Assert
         collection.Should().BeAssignableTo<IFeatureCollection>();
     }
 
-    [Fact]
-    public void Create_ReturnsNewInstanceEachCall()
+    [Theory]
+    [AutoNSubstituteData]
+    public void Create_ReturnsNewInstanceEachCall(IEnumerable<IFeatureProvider> featureProviders)
     {
         // Arrange
         var factory = new DefaultFeatureCollectionFactory([]);
 
         // Act
-        var collection1 = factory.Create();
-        var collection2 = factory.Create();
+        var collection1 = factory.Create(featureProviders);
+        var collection2 = factory.Create(featureProviders);
 
         // Assert
         collection1.Should().NotBeSameAs(collection2);
     }
 
-    [Fact]
-    public void Create_PassesProvidersToCollection()
+    [Theory]
+    [AutoNSubstituteData]
+    public void Create_PassesProvidersToCollection(IEnumerable<IFeatureProvider> featureProviders)
     {
         // Arrange
         var provider = Substitute.For<IFeatureProvider>();
@@ -46,7 +49,7 @@ public class DefaultFeatureCollectionFactoryTest
             });
 
         // Act
-        var collection = factory.Create();
+        var collection = factory.Create(featureProviders);
         var result = collection.Get<string>();
 
         // Assert

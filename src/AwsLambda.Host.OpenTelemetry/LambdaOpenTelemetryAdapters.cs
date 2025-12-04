@@ -52,6 +52,9 @@ public static class LambdaOpenTelemetryServiceProviderExtensions
         ///     <typeparamref name="TResponse" />, or if a <see cref="TracerProvider" /> instance is not
         ///     registered in the dependency injection container.
         /// </exception>
+        [Obsolete(
+            "This method will be removed in v2.0.0 Use UseOpenTelemetryTracing directly instead."
+        )]
         public Func<LambdaInvocationDelegate, LambdaInvocationDelegate> GetOpenTelemetryTracer<
             TEvent,
             TResponse
@@ -107,6 +110,9 @@ public static class LambdaOpenTelemetryServiceProviderExtensions
         ///     Thrown if the context response is not of type
         ///     <typeparamref name="TResponse" />.
         /// </exception>
+        [Obsolete(
+            "This method will be removed in v2.0.0 Use UseOpenTelemetryTracing directly instead."
+        )]
         public Func<
             LambdaInvocationDelegate,
             LambdaInvocationDelegate
@@ -154,6 +160,9 @@ public static class LambdaOpenTelemetryServiceProviderExtensions
         ///     Thrown if the context event is not of type
         ///     <typeparamref name="TEvent" />.
         /// </exception>
+        [Obsolete(
+            "This method will be removed in v2.0.0 Use UseOpenTelemetryTracing directly instead."
+        )]
         public Func<
             LambdaInvocationDelegate,
             LambdaInvocationDelegate
@@ -194,6 +203,9 @@ public static class LambdaOpenTelemetryServiceProviderExtensions
         ///     <inheritdoc cref="GetOpenTelemetryTracer{TEvent,TResponse}" path="/remarks" /> Neither
         ///     event nor response types are relevant or known when using this overload.
         /// </remarks>
+        [Obsolete(
+            "This method will be removed in v2.0.0 Use UseOpenTelemetryTracing directly instead."
+        )]
         public Func<
             LambdaInvocationDelegate,
             LambdaInvocationDelegate

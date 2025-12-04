@@ -88,9 +88,6 @@ internal static class GeneratorTestHelpers
             MetadataReference.CreateFromFile(typeof(IOptions<>).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(ILambdaHostContext).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(APIGatewayProxyResponse).Assembly.Location),
-            MetadataReference.CreateFromFile(
-                typeof(LambdaOpenTelemetryServiceProviderExtensions).Assembly.Location
-            ),
         ];
 
         var compilationOptions = new CSharpCompilationOptions(

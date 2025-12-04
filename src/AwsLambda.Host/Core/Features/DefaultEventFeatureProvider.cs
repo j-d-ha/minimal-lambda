@@ -7,7 +7,7 @@ namespace AwsLambda.Host.Core;
 ///     deserialization. This provider is instantiated by source-generated code to handle Lambda event
 ///     processing using the specified <see cref="ILambdaSerializer" />.
 /// </summary>
-public class DefaultEventFeatureProvider<T>(ILambdaSerializer lambdaSerializer) : IFeatureProvider
+internal class DefaultEventFeatureProvider<T>(ILambdaSerializer lambdaSerializer) : IFeatureProvider
 {
     // ReSharper disable once StaticMemberInGenericType
     private static readonly Type FeatureType = typeof(IEventFeature);

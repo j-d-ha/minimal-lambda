@@ -1,4 +1,4 @@
-﻿using AwsLambda.Host.UnitTests;
+using AwsLambda.Host.UnitTests;
 using Microsoft.Extensions.DependencyInjection;
 using OpenTelemetry.Trace;
 

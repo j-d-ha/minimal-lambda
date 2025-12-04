@@ -14,18 +14,6 @@ internal static class DiagnosticGenerator
 
         var delegateInfos = compilationInfo.MapHandlerInvocationInfos;
 
-        // check for multiple invocations of MapHandler
-        if (delegateInfos.Count > 1)
-            diagnostics.AddRange(
-                delegateInfos.Select(invocationInfo =>
-                    Diagnostic.Create(
-                        Diagnostics.MultipleMethodCalls,
-                        invocationInfo.LocationInfo?.ToLocation(),
-                        "LambdaApplication.MapHandler(Delegate)"
-                    )
-                )
-            );
-
         // Validate parameters
         foreach (var invocationInfo in delegateInfos)
             // check for multiple parameters that use the `[Event]` attribute

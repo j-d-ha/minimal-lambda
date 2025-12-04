@@ -48,6 +48,13 @@ public static class ServiceCollectionExtensions
                 EnvelopeOptionsPostConfiguration
             >();
 
+            // Register IFeatureProvider factories
+            services.AddSingleton<
+                IResponseFeatureProviderFactory,
+                ResponseFeatureProviderFactory
+            >();
+            services.AddSingleton<IEventFeatureProviderFactory, EventFeatureProviderFactory>();
+
             return services;
         }
 

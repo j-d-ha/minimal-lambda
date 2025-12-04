@@ -8,63 +8,75 @@ namespace AwsLambda.Host.SourceGenerators;
 internal static class MapHandlerSources
 {
     internal static string Generate(
-        HigherOrderMethodInfo higherOrderMethodInfo,
+        EquatableArray<HigherOrderMethodInfo> mapHandlerInvocationInfos,
         EquatableArray<SimpleMethodInfo> builderInfo,
         string generatedCodeAttribute
     )
     {
-        var delegateInfo = higherOrderMethodInfo.DelegateInfo;
-
-        // build handler function signature
-        var handlerSignature = delegateInfo.BuildHandlerSignature();
-
-        // build out assignment statements for each handler parameter
-        var handlerArgs = delegateInfo.BuildHandlerParameterAssignment();
-
-        // get input event type
-        var inputEvent = delegateInfo.EventParameter is { } p
-            ? new
-            {
-                IsStream = p.TypeInfo.FullyQualifiedType == TypeConstants.Stream,
-                Type = p.TypeInfo.FullyQualifiedType,
-            }
-            : null;
-
-        // get output response type and whether it is a stream
-        var outputResponse = delegateInfo.HasResponse
-            ? new
-            {
-                ResponseType = delegateInfo.ReturnTypeInfo.UnwrappedFullyQualifiedType,
-                ResponseIsStream = delegateInfo.ReturnTypeInfo.UnwrappedFullyQualifiedType
-                    == TypeConstants.Stream,
-            }
-            : null;
-
-        var builderCalls = builderInfo.Select(b => b.InterceptableLocationInfo).ToArray();
-
-        var model = new
+        var mapHandlerCalls = mapHandlerInvocationInfos.Select(mapHandlerInvocationInfo =>
         {
-            Location = higherOrderMethodInfo.InterceptableLocationInfo,
-            HandlerSignature = handlerSignature,
-            delegateInfo.HasAnyKeyedServiceParameter,
-            HandlerArgs = handlerArgs,
-            ShouldAwait = delegateInfo.IsAwaitable,
-            InputEvent = inputEvent,
-            OutputResponse = outputResponse,
-            Builders = builderCalls,
-            GeneratedCodeAttribute = generatedCodeAttribute,
-        };
+            var delegateInfo = mapHandlerInvocationInfo.DelegateInfo;
+
+            // build handler function signature
+            var handlerSignature = delegateInfo.BuildHandlerSignature();
+
+            // build out assignment statements for each handler parameter
+            var handlerArgs = delegateInfo.BuildHandlerParameterAssignment();
+
+            // get input event type
+            var inputEvent = delegateInfo.EventParameter is { } p
+                ? new
+                {
+                    IsStream = p.TypeInfo.FullyQualifiedType == TypeConstants.Stream,
+                    Type = p.TypeInfo.FullyQualifiedType,
+                }
+                : null;
+
+            // get output response type and whether it is a stream
+            var outputResponse = delegateInfo.HasResponse
+                ? new
+                {
+                    ResponseType = delegateInfo.ReturnTypeInfo.UnwrappedFullyQualifiedType,
+                    ResponseIsStream = delegateInfo.ReturnTypeInfo.UnwrappedFullyQualifiedType
+                        == TypeConstants.Stream,
+                }
+                : null;
+
+            // determine if event feature is required
+            var isEventFeatureRequired = inputEvent is { IsStream: false };
+
+            // determine if response feature is required
+            var isResponseFeatureRequired = outputResponse is { ResponseIsStream: false };
+
+            return new
+            {
+                Location = mapHandlerInvocationInfo.InterceptableLocationInfo,
+                HandlerSignature = handlerSignature,
+                IsEventFeatureRequired = isEventFeatureRequired,
+                IsResponseFeatureRequired = isResponseFeatureRequired,
+                delegateInfo.HasAnyKeyedServiceParameter,
+                HandlerArgs = handlerArgs,
+                ShouldAwait = delegateInfo.IsAwaitable,
+                InputEvent = inputEvent,
+                OutputResponse = outputResponse,
+            };
+        });
 
         var template = TemplateHelper.LoadTemplate(
             GeneratorConstants.LambdaHostMapHandlerExtensionsTemplateFile
         );
 
-        return template.Render(model);
+        return template.Render(
+            new
+            {
+                GeneratedCodeAttribute = generatedCodeAttribute,
+                MapHandlerCalls = mapHandlerCalls,
+            }
+        );
     }
 
-    private static HandlerArg[] BuildHandlerParameterAssignment(this DelegateInfo delegateInfo)
-    {
-        var handlerArgs = delegateInfo
+    private static HandlerArg[] BuildHandlerParameterAssignment(this DelegateInfo delegateInfo) =>
+        delegateInfo
             .Parameters.Select(param => new HandlerArg
             {
                 String = param.ToPublicString(),
@@ -102,9 +114,6 @@ internal static class MapHandlerSources
                 },
             })
             .ToArray();
-
-        return handlerArgs;
-    }
 
     private readonly record struct HandlerArg(string String, string Assignment);
 }

@@ -7,7 +7,7 @@ namespace AwsLambda.Host.Core;
 ///     serialization. This provider is instantiated by source-generated code to handle Lambda response
 ///     processing using the specified <see cref="ILambdaSerializer" />.
 /// </summary>
-public class DefaultResponseFeatureProvider<T>(ILambdaSerializer lambdaSerializer)
+internal class DefaultResponseFeatureProvider<T>(ILambdaSerializer lambdaSerializer)
     : IFeatureProvider
 {
     // ReSharper disable once StaticMemberInGenericType

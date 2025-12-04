@@ -19,7 +19,10 @@ internal static class LambdaHostOutputGenerator
         if (diagnostics.Any())
         {
             diagnostics.ForEach(context.ReportDiagnostic);
-            return;
+
+            // if there are any errors, return without generating any source code.
+            if (diagnostics.Any(d => d.Severity == DiagnosticSeverity.Error))
+                return;
         }
 
         // create GeneratedCodeAttribute. This is used across all generated source files.
@@ -28,40 +31,12 @@ internal static class LambdaHostOutputGenerator
 
         List<string?> outputs = [CommonSources.Generate(generatedCodeAttribute)];
 
-        // if MapHandler calls found, generate the source code. Will always be 0 or 1 at this point.
-        // Anything that needs to know types from the handler must be generated here.
-        if (compilationInfo.MapHandlerInvocationInfos.Count(x => x.Name != "Handle") == 1)
-        {
-            var mapHandlerInvocationInfo = compilationInfo.MapHandlerInvocationInfos.First();
-
+        // if MapHandler calls found, generate the source code.
+        if (compilationInfo.MapHandlerInvocationInfos.Count >= 1)
             outputs.Add(
                 MapHandlerSources.Generate(
-                    mapHandlerInvocationInfo,
+                    compilationInfo.MapHandlerInvocationInfos,
                     compilationInfo.BuilderInfos,
-                    generatedCodeAttribute
-                )
-            );
-
-            // if UseOpenTelemetryTracing calls found, generate the source code.
-            if (compilationInfo.UseOpenTelemetryTracingInfos.Count >= 1)
-                outputs.Add(
-                    OpenTelemetrySources.Generate(
-                        compilationInfo.UseOpenTelemetryTracingInfos,
-                        mapHandlerInvocationInfo.DelegateInfo,
-                        generatedCodeAttribute
-                    )
-                );
-        }
-
-        // add OnShutdown interceptors
-        if (compilationInfo.OnShutdownInvocationInfos.Count >= 1)
-            outputs.Add(
-                GenericHandlerSources.Generate(
-                    compilationInfo.OnShutdownInvocationInfos,
-                    "OnShutdown",
-                    null,
-                    null,
-                    "ILambdaOnShutdownBuilder",
                     generatedCodeAttribute
                 )
             );
@@ -75,6 +50,19 @@ internal static class LambdaHostOutputGenerator
                     "bool",
                     "true",
                     "ILambdaOnInitBuilder",
+                    generatedCodeAttribute
+                )
+            );
+
+        // add OnShutdown interceptors
+        if (compilationInfo.OnShutdownInvocationInfos.Count >= 1)
+            outputs.Add(
+                GenericHandlerSources.Generate(
+                    compilationInfo.OnShutdownInvocationInfos,
+                    "OnShutdown",
+                    null,
+                    null,
+                    "ILambdaOnShutdownBuilder",
                     generatedCodeAttribute
                 )
             );

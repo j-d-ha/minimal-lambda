@@ -35,10 +35,9 @@ namespace AwsLambda.Host.Core.Generated
     using System.Threading.Tasks;
     using Microsoft.Extensions.DependencyInjection;
     using AwsLambda.Host.Builder;
-    using AwsLambda.Host.Core;
     
     [GeneratedCode("AwsLambda.Host.SourceGenerators", "0.0.0")]
-    file static class OnShutdownLambdaApplicationExtensions
+    file static class GeneratedLambdaOnShutdownBuilderExtensions
     {
         // Location: InputFile.cs(10,8)
         [InterceptsLocation(1, "QR3PHAM1SBBcUgDZGFYhBtQAAABJbnB1dEZpbGUuY3M=")]

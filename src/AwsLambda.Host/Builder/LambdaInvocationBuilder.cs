@@ -2,6 +2,9 @@ namespace AwsLambda.Host.Builder;
 
 internal class LambdaInvocationBuilder : ILambdaInvocationBuilder
 {
+    internal const string EventFeatureProviderKey = "__EventFeatureProvider";
+    internal const string ResponseFeatureProviderKey = "__ResponseFeatureProvider";
+
     private readonly List<Func<LambdaInvocationDelegate, LambdaInvocationDelegate>> _middleware =
     [];
 

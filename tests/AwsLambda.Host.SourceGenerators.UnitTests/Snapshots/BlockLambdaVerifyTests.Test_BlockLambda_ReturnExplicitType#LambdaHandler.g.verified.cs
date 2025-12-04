@@ -30,27 +30,40 @@ namespace AwsLambda.Host.Core.Generated
 {
     using System;
     using System.CodeDom.Compiler;
-    using System.IO;
     using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
-    using Amazon.Lambda.Core;
     using AwsLambda.Host.Builder;
     using AwsLambda.Host.Core;
     using Microsoft.Extensions.DependencyInjection;
     
     [GeneratedCode("AwsLambda.Host.SourceGenerators", "0.0.0")]
-    file static class MapHandlerLambdaApplicationExtensions
+    file static class GeneratedLambdaInvocationBuilderExtensions
     {
+        private const string EventFeatureProviderKey = "__EventFeatureProvider";
+        private const string ResponseFeatureProviderKey = "__ResponseFeatureProvider";
+    
         // Location: InputFile.cs(9,8)
         [InterceptsLocation(1, "kmm35a5GJaoqey+0CeV8vdMAAABJbnB1dEZpbGUuY3M=")]
-        internal static ILambdaInvocationBuilder MapHandlerInterceptor(
+        internal static ILambdaInvocationBuilder MapHandlerInterceptor0(
             this ILambdaInvocationBuilder application,
             Delegate handler
         )
         {
             var castHandler = (global::System.Func<string, global::IService, global::IService>)handler;
-
-            return application.Handle(InvocationDelegate);
+            
+            application.Handle(InvocationDelegate);
+            
+            if (!application.Properties.ContainsKey(EventFeatureProviderKey))
+                application.Properties[EventFeatureProviderKey] = application
+                    .Services.GetRequiredService<IEventFeatureProviderFactory>()
+                    .Create<string>();
+            
+            if (!application.Properties.ContainsKey(ResponseFeatureProviderKey))
+                application.Properties[ResponseFeatureProviderKey] = application.
+                    Services.GetRequiredService<IResponseFeatureProviderFactory>()
+                    .Create<global::IService>();
+            
+            return application;
 
             Task InvocationDelegate(ILambdaHostContext context)
             {
@@ -66,14 +79,6 @@ namespace AwsLambda.Host.Core.Generated
                 responseFeature.SetResponse(response);
                 return Task.CompletedTask; 
             }
-        }
-        
-        [InterceptsLocation(1, "kmm35a5GJaoqey+0CeV8vcIAAABJbnB1dEZpbGUuY3M=")] // Location: InputFile.cs(7,22)
-        internal static LambdaApplication BuildInterceptor(this LambdaApplicationBuilder builder)
-        {
-            builder.Services.AddSingleton<IFeatureProvider, DefaultEventFeatureProvider<string>>();
-            builder.Services.AddSingleton<IFeatureProvider, DefaultResponseFeatureProvider<global::IService>>();
-            return builder.Build();
         }
     }
 }
