@@ -5,6 +5,7 @@ name: PR Build
 
 on:
   pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
     branches: [ "main" ]
     paths-ignore:
       - 'docs/**'
