@@ -124,12 +124,6 @@ Here's the step-by-step process:
 4. These event and response objects are passed to the official `OpenTelemetry.Instrumentation.AWSLambda` package, which wraps the handler execution in a root trace span.
 5. The OpenTelemetry instrumentation automatically extracts trace context from supported event types (like API Gateway requests), ensuring proper distributed trace propagation across services.
 
-This approach is both efficient and flexible. Because event and response types are determined at runtime from the feature collection, the same middleware works seamlessly with:
-
-- Multiple handlers registered via `MapHandler()` with different event/response types
-- Handlers with or without events/responses
-- Any AWS Lambda event source type
-
 The shutdown helpers (`OnShutdownFlushOpenTelemetry`, `OnShutdownFlushTracer`, and `OnShutdownFlushMeter`) are regular extension methods that execute at runtime and use the registered `TracerProvider`/`MeterProvider` instances to force-flush telemetry before Lambda freezes the environment.
 
 ---
@@ -162,8 +156,6 @@ This method registers middleware in the invocation pipeline that wraps each hand
 - Passing both the event and response to the underlying `OpenTelemetry.Instrumentation.AWSLambda` package
 
 Because the middleware reads event and response types dynamically from the feature collection, it works seamlessly with any Lambda event source type. The OpenTelemetry instrumentation can correctly extract context and attributes from strongly-typed event objects (such as trace parent headers from an API Gateway request), ensuring proper distributed trace propagation across your services.
-
-This dynamic approach also enables you to register multiple handlers with different event types in the same Lambda function—the middleware automatically adapts to whichever handler executes.
 
 
 ### Gracefully Shutdown & Cleaning Up
