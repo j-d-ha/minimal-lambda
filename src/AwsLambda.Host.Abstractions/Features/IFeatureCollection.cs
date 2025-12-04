@@ -1,6 +1,6 @@
 // Portions of this file are derived from azure-functions-dotnet-worker
 // Source:
-// https://github.com/Azure/azure-functions-dotnet-worker/blob/main/src/DotNetWorker.Core/Context/Features/IInvocationFeatures.cs
+// https://github.com/Azure/azure-functions-dotnet-worker/blob/2.51.0/src/DotNetWorker.Core/Context/Features/IInvocationFeatures.cs
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License
 // See THIRD-PARTY-LICENSES.txt file in the project root or visit
