@@ -28,7 +28,7 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
     private bool _disposedAsync;
     private TestServer? _server;
     private IHost? _host;
-    private Action<IWebHostBuilder> _configuration;
+    private Action<IHostBuilder> _configuration;
     private readonly List<HttpClient> _clients = new();
     private readonly List<WebApplicationFactory<TEntryPoint>> _derivedFactories = new();
 
@@ -38,7 +38,7 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
     /// create a <see cref="TestServer"/> instance using the MVC application defined by <typeparamref name="TEntryPoint"/>
     /// and one or more <see cref="HttpClient"/> instances used to send <see cref="HttpRequestMessage"/> to the <see cref="TestServer"/>.
     /// The <see cref="WebApplicationFactory{TEntryPoint}"/> will find the entry point class of <typeparamref name="TEntryPoint"/>
-    /// assembly and initialize the application by calling <c>IWebHostBuilder CreateWebHostBuilder(string [] args)</c>
+    /// assembly and initialize the application by calling <c>IHostBuilder CreateWebHostBuilder(string [] args)</c>
     /// on <typeparamref name="TEntryPoint"/>.
     /// </para>
     /// <para>
@@ -88,8 +88,8 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
 
     /// <summary>
     /// Gets the <see cref="IReadOnlyList{WebApplicationFactory}"/> of factories created from this factory
-    /// by further customizing the <see cref="IWebHostBuilder"/> when calling
-    /// <see cref="WebApplicationFactory{TEntryPoint}.WithWebHostBuilder(Action{IWebHostBuilder})"/>.
+    /// by further customizing the <see cref="IHostBuilder"/> when calling
+    /// <see cref="WebApplicationFactory{TEntryPoint}.WithWebHostBuilder(Action{IHostBuilder})"/>.
     /// </summary>
     public IReadOnlyList<WebApplicationFactory<TEntryPoint>> Factories =>
         _derivedFactories.AsReadOnly();
@@ -100,19 +100,19 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
     public LambdaApplicationFactoryClientOptions ClientOptions { get; private set; } = new();
 
     /// <summary>
-    /// Creates a new <see cref="WebApplicationFactory{TEntryPoint}"/> with a <see cref="IWebHostBuilder"/>
+    /// Creates a new <see cref="WebApplicationFactory{TEntryPoint}"/> with a <see cref="IHostBuilder"/>
     /// that is further customized by <paramref name="configuration"/>.
     /// </summary>
     /// <param name="configuration">
-    /// An <see cref="Action{IWebHostBuilder}"/> to configure the <see cref="IWebHostBuilder"/>.
+    /// An <see cref="Action{IHostBuilder}"/> to configure the <see cref="IHostBuilder"/>.
     /// </param>
     /// <returns>A new <see cref="WebApplicationFactory{TEntryPoint}"/>.</returns>
     public WebApplicationFactory<TEntryPoint> WithWebHostBuilder(
-        Action<IWebHostBuilder> configuration
+        Action<IHostBuilder> configuration
     ) => WithWebHostBuilderCore(configuration);
 
     internal virtual WebApplicationFactory<TEntryPoint> WithWebHostBuilderCore(
-        Action<IWebHostBuilder> configuration
+        Action<IHostBuilder> configuration
     )
     {
         var factory = new DelegatedWebApplicationFactory(
@@ -143,71 +143,45 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
 
         EnsureDepsFile();
 
-        var hostBuilder = CreateHostBuilder();
-        if (hostBuilder is not null)
+        var deferredHostBuilder = new DeferredHostBuilder();
+        deferredHostBuilder.UseEnvironment(Environments.Development);
+        // There's no helper for UseApplicationName, but we need to
+        // set the application name to the target entry point
+        // assembly name.
+        deferredHostBuilder.ConfigureHostConfiguration(config =>
         {
-            ConfigureHostBuilder(hostBuilder);
+            config.AddInMemoryCollection(
+                new Dictionary<string, string?>
+                {
+                    {
+                        HostDefaults.ApplicationKey,
+                        typeof(TEntryPoint).Assembly.GetName()?.Name ?? string.Empty
+                    },
+                }
+            );
+        });
+        // This helper call does the hard work to determine if we can fallback to diagnostic
+        // source events to get the host instance
+        var factory = HostFactoryResolver.ResolveHostFactory(
+            typeof(TEntryPoint).Assembly,
+            stopApplication: false,
+            configureHostBuilder: deferredHostBuilder.ConfigureHostBuilder,
+            entrypointCompleted: deferredHostBuilder.EntryPointCompleted
+        );
+
+        if (factory is not null)
+        {
+            // If we have a valid factory it means the specified entry point's assembly can
+            // potentially resolve the IHost
+            // so we set the factory on the DeferredHostBuilder so we can invoke it on the call
+            // to IHostBuilder.Build.
+            deferredHostBuilder.SetHostFactory(factory);
+
+            ConfigureHostBuilder(deferredHostBuilder);
             return;
         }
 
-        var builder = CreateWebHostBuilder();
-        if (builder is null)
-        {
-            var deferredHostBuilder = new DeferredHostBuilder();
-            deferredHostBuilder.UseEnvironment(Environments.Development);
-            // There's no helper for UseApplicationName, but we need to
-            // set the application name to the target entry point
-            // assembly name.
-            deferredHostBuilder.ConfigureHostConfiguration(config =>
-            {
-                config.AddInMemoryCollection(
-                    new Dictionary<string, string?>
-                    {
-                        {
-                            HostDefaults.ApplicationKey,
-                            typeof(TEntryPoint).Assembly.GetName()?.Name ?? string.Empty
-                        },
-                    }
-                );
-            });
-            // This helper call does the hard work to determine if we can fallback to diagnostic
-            // source events to get the host instance
-            var factory = HostFactoryResolver.ResolveHostFactory(
-                typeof(TEntryPoint).Assembly,
-                stopApplication: false,
-                configureHostBuilder: deferredHostBuilder.ConfigureHostBuilder,
-                entrypointCompleted: deferredHostBuilder.EntryPointCompleted
-            );
-
-            if (factory is not null)
-            {
-                // If we have a valid factory it means the specified entry point's assembly can
-                // potentially resolve the IHost
-                // so we set the factory on the DeferredHostBuilder so we can invoke it on the call
-                // to IHostBuilder.Build.
-                deferredHostBuilder.SetHostFactory(factory);
-
-                ConfigureHostBuilder(deferredHostBuilder);
-                return;
-            }
-
-            throw new InvalidOperationException(
-                Resources.FormatMissingBuilderMethod(
-                    nameof(IHostBuilder),
-                    nameof(IWebHostBuilder),
-                    typeof(TEntryPoint).Assembly.EntryPoint!.DeclaringType!.FullName,
-                    typeof(WebApplicationFactory<TEntryPoint>).Name,
-                    nameof(CreateHostBuilder),
-                    nameof(CreateWebHostBuilder)
-                )
-            );
-        }
-        else
-        {
-            SetContentRoot(builder);
-            _configuration(builder);
-            _server = CreateServer(builder);
-        }
+        throw new InvalidOperationException("Unable to create IHostBuilder instance.");
     }
 
     [MemberNotNull(nameof(_server))]
@@ -219,11 +193,17 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
             _configuration(webHostBuilder);
             webHostBuilder.UseTestServer();
         });
+        hostBuilder.ConfigureWebHost(webHostBuilder =>
+        {
+            SetContentRoot(webHostBuilder);
+            _configuration(webHostBuilder);
+            webHostBuilder.UseTestServer();
+        });
         _host = CreateHost(hostBuilder);
         _server = (TestServer)_host.Services.GetRequiredService<IServer>();
     }
 
-    private void SetContentRoot(IWebHostBuilder builder)
+    private void SetContentRoot(IHostBuilder builder)
     {
         if (SetContentRootFromSetting(builder))
             return;
@@ -289,7 +269,7 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
         return contentRoot;
     }
 
-    private static bool SetContentRootFromSetting(IWebHostBuilder builder)
+    private static bool SetContentRootFromSetting(IHostBuilder builder)
     {
         // Attempt to look for TEST_CONTENTROOT_APPNAME in settings. This should result in looking
         // for
@@ -416,15 +396,15 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
     }
 
     /// <summary>
-    /// Creates a <see cref="IWebHostBuilder"/> used to set up <see cref="TestServer"/>.
+    /// Creates a <see cref="IHostBuilder"/> used to set up <see cref="TestServer"/>.
     /// </summary>
     /// <remarks>
-    /// The default implementation of this method looks for a <c>public static IWebHostBuilder CreateWebHostBuilder(string[] args)</c>
+    /// The default implementation of this method looks for a <c>public static IHostBuilder CreateWebHostBuilder(string[] args)</c>
     /// method defined on the entry point of the assembly of <typeparamref name="TEntryPoint" /> and invokes it passing an empty string
     /// array as arguments.
     /// </remarks>
-    /// <returns>A <see cref="IWebHostBuilder"/> instance.</returns>
-    protected virtual IWebHostBuilder? CreateWebHostBuilder()
+    /// <returns>A <see cref="IHostBuilder"/> instance.</returns>
+    protected virtual IHostBuilder? CreateWebHostBuilder()
     {
         var builder = WebHostBuilderFactory.CreateFromTypesAssemblyEntryPoint<TEntryPoint>(
             Array.Empty<string>()
@@ -438,18 +418,18 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
 
     /// <summary>
     /// Creates the <see cref="TestServer"/> with the bootstrapped application in <paramref name="builder"/>.
-    /// This is only called for applications using <see cref="IWebHostBuilder"/>. Applications based on
+    /// This is only called for applications using <see cref="IHostBuilder"/>. Applications based on
     /// <see cref="IHostBuilder"/> will use <see cref="CreateHost"/> instead.
     /// </summary>
-    /// <param name="builder">The <see cref="IWebHostBuilder"/> used to
+    /// <param name="builder">The <see cref="IHostBuilder"/> used to
     /// create the server.</param>
     /// <returns>The <see cref="TestServer"/> with the bootstrapped application.</returns>
-    protected virtual TestServer CreateServer(IWebHostBuilder builder) => new(builder);
+    protected virtual TestServer CreateServer(IHostBuilder builder) => new(builder);
 
     /// <summary>
     /// Creates the <see cref="IHost"/> with the bootstrapped application in <paramref name="builder"/>.
     /// This is only called for applications using <see cref="IHostBuilder"/>. Applications based on
-    /// <see cref="IWebHostBuilder"/> will use <see cref="CreateServer"/> instead.
+    /// <see cref="IHostBuilder"/> will use <see cref="CreateServer"/> instead.
     /// </summary>
     /// <param name="builder">The <see cref="IHostBuilder"/> used to create the host.</param>
     /// <returns>The <see cref="IHost"/> with the bootstrapped application.</returns>
@@ -463,8 +443,8 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
     /// <summary>
     /// Gives a fixture an opportunity to configure the application before it gets built.
     /// </summary>
-    /// <param name="builder">The <see cref="IWebHostBuilder"/> for the application.</param>
-    protected virtual void ConfigureWebHost(IWebHostBuilder builder) { }
+    /// <param name="builder">The <see cref="IHostBuilder"/> for the application.</param>
+    protected virtual void ConfigureWebHost(IHostBuilder builder) { }
 
     /// <summary>
     /// Creates an instance of <see cref="HttpClient"/> that automatically follows
@@ -478,7 +458,7 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
     /// redirects and handles cookies.
     /// </summary>
     /// <returns>The <see cref="HttpClient"/>.</returns>
-    public HttpClient CreateClient(WebApplicationFactoryClientOptions options) =>
+    public HttpClient CreateClient(LambdaApplicationFactoryClientOptions options) =>
         CreateDefaultClient(options.BaseAddress, options.CreateHandlers());
 
     /// <summary>
@@ -605,22 +585,22 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
 
     private sealed class DelegatedWebApplicationFactory : WebApplicationFactory<TEntryPoint>
     {
-        private readonly Func<IWebHostBuilder, TestServer> _createServer;
+        private readonly Func<IHostBuilder, TestServer> _createServer;
         private readonly Func<IHostBuilder, IHost> _createHost;
-        private readonly Func<IWebHostBuilder?> _createWebHostBuilder;
+        private readonly Func<IHostBuilder?> _createWebHostBuilder;
         private readonly Func<IHostBuilder?> _createHostBuilder;
         private readonly Func<IEnumerable<Assembly>> _getTestAssemblies;
         private readonly Action<HttpClient> _configureClient;
 
         public DelegatedWebApplicationFactory(
             WebApplicationFactoryClientOptions options,
-            Func<IWebHostBuilder, TestServer> createServer,
+            Func<IHostBuilder, TestServer> createServer,
             Func<IHostBuilder, IHost> createHost,
-            Func<IWebHostBuilder?> createWebHostBuilder,
+            Func<IHostBuilder?> createWebHostBuilder,
             Func<IHostBuilder?> createHostBuilder,
             Func<IEnumerable<Assembly>> getTestAssemblies,
             Action<HttpClient> configureClient,
-            Action<IWebHostBuilder> configureWebHost
+            Action<IHostBuilder> configureWebHost
         )
         {
             ClientOptions = new WebApplicationFactoryClientOptions(options);
@@ -633,24 +613,22 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
             _configuration = configureWebHost;
         }
 
-        protected override TestServer CreateServer(IWebHostBuilder builder) =>
-            _createServer(builder);
+        protected override TestServer CreateServer(IHostBuilder builder) => _createServer(builder);
 
         protected override IHost CreateHost(IHostBuilder builder) => _createHost(builder);
 
-        protected override IWebHostBuilder? CreateWebHostBuilder() => _createWebHostBuilder();
+        protected override IHostBuilder? CreateWebHostBuilder() => _createWebHostBuilder();
 
         protected override IHostBuilder? CreateHostBuilder() => _createHostBuilder();
 
         protected override IEnumerable<Assembly> GetTestAssemblies() => _getTestAssemblies();
 
-        protected override void ConfigureWebHost(IWebHostBuilder builder) =>
-            _configuration(builder);
+        protected override void ConfigureWebHost(IHostBuilder builder) => _configuration(builder);
 
         protected override void ConfigureClient(HttpClient client) => _configureClient(client);
 
         internal override WebApplicationFactory<TEntryPoint> WithWebHostBuilderCore(
-            Action<IWebHostBuilder> configuration
+            Action<IHostBuilder> configuration
         ) =>
             new DelegatedWebApplicationFactory(
                 ClientOptions,
