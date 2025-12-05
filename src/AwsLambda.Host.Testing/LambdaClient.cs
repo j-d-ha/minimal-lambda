@@ -12,6 +12,7 @@ public class LambdaClient
     private readonly Channel<HttpResponseMessage> _responseChanel;
     private readonly ILambdaRuntimeRouteManager _routeManager;
     private bool _isBootstrappingComplete;
+    private readonly LambdaClientOptions _lambdaClientOptions;
 
     internal LambdaClient(
         Channel<HttpRequestMessage> requestChanel,
@@ -24,6 +25,16 @@ public class LambdaClient
         _responseChanel = responseChanel;
         _jsonSerializerOptions = jsonSerializerOptions;
         _routeManager = routeManager;
+        _lambdaClientOptions = new LambdaClientOptions();
+    }
+
+    public LambdaClient ConfigureOptions(Action<LambdaClientOptions> configureOptions)
+    {
+        ArgumentNullException.ThrowIfNull(configureOptions);
+
+        configureOptions(_lambdaClientOptions);
+
+        return this;
     }
 
     internal async Task WaitForBootstrapAsync(CancellationToken cancellationToken = default)
