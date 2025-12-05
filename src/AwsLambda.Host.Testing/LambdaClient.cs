@@ -157,15 +157,19 @@ public class LambdaClient
         {
             WasSuccess = wasSuccess,
             Response = wasSuccess
-                ? await request.RequestMessage.Content?.ReadFromJsonAsync<TResponse>(
-                    _jsonSerializerOptions,
-                    cancellationToken
+                ? await (
+                    request.RequestMessage.Content?.ReadFromJsonAsync<TResponse>(
+                        _jsonSerializerOptions,
+                        cancellationToken
+                    ) ?? Task.FromResult<TResponse?>(default)
                 )
                 : default,
             Error = !wasSuccess
-                ? await request.RequestMessage.Content?.ReadFromJsonAsync<ErrorResponse>(
-                    _jsonSerializerOptions,
-                    cancellationToken
+                ? await (
+                    request.RequestMessage.Content?.ReadFromJsonAsync<ErrorResponse>(
+                        _jsonSerializerOptions,
+                        cancellationToken
+                    ) ?? Task.FromResult<ErrorResponse?>(null)
                 )
                 : null,
         };
