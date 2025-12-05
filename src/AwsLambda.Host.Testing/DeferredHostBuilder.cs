@@ -1,7 +1,7 @@
 // Portions of this file are derived from aspnetcore
 // Source:
 // https://github.com/dotnet/aspnetcore/blob/v10.0.0/src/Mvc/Mvc.Testing/src/DeferredHostBuilder.cs
-// Copyright (c) .NET Foundation
+// Copyright (c) .NET Foundation and Contributors
 // Licensed under the MIT License
 // See THIRD-PARTY-LICENSES.txt file in the project root or visit
 // https://github.com/dotnet/aspnetcore/blob/v10.0.0/LICENSE.txt
