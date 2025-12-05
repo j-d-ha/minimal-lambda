@@ -8,11 +8,11 @@ namespace AwsLambda.Host.Testing;
 public class LambdaClient
 {
     private readonly JsonSerializerOptions _jsonSerializerOptions;
+    private readonly LambdaClientOptions _lambdaClientOptions;
     private readonly Channel<HttpRequestMessage> _requestChanel;
     private readonly Channel<HttpResponseMessage> _responseChanel;
     private readonly ILambdaRuntimeRouteManager _routeManager;
     private bool _isBootstrappingComplete;
-    private readonly LambdaClientOptions _lambdaClientOptions;
 
     internal LambdaClient(
         Channel<HttpRequestMessage> requestChanel,
@@ -84,28 +84,34 @@ public class LambdaClient
         };
 
         // Add standard HTTP headers
-        response.Headers.Date = new DateTimeOffset(_lambdaClientOptions.InvocationHeaders.Date);
+        response.Headers.Date = new DateTimeOffset(
+            _lambdaClientOptions.InvocationHeaderOptions.Date
+        );
         response.Headers.TransferEncodingChunked = _lambdaClientOptions
-            .InvocationHeaders
+            .InvocationHeaderOptions
             .TransferEncodingChunked;
 
         // Add custom Lambda runtime headers
-        response.Headers.Add(
-            "Lambda-Runtime-Deadline-Ms",
-            _lambdaClientOptions.InvocationHeaders.DeadlineMs.ToString()
-        );
+        var deadlineMs = DateTimeOffset
+            .UtcNow.Add(_lambdaClientOptions.InvocationHeaderOptions.FunctionTimeout)
+            .ToUnixTimeMilliseconds();
+        response.Headers.Add("Lambda-Runtime-Deadline-Ms", deadlineMs.ToString());
         response.Headers.Add(
             "Lambda-Runtime-Aws-Request-Id",
-            _lambdaClientOptions.InvocationHeaders.RequestId
+            _lambdaClientOptions.InvocationHeaderOptions.RequestId
         );
         response.Headers.Add(
             "Lambda-Runtime-Trace-Id",
-            _lambdaClientOptions.InvocationHeaders.TraceId
+            _lambdaClientOptions.InvocationHeaderOptions.TraceId
         );
         response.Headers.Add(
             "Lambda-Runtime-Invoked-Function-Arn",
-            _lambdaClientOptions.InvocationHeaders.FunctionArn
+            _lambdaClientOptions.InvocationHeaderOptions.FunctionArn
         );
+
+        // Add any additional custom headers
+        foreach (var header in _lambdaClientOptions.InvocationHeaderOptions.AdditionalHeaders)
+            response.Headers.Add(header.Key, header.Value);
 
         return response;
     }
@@ -119,54 +125,4 @@ public class LambdaClient
 
         return default;
     }
-}
-
-/// <summary>
-/// Configuration options for the Lambda test client.
-/// </summary>
-public class LambdaClientOptions
-{
-    /// <summary>
-    /// Gets or sets the headers to include in Lambda invocation responses.
-    /// </summary>
-    public LambdaInvocationHeaders InvocationHeaders { get; set; } = new();
-}
-
-/// <summary>
-/// Headers returned in Lambda runtime API invocation responses.
-/// </summary>
-public class LambdaInvocationHeaders
-{
-    /// <summary>
-    /// Gets or sets the response date header. Defaults to current UTC time.
-    /// </summary>
-    public DateTime Date { get; set; } = DateTime.UtcNow;
-
-    /// <summary>
-    /// Gets or sets whether to use chunked transfer encoding. Defaults to true.
-    /// </summary>
-    public bool TransferEncodingChunked { get; set; } = true;
-
-    /// <summary>
-    /// Gets or sets the Lambda invocation deadline in milliseconds since Unix epoch.
-    /// This indicates when the Lambda function will timeout.
-    /// </summary>
-    public long DeadlineMs { get; set; } =
-        DateTimeOffset.UtcNow.AddMinutes(15).ToUnixTimeMilliseconds();
-
-    /// <summary>
-    /// Gets or sets the AWS request ID for this invocation.
-    /// </summary>
-    public string RequestId { get; set; } = Guid.NewGuid().ToString();
-
-    /// <summary>
-    /// Gets or sets the AWS X-Ray trace ID for distributed tracing.
-    /// </summary>
-    public string TraceId { get; set; } = Guid.NewGuid().ToString();
-
-    /// <summary>
-    /// Gets or sets the ARN of the Lambda function being invoked.
-    /// </summary>
-    public string FunctionArn { get; set; } =
-        "arn:aws:lambda:us-west-2:123412341234:function:Function";
 }
