@@ -96,10 +96,13 @@ public class LambdaClient
             .UtcNow.Add(_lambdaClientOptions.InvocationHeaderOptions.FunctionTimeout)
             .ToUnixTimeMilliseconds();
         response.Headers.Add("Lambda-Runtime-Deadline-Ms", deadlineMs.ToString());
-        response.Headers.Add(
-            "Lambda-Runtime-Aws-Request-Id",
-            _lambdaClientOptions.InvocationHeaderOptions.RequestId
-        );
+
+        // Generate request ID with proper padding (12 digits, zero-padded)
+        var requestId = _lambdaClientOptions
+            .InvocationHeaderOptions.InvocationCounter.ToString()
+            .PadLeft(12, '0');
+        response.Headers.Add("Lambda-Runtime-Aws-Request-Id", requestId);
+
         response.Headers.Add(
             "Lambda-Runtime-Trace-Id",
             _lambdaClientOptions.InvocationHeaderOptions.TraceId
@@ -116,12 +119,15 @@ public class LambdaClient
         return response;
     }
 
-    public async Task<InvocationResponse<TResponse>> Invoke<TEvent, TResponse>(
+    public async Task<InvocationResponse<TResponse>> InvokeAsync<TEvent, TResponse>(
         TEvent invokeEvent,
         CancellationToken cancellationToken = default
     )
     {
         var response = CreateRequest(invokeEvent);
+
+        // Increment the invocation counter after the request is made
+        _lambdaClientOptions.InvocationHeaderOptions.InvocationCounter++;
 
         return default;
     }
