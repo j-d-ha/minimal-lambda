@@ -149,8 +149,6 @@ public class LambdaClient
             cancellationToken
         );
 
-        await WaitForNextRequestAsync(cancellationToken);
-
         var wasSuccess = request.RequestType == RequestType.PostResponse;
 
         var invocationResponse = new InvocationResponse<TResponse>
