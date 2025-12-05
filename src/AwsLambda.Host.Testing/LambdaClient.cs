@@ -1,4 +1,5 @@
 using System.Net;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Channels;
@@ -37,19 +38,14 @@ public class LambdaClient
         return this;
     }
 
-    internal async Task WaitForBootstrapAsync(CancellationToken cancellationToken = default)
+    internal async Task WaitForNextRequestAsync(CancellationToken cancellationToken = default)
     {
-        if (_isBootstrappingComplete)
-            return;
-
         var request = await WaitForRequestAsync(cancellationToken);
 
         if (request.RequestType != RequestType.GetNextInvocation)
             throw new InvalidOperationException(
                 $"Unexpected request received during bootstrap: {request.RequestType.ToString()}"
             );
-
-        _isBootstrappingComplete = true;
     }
 
     private async Task<LambdaBootstrapRequest> WaitForRequestAsync(
@@ -126,9 +122,54 @@ public class LambdaClient
     {
         var response = CreateRequest(invokeEvent);
 
-        // Increment the invocation counter after the request is made
+        await _responseChanel.Writer.WriteAsync(response, cancellationToken);
+
         _lambdaClientOptions.InvocationHeaderOptions.InvocationCounter++;
 
-        return default;
+        var request = await WaitForRequestAsync(cancellationToken);
+
+        if (request.RequestType == RequestType.GetNextInvocation)
+            throw new InvalidOperationException(
+                $"Expected PostResponse or PostError request, but received {request.RequestType}"
+            );
+
+        await _responseChanel.Writer.WriteAsync(
+            new HttpResponseMessage(HttpStatusCode.Accepted)
+            {
+                Content = new StringContent(
+                    JsonSerializer.Serialize(
+                        new Dictionary<string, string?> { ["status"] = "success" },
+                        _jsonSerializerOptions
+                    ),
+                    Encoding.UTF8,
+                    "application/json"
+                ),
+                Version = Version.Parse("1.1"),
+            },
+            cancellationToken
+        );
+
+        await WaitForNextRequestAsync(cancellationToken);
+
+        var wasSuccess = request.RequestType == RequestType.PostResponse;
+
+        var invocationResponse = new InvocationResponse<TResponse>
+        {
+            WasSuccess = wasSuccess,
+            Response = wasSuccess
+                ? await request.RequestMessage.Content?.ReadFromJsonAsync<TResponse>(
+                    _jsonSerializerOptions,
+                    cancellationToken
+                )
+                : default,
+            Error = !wasSuccess
+                ? await request.RequestMessage.Content?.ReadFromJsonAsync<ErrorResponse>(
+                    _jsonSerializerOptions,
+                    cancellationToken
+                )
+                : null,
+        };
+
+        return invocationResponse;
     }
 }
