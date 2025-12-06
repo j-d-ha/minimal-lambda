@@ -27,14 +27,13 @@ namespace AwsLambda.Host.Testing;
 public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposable
     where TEntryPoint : class
 {
-    private bool _disposed;
-    private bool _disposedAsync;
-    private LambdaTestServer? _server;
-    private IHost? _host;
-    private Action<IHostBuilder> _configuration;
-
     // private readonly List<HttpClient> _clients = [];
     private readonly List<WebApplicationFactory<TEntryPoint>> _derivedFactories = [];
+    private Action<IHostBuilder> _configuration;
+    private bool _disposed;
+    private bool _disposedAsync;
+    private IHost? _host;
+    private LambdaTestServer? _server;
 
     /// <summary>
     /// <para>
@@ -62,9 +61,17 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
     public WebApplicationFactory() => _configuration = ConfigureWebHost;
 
     /// <summary>
-    /// Finalizes an instance of the <see cref="WebApplicationFactory{TEntryPoint}"/> class.
+    /// Gets the <see cref="WebApplicationFactoryClientOptions"/> used by <see cref="CreateClient()"/>.
     /// </summary>
-    ~WebApplicationFactory() => Dispose(false);
+    public LambdaApplicationFactoryClientOptions ClientOptions { get; private set; } = new();
+
+    /// <summary>
+    /// Gets the <see cref="IReadOnlyList{WebApplicationFactory}"/> of factories created from this factory
+    /// by further customizing the <see cref="IHostBuilder"/> when calling
+    /// <see cref="WebApplicationFactory{TEntryPoint}.WithWebHostBuilder(Action{IHostBuilder})"/>.
+    /// </summary>
+    public IReadOnlyList<WebApplicationFactory<TEntryPoint>> Factories =>
+        _derivedFactories.AsReadOnly();
 
     /// <summary>
     /// Gets the <see cref="LambdaTestServer"/> created by this <see cref="WebApplicationFactory{TEntryPoint}"/>.
@@ -91,6 +98,48 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
         }
     }
 
+    /// <inheritdoc />
+    public virtual async ValueTask DisposeAsync()
+    {
+        if (_disposed)
+            return;
+
+        if (_disposedAsync)
+            return;
+
+        // foreach (var client in _clients)
+        //     client.Dispose();
+
+        foreach (var factory in _derivedFactories)
+            await ((IAsyncDisposable)factory).DisposeAsync().ConfigureAwait(false);
+
+        _server?.Dispose();
+
+        if (_host != null)
+        {
+            await _host.StopAsync().ConfigureAwait(false);
+            _host?.Dispose();
+        }
+
+        _disposedAsync = true;
+
+        Dispose(true);
+
+        GC.SuppressFinalize(this);
+    }
+
+    /// <inheritdoc />
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
+    }
+
+    /// <summary>
+    /// Finalizes an instance of the <see cref="WebApplicationFactory{TEntryPoint}"/> class.
+    /// </summary>
+    ~WebApplicationFactory() => Dispose(false);
+
     public LambdaClient CreateClient()
     {
         EnsureServer();
@@ -99,19 +148,6 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
             new LambdaRuntimeRouteManager()
         );
     }
-
-    /// <summary>
-    /// Gets the <see cref="IReadOnlyList{WebApplicationFactory}"/> of factories created from this factory
-    /// by further customizing the <see cref="IHostBuilder"/> when calling
-    /// <see cref="WebApplicationFactory{TEntryPoint}.WithWebHostBuilder(Action{IHostBuilder})"/>.
-    /// </summary>
-    public IReadOnlyList<WebApplicationFactory<TEntryPoint>> Factories =>
-        _derivedFactories.AsReadOnly();
-
-    /// <summary>
-    /// Gets the <see cref="WebApplicationFactoryClientOptions"/> used by <see cref="CreateClient()"/>.
-    /// </summary>
-    public LambdaApplicationFactoryClientOptions ClientOptions { get; private set; } = new();
 
     /// <summary>
     /// Creates a new <see cref="WebApplicationFactory{TEntryPoint}"/> with a <see cref="IHostBuilder"/>
@@ -208,23 +244,19 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
         // set Lambda Bootstrap Http Client
         hostBuilder.ConfigureServices(services =>
         {
-            services.AddLambdaBootstrapHttpClient(
-                (_, _) =>
-                {
-                    var client = new HttpClient(_server.CreateTestingHandler());
-                    client.BaseAddress = new Uri("localhost:8080");
-                    return client;
-                }
-            );
+            services.AddLambdaBootstrapHttpClient(new HttpClient(_server.CreateTestingHandler()));
 
             services.PostConfigure<LambdaHostOptions>(options =>
             {
                 if (string.IsNullOrEmpty(options.BootstrapOptions.RuntimeApiEndpoint))
-                    options.BootstrapOptions.RuntimeApiEndpoint = "localhost:3002";
+                    options.BootstrapOptions.RuntimeApiEndpoint = "http://localhost:3002";
             });
         });
 
         _host = CreateHost(hostBuilder);
+
+        // Start the server's background processing loop after host is ready
+        _server.Start();
     }
 
     private void SetContentRoot(IHostBuilder builder)
@@ -290,9 +322,6 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
 
         return contentRoot == "~" ? AppContext.BaseDirectory : contentRoot;
     }
-
-    [JsonSerializable(typeof(IDictionary<string, string>))]
-    private sealed partial class CustomJsonSerializerContext : JsonSerializerContext;
 
     private string? GetContentRootFromAssembly()
     {
@@ -460,13 +489,6 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
         client.BaseAddress = new Uri("http://localhost");
     }
 
-    /// <inheritdoc />
-    public void Dispose()
-    {
-        Dispose(true);
-        GC.SuppressFinalize(this);
-    }
-
     /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
@@ -477,9 +499,7 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
     protected virtual void Dispose(bool disposing)
     {
         if (_disposed)
-        {
             return;
-        }
 
         if (disposing)
             if (!_disposedAsync)
@@ -488,45 +508,17 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
         _disposed = true;
     }
 
-    /// <inheritdoc />
-    public virtual async ValueTask DisposeAsync()
-    {
-        if (_disposed)
-            return;
-
-        if (_disposedAsync)
-        {
-            return;
-        }
-
-        // foreach (var client in _clients)
-        //     client.Dispose();
-
-        foreach (var factory in _derivedFactories)
-            await ((IAsyncDisposable)factory).DisposeAsync().ConfigureAwait(false);
-
-        _server?.Dispose();
-
-        if (_host != null)
-        {
-            await _host.StopAsync().ConfigureAwait(false);
-            _host?.Dispose();
-        }
-
-        _disposedAsync = true;
-
-        Dispose(true);
-
-        GC.SuppressFinalize(this);
-    }
+    [JsonSerializable(typeof(IDictionary<string, string>))]
+    private sealed partial class CustomJsonSerializerContext : JsonSerializerContext;
 
     private sealed class DelegatedWebApplicationFactory : WebApplicationFactory<TEntryPoint>
     {
+        private readonly Action<HttpClient> _configureClient;
+
         // private readonly Func<IHostBuilder, LambdaTestServer> _createServer;
         private readonly Func<IHostBuilder, IHost> _createHost;
         private readonly Func<IHostBuilder?> _createHostBuilder;
         private readonly Func<IEnumerable<Assembly>> _getTestAssemblies;
-        private readonly Action<HttpClient> _configureClient;
 
         public DelegatedWebApplicationFactory(
             LambdaApplicationFactoryClientOptions options,

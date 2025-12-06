@@ -177,3 +177,130 @@ Headers:
 
 
 ```
+
+# In-Memory Lambda Testing Client Implementation Summary
+
+## Overview
+
+This implementation provides an in-memory testing infrastructure for AWS Lambda functions using .NET. It intercepts HTTP requests from the Lambda Bootstrap and allows test code to simulate the Lambda Runtime API without any network calls.
+
+## Core Components
+
+### 1. LambdaHttpTransaction
+
+A simple class that bundles an HTTP request with its response mechanism:
+
+- **Request**: The `HttpRequestMessage` sent by Lambda Bootstrap
+- **ResponseTcs**: A `TaskCompletionSource<HttpResponseMessage>` that the test infrastructure completes when ready
+- **Convenience methods**: `Respond()` and `Fail()` for easy response handling
+
+The key insight is that each transaction carries its own completion mechanism, providing automatic correlation between requests and responses without needing IDs or separate channels.
+
+### 2. LambdaTestingHttpHandler
+
+A custom `HttpMessageHandler` that intercepts all HTTP calls from Lambda Bootstrap:
+
+- Creates a `Channel<LambdaHttpTransaction>` for outbound communication
+- On `SendAsync()`:
+  1. Wraps the request in a `LambdaHttpTransaction`
+  2. Writes it to the channel
+  3. Awaits the transaction's `TaskCompletionSource`
+- Handles cancellation by registering a callback that cancels the TCS
+
+This replaces the original two-channel design (request channel + response channel) with a single channel carrying self-contained transactions.
+
+### 3. LambdaTestServer
+
+The intermediary that processes HTTP transactions from the handler:
+
+- Reads transactions from the handler's channel
+- Routes requests based on the Lambda Runtime API paths
+- Manages queued `/next` requests when no invocations are pending
+- Matches response posts back to pending invocations by request ID
+
+### 4. LambdaTestClient
+
+The user-facing API that abstracts away all HTTP details:
+
+- Exposes a clean `InvokeAsync<TEvent, TResponse>()` method
+- Communicates with the server to queue invocations
+- Tracks pending invocations in a `ConcurrentDictionary` keyed by request ID
+- Returns typed `InvocationResponse<TResponse>` to callers
+
+## Request Flow
+```mermaid
+sequenceDiagram
+    participant User as User Code
+    participant Client as LambdaTestClient
+    participant Server as LambdaTestServer
+    participant Handler as LambdaTestingHttpHandler
+    participant Bootstrap as Lambda Bootstrap
+
+    User->>Client: InvokeAsync(event)
+    Client->>Server: Queue pending invocation
+    
+    Bootstrap->>Handler: GET /invocation/next
+    Handler->>Server: Transaction via Channel
+    Server->>Server: Match with pending invocation
+    Server->>Handler: Respond(event payload)
+    Handler->>Bootstrap: HTTP 200 + event + headers
+    
+    Note over Bootstrap: Lambda function executes
+    
+    Bootstrap->>Handler: POST /invocation/{id}/response
+    Handler->>Server: Transaction via Channel
+    Server->>Server: Find pending by request ID
+    Server->>Handler: Respond(HTTP 202)
+    Handler->>Bootstrap: HTTP 202 Accepted
+    Server->>Client: Complete invocation TCS
+    Client->>User: InvocationResponse<TResponse>
+```
+
+## Concurrency Handling
+
+The implementation correctly handles multiple concurrent invocations:
+
+1. **Correlation via TCS**: Each `LambdaHttpTransaction` has its own `TaskCompletionSource`, so responses automatically route to the correct caller regardless of completion order.
+
+2. **Request ID tracking**: Each invocation gets a unique GUID. The server tracks pending invocations by this ID and matches Bootstrap's response posts back to the original caller.
+
+3. **Queued /next requests**: If Bootstrap polls for work before any invocations are pending, the request is queued and served when an invocation arrives.
+
+## Key Design Decisions
+
+| Decision | Rationale |
+|----------|-----------|
+| Single channel with TCS | Eliminates correlation problem inherent in separate request/response channels |
+| `TaskCreationOptions.RunContinuationsAsynchronously` | Prevents deadlocks and stack dives when completing the TCS |
+| Background processing loop in server | Decouples user's invoke calls from Bootstrap's polling pattern |
+| `ConcurrentDictionary` for pending invocations | Thread-safe tracking for concurrent invoke calls |
+
+## Usage Example
+```csharp
+// Setup
+var handler = new LambdaTestingHttpHandler();
+var server = new LambdaTestServer(handler);
+var client = new LambdaTestClient(server);
+
+server.Start();
+
+// Wire handler to Lambda Bootstrap's HttpClient
+// ... bootstrap configuration ...
+
+// Invoke - user only sees events and responses, no HTTP
+var response = await client.InvokeAsync<MyEvent, MyResponse>(
+    new MyEvent { UserId = 123 });
+
+if (response.IsSuccess)
+{
+    Console.WriteLine(response.Response.Result);
+}
+```
+
+## Benefits
+
+- **Clean API**: Users work with typed events and responses, not HTTP
+- **Correct concurrency**: Multiple simultaneous invocations work correctly
+- **Testable**: No network, no ports, no external dependencies
+- **Faithful simulation**: Follows the actual Lambda Runtime API contract
+- **Faithful simulation**: Follows the actual Lambda Runtime API contract
