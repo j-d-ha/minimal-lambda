@@ -5,7 +5,7 @@ namespace AwsLambda.Host.Testing;
 public class LambdaTestingHttpHandler(
     Channel<HttpRequestMessage> requestChanel,
     Channel<HttpResponseMessage> responseChanel
-) : DelegatingHandler
+) : HttpMessageHandler
 {
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
