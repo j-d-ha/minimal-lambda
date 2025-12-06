@@ -7,16 +7,6 @@ public static class LambdaHttpClientServiceCollectionExtensions
 {
     extension(IServiceCollection services)
     {
-        public IServiceCollection AddLambdaBootstrapHttpClient<T>()
-            where T : HttpClient
-        {
-            ArgumentNullException.ThrowIfNull(services);
-
-            services.AddKeyedSingleton<HttpClient, T>(typeof(ILambdaBootstrapOrchestrator));
-
-            return services;
-        }
-
         public IServiceCollection AddLambdaBootstrapHttpClient<T>(T client)
             where T : HttpClient
         {
@@ -36,14 +26,6 @@ public static class LambdaHttpClientServiceCollectionExtensions
             services.AddKeyedSingleton<HttpClient>(typeof(ILambdaBootstrapOrchestrator), factory);
 
             return services;
-        }
-
-        public void TryAddLambdaBootstrapHttpClient<T>()
-            where T : HttpClient
-        {
-            ArgumentNullException.ThrowIfNull(services);
-
-            services.TryAddKeyedSingleton<HttpClient, T>(typeof(ILambdaBootstrapOrchestrator));
         }
 
         public void TryAddLambdaBootstrapHttpClient<T>(T client)
