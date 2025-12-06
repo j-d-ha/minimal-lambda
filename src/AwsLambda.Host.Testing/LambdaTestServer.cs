@@ -209,12 +209,15 @@ internal class LambdaTestServer : IAsyncDisposable
     /// <summary>
     /// Responds to a /next request with a pending invocation.
     /// </summary>
-    private void RespondToNextRequest(
-        LambdaHttpTransaction transaction,
-        PendingInvocation pending
-    ) =>
+    private void RespondToNextRequest(LambdaHttpTransaction transaction, PendingInvocation pending)
+    {
         // Respond with the event payload and Lambda headers
-        transaction.Respond(pending.EventResponse);
+        if (transaction.Respond(pending.EventResponse))
+            return;
+
+        // Request was already canceled; re-enqueue invocation to avoid dropping it
+        _pendingInvocationIds.Enqueue(pending.RequestId);
+    }
 
     /// <summary>
     /// Responds to a /next request with a pending invocation by looking up the next one.
