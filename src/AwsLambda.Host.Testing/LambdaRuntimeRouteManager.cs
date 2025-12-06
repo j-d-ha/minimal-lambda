@@ -47,7 +47,8 @@ internal class LambdaRuntimeRouteManager : ILambdaRuntimeRouteManager
         values = null;
 
         var method = request.Method.Method;
-        var path = request.RequestUri?.AbsolutePath.TrimStart('/') ?? string.Empty;
+        // var path = request.RequestUri?.AbsolutePath.TrimStart('/') ?? string.Empty;
+        var path = request.RequestUri?.AbsolutePath ?? string.Empty;
 
         foreach (var route in Routes)
         {
