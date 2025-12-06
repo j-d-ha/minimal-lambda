@@ -30,7 +30,8 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
     private LambdaTestServer? _server;
     private IHost? _host;
     private Action<IHostBuilder> _configuration;
-    private readonly List<HttpClient> _clients = [];
+
+    // private readonly List<HttpClient> _clients = [];
     private readonly List<WebApplicationFactory<TEntryPoint>> _derivedFactories = [];
 
     /// <summary>
@@ -84,7 +85,7 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
         {
             EnsureServer();
             // return _host?.Services ?? _server.Host.Services;
-            return _host?.Services;
+            return _host!.Services;
         }
     }
 
@@ -119,9 +120,8 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
     {
         var factory = new DelegatedWebApplicationFactory(
             ClientOptions,
-            CreateServer,
+            // CreateServer,
             CreateHost,
-            CreateWebHostBuilder,
             CreateHostBuilder,
             GetTestAssemblies,
             ConfigureClient,
@@ -406,27 +406,6 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
     }
 
     /// <summary>
-    /// Creates a <see cref="IHostBuilder"/> used to set up <see cref="LambdaTestServer"/>.
-    /// </summary>
-    /// <remarks>
-    /// The default implementation of this method looks for a <c>public static IHostBuilder CreateWebHostBuilder(string[] args)</c>
-    /// method defined on the entry point of the assembly of <typeparamref name="TEntryPoint" /> and invokes it passing an empty string
-    /// array as arguments.
-    /// </remarks>
-    /// <returns>A <see cref="IHostBuilder"/> instance.</returns>
-    protected virtual IHostBuilder? CreateWebHostBuilder()
-    {
-        var builder = WebHostBuilderFactory.CreateFromTypesAssemblyEntryPoint<TEntryPoint>(
-            Array.Empty<string>()
-        );
-
-        if (builder is not null)
-            return builder.UseEnvironment(Environments.Development);
-
-        return null;
-    }
-
-    /// <summary>
     /// Creates the <see cref="LambdaTestServer"/> with the bootstrapped application in <paramref name="builder"/>.
     /// This is only called for applications using <see cref="IHostBuilder"/>. Applications based on
     /// <see cref="IHostBuilder"/> will use <see cref="CreateHost"/> instead.
@@ -434,7 +413,8 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
     /// <param name="builder">The <see cref="IHostBuilder"/> used to
     /// create the server.</param>
     /// <returns>The <see cref="LambdaTestServer"/> with the bootstrapped application.</returns>
-    protected virtual LambdaTestServer CreateServer(IHostBuilder builder) => new(builder);
+    // protected internal virtual LambdaTestServer CreateServer(IHostBuilder builder) =>
+    // new(builder);
 
     /// <summary>
     /// Creates the <see cref="IHost"/> with the bootstrapped application in <paramref name="builder"/>.
@@ -456,55 +436,42 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
     /// <param name="builder">The <see cref="IHostBuilder"/> for the application.</param>
     protected virtual void ConfigureWebHost(IHostBuilder builder) { }
 
-    /// <summary>
-    /// Creates an instance of <see cref="HttpClient"/> that automatically follows
-    /// redirects and handles cookies.
-    /// </summary>
-    /// <returns>The <see cref="HttpClient"/>.</returns>
-    public HttpClient CreateClient() => CreateClient(ClientOptions);
-
-    /// <summary>
-    /// Creates an instance of <see cref="HttpClient"/> that automatically follows
-    /// redirects and handles cookies.
-    /// </summary>
-    /// <returns>The <see cref="HttpClient"/>.</returns>
-    public HttpClient CreateClient(LambdaApplicationFactoryClientOptions options) =>
-        CreateDefaultClient(options.BaseAddress, options.CreateHandlers());
-
-    /// <summary>
-    /// Creates a new instance of an <see cref="HttpClient"/> that can be used to
-    /// send <see cref="HttpRequestMessage"/> to the server. The base address of the <see cref="HttpClient"/>
-    /// instance will be set to <c>http://localhost</c>.
-    /// </summary>
-    /// <param name="handlers">A list of <see cref="DelegatingHandler"/> instances to set up on the
-    /// <see cref="HttpClient"/>.</param>
-    /// <returns>The <see cref="HttpClient"/>.</returns>
-    public HttpClient CreateDefaultClient(params DelegatingHandler[] handlers)
-    {
-        EnsureServer();
-
-        HttpClient client;
-        if (handlers == null || handlers.Length == 0)
-        {
-            client = _server.CreateClient();
-        }
-        else
-        {
-            for (var i = handlers.Length - 1; i > 0; i--)
-                handlers[i - 1].InnerHandler = handlers[i];
-
-            var serverHandler = _server.CreateHandler();
-            handlers[^1].InnerHandler = serverHandler;
-
-            client = new HttpClient(handlers[0]);
-        }
-
-        _clients.Add(client);
-
-        ConfigureClient(client);
-
-        return client;
-    }
+    // /// <summary>
+    // /// Creates a new instance of an <see cref="HttpClient"/> that can be used to
+    // /// send <see cref="HttpRequestMessage"/> to the server. The base address of the <see
+    // cref="HttpClient"/>
+    // /// instance will be set to <c>http://localhost</c>.
+    // /// </summary>
+    // /// <param name="handlers">A list of <see cref="DelegatingHandler"/> instances to set up on
+    // the
+    // /// <see cref="HttpClient"/>.</param>
+    // /// <returns>The <see cref="HttpClient"/>.</returns>
+    // public HttpClient CreateDefaultClient(params DelegatingHandler[] handlers)
+    // {
+    //     EnsureServer();
+    //
+    //     HttpClient client;
+    //     if (handlers == null || handlers.Length == 0)
+    //     {
+    //         client = _server.CreateClient();
+    //     }
+    //     else
+    //     {
+    //         for (var i = handlers.Length - 1; i > 0; i--)
+    //             handlers[i - 1].InnerHandler = handlers[i];
+    //
+    //         var serverHandler = _server.CreateHandler();
+    //         handlers[^1].InnerHandler = serverHandler;
+    //
+    //         client = new HttpClient(handlers[0]);
+    //     }
+    //
+    //     _clients.Add(client);
+    //
+    //     ConfigureClient(client);
+    //
+    //     return client;
+    // }
 
     /// <summary>
     /// Configures <see cref="HttpClient"/> instances created by this <see cref="WebApplicationFactory{TEntryPoint}"/>.
@@ -517,21 +484,23 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
         client.BaseAddress = new Uri("http://localhost");
     }
 
-    /// <summary>
-    /// Creates a new instance of an <see cref="HttpClient"/> that can be used to
-    /// send <see cref="HttpRequestMessage"/> to the server.
-    /// </summary>
-    /// <param name="baseAddress">The base address of the <see cref="HttpClient"/> instance.</param>
-    /// <param name="handlers">A list of <see cref="DelegatingHandler"/> instances to set up on the
-    /// <see cref="HttpClient"/>.</param>
-    /// <returns>The <see cref="HttpClient"/>.</returns>
-    public HttpClient CreateDefaultClient(Uri baseAddress, params DelegatingHandler[] handlers)
-    {
-        var client = CreateDefaultClient(handlers);
-        client.BaseAddress = baseAddress;
-
-        return client;
-    }
+    // /// <summary>
+    // /// Creates a new instance of an <see cref="HttpClient"/> that can be used to
+    // /// send <see cref="HttpRequestMessage"/> to the server.
+    // /// </summary>
+    // /// <param name="baseAddress">The base address of the <see cref="HttpClient"/>
+    // instance.</param>
+    // /// <param name="handlers">A list of <see cref="DelegatingHandler"/> instances to set up on
+    // the
+    // /// <see cref="HttpClient"/>.</param>
+    // /// <returns>The <see cref="HttpClient"/>.</returns>
+    // public HttpClient CreateDefaultClient(Uri baseAddress, params DelegatingHandler[] handlers)
+    // {
+    //     var client = CreateDefaultClient(handlers);
+    //     client.BaseAddress = baseAddress;
+    //
+    //     return client;
+    // }
 
     /// <inheritdoc />
     public void Dispose()
@@ -572,8 +541,8 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
             return;
         }
 
-        foreach (var client in _clients)
-            client.Dispose();
+        // foreach (var client in _clients)
+        //     client.Dispose();
 
         foreach (var factory in _derivedFactories)
             await ((IAsyncDisposable)factory).DisposeAsync().ConfigureAwait(false);
@@ -595,18 +564,16 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
 
     private sealed class DelegatedWebApplicationFactory : WebApplicationFactory<TEntryPoint>
     {
-        private readonly Func<IHostBuilder, LambdaTestServer> _createServer;
+        // private readonly Func<IHostBuilder, LambdaTestServer> _createServer;
         private readonly Func<IHostBuilder, IHost> _createHost;
-        private readonly Func<IHostBuilder?> _createWebHostBuilder;
         private readonly Func<IHostBuilder?> _createHostBuilder;
         private readonly Func<IEnumerable<Assembly>> _getTestAssemblies;
         private readonly Action<HttpClient> _configureClient;
 
         public DelegatedWebApplicationFactory(
             LambdaApplicationFactoryClientOptions options,
-            Func<IHostBuilder, LambdaTestServer> createServer,
+            // Func<IHostBuilder, LambdaTestServer> createServer,
             Func<IHostBuilder, IHost> createHost,
-            Func<IHostBuilder?> createWebHostBuilder,
             Func<IHostBuilder?> createHostBuilder,
             Func<IEnumerable<Assembly>> getTestAssemblies,
             Action<HttpClient> configureClient,
@@ -614,21 +581,15 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
         )
         {
             ClientOptions = options;
-            _createServer = createServer;
+            // _createServer = createServer;
             _createHost = createHost;
-            _createWebHostBuilder = createWebHostBuilder;
             _createHostBuilder = createHostBuilder;
             _getTestAssemblies = getTestAssemblies;
             _configureClient = configureClient;
             _configuration = configureWebHost;
         }
 
-        protected override LambdaTestServer CreateServer(IHostBuilder builder) =>
-            _createServer(builder);
-
         protected override IHost CreateHost(IHostBuilder builder) => _createHost(builder);
-
-        protected override IHostBuilder? CreateWebHostBuilder() => _createWebHostBuilder();
 
         protected override IHostBuilder? CreateHostBuilder() => _createHostBuilder();
 
@@ -643,9 +604,8 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
         ) =>
             new DelegatedWebApplicationFactory(
                 ClientOptions,
-                _createServer,
+                // _createServer,
                 _createHost,
-                _createWebHostBuilder,
                 _createHostBuilder,
                 _getTestAssemblies,
                 _configureClient,
