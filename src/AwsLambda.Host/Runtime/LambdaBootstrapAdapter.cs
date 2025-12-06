@@ -1,5 +1,6 @@
 using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
 namespace AwsLambda.Host.Runtime;
@@ -10,11 +11,22 @@ namespace AwsLambda.Host.Runtime;
 /// </summary>
 internal sealed class LambdaBootstrapAdapter : ILambdaBootstrapOrchestrator
 {
+    private readonly HttpClient? _httpClient;
     private readonly LambdaHostOptions _settings;
 
-    public LambdaBootstrapAdapter(IOptions<LambdaHostOptions> lambdaHostSettings)
+    public LambdaBootstrapAdapter(
+        IOptions<LambdaHostOptions> lambdaHostSettings,
+        [FromKeyedServices(typeof(ILambdaBootstrapOrchestrator))] HttpClient? httpClient
+    )
     {
         ArgumentNullException.ThrowIfNull(lambdaHostSettings);
+
+        // TODO: Remove this check once ILambdaBootstrapOrchestrator.BootstrapHttpClient is removed.
+        // until ILambdaBootstrapOrchestrator.BootstrapHttpClient is removed, we need to check for
+        // it if the keyed service is NOT present.
+#pragma warning disable CS0618 // Type or member is obsolete
+        _httpClient = httpClient ?? lambdaHostSettings.Value.BootstrapHttpClient;
+#pragma warning restore CS0618 // Type or member is obsolete
 
         _settings = lambdaHostSettings.Value;
     }
@@ -32,10 +44,10 @@ internal sealed class LambdaBootstrapAdapter : ILambdaBootstrapOrchestrator
         using var wrappedHandler = HandlerWrapper.GetHandlerWrapper(handler);
 
         // Create the bootstrap based on configuration.
-        using var bootstrap = _settings.BootstrapHttpClient is null
+        using var bootstrap = _httpClient is null
             ? new LambdaBootstrap(wrappedHandler, _settings.BootstrapOptions, convertedInitializer)
             : new LambdaBootstrap(
-                _settings.BootstrapHttpClient,
+                _httpClient,
                 wrappedHandler,
                 _settings.BootstrapOptions,
                 convertedInitializer
