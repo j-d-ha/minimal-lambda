@@ -11,7 +11,9 @@ using System.Reflection;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using AwsLambda.Host.Builder.Extensions;
+using AwsLambda.Host.Options;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.Hosting;
 
@@ -87,6 +89,15 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
             // return _host?.Services ?? _server.Host.Services;
             return _host!.Services;
         }
+    }
+
+    public LambdaClient GetClient()
+    {
+        EnsureServer();
+        return _server!.CreateLambdaClient(
+            new JsonSerializerOptions(),
+            new LambdaRuntimeRouteManager()
+        );
     }
 
     /// <summary>
@@ -197,7 +208,20 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
         // set Lambda Bootstrap Http Client
         hostBuilder.ConfigureServices(services =>
         {
-            services.AddLambdaBootstrapHttpClient(new HttpClient(_server.CreateTestingHandler()));
+            services.AddLambdaBootstrapHttpClient(
+                (_, _) =>
+                {
+                    var client = new HttpClient(_server.CreateTestingHandler());
+                    client.BaseAddress = new Uri("localhost:8080");
+                    return client;
+                }
+            );
+
+            services.PostConfigure<LambdaHostOptions>(options =>
+            {
+                if (string.IsNullOrEmpty(options.BootstrapOptions.RuntimeApiEndpoint))
+                    options.BootstrapOptions.RuntimeApiEndpoint = "localhost:3002";
+            });
         });
 
         _host = CreateHost(hostBuilder);
