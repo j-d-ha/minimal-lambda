@@ -35,7 +35,11 @@ internal class LambdaTestingHttpHandler(Channel<LambdaHttpTransaction> transacti
         using var registration = cancellationToken.Register(() => transaction.Cancel());
 
         // Send transaction to server
-        if (!transactionChannel.Writer.TryWrite(transaction))
+        try
+        {
+            await transactionChannel.Writer.WriteAsync(transaction, cancellationToken);
+        }
+        catch (ChannelClosedException)
         {
             // Server is shutting down; propagate cancellation to caller
             var canceled = new TaskCompletionSource<HttpResponseMessage>(

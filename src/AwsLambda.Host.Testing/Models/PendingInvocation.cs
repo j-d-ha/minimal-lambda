@@ -28,9 +28,18 @@ internal class PendingInvocation
     internal required TaskCompletionSource<InvocationCompletion> ResponseTcs { get; init; }
 
     /// <summary>
+    /// Absolute time when this invocation should be considered expired.
+    /// </summary>
+    internal required DateTimeOffset DeadlineUtc { get; init; }
+
+    /// <summary>
     /// Creates a pending invocation with proper TCS configuration.
     /// </summary>
-    internal static PendingInvocation Create(string requestId, HttpResponseMessage eventResponse) =>
+    internal static PendingInvocation Create(
+        string requestId,
+        HttpResponseMessage eventResponse,
+        DateTimeOffset deadlineUtc
+    ) =>
         new()
         {
             RequestId = requestId,
@@ -38,5 +47,6 @@ internal class PendingInvocation
             ResponseTcs = new TaskCompletionSource<InvocationCompletion>(
                 TaskCreationOptions.RunContinuationsAsynchronously
             ),
+            DeadlineUtc = deadlineUtc,
         };
 }

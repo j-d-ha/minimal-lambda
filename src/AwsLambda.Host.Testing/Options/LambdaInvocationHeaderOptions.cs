@@ -33,6 +33,13 @@ public class LambdaInvocationHeaderOptions
     public TimeSpan FunctionTimeout { get; set; } = TimeSpan.FromMinutes(15);
 
     /// <summary>
+    /// Gets or sets the maximum amount of time to wait for a response from the Lambda bootstrap.
+    /// Defaults to the function timeout plus a small buffer.
+    /// </summary>
+    public TimeSpan InvocationTimeout { get; set; } =
+        TimeSpan.FromMinutes(15).Add(TimeSpan.FromSeconds(5));
+
+    /// <summary>
     /// Gets or sets the AWS X-Ray trace ID for distributed tracing.
     /// Maps to the <c>Lambda-Runtime-Trace-Id</c> header.
     /// </summary>

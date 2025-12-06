@@ -13,6 +13,8 @@ namespace AwsLambda.Host.Testing;
 /// </summary>
 internal class LambdaTestServer : IAsyncDisposable
 {
+    private const int TransactionChannelCapacity = 1024;
+    private const int NextRequestChannelCapacity = 1024;
     private static readonly OperationCanceledException DisposedException = new(
         "LambdaTestServer disposed"
     );
@@ -32,10 +34,24 @@ internal class LambdaTestServer : IAsyncDisposable
         ILambdaRuntimeRouteManager? routeManager = null
     )
     {
-        _transactionChannel = Channel.CreateUnbounded<LambdaHttpTransaction>();
+        _transactionChannel = Channel.CreateBounded<LambdaHttpTransaction>(
+            new BoundedChannelOptions(TransactionChannelCapacity)
+            {
+                SingleReader = true,
+                SingleWriter = false,
+                FullMode = BoundedChannelFullMode.Wait,
+            }
+        );
         _pendingInvocationIds = new ConcurrentQueue<string>();
         _pendingInvocations = new ConcurrentDictionary<string, PendingInvocation>();
-        _queuedNextRequests = Channel.CreateUnbounded<LambdaHttpTransaction>();
+        _queuedNextRequests = Channel.CreateBounded<LambdaHttpTransaction>(
+            new BoundedChannelOptions(NextRequestChannelCapacity)
+            {
+                SingleReader = false,
+                SingleWriter = false,
+                FullMode = BoundedChannelFullMode.Wait,
+            }
+        );
         _routeManager = routeManager ?? new LambdaRuntimeRouteManager();
         _jsonSerializerOptions = jsonSerializerOptions ?? new JsonSerializerOptions();
         _shutdownCts = new CancellationTokenSource();
@@ -108,10 +124,11 @@ internal class LambdaTestServer : IAsyncDisposable
     internal async Task<InvocationCompletion> QueueInvocationAsync(
         string requestId,
         HttpResponseMessage eventResponse,
+        DateTimeOffset deadlineUtc,
         CancellationToken cancellationToken
     )
     {
-        var pending = PendingInvocation.Create(requestId, eventResponse);
+        var pending = PendingInvocation.Create(requestId, eventResponse, deadlineUtc);
 
         if (!_pendingInvocations.TryAdd(requestId, pending))
             throw new InvalidOperationException($"Duplicate request ID: {requestId}");
@@ -199,7 +216,15 @@ internal class LambdaTestServer : IAsyncDisposable
         if (!TryDequeuePendingInvocation(out var pending))
         {
             // No work available - queue this /next request
-            await _queuedNextRequests.Writer.WriteAsync(transaction);
+            try
+            {
+                await _queuedNextRequests.Writer.WriteAsync(transaction, _shutdownCts.Token);
+            }
+            catch (OperationCanceledException)
+            {
+                transaction.Fail(DisposedException);
+            }
+
             return;
         }
 
@@ -351,9 +376,23 @@ internal class LambdaTestServer : IAsyncDisposable
 
     private bool TryDequeuePendingInvocation(out PendingInvocation? pendingInvocation)
     {
+        var now = DateTimeOffset.UtcNow;
+
         while (_pendingInvocationIds.TryDequeue(out var requestId))
+        {
             if (_pendingInvocations.TryGetValue(requestId, out pendingInvocation))
+            {
+                if (pendingInvocation.DeadlineUtc <= now)
+                {
+                    if (_pendingInvocations.TryRemove(requestId, out var expiredInvocation))
+                        expiredInvocation.ResponseTcs.TrySetCanceled();
+
+                    continue;
+                }
+
                 return true;
+            }
+        }
 
         pendingInvocation = null;
         return false;
