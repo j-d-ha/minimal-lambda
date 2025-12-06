@@ -11,6 +11,12 @@ public class LambdaHostOptions
     ///     runtime API. Provide a custom client to control connection pooling, timeout settings, or other
     ///     HTTP-level behaviors.
     /// </remarks>
+    [Obsolete(
+        "This property will be removed in version 2.0.0. Use "
+            + "AddLambdaBootstrapHttpClient() or TryAddLambdaBootstrapHttpClient() extension methods "
+            + "instead.",
+        false
+    )]
     public HttpClient? BootstrapHttpClient { get; set; } = null;
 
     /// <summary>Gets or sets the options for configuring the Lambda bootstrap behavior.</summary>
