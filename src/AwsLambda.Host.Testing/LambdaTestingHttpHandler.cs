@@ -14,6 +14,13 @@ internal class LambdaTestingHttpHandler(Channel<LambdaHttpTransaction> transacti
         CancellationToken cancellationToken
     )
     {
+        // Buffer the content to make it re-readable for downstream consumers
+        if (request.Content != null)
+        {
+            var bytes = await request.Content.ReadAsByteArrayAsync(cancellationToken);
+            request.Content = new ByteArrayContent(bytes);
+        }
+
         // Create transaction with request and completion mechanism
         var transaction = LambdaHttpTransaction.Create(request);
 
