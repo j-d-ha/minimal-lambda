@@ -33,13 +33,6 @@ public class LambdaInvocationHeaderOptions
     public TimeSpan FunctionTimeout { get; set; } = TimeSpan.FromMinutes(15);
 
     /// <summary>
-    /// Gets or sets the invocation counter used to generate the request ID.
-    /// Maps to the <c>Lambda-Runtime-Aws-Request-Id</c> header as a zero-padded 12-digit number.
-    /// The counter is incremented after each invocation. Defaults to 1.
-    /// </summary>
-    public int InvocationCounter { get; set; } = 1;
-
-    /// <summary>
     /// Gets or sets the AWS X-Ray trace ID for distributed tracing.
     /// Maps to the <c>Lambda-Runtime-Trace-Id</c> header.
     /// </summary>
