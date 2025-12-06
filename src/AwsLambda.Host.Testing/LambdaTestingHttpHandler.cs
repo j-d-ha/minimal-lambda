@@ -18,12 +18,13 @@ internal class LambdaTestingHttpHandler(Channel<LambdaHttpTransaction> transacti
         var transaction = LambdaHttpTransaction.Create(request);
 
         // Register cancellation to cancel the transaction TCS
-        using var registration = cancellationToken.Register(() => transaction.Cancel());
+        await using var registration = cancellationToken.Register(() => transaction.Cancel());
 
         // Send transaction to server
         await transactionChannel.Writer.WriteAsync(transaction, cancellationToken);
 
         // Wait for server to complete the transaction
-        return await transaction.ResponseTcs.Task;
+        var response = await transaction.ResponseTcs.Task;
+        return response;
     }
 }

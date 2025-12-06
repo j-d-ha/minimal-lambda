@@ -113,7 +113,8 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
         foreach (var factory in _derivedFactories)
             await ((IAsyncDisposable)factory).DisposeAsync().ConfigureAwait(false);
 
-        _server?.Dispose();
+        if (_server != null)
+            await _server.DisposeAsync().ConfigureAwait(false);
 
         if (_host != null)
         {
@@ -249,7 +250,7 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
             services.PostConfigure<LambdaHostOptions>(options =>
             {
                 if (string.IsNullOrEmpty(options.BootstrapOptions.RuntimeApiEndpoint))
-                    options.BootstrapOptions.RuntimeApiEndpoint = "http://localhost:3002";
+                    options.BootstrapOptions.RuntimeApiEndpoint = "localhost:3002";
             });
         });
 

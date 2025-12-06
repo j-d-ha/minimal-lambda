@@ -11,7 +11,7 @@ namespace AwsLambda.Host.Testing;
 /// Test server that processes HTTP transactions from Lambda Bootstrap.
 /// Routes requests, queues invocations, and manages request-response correlation.
 /// </summary>
-internal class LambdaTestServer : IDisposable
+internal class LambdaTestServer : IAsyncDisposable
 {
     private readonly LambdaClient _client;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
@@ -37,10 +37,22 @@ internal class LambdaTestServer : IDisposable
         _client = new LambdaClient(this, _jsonSerializerOptions);
     }
 
-    public void Dispose()
+    public async ValueTask DisposeAsync()
     {
-        _shutdownCts.Cancel();
-        _processingTask?.Wait(TimeSpan.FromSeconds(5));
+        await _shutdownCts.CancelAsync();
+
+        if (_processingTask != null)
+        {
+            try
+            {
+                await _processingTask.ConfigureAwait(false);
+            }
+            catch (OperationCanceledException)
+            {
+                // Expected when task is canceled
+            }
+        }
+
         _shutdownCts.Dispose();
     }
 
@@ -312,10 +324,7 @@ internal class LambdaTestServer : IDisposable
             new HttpResponseMessage(HttpStatusCode.Accepted)
             {
                 Content = new StringContent(
-                    JsonSerializer.Serialize(
-                        new Dictionary<string, string> { ["status"] = "success" },
-                        _jsonSerializerOptions
-                    ),
+                    "{\"status\":\"success\"}",
                     Encoding.UTF8,
                     "application/json"
                 ),

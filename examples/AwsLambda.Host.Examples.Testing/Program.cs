@@ -1,4 +1,5 @@
-﻿using AwsLambda.Host.Builder;
+﻿using System;
+using AwsLambda.Host.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
