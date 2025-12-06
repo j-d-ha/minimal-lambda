@@ -21,6 +21,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\AwsLambda.Host.Testing\AwsLambda.Host.Testing.csproj" />
     <ProjectReference Include="..\..\src\AwsLambda.Host\AwsLambda.Host.csproj" />
     <ProjectReference
       Include="..\..\src\AwsLambda.Host.SourceGenerators\AwsLambda.Host.SourceGenerators.csproj"
