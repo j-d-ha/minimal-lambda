@@ -91,7 +91,7 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
         }
     }
 
-    public LambdaClient GetClient()
+    public LambdaClient CreateClient()
     {
         EnsureServer();
         return _server!.CreateLambdaClient(
@@ -430,17 +430,6 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
     }
 
     /// <summary>
-    /// Creates the <see cref="LambdaTestServer"/> with the bootstrapped application in <paramref name="builder"/>.
-    /// This is only called for applications using <see cref="IHostBuilder"/>. Applications based on
-    /// <see cref="IHostBuilder"/> will use <see cref="CreateHost"/> instead.
-    /// </summary>
-    /// <param name="builder">The <see cref="IHostBuilder"/> used to
-    /// create the server.</param>
-    /// <returns>The <see cref="LambdaTestServer"/> with the bootstrapped application.</returns>
-    // protected internal virtual LambdaTestServer CreateServer(IHostBuilder builder) =>
-    // new(builder);
-
-    /// <summary>
     /// Creates the <see cref="IHost"/> with the bootstrapped application in <paramref name="builder"/>.
     /// This is only called for applications using <see cref="IHostBuilder"/>. Applications based on
     /// <see cref="IHostBuilder"/> will use <see cref="CreateServer"/> instead.
@@ -460,43 +449,6 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
     /// <param name="builder">The <see cref="IHostBuilder"/> for the application.</param>
     protected virtual void ConfigureWebHost(IHostBuilder builder) { }
 
-    // /// <summary>
-    // /// Creates a new instance of an <see cref="HttpClient"/> that can be used to
-    // /// send <see cref="HttpRequestMessage"/> to the server. The base address of the <see
-    // cref="HttpClient"/>
-    // /// instance will be set to <c>http://localhost</c>.
-    // /// </summary>
-    // /// <param name="handlers">A list of <see cref="DelegatingHandler"/> instances to set up on
-    // the
-    // /// <see cref="HttpClient"/>.</param>
-    // /// <returns>The <see cref="HttpClient"/>.</returns>
-    // public HttpClient CreateDefaultClient(params DelegatingHandler[] handlers)
-    // {
-    //     EnsureServer();
-    //
-    //     HttpClient client;
-    //     if (handlers == null || handlers.Length == 0)
-    //     {
-    //         client = _server.CreateClient();
-    //     }
-    //     else
-    //     {
-    //         for (var i = handlers.Length - 1; i > 0; i--)
-    //             handlers[i - 1].InnerHandler = handlers[i];
-    //
-    //         var serverHandler = _server.CreateHandler();
-    //         handlers[^1].InnerHandler = serverHandler;
-    //
-    //         client = new HttpClient(handlers[0]);
-    //     }
-    //
-    //     _clients.Add(client);
-    //
-    //     ConfigureClient(client);
-    //
-    //     return client;
-    // }
-
     /// <summary>
     /// Configures <see cref="HttpClient"/> instances created by this <see cref="WebApplicationFactory{TEntryPoint}"/>.
     /// </summary>
@@ -507,24 +459,6 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
 
         client.BaseAddress = new Uri("http://localhost");
     }
-
-    // /// <summary>
-    // /// Creates a new instance of an <see cref="HttpClient"/> that can be used to
-    // /// send <see cref="HttpRequestMessage"/> to the server.
-    // /// </summary>
-    // /// <param name="baseAddress">The base address of the <see cref="HttpClient"/>
-    // instance.</param>
-    // /// <param name="handlers">A list of <see cref="DelegatingHandler"/> instances to set up on
-    // the
-    // /// <see cref="HttpClient"/>.</param>
-    // /// <returns>The <see cref="HttpClient"/>.</returns>
-    // public HttpClient CreateDefaultClient(Uri baseAddress, params DelegatingHandler[] handlers)
-    // {
-    //     var client = CreateDefaultClient(handlers);
-    //     client.BaseAddress = baseAddress;
-    //
-    //     return client;
-    // }
 
     /// <inheritdoc />
     public void Dispose()

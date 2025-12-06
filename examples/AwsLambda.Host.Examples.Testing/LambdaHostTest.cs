@@ -13,7 +13,7 @@ public class LambdaHostTest
     {
         await using var factory = new WebApplicationFactory<Program>();
 
-        var client = factory.GetClient();
+        var client = factory.CreateClient();
         await client.WaitForNextRequestAsync();
         var response = await client.InvokeAsync<string, string>("Jonas");
         Assert.True(response.WasSuccess);
