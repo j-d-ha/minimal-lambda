@@ -24,7 +24,7 @@ internal class LambdaTestServer : IServer
         ILambdaRuntimeRouteManager routeManager
     ) => new(_requestChanel, _responseChanel, jsonSerializerOptions, routeManager);
 
-    public void Dispose() => throw new NotImplementedException();
+    public void Dispose() { }
 
     public Task StartAsync<TContext>(
         IHttpApplication<TContext> application,
