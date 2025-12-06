@@ -188,18 +188,16 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
     [MemberNotNull(nameof(_server))]
     private void ConfigureHostBuilder(IHostBuilder hostBuilder)
     {
-        hostBuilder.ConfigureWebHost(webHostBuilder =>
-        {
-            SetContentRoot(webHostBuilder);
-            _configuration(webHostBuilder);
-            webHostBuilder.UseTestServer();
-        });
-        hostBuilder.ConfigureWebHost(webHostBuilder =>
-        {
-            SetContentRoot(webHostBuilder);
-            _configuration(webHostBuilder);
-            webHostBuilder.UseTestServer();
-        });
+        SetContentRoot(hostBuilder);
+        _configuration(hostBuilder);
+
+        // hostBuilder.ConfigureWebHost(webHostBuilder =>
+        // {
+        //     webHostBuilder.UseTestServer();
+        // });
+
+        // set Lambda Bootstrap Http Client
+
         _host = CreateHost(hostBuilder);
         _server = (LambdaTestServer)_host.Services.GetRequiredService<IServer>();
     }
