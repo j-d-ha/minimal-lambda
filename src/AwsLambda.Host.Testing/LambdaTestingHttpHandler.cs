@@ -2,7 +2,7 @@ using System.Threading.Channels;
 
 namespace AwsLambda.Host.Testing;
 
-public class LambdaTestingHttpHandler(
+internal class LambdaTestingHttpHandler(
     Channel<HttpRequestMessage> requestChanel,
     Channel<HttpResponseMessage> responseChanel
 ) : HttpMessageHandler

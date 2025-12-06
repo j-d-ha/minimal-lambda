@@ -13,7 +13,6 @@ public class LambdaClient
     private readonly Channel<HttpRequestMessage> _requestChanel;
     private readonly Channel<HttpResponseMessage> _responseChanel;
     private readonly ILambdaRuntimeRouteManager _routeManager;
-    private bool _isBootstrappingComplete;
     private int _requestCounter;
 
     internal LambdaClient(
