@@ -16,7 +16,7 @@ internal sealed class LambdaBootstrapAdapter : ILambdaBootstrapOrchestrator
 
     public LambdaBootstrapAdapter(
         IOptions<LambdaHostOptions> lambdaHostSettings,
-        [FromKeyedServices(typeof(ILambdaBootstrapOrchestrator))] HttpClient? httpClient
+        [FromKeyedServices(typeof(ILambdaBootstrapOrchestrator))] HttpClient? httpClient = null
     )
     {
         ArgumentNullException.ThrowIfNull(lambdaHostSettings);
