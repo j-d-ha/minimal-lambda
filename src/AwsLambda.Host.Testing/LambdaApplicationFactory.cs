@@ -144,10 +144,7 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
     public LambdaClient CreateClient()
     {
         EnsureServer();
-        return _server!.CreateLambdaClient(
-            new JsonSerializerOptions(),
-            new LambdaRuntimeRouteManager()
-        );
+        return _server!.CreateLambdaClient();
     }
 
     /// <summary>
@@ -240,7 +237,10 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
         SetContentRoot(hostBuilder);
         _configuration(hostBuilder);
 
-        _server = new LambdaTestServer();
+        var serializerOptions = new JsonSerializerOptions();
+        var routeManager = new LambdaRuntimeRouteManager();
+
+        _server = new LambdaTestServer(serializerOptions, routeManager);
 
         // set Lambda Bootstrap Http Client
         hostBuilder.ConfigureServices(services =>

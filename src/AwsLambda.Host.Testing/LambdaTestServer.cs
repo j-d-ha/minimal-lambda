@@ -27,14 +27,17 @@ internal class LambdaTestServer : IAsyncDisposable
     private readonly Channel<LambdaHttpTransaction> _transactionChannel;
     private Task? _processingTask;
 
-    internal LambdaTestServer()
+    internal LambdaTestServer(
+        JsonSerializerOptions? jsonSerializerOptions = null,
+        ILambdaRuntimeRouteManager? routeManager = null
+    )
     {
         _transactionChannel = Channel.CreateUnbounded<LambdaHttpTransaction>();
         _pendingInvocationIds = new ConcurrentQueue<string>();
         _pendingInvocations = new ConcurrentDictionary<string, PendingInvocation>();
         _queuedNextRequests = Channel.CreateUnbounded<LambdaHttpTransaction>();
-        _routeManager = new LambdaRuntimeRouteManager();
-        _jsonSerializerOptions = new JsonSerializerOptions();
+        _routeManager = routeManager ?? new LambdaRuntimeRouteManager();
+        _jsonSerializerOptions = jsonSerializerOptions ?? new JsonSerializerOptions();
         _shutdownCts = new CancellationTokenSource();
 
         // Create client that communicates with this server
@@ -84,10 +87,7 @@ internal class LambdaTestServer : IAsyncDisposable
     /// <summary>
     /// Gets the client for test code to invoke Lambda functions.
     /// </summary>
-    internal LambdaClient CreateLambdaClient(
-        JsonSerializerOptions jsonSerializerOptions,
-        ILambdaRuntimeRouteManager routeManager
-    ) => _client;
+    internal LambdaClient CreateLambdaClient() => _client;
 
     /// <summary>
     /// Starts the background processing loop.

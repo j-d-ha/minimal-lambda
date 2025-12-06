@@ -16,7 +16,10 @@ public class LambdaHostTest
 
         var client = factory.CreateClient();
         // No need to wait for next request - server handles this automatically
-        var response = await client.InvokeAsync<string, string>("Jonas");
+        var response = await client.InvokeAsync<string, string>(
+            "Jonas",
+            TestContext.Current.CancellationToken
+        );
         Assert.True(response.WasSuccess);
         Assert.NotNull(response);
         Assert.Equal("Hello Jonas!", response.Response);
@@ -31,7 +34,12 @@ public class LambdaHostTest
         // Launch 5 concurrent invocations
         var tasks = Enumerable
             .Range(1, 5)
-            .Select(i => client.InvokeAsync<string, string>($"User{i}"))
+            .Select(i =>
+                client.InvokeAsync<string, string>(
+                    $"User{i}",
+                    TestContext.Current.CancellationToken
+                )
+            )
             .ToArray();
 
         var responses = await Task.WhenAll(tasks);
