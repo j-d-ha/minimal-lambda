@@ -12,6 +12,7 @@ using System.Text.Json;
 using System.Text.Json.Serialization;
 using AwsLambda.Host.Builder.Extensions;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.Hosting;
 
 namespace AwsLambda.Host.Testing;
@@ -43,7 +44,7 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
     /// </para>
     /// <para>
     /// This constructor will infer the application content root path by searching for a
-    /// <see cref="WebApplicationFactoryContentRootAttribute"/> on the assembly containing the functional tests with
+    /// <see cref="LambdaApplicationFactoryContentRootAttribute"/> on the assembly containing the functional tests with
     /// a key equal to the <typeparamref name="TEntryPoint"/> assembly <see cref="Assembly.FullName"/>.
     /// In case an attribute with the right key can't be found, <see cref="WebApplicationFactory{TEntryPoint}"/>
     /// will fall back to searching for a solution file (*.sln) and then appending <typeparamref name="TEntryPoint"/> assembly name
@@ -65,7 +66,7 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
     /// <summary>
     /// Gets the <see cref="LambdaTestServer"/> created by this <see cref="WebApplicationFactory{TEntryPoint}"/>.
     /// </summary>
-    public LambdaTestServer Server
+    internal LambdaTestServer Server
     {
         get
         {
@@ -204,9 +205,6 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
 
     private void SetContentRoot(IHostBuilder builder)
     {
-        if (SetContentRootFromSetting(builder))
-            return;
-
         var fromFile = File.Exists("MvcTestingAppManifest.json");
         var contentRoot = fromFile
             ? GetContentRootFromFile("MvcTestingAppManifest.json")
@@ -215,7 +213,42 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
         if (contentRoot != null)
             builder.UseContentRoot(contentRoot);
         else
-            builder.UseSolutionRelativeContentRoot(typeof(TEntryPoint).Assembly.GetName().Name!);
+            UseSolutionRelativeContentRoot(builder, typeof(TEntryPoint).Assembly.GetName().Name!);
+    }
+
+    private static void UseSolutionRelativeContentRoot(
+        IHostBuilder builder,
+        string solutionRelativePath
+    )
+    {
+        ArgumentNullException.ThrowIfNull(solutionRelativePath);
+
+        var applicationBasePath = AppContext.BaseDirectory;
+        string[] solutionNames = ["*.sln", "*.slnx"];
+
+        var directoryInfo = new DirectoryInfo(applicationBasePath);
+        do
+        {
+            foreach (var solutionName in solutionNames)
+            {
+                var solutionPath = Directory
+                    .EnumerateFiles(directoryInfo.FullName, solutionName)
+                    .FirstOrDefault();
+                if (solutionPath != null)
+                {
+                    builder.UseContentRoot(
+                        Path.GetFullPath(Path.Combine(directoryInfo.FullName, solutionRelativePath))
+                    );
+                    return;
+                }
+            }
+
+            directoryInfo = directoryInfo.Parent;
+        } while (directoryInfo is not null);
+
+        throw new InvalidOperationException(
+            $"Solution root could not be located using application root {applicationBasePath}."
+        );
     }
 
     private static string? GetContentRootFromFile(string file)
@@ -268,31 +301,14 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
         return contentRoot;
     }
 
-    private static bool SetContentRootFromSetting(IHostBuilder builder)
-    {
-        // Attempt to look for TEST_CONTENTROOT_APPNAME in settings. This should result in looking
-        // for
-        // ASPNETCORE_TEST_CONTENTROOT_APPNAME environment variable.
-        var assemblyName = typeof(TEntryPoint).Assembly.GetName().Name!;
-        var settingSuffix = assemblyName.ToUpperInvariant().Replace(".", "_");
-        var settingName = $"TEST_CONTENTROOT_{settingSuffix}";
-
-        var settingValue = builder.GetSetting(settingName);
-        if (settingValue == null)
-            return false;
-
-        builder.UseContentRoot(settingValue);
-        return true;
-    }
-
-    private WebApplicationFactoryContentRootAttribute[] GetContentRootMetadataAttributes(
+    private LambdaApplicationFactoryContentRootAttribute[] GetContentRootMetadataAttributes(
         string tEntryPointAssemblyFullName,
         string tEntryPointAssemblyName
     )
     {
         var testAssembly = GetTestAssemblies();
         var metadataAttributes = testAssembly
-            .SelectMany(a => a.GetCustomAttributes<WebApplicationFactoryContentRootAttribute>())
+            .SelectMany(a => a.GetCustomAttributes<LambdaApplicationFactoryContentRootAttribute>())
             .Where(a =>
                 string.Equals(
                     a.Key,
@@ -309,7 +325,7 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
 
     /// <summary>
     /// Gets the assemblies containing the functional tests. The
-    /// <see cref="WebApplicationFactoryContentRootAttribute"/> applied to these
+    /// <see cref="LambdaApplicationFactoryContentRootAttribute"/> applied to these
     /// assemblies defines the content root to use for the given
     /// <typeparamref name="TEntryPoint"/>.
     /// </summary>
@@ -592,7 +608,7 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
         private readonly Action<HttpClient> _configureClient;
 
         public DelegatedWebApplicationFactory(
-            WebApplicationFactoryClientOptions options,
+            LambdaApplicationFactoryClientOptions options,
             Func<IHostBuilder, LambdaTestServer> createServer,
             Func<IHostBuilder, IHost> createHost,
             Func<IHostBuilder?> createWebHostBuilder,
@@ -602,7 +618,7 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
             Action<IHostBuilder> configureWebHost
         )
         {
-            ClientOptions = new WebApplicationFactoryClientOptions(options);
+            ClientOptions = options;
             _createServer = createServer;
             _createHost = createHost;
             _createWebHostBuilder = createWebHostBuilder;
