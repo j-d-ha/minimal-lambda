@@ -14,6 +14,7 @@ public class LambdaClient
     private readonly Channel<HttpResponseMessage> _responseChanel;
     private readonly ILambdaRuntimeRouteManager _routeManager;
     private bool _isBootstrappingComplete;
+    private int _requestCounter;
 
     internal LambdaClient(
         Channel<HttpRequestMessage> requestChanel,
@@ -94,10 +95,7 @@ public class LambdaClient
         response.Headers.Add("Lambda-Runtime-Deadline-Ms", deadlineMs.ToString());
 
         // Generate request ID with proper padding (12 digits, zero-padded)
-        var requestId = _lambdaClientOptions
-            .InvocationHeaderOptions.InvocationCounter.ToString()
-            .PadLeft(12, '0');
-        response.Headers.Add("Lambda-Runtime-Aws-Request-Id", requestId);
+        response.Headers.Add("Lambda-Runtime-Aws-Request-Id", GetRequestId());
 
         response.Headers.Add(
             "Lambda-Runtime-Trace-Id",
@@ -115,6 +113,9 @@ public class LambdaClient
         return response;
     }
 
+    private string GetRequestId() =>
+        Interlocked.Increment(ref _requestCounter).ToString().PadLeft(12, '0');
+
     public async Task<InvocationResponse<TResponse>> InvokeAsync<TEvent, TResponse>(
         TEvent invokeEvent,
         CancellationToken cancellationToken = default
@@ -123,8 +124,6 @@ public class LambdaClient
         var response = CreateRequest(invokeEvent);
 
         await _responseChanel.Writer.WriteAsync(response, cancellationToken);
-
-        _lambdaClientOptions.InvocationHeaderOptions.InvocationCounter++;
 
         var request = await WaitForRequestAsync(cancellationToken);
 
