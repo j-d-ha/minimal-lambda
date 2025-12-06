@@ -4,10 +4,6 @@ namespace AwsLambda.Host.Testing;
 
 internal class LambdaBootstrapRequest
 {
-    internal required RequestType RequestType { get; init; }
-    internal required HttpRequestMessage RequestMessage { get; init; }
-    internal required RouteValueDictionary RouteValue { get; init; }
-
     internal string? RequestId
     {
         get
@@ -21,4 +17,8 @@ internal class LambdaBootstrapRequest
             return field;
         }
     }
+
+    internal required HttpRequestMessage RequestMessage { get; init; }
+    internal required RequestType RequestType { get; init; }
+    internal required RouteValueDictionary RouteValue { get; init; }
 }

@@ -68,11 +68,6 @@ public sealed class LambdaApplicationFactoryContentRootAttribute : Attribute
     }
 
     /// <summary>
-    /// Gets the key for the content root associated with this project. Typically <see cref="Assembly.FullName"/>.
-    /// </summary>
-    public string Key { get; }
-
-    /// <summary>
     /// Gets the content root path for a given project. This content root can be relative or absolute. If it is a
     /// relative path, it will be combined with <see cref="AppContext.BaseDirectory"/>.
     /// </summary>
@@ -82,6 +77,11 @@ public sealed class LambdaApplicationFactoryContentRootAttribute : Attribute
     /// A marker file used to ensure that the path the content root is being set to is correct.
     /// </summary>
     public string ContentRootTest { get; }
+
+    /// <summary>
+    /// Gets the key for the content root associated with this project. Typically <see cref="Assembly.FullName"/>.
+    /// </summary>
+    public string Key { get; }
 
     /// <summary>
     /// Gets a number for determining the probing order when multiple <see cref="LambdaApplicationFactoryContentRootAttribute"/>

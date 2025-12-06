@@ -16,11 +16,6 @@ namespace AwsLambda.Host.Testing;
 // ConfigureHostBuilder
 internal sealed class DeferredHostBuilder : IHostBuilder
 {
-    public IDictionary<object, object> Properties { get; } = new Dictionary<object, object>();
-
-    private Action<IHostBuilder> _configure;
-    private Func<string[], object>? _hostFactory;
-
     private readonly ConfigurationManager _hostConfiguration = new();
 
     // This task represents a call to IHost.Start, we create it here preemptively in case the
@@ -30,6 +25,9 @@ internal sealed class DeferredHostBuilder : IHostBuilder
         TaskCreationOptions.RunContinuationsAsynchronously
     );
 
+    private Action<IHostBuilder> _configure;
+    private Func<string[], object>? _hostFactory;
+
     public DeferredHostBuilder() =>
         _configure = b =>
         {
@@ -38,6 +36,8 @@ internal sealed class DeferredHostBuilder : IHostBuilder
             foreach (var pair in Properties)
                 b.Properties[pair.Key] = pair.Value;
         };
+
+    public IDictionary<object, object> Properties { get; } = new Dictionary<object, object>();
 
     public IHost Build()
     {
@@ -132,10 +132,6 @@ internal sealed class DeferredHostBuilder : IHostBuilder
             _hostStartedTcs = hostStartedTcs;
         }
 
-        public IServiceProvider Services => _host.Services;
-
-        public void Dispose() => _host.Dispose();
-
         public async ValueTask DisposeAsync()
         {
             if (_host is IAsyncDisposable disposable)
@@ -146,6 +142,10 @@ internal sealed class DeferredHostBuilder : IHostBuilder
 
             Dispose();
         }
+
+        public IServiceProvider Services => _host.Services;
+
+        public void Dispose() => _host.Dispose();
 
         public async Task StartAsync(CancellationToken cancellationToken = default)
         {
