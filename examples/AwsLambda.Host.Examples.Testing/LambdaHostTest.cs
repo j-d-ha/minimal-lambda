@@ -1,4 +1,6 @@
+using System;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using AwsLambda.Host.Testing;
 using JetBrains.Annotations;
@@ -51,5 +53,50 @@ public class LambdaHostTest
         Assert.Equal("Hello User3!", responses[2].Response);
         Assert.Equal("Hello User4!", responses[3].Response);
         Assert.Equal("Hello User5!", responses[4].Response);
+    }
+
+    [Fact]
+    public async Task InvokeAsync_WithInvalidPayload_ReturnsError()
+    {
+        await using var factory = new WebApplicationFactory<Program>();
+        var client = factory.CreateClient();
+
+        var response = await client.InvokeAsync<string, int>(
+            123,
+            TestContext.Current.CancellationToken
+        );
+
+        Assert.False(response.WasSuccess);
+        Assert.NotNull(response.Error);
+        Assert.Contains("Json", response.Error!.ErrorType, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public async Task InvokeAsync_WithPreCanceledToken_CancelsInvocation()
+    {
+        await using var factory = new WebApplicationFactory<Program>();
+        var client = factory.CreateClient();
+
+        using var cts = new CancellationTokenSource();
+        await cts.CancelAsync();
+
+        await Assert.ThrowsAsync<TaskCanceledException>(() =>
+            client.InvokeAsync<string, string>("Jonas", cts.Token)
+        );
+    }
+
+    [Fact]
+    public async Task InvokeAsync_WithZeroTimeout_CancelsInvocation()
+    {
+        await using var factory = new WebApplicationFactory<Program>();
+        var client = factory
+            .CreateClient()
+            .ConfigureOptions(options =>
+                options.InvocationHeaderOptions.InvocationTimeout = TimeSpan.Zero
+            );
+
+        await Assert.ThrowsAsync<OperationCanceledException>(() =>
+            client.InvokeAsync<string, string>("Jonas", TestContext.Current.CancellationToken)
+        );
     }
 }
