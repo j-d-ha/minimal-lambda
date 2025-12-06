@@ -8,7 +8,7 @@ internal class LambdaBootstrapRequest
     internal required HttpRequestMessage RequestMessage { get; init; }
     internal required RouteValueDictionary RouteValue { get; init; }
 
-    internal string RequestId
+    internal string? RequestId
     {
         get
         {
@@ -16,7 +16,7 @@ internal class LambdaBootstrapRequest
                 RouteValue.TryGetValue("RequestId", out var requestId)
                 && requestId is string requestIdString
                     ? requestIdString
-                    : string.Empty;
+                    : null;
 
             return field;
         }
