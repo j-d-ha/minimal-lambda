@@ -114,9 +114,12 @@ internal sealed class DeferredHostBuilder : IHostBuilder
         // If the entry point completed we'll set the tcs just in case the application doesn't call
         // IHost.Start/StartAsync.
         if (exception is not null)
+        {
             _hostStartTcs.TrySetException(exception);
-        else
-            _hostStartTcs.TrySetResult();
+            throw exception;
+        }
+
+        _hostStartTcs.TrySetResult();
     }
 
     public void SetHostFactory(Func<string[], object> hostFactory) => _hostFactory = hostFactory;
