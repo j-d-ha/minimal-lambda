@@ -12,13 +12,13 @@ using System.Reflection;
 namespace AwsLambda.Host.Testing;
 
 /// <summary>
-/// Metadata that <see cref="WebApplicationFactory{TEntryPoint}"/> uses to find out the content
+/// Metadata that <see cref="LambdaApplicationFactory{TEntryPoint}"/> uses to find out the content
 /// root for the web application represented by <c>TEntryPoint</c>.
-/// <see cref="WebApplicationFactory{TEntryPoint}"/> will iterate over all the instances of
+/// <see cref="LambdaApplicationFactory{TEntryPoint}"/> will iterate over all the instances of
 /// <see cref="LambdaApplicationFactoryContentRootAttribute"/>, filter the instances whose
 /// <see cref="Key"/> is equal to <c>TEntryPoint</c> <see cref="Assembly.FullName"/>,
 /// order them by <see cref="Priority"/> in ascending order.
-/// <see cref="WebApplicationFactory{TEntryPoint}"/> will check for the existence of the marker
+/// <see cref="LambdaApplicationFactory{TEntryPoint}"/> will check for the existence of the marker
 /// in <c>Path.Combine(<see cref="ContentRootPath"/>, Path.GetFileName(<see cref="ContentRootTest"/>))"</c>
 /// and if the file exists it will set the content root to <see cref="ContentRootPath"/>.
 /// </summary>
@@ -30,7 +30,7 @@ public sealed class LambdaApplicationFactoryContentRootAttribute : Attribute
     /// </summary>
     /// <param name="key">
     /// The key of this <see cref="LambdaApplicationFactoryContentRootAttribute"/>. This
-    /// key is used by <see cref="WebApplicationFactory{TEntryPoint}"/> to determine what of the
+    /// key is used by <see cref="LambdaApplicationFactory{TEntryPoint}"/> to determine what of the
     /// <see cref="LambdaApplicationFactoryContentRootAttribute"/> instances on the test assembly should be used
     /// to match a given TEntryPoint class.
     /// </param>
@@ -68,11 +68,6 @@ public sealed class LambdaApplicationFactoryContentRootAttribute : Attribute
     }
 
     /// <summary>
-    /// Gets the key for the content root associated with this project. Typically <see cref="Assembly.FullName"/>.
-    /// </summary>
-    public string Key { get; }
-
-    /// <summary>
     /// Gets the content root path for a given project. This content root can be relative or absolute. If it is a
     /// relative path, it will be combined with <see cref="AppContext.BaseDirectory"/>.
     /// </summary>
@@ -82,6 +77,11 @@ public sealed class LambdaApplicationFactoryContentRootAttribute : Attribute
     /// A marker file used to ensure that the path the content root is being set to is correct.
     /// </summary>
     public string ContentRootTest { get; }
+
+    /// <summary>
+    /// Gets the key for the content root associated with this project. Typically <see cref="Assembly.FullName"/>.
+    /// </summary>
+    public string Key { get; }
 
     /// <summary>
     /// Gets a number for determining the probing order when multiple <see cref="LambdaApplicationFactoryContentRootAttribute"/>

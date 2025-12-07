@@ -2,33 +2,30 @@ using System.Net;
 using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
-using System.Threading.Channels;
 
 namespace AwsLambda.Host.Testing;
 
+/// <summary>
+/// Client for invoking Lambda functions in tests.
+/// Provides a clean API that abstracts HTTP details.
+/// </summary>
 public class LambdaClient
 {
     private readonly JsonSerializerOptions _jsonSerializerOptions;
     private readonly LambdaClientOptions _lambdaClientOptions;
-    private readonly Channel<HttpRequestMessage> _requestChanel;
-    private readonly Channel<HttpResponseMessage> _responseChanel;
-    private readonly ILambdaRuntimeRouteManager _routeManager;
+    private readonly LambdaTestServer _server;
     private int _requestCounter;
 
-    internal LambdaClient(
-        Channel<HttpRequestMessage> requestChanel,
-        Channel<HttpResponseMessage> responseChanel,
-        JsonSerializerOptions jsonSerializerOptions,
-        ILambdaRuntimeRouteManager routeManager
-    )
+    internal LambdaClient(LambdaTestServer server, JsonSerializerOptions jsonSerializerOptions)
     {
-        _requestChanel = requestChanel;
-        _responseChanel = responseChanel;
+        _server = server;
         _jsonSerializerOptions = jsonSerializerOptions;
-        _routeManager = routeManager;
         _lambdaClientOptions = new LambdaClientOptions();
     }
 
+    /// <summary>
+    /// Configures client options for invocation headers.
+    /// </summary>
     public LambdaClient ConfigureOptions(Action<LambdaClientOptions> configureOptions)
     {
         ArgumentNullException.ThrowIfNull(configureOptions);
@@ -38,36 +35,67 @@ public class LambdaClient
         return this;
     }
 
-    public async Task WaitForNextRequestAsync(CancellationToken cancellationToken = default)
-    {
-        var request = await WaitForRequestAsync(cancellationToken);
-
-        if (request.RequestType != RequestType.GetNextInvocation)
-            throw new InvalidOperationException(
-                $"Unexpected request received during bootstrap: {request.RequestType.ToString()}"
-            );
-    }
-
-    private async Task<LambdaBootstrapRequest> WaitForRequestAsync(
+    /// <summary>
+    /// Invokes the Lambda function with the given event and waits for the response.
+    /// </summary>
+    public async Task<InvocationResponse<TResponse>> InvokeAsync<TResponse, TEvent>(
+        TEvent invokeEvent,
         CancellationToken cancellationToken = default
     )
     {
-        var request = await _requestChanel.Reader.ReadAsync(cancellationToken);
+        // Generate unique request ID
+        var requestId = GetRequestId();
 
-        if (!_routeManager.TryMatch(request, out var routeType, out var routeValue))
-            throw new InvalidOperationException(
-                $"Unexpected request received: {request.Method} {request.RequestUri?.PathAndQuery ?? "(no URI)"}"
-            );
+        // Create the event response with Lambda headers
+        var eventResponse = CreateEventResponse(invokeEvent, requestId);
+        var deadlineUtc = DateTimeOffset.UtcNow.Add(
+            _lambdaClientOptions.InvocationHeaderOptions.ClientWaitTimeout
+        );
 
-        return new LambdaBootstrapRequest
+        // Queue invocation and wait for Bootstrap to process it
+        var waitTimeout = _lambdaClientOptions.InvocationHeaderOptions.ClientWaitTimeout;
+
+        using var timeoutCts = new CancellationTokenSource(waitTimeout);
+        using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
+            cancellationToken,
+            timeoutCts.Token
+        );
+
+        var completion = await _server.QueueInvocationAsync(
+            requestId,
+            eventResponse,
+            deadlineUtc,
+            linkedCts.Token
+        );
+
+        var responseMessage = completion.Request;
+        var wasSuccess = completion.RequestType == RequestType.PostResponse;
+
+        var invocationResponse = new InvocationResponse<TResponse>
         {
-            RequestType = routeType!.Value,
-            RequestMessage = request,
-            RouteValue = routeValue!,
+            WasSuccess = wasSuccess,
+            Response = wasSuccess
+                ? await (
+                    responseMessage.Content?.ReadFromJsonAsync<TResponse>(
+                        _jsonSerializerOptions,
+                        cancellationToken
+                    ) ?? Task.FromResult<TResponse?>(default)
+                )
+                : default,
+            Error = !wasSuccess
+                ? await (
+                    responseMessage.Content?.ReadFromJsonAsync<ErrorResponse>(
+                        _jsonSerializerOptions,
+                        cancellationToken
+                    ) ?? Task.FromResult<ErrorResponse?>(null)
+                )
+                : null,
         };
+
+        return invocationResponse;
     }
 
-    private HttpResponseMessage CreateRequest<TEvent>(TEvent invokeEvent)
+    private HttpResponseMessage CreateEventResponse<TEvent>(TEvent invokeEvent, string requestId)
     {
         var response = new HttpResponseMessage(HttpStatusCode.OK)
         {
@@ -92,10 +120,7 @@ public class LambdaClient
             .UtcNow.Add(_lambdaClientOptions.InvocationHeaderOptions.FunctionTimeout)
             .ToUnixTimeMilliseconds();
         response.Headers.Add("Lambda-Runtime-Deadline-Ms", deadlineMs.ToString());
-
-        // Generate request ID with proper padding (12 digits, zero-padded)
-        response.Headers.Add("Lambda-Runtime-Aws-Request-Id", GetRequestId());
-
+        response.Headers.Add("Lambda-Runtime-Aws-Request-Id", requestId);
         response.Headers.Add(
             "Lambda-Runtime-Trace-Id",
             _lambdaClientOptions.InvocationHeaderOptions.TraceId
@@ -114,62 +139,4 @@ public class LambdaClient
 
     private string GetRequestId() =>
         Interlocked.Increment(ref _requestCounter).ToString().PadLeft(12, '0');
-
-    public async Task<InvocationResponse<TResponse>> InvokeAsync<TResponse, TEvent>(
-        TEvent invokeEvent,
-        CancellationToken cancellationToken = default
-    )
-    {
-        var response = CreateRequest(invokeEvent);
-
-        await _responseChanel.Writer.WriteAsync(response, cancellationToken);
-
-        var request = await WaitForRequestAsync(cancellationToken);
-
-        if (request.RequestType == RequestType.GetNextInvocation)
-            throw new InvalidOperationException(
-                $"Expected PostResponse or PostError request, but received {request.RequestType}"
-            );
-
-        var wasSuccess = request.RequestType == RequestType.PostResponse;
-
-        var invocationResponse = new InvocationResponse<TResponse>
-        {
-            WasSuccess = wasSuccess,
-            Response = wasSuccess
-                ? await (
-                    request.RequestMessage.Content?.ReadFromJsonAsync<TResponse>(
-                        _jsonSerializerOptions,
-                        cancellationToken
-                    ) ?? Task.FromResult<TResponse?>(default)
-                )
-                : default,
-            Error = !wasSuccess
-                ? await (
-                    request.RequestMessage.Content?.ReadFromJsonAsync<ErrorResponse>(
-                        _jsonSerializerOptions,
-                        cancellationToken
-                    ) ?? Task.FromResult<ErrorResponse?>(null)
-                )
-                : null,
-        };
-
-        await _responseChanel.Writer.WriteAsync(
-            new HttpResponseMessage(HttpStatusCode.Accepted)
-            {
-                Content = new StringContent(
-                    JsonSerializer.Serialize(
-                        new Dictionary<string, string?> { ["status"] = "success" },
-                        _jsonSerializerOptions
-                    ),
-                    Encoding.UTF8,
-                    "application/json"
-                ),
-                Version = Version.Parse("1.1"),
-            },
-            cancellationToken
-        );
-
-        return invocationResponse;
-    }
 }

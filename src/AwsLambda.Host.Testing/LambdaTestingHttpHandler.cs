@@ -2,20 +2,55 @@ using System.Threading.Channels;
 
 namespace AwsLambda.Host.Testing;
 
-internal class LambdaTestingHttpHandler(
-    Channel<HttpRequestMessage> requestChanel,
-    Channel<HttpResponseMessage> responseChanel
-) : HttpMessageHandler
+/// <summary>
+/// HTTP message handler that intercepts Lambda Bootstrap HTTP calls and
+/// routes them through the test server via transactions.
+/// </summary>
+internal class LambdaTestingHttpHandler(Channel<LambdaHttpTransaction> transactionChannel)
+    : HttpMessageHandler
 {
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
         CancellationToken cancellationToken
     )
     {
-        // pass the request out to the client
-        await requestChanel.Writer.WriteAsync(request, cancellationToken);
+        // Buffer the content to make it re-readable for downstream consumers
+        if (request.Content != null)
+        {
+            var originalContent = request.Content;
+            var bytes = await originalContent.ReadAsByteArrayAsync(cancellationToken);
+            var bufferedContent = new ByteArrayContent(bytes);
 
-        // block here until the client sends a response. There may not be a response.
-        return await responseChanel.Reader.ReadAsync(cancellationToken);
+            foreach (var header in originalContent.Headers)
+                bufferedContent.Headers.TryAddWithoutValidation(header.Key, header.Value);
+
+            request.Content = bufferedContent;
+            originalContent.Dispose();
+        }
+
+        // Create transaction with request and completion mechanism
+        var transaction = LambdaHttpTransaction.Create(request);
+
+        // Register cancellation to cancel the transaction TCS
+        using var registration = cancellationToken.Register(() => transaction.Cancel());
+
+        // Send transaction to server
+        try
+        {
+            await transactionChannel.Writer.WriteAsync(transaction, cancellationToken);
+        }
+        catch (ChannelClosedException)
+        {
+            // Server is shutting down; propagate cancellation to caller
+            var canceled = new TaskCompletionSource<HttpResponseMessage>(
+                TaskCreationOptions.RunContinuationsAsynchronously
+            );
+            canceled.TrySetCanceled();
+            return await canceled.Task;
+        }
+
+        // Wait for server to complete the transaction
+        var response = await transaction.ResponseTcs.Task;
+        return response;
     }
 }

@@ -8,28 +8,28 @@ namespace AwsLambda.Host.Testing;
 public class ErrorResponse
 {
     /// <summary>
-    /// The type of error that occurred.
+    /// The underlying cause of this error, if any.
     /// </summary>
-    [JsonPropertyName("errorType")]
-    public string ErrorType { get; set; }
+    [JsonPropertyName("cause")]
+    public ErrorCause? Cause { get; set; }
 
     /// <summary>
     /// The error message describing what went wrong.
     /// </summary>
     [JsonPropertyName("errorMessage")]
-    public string ErrorMessage { get; set; }
+    public required string ErrorMessage { get; set; }
+
+    /// <summary>
+    /// The type of error that occurred.
+    /// </summary>
+    [JsonPropertyName("errorType")]
+    public required string ErrorType { get; set; }
 
     /// <summary>
     /// The stack trace showing where the error occurred.
     /// </summary>
     [JsonPropertyName("stackTrace")]
-    public List<string> StackTrace { get; set; }
-
-    /// <summary>
-    /// The underlying cause of this error, if any.
-    /// </summary>
-    [JsonPropertyName("cause")]
-    public ErrorCause? Cause { get; set; }
+    public List<string> StackTrace { get; set; } = [];
 
     /// <summary>
     /// Represents the cause of an error, which can have its own nested cause.
@@ -37,27 +37,27 @@ public class ErrorResponse
     public class ErrorCause
     {
         /// <summary>
+        /// The underlying cause of this error, if any.
+        /// </summary>
+        [JsonPropertyName("cause")]
+        public ErrorCause? Cause { get; set; }
+
+        /// <summary>
+        /// The error message describing what went wrong.
+        /// </summary>
+        [JsonPropertyName("errorMessage")]
+        public required string ErrorMessage { get; set; }
+
+        /// <summary>
         /// The type of error that occurred.
         /// </summary>
         [JsonPropertyName("errorType")]
         public string ErrorType { get; set; }
 
         /// <summary>
-        /// The error message describing what went wrong.
-        /// </summary>
-        [JsonPropertyName("errorMessage")]
-        public string ErrorMessage { get; set; }
-
-        /// <summary>
         /// The stack trace showing where the error occurred.
         /// </summary>
         [JsonPropertyName("stackTrace")]
-        public List<string> StackTrace { get; set; }
-
-        /// <summary>
-        /// The underlying cause of this error, if any.
-        /// </summary>
-        [JsonPropertyName("cause")]
-        public ErrorCause? Cause { get; set; }
+        public List<string> StackTrace { get; set; } = [];
     }
 }

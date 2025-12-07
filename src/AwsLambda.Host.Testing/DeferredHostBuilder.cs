@@ -16,11 +16,6 @@ namespace AwsLambda.Host.Testing;
 // ConfigureHostBuilder
 internal sealed class DeferredHostBuilder : IHostBuilder
 {
-    public IDictionary<object, object> Properties { get; } = new Dictionary<object, object>();
-
-    private Action<IHostBuilder> _configure;
-    private Func<string[], object>? _hostFactory;
-
     private readonly ConfigurationManager _hostConfiguration = new();
 
     // This task represents a call to IHost.Start, we create it here preemptively in case the
@@ -30,6 +25,9 @@ internal sealed class DeferredHostBuilder : IHostBuilder
         TaskCreationOptions.RunContinuationsAsynchronously
     );
 
+    private Action<IHostBuilder> _configure;
+    private Func<string[], object>? _hostFactory;
+
     public DeferredHostBuilder() =>
         _configure = b =>
         {
@@ -38,6 +36,8 @@ internal sealed class DeferredHostBuilder : IHostBuilder
             foreach (var pair in Properties)
                 b.Properties[pair.Key] = pair.Value;
         };
+
+    public IDictionary<object, object> Properties { get; } = new Dictionary<object, object>();
 
     public IHost Build()
     {
@@ -114,31 +114,24 @@ internal sealed class DeferredHostBuilder : IHostBuilder
         // If the entry point completed we'll set the tcs just in case the application doesn't call
         // IHost.Start/StartAsync.
         if (exception is not null)
+        {
             _hostStartTcs.TrySetException(exception);
+        }
         else
+        {
             _hostStartTcs.TrySetResult();
+        }
     }
 
     public void SetHostFactory(Func<string[], object> hostFactory) => _hostFactory = hostFactory;
 
-    private sealed class DeferredHost : IHost, IAsyncDisposable
+    private sealed class DeferredHost(IHost host, TaskCompletionSource hostStartedTcs)
+        : IHost,
+            IAsyncDisposable
     {
-        private readonly IHost _host;
-        private readonly TaskCompletionSource _hostStartedTcs;
-
-        public DeferredHost(IHost host, TaskCompletionSource hostStartedTcs)
-        {
-            _host = host;
-            _hostStartedTcs = hostStartedTcs;
-        }
-
-        public IServiceProvider Services => _host.Services;
-
-        public void Dispose() => _host.Dispose();
-
         public async ValueTask DisposeAsync()
         {
-            if (_host is IAsyncDisposable disposable)
+            if (host is IAsyncDisposable disposable)
             {
                 await disposable.DisposeAsync().ConfigureAwait(false);
                 return;
@@ -147,28 +140,32 @@ internal sealed class DeferredHostBuilder : IHostBuilder
             Dispose();
         }
 
+        public IServiceProvider Services => host.Services;
+
+        public void Dispose() => host.Dispose();
+
         public async Task StartAsync(CancellationToken cancellationToken = default)
         {
             // Wait on the existing host to start running and have this call wait on that. This
             // avoids starting the actual host too early and
             // leaves the application in charge of calling start.
 
-            using var reg = cancellationToken.UnsafeRegister(
-                _ => _hostStartedTcs.TrySetCanceled(),
+            await using var reg = cancellationToken.UnsafeRegister(
+                _ => hostStartedTcs.TrySetCanceled(),
                 null
             );
 
             // REVIEW: This will deadlock if the application creates the host but never calls start.
             // This is mitigated by the cancellationToken
             // but it's rarely a valid token for Start
-            using var reg2 = _host
+            await using var reg2 = host
                 .Services.GetRequiredService<IHostApplicationLifetime>()
-                .ApplicationStarted.UnsafeRegister(_ => _hostStartedTcs.TrySetResult(), null);
+                .ApplicationStarted.UnsafeRegister(_ => hostStartedTcs.TrySetResult(), null);
 
-            await _hostStartedTcs.Task.ConfigureAwait(false);
+            await hostStartedTcs.Task.ConfigureAwait(false);
         }
 
         public Task StopAsync(CancellationToken cancellationToken = default) =>
-            _host.StopAsync(cancellationToken);
+            host.StopAsync(cancellationToken);
     }
 }
