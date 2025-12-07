@@ -8,7 +8,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using System.Text.Json;
 using System.Text.Json.Serialization;
 using AwsLambda.Host.Builder.Extensions;
 using AwsLambda.Host.Options;
@@ -236,10 +235,7 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
         SetContentRoot(hostBuilder);
         _configuration(hostBuilder);
 
-        var serializerOptions = new JsonSerializerOptions();
-        var routeManager = new LambdaRuntimeRouteManager();
-
-        _server = new LambdaTestServer(serializerOptions, routeManager);
+        _server = CreateServer();
 
         // set Lambda Bootstrap Http Client
         hostBuilder.ConfigureServices(services =>
