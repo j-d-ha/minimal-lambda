@@ -8,7 +8,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using System.Text.Json.Serialization;
 using AwsLambda.Host.Builder.Extensions;
 using AwsLambda.Host.Options;
 using Microsoft.Extensions.Configuration;
@@ -23,7 +22,7 @@ namespace AwsLambda.Host.Testing;
 /// </summary>
 /// <typeparam name="TEntryPoint">A type in the entry point assembly of the application.
 /// Typically the Startup or Program classes can be used.</typeparam>
-public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposable
+public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposable
     where TEntryPoint : class
 {
     private readonly List<LambdaApplicationFactory<TEntryPoint>> _derivedFactories = [];
@@ -103,9 +102,6 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
 
         if (_disposedAsync)
             return;
-
-        // foreach (var client in _clients)
-        //     client.Dispose();
 
         foreach (var factory in _derivedFactories)
             await ((IAsyncDisposable)factory).DisposeAsync().ConfigureAwait(false);
@@ -200,7 +196,7 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
                 {
                     {
                         HostDefaults.ApplicationKey,
-                        typeof(TEntryPoint).Assembly.GetName()?.Name ?? string.Empty
+                        typeof(TEntryPoint).Assembly.GetName().Name ?? string.Empty
                     },
                 }
             );
@@ -367,7 +363,7 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
             var context = DependencyContext.Default;
             if (context == null || context.CompileLibraries.Count == 0)
                 // The app domain friendly name will be populated in full framework.
-                return new[] { Assembly.Load(AppDomain.CurrentDomain.FriendlyName) };
+                return [Assembly.Load(AppDomain.CurrentDomain.FriendlyName)];
 
             var runtimeProjectLibraries = context.RuntimeLibraries.ToDictionary(
                 r => r.Name,
@@ -469,15 +465,11 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
         if (_disposed)
             return;
 
-        if (disposing)
-            if (!_disposedAsync)
-                DisposeAsync().AsTask().ConfigureAwait(false).GetAwaiter().GetResult();
+        if (disposing && !_disposedAsync)
+            DisposeAsync().AsTask().ConfigureAwait(false).GetAwaiter().GetResult();
 
         _disposed = true;
     }
-
-    [JsonSerializable(typeof(IDictionary<string, string>))]
-    private sealed partial class CustomJsonSerializerContext : JsonSerializerContext;
 
     private sealed class DelegatedLambdaApplicationFactory : LambdaApplicationFactory<TEntryPoint>
     {
