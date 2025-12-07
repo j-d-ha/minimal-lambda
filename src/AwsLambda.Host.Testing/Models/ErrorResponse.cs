@@ -17,19 +17,19 @@ public class ErrorResponse
     /// The error message describing what went wrong.
     /// </summary>
     [JsonPropertyName("errorMessage")]
-    public string ErrorMessage { get; set; }
+    public required string ErrorMessage { get; set; }
 
     /// <summary>
     /// The type of error that occurred.
     /// </summary>
     [JsonPropertyName("errorType")]
-    public string ErrorType { get; set; }
+    public required string ErrorType { get; set; }
 
     /// <summary>
     /// The stack trace showing where the error occurred.
     /// </summary>
     [JsonPropertyName("stackTrace")]
-    public List<string> StackTrace { get; set; }
+    public List<string> StackTrace { get; set; } = [];
 
     /// <summary>
     /// Represents the cause of an error, which can have its own nested cause.
@@ -46,7 +46,7 @@ public class ErrorResponse
         /// The error message describing what went wrong.
         /// </summary>
         [JsonPropertyName("errorMessage")]
-        public string ErrorMessage { get; set; }
+        public required string ErrorMessage { get; set; }
 
         /// <summary>
         /// The type of error that occurred.
@@ -58,6 +58,6 @@ public class ErrorResponse
         /// The stack trace showing where the error occurred.
         /// </summary>
         [JsonPropertyName("stackTrace")]
-        public List<string> StackTrace { get; set; }
+        public List<string> StackTrace { get; set; } = [];
     }
 }
