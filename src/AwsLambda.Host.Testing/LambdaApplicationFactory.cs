@@ -73,7 +73,7 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
     /// <summary>
     /// Gets the <see cref="LambdaTestServer"/> created by this <see cref="LambdaApplicationFactory{TEntryPoint}"/>.
     /// </summary>
-    internal LambdaTestServer Server
+    public LambdaTestServer Server
     {
         get
         {
@@ -85,14 +85,7 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
     /// <summary>
     /// Gets the <see cref="IServiceProvider"/> created by the server associated with this <see cref="LambdaApplicationFactory{TEntryPoint}"/>.
     /// </summary>
-    public virtual IServiceProvider Services
-    {
-        get
-        {
-            EnsureServer();
-            return _host!.Services;
-        }
-    }
+    public virtual IServiceProvider Services => Server.Services;
 
     /// <inheritdoc />
     public virtual async ValueTask DisposeAsync()
@@ -106,14 +99,9 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
         foreach (var factory in _derivedFactories)
             await ((IAsyncDisposable)factory).DisposeAsync().ConfigureAwait(false);
 
+        // Server handles disposing both processor and host
         if (_server != null)
             await _server.DisposeAsync().ConfigureAwait(false);
-
-        if (_host != null)
-        {
-            await _host.StopAsync().ConfigureAwait(false);
-            _host?.Dispose();
-        }
 
         _disposedAsync = true;
 
@@ -134,12 +122,6 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
     /// </summary>
     ~LambdaApplicationFactory() => Dispose(false);
 
-    public LambdaClient CreateClient()
-    {
-        EnsureServer();
-        return _server!.CreateLambdaClient();
-    }
-
     /// <summary>
     /// Creates a new <see cref="LambdaApplicationFactory{TEntryPoint}"/> with a <see cref="IHostBuilder"/>
     /// that is further customized by <paramref name="configuration"/>.
@@ -152,15 +134,12 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
         Action<IHostBuilder> configuration
     ) => WithHostBuilderCore(configuration);
 
-    internal virtual LambdaTestServer CreateServer() => new();
-
     internal virtual LambdaApplicationFactory<TEntryPoint> WithHostBuilderCore(
         Action<IHostBuilder> configuration
     )
     {
         var factory = new DelegatedLambdaApplicationFactory(
             ClientOptions,
-            CreateServer,
             CreateHost,
             CreateHostBuilder,
             GetTestAssemblies,
@@ -231,12 +210,12 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
         SetContentRoot(hostBuilder);
         _configuration(hostBuilder);
 
-        _server = CreateServer();
+        var processor = new InvocationProcessor();
 
         // set Lambda Bootstrap Http Client
         hostBuilder.ConfigureServices(services =>
         {
-            services.AddLambdaBootstrapHttpClient(new HttpClient(_server.CreateTestingHandler()));
+            services.AddLambdaBootstrapHttpClient(new HttpClient(processor.CreateTestingHandler()));
 
             services.PostConfigure<LambdaHostOptions>(options =>
             {
@@ -245,10 +224,11 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
             });
         });
 
+        // Build the host but DON'T start it - server will start it
         _host = CreateHost(hostBuilder);
 
-        // Start the server's background processing loop after host is ready
-        _server.Start();
+        // Create the public server with the built (but not started) host
+        _server = new LambdaTestServer(_host, processor);
     }
 
     private void SetContentRoot(IHostBuilder builder)
@@ -440,12 +420,9 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
     /// </summary>
     /// <param name="builder">The <see cref="IHostBuilder"/> used to create the host.</param>
     /// <returns>The <see cref="IHost"/> with the bootstrapped application.</returns>
-    protected virtual IHost CreateHost(IHostBuilder builder)
-    {
-        var host = builder.Build();
-        host.Start();
-        return host;
-    }
+    protected virtual IHost CreateHost(IHostBuilder builder) =>
+        // Build the host but DON'T start it - LambdaTestServer.StartAsync() will start it
+        builder.Build();
 
     /// <summary>
     /// Gives a fixture an opportunity to configure the application before it gets built.
@@ -475,12 +452,10 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
     {
         private readonly Func<IHostBuilder, IHost> _createHost;
         private readonly Func<IHostBuilder?> _createHostBuilder;
-        private readonly Func<LambdaTestServer> _createServer;
         private readonly Func<IEnumerable<Assembly>> _getTestAssemblies;
 
         public DelegatedLambdaApplicationFactory(
             LambdaApplicationFactoryClientOptions options,
-            Func<LambdaTestServer> createServer,
             Func<IHostBuilder, IHost> createHost,
             Func<IHostBuilder?> createHostBuilder,
             Func<IEnumerable<Assembly>> getTestAssemblies,
@@ -488,7 +463,6 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
         )
         {
             ClientOptions = options;
-            _createServer = createServer;
             _createHost = createHost;
             _createHostBuilder = createHostBuilder;
             _getTestAssemblies = getTestAssemblies;
@@ -496,8 +470,6 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
         }
 
         protected override IHost CreateHost(IHostBuilder builder) => _createHost(builder);
-
-        internal override LambdaTestServer CreateServer() => _createServer();
 
         protected override IHostBuilder? CreateHostBuilder() => _createHostBuilder();
 
@@ -510,7 +482,6 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
         ) =>
             new DelegatedLambdaApplicationFactory(
                 ClientOptions,
-                _createServer,
                 _createHost,
                 _createHostBuilder,
                 _getTestAssemblies,
