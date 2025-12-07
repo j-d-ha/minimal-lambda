@@ -124,20 +124,13 @@ internal sealed class DeferredHostBuilder : IHostBuilder
 
     public void SetHostFactory(Func<string[], object> hostFactory) => _hostFactory = hostFactory;
 
-    private sealed class DeferredHost : IHost, IAsyncDisposable
+    private sealed class DeferredHost(IHost host, TaskCompletionSource hostStartedTcs)
+        : IHost,
+            IAsyncDisposable
     {
-        private readonly IHost _host;
-        private readonly TaskCompletionSource _hostStartedTcs;
-
-        public DeferredHost(IHost host, TaskCompletionSource hostStartedTcs)
-        {
-            _host = host;
-            _hostStartedTcs = hostStartedTcs;
-        }
-
         public async ValueTask DisposeAsync()
         {
-            if (_host is IAsyncDisposable disposable)
+            if (host is IAsyncDisposable disposable)
             {
                 await disposable.DisposeAsync().ConfigureAwait(false);
                 return;
@@ -146,9 +139,9 @@ internal sealed class DeferredHostBuilder : IHostBuilder
             Dispose();
         }
 
-        public IServiceProvider Services => _host.Services;
+        public IServiceProvider Services => host.Services;
 
-        public void Dispose() => _host.Dispose();
+        public void Dispose() => host.Dispose();
 
         public async Task StartAsync(CancellationToken cancellationToken = default)
         {
@@ -156,22 +149,22 @@ internal sealed class DeferredHostBuilder : IHostBuilder
             // avoids starting the actual host too early and
             // leaves the application in charge of calling start.
 
-            using var reg = cancellationToken.UnsafeRegister(
-                _ => _hostStartedTcs.TrySetCanceled(),
+            await using var reg = cancellationToken.UnsafeRegister(
+                _ => hostStartedTcs.TrySetCanceled(),
                 null
             );
 
             // REVIEW: This will deadlock if the application creates the host but never calls start.
             // This is mitigated by the cancellationToken
             // but it's rarely a valid token for Start
-            using var reg2 = _host
+            await using var reg2 = host
                 .Services.GetRequiredService<IHostApplicationLifetime>()
-                .ApplicationStarted.UnsafeRegister(_ => _hostStartedTcs.TrySetResult(), null);
+                .ApplicationStarted.UnsafeRegister(_ => hostStartedTcs.TrySetResult(), null);
 
-            await _hostStartedTcs.Task.ConfigureAwait(false);
+            await hostStartedTcs.Task.ConfigureAwait(false);
         }
 
         public Task StopAsync(CancellationToken cancellationToken = default) =>
-            _host.StopAsync(cancellationToken);
+            host.StopAsync(cancellationToken);
     }
 }
