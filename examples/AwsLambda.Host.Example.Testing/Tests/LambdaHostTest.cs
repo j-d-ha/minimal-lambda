@@ -10,7 +10,7 @@ public class LambdaHostTest
     [Fact]
     public async Task LambdaHost_CanStartWithoutError()
     {
-        await using var factory = new WebApplicationFactory<Program>();
+        await using var factory = new LambdaApplicationFactory<Program>();
 
         var client = factory.CreateClient();
         // No need to wait for next request - server handles this automatically
@@ -26,7 +26,7 @@ public class LambdaHostTest
     [Fact]
     public async Task LambdaHost_ProcessesConcurrentInvocationsInFifoOrder()
     {
-        await using var factory = new WebApplicationFactory<Program>();
+        await using var factory = new LambdaApplicationFactory<Program>();
         var client = factory.CreateClient();
 
         // Launch 5 concurrent invocations
@@ -54,7 +54,7 @@ public class LambdaHostTest
     [Fact]
     public async Task InvokeAsync_WithInvalidPayload_ReturnsError()
     {
-        await using var factory = new WebApplicationFactory<Program>();
+        await using var factory = new LambdaApplicationFactory<Program>();
         var client = factory.CreateClient();
 
         var response = await client.InvokeAsync<string, int>(
@@ -70,7 +70,7 @@ public class LambdaHostTest
     [Fact]
     public async Task InvokeAsync_WithPreCanceledToken_CancelsInvocation()
     {
-        await using var factory = new WebApplicationFactory<Program>();
+        await using var factory = new LambdaApplicationFactory<Program>();
         var client = factory.CreateClient();
 
         using var cts = new CancellationTokenSource();
@@ -85,7 +85,7 @@ public class LambdaHostTest
     public async Task InvokeAsync_WithZeroTimeout_CancelsInvocation() =>
         await Assert.ThrowsAsync<AggregateException>(async () =>
         {
-            await using var factory = new WebApplicationFactory<Program>();
+            await using var factory = new LambdaApplicationFactory<Program>();
             var client = factory
                 .CreateClient()
                 .ConfigureOptions(options =>

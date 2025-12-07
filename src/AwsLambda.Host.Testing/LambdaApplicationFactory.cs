@@ -1,6 +1,6 @@
 // Portions of this file are derived from aspnetcore
 // Source:
-// https://github.com/dotnet/aspnetcore/blob/v10.0.0/src/Mvc/Mvc.Testing/src/WebApplicationFactory.cs
+// https://github.com/dotnet/aspnetcore/blob/v10.0.0/src/Mvc/Mvc.Testing/src/LambdaApplicationFactory.cs
 // Copyright (c) .NET Foundation and Contributors
 // Licensed under the MIT License
 // See THIRD-PARTY-LICENSES.txt file in the project root or visit
@@ -24,11 +24,11 @@ namespace AwsLambda.Host.Testing;
 /// </summary>
 /// <typeparam name="TEntryPoint">A type in the entry point assembly of the application.
 /// Typically the Startup or Program classes can be used.</typeparam>
-public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposable
+public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposable
     where TEntryPoint : class
 {
     // private readonly List<HttpClient> _clients = [];
-    private readonly List<WebApplicationFactory<TEntryPoint>> _derivedFactories = [];
+    private readonly List<LambdaApplicationFactory<TEntryPoint>> _derivedFactories = [];
     private Action<IHostBuilder> _configuration;
     private bool _disposed;
     private bool _disposedAsync;
@@ -37,10 +37,10 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
 
     /// <summary>
     /// <para>
-    /// Creates an instance of <see cref="WebApplicationFactory{TEntryPoint}"/>. This factory can be used to
+    /// Creates an instance of <see cref="LambdaApplicationFactory{TEntryPoint}"/>. This factory can be used to
     /// create a <see cref="LambdaTestServer"/> instance using the MVC application defined by <typeparamref name="TEntryPoint"/>
     /// and one or more <see cref="HttpClient"/> instances used to send <see cref="HttpRequestMessage"/> to the <see cref="LambdaTestServer"/>.
-    /// The <see cref="WebApplicationFactory{TEntryPoint}"/> will find the entry point class of <typeparamref name="TEntryPoint"/>
+    /// The <see cref="LambdaApplicationFactory{TEntryPoint}"/> will find the entry point class of <typeparamref name="TEntryPoint"/>
     /// assembly and initialize the application by calling <c>IHostBuilder CreateWebHostBuilder(string [] args)</c>
     /// on <typeparamref name="TEntryPoint"/>.
     /// </para>
@@ -48,7 +48,7 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
     /// This constructor will infer the application content root path by searching for a
     /// <see cref="LambdaApplicationFactoryContentRootAttribute"/> on the assembly containing the functional tests with
     /// a key equal to the <typeparamref name="TEntryPoint"/> assembly <see cref="Assembly.FullName"/>.
-    /// In case an attribute with the right key can't be found, <see cref="WebApplicationFactory{TEntryPoint}"/>
+    /// In case an attribute with the right key can't be found, <see cref="LambdaApplicationFactory{TEntryPoint}"/>
     /// will fall back to searching for a solution file (*.sln) and then appending <typeparamref name="TEntryPoint"/> assembly name
     /// to the solution directory. The application root directory will be used to discover views and content files.
     /// </para>
@@ -58,7 +58,7 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
     /// <typeparamref name="TEntryPoint" /> will be loaded as application assemblies.
     /// </para>
     /// </summary>
-    public WebApplicationFactory() => _configuration = ConfigureWebHost;
+    public LambdaApplicationFactory() => _configuration = ConfigureWebHost;
 
     /// <summary>
     /// Gets the <see cref="WebApplicationFactoryClientOptions"/> used by <see cref="CreateClient()"/>.
@@ -66,15 +66,15 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
     public LambdaApplicationFactoryClientOptions ClientOptions { get; private set; } = new();
 
     /// <summary>
-    /// Gets the <see cref="IReadOnlyList{WebApplicationFactory}"/> of factories created from this factory
+    /// Gets the <see cref="IReadOnlyList{LambdaApplicationFactory}"/> of factories created from this factory
     /// by further customizing the <see cref="IHostBuilder"/> when calling
-    /// <see cref="WebApplicationFactory{TEntryPoint}.WithWebHostBuilder(Action{IHostBuilder})"/>.
+    /// <see cref="LambdaApplicationFactory{TEntryPoint}.WithWebHostBuilder(Action{IHostBuilder})"/>.
     /// </summary>
-    public IReadOnlyList<WebApplicationFactory<TEntryPoint>> Factories =>
+    public IReadOnlyList<LambdaApplicationFactory<TEntryPoint>> Factories =>
         _derivedFactories.AsReadOnly();
 
     /// <summary>
-    /// Gets the <see cref="LambdaTestServer"/> created by this <see cref="WebApplicationFactory{TEntryPoint}"/>.
+    /// Gets the <see cref="LambdaTestServer"/> created by this <see cref="LambdaApplicationFactory{TEntryPoint}"/>.
     /// </summary>
     internal LambdaTestServer Server
     {
@@ -86,7 +86,7 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
     }
 
     /// <summary>
-    /// Gets the <see cref="IServiceProvider"/> created by the server associated with this <see cref="WebApplicationFactory{TEntryPoint}"/>.
+    /// Gets the <see cref="IServiceProvider"/> created by the server associated with this <see cref="LambdaApplicationFactory{TEntryPoint}"/>.
     /// </summary>
     public virtual IServiceProvider Services
     {
@@ -137,9 +137,9 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
     }
 
     /// <summary>
-    /// Finalizes an instance of the <see cref="WebApplicationFactory{TEntryPoint}"/> class.
+    /// Finalizes an instance of the <see cref="LambdaApplicationFactory{TEntryPoint}"/> class.
     /// </summary>
-    ~WebApplicationFactory() => Dispose(false);
+    ~LambdaApplicationFactory() => Dispose(false);
 
     public LambdaClient CreateClient()
     {
@@ -148,22 +148,22 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
     }
 
     /// <summary>
-    /// Creates a new <see cref="WebApplicationFactory{TEntryPoint}"/> with a <see cref="IHostBuilder"/>
+    /// Creates a new <see cref="LambdaApplicationFactory{TEntryPoint}"/> with a <see cref="IHostBuilder"/>
     /// that is further customized by <paramref name="configuration"/>.
     /// </summary>
     /// <param name="configuration">
     /// An <see cref="Action{IHostBuilder}"/> to configure the <see cref="IHostBuilder"/>.
     /// </param>
-    /// <returns>A new <see cref="WebApplicationFactory{TEntryPoint}"/>.</returns>
-    public WebApplicationFactory<TEntryPoint> WithWebHostBuilder(
+    /// <returns>A new <see cref="LambdaApplicationFactory{TEntryPoint}"/>.</returns>
+    public LambdaApplicationFactory<TEntryPoint> WithWebHostBuilder(
         Action<IHostBuilder> configuration
     ) => WithWebHostBuilderCore(configuration);
 
-    internal virtual WebApplicationFactory<TEntryPoint> WithWebHostBuilderCore(
+    internal virtual LambdaApplicationFactory<TEntryPoint> WithWebHostBuilderCore(
         Action<IHostBuilder> configuration
     )
     {
-        var factory = new DelegatedWebApplicationFactory(
+        var factory = new DelegatedLambdaApplicationFactory(
             ClientOptions,
             // CreateServer,
             CreateHost,
@@ -480,7 +480,7 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
     protected virtual void ConfigureWebHost(IHostBuilder builder) { }
 
     /// <summary>
-    /// Configures <see cref="HttpClient"/> instances created by this <see cref="WebApplicationFactory{TEntryPoint}"/>.
+    /// Configures <see cref="HttpClient"/> instances created by this <see cref="LambdaApplicationFactory{TEntryPoint}"/>.
     /// </summary>
     /// <param name="client">The <see cref="HttpClient"/> instance getting configured.</param>
     protected virtual void ConfigureClient(HttpClient client)
@@ -512,7 +512,7 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
     [JsonSerializable(typeof(IDictionary<string, string>))]
     private sealed partial class CustomJsonSerializerContext : JsonSerializerContext;
 
-    private sealed class DelegatedWebApplicationFactory : WebApplicationFactory<TEntryPoint>
+    private sealed class DelegatedLambdaApplicationFactory : LambdaApplicationFactory<TEntryPoint>
     {
         private readonly Action<HttpClient> _configureClient;
 
@@ -521,7 +521,7 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
         private readonly Func<IHostBuilder?> _createHostBuilder;
         private readonly Func<IEnumerable<Assembly>> _getTestAssemblies;
 
-        public DelegatedWebApplicationFactory(
+        public DelegatedLambdaApplicationFactory(
             LambdaApplicationFactoryClientOptions options,
             // Func<IHostBuilder, LambdaTestServer> createServer,
             Func<IHostBuilder, IHost> createHost,
@@ -550,10 +550,10 @@ public partial class WebApplicationFactory<TEntryPoint> : IDisposable, IAsyncDis
 
         protected override void ConfigureClient(HttpClient client) => _configureClient(client);
 
-        internal override WebApplicationFactory<TEntryPoint> WithWebHostBuilderCore(
+        internal override LambdaApplicationFactory<TEntryPoint> WithWebHostBuilderCore(
             Action<IHostBuilder> configuration
         ) =>
-            new DelegatedWebApplicationFactory(
+            new DelegatedLambdaApplicationFactory(
                 ClientOptions,
                 // _createServer,
                 _createHost,
