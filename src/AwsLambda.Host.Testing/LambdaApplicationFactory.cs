@@ -250,7 +250,7 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
             services.PostConfigure<LambdaHostOptions>(options =>
             {
                 if (string.IsNullOrEmpty(options.BootstrapOptions.RuntimeApiEndpoint))
-                    options.BootstrapOptions.RuntimeApiEndpoint = "localhost:3002";
+                    options.BootstrapOptions.RuntimeApiEndpoint = "localhost";
             });
         });
 
