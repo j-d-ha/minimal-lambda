@@ -27,7 +27,6 @@ namespace AwsLambda.Host.Testing;
 public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposable
     where TEntryPoint : class
 {
-    // private readonly List<HttpClient> _clients = [];
     private readonly List<LambdaApplicationFactory<TEntryPoint>> _derivedFactories = [];
     private Action<IHostBuilder> _configuration;
     private bool _disposed;
@@ -159,17 +158,18 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
         Action<IHostBuilder> configuration
     ) => WithWebHostBuilderCore(configuration);
 
+    internal virtual LambdaTestServer CreateServer() => new();
+
     internal virtual LambdaApplicationFactory<TEntryPoint> WithWebHostBuilderCore(
         Action<IHostBuilder> configuration
     )
     {
         var factory = new DelegatedLambdaApplicationFactory(
             ClientOptions,
-            // CreateServer,
+            CreateServer,
             CreateHost,
             CreateHostBuilder,
             GetTestAssemblies,
-            ConfigureClient,
             builder =>
             {
                 _configuration(builder);
@@ -480,17 +480,6 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
     protected virtual void ConfigureWebHost(IHostBuilder builder) { }
 
     /// <summary>
-    /// Configures <see cref="HttpClient"/> instances created by this <see cref="LambdaApplicationFactory{TEntryPoint}"/>.
-    /// </summary>
-    /// <param name="client">The <see cref="HttpClient"/> instance getting configured.</param>
-    protected virtual void ConfigureClient(HttpClient client)
-    {
-        ArgumentNullException.ThrowIfNull(client);
-
-        client.BaseAddress = new Uri("http://localhost");
-    }
-
-    /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
     /// <param name="disposing">
@@ -514,33 +503,33 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
 
     private sealed class DelegatedLambdaApplicationFactory : LambdaApplicationFactory<TEntryPoint>
     {
-        private readonly Action<HttpClient> _configureClient;
-
-        // private readonly Func<IHostBuilder, LambdaTestServer> _createServer;
+        private readonly Func<LambdaTestServer> _createServer;
         private readonly Func<IHostBuilder, IHost> _createHost;
         private readonly Func<IHostBuilder?> _createHostBuilder;
         private readonly Func<IEnumerable<Assembly>> _getTestAssemblies;
 
         public DelegatedLambdaApplicationFactory(
             LambdaApplicationFactoryClientOptions options,
+            // Func<IWebHostBuilder, TestServer> createServer,
             // Func<IHostBuilder, LambdaTestServer> createServer,
+            Func<LambdaTestServer> createServer,
             Func<IHostBuilder, IHost> createHost,
             Func<IHostBuilder?> createHostBuilder,
             Func<IEnumerable<Assembly>> getTestAssemblies,
-            Action<HttpClient> configureClient,
             Action<IHostBuilder> configureWebHost
         )
         {
             ClientOptions = options;
-            // _createServer = createServer;
+            _createServer = createServer;
             _createHost = createHost;
             _createHostBuilder = createHostBuilder;
             _getTestAssemblies = getTestAssemblies;
-            _configureClient = configureClient;
             _configuration = configureWebHost;
         }
 
         protected override IHost CreateHost(IHostBuilder builder) => _createHost(builder);
+
+        internal override LambdaTestServer CreateServer() => _createServer();
 
         protected override IHostBuilder? CreateHostBuilder() => _createHostBuilder();
 
@@ -548,18 +537,15 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
 
         protected override void ConfigureWebHost(IHostBuilder builder) => _configuration(builder);
 
-        protected override void ConfigureClient(HttpClient client) => _configureClient(client);
-
         internal override LambdaApplicationFactory<TEntryPoint> WithWebHostBuilderCore(
             Action<IHostBuilder> configuration
         ) =>
             new DelegatedLambdaApplicationFactory(
                 ClientOptions,
-                // _createServer,
+                _createServer,
                 _createHost,
                 _createHostBuilder,
                 _getTestAssemblies,
-                _configureClient,
                 builder =>
                 {
                     _configuration(builder);
