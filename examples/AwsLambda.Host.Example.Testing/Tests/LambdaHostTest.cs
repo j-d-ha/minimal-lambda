@@ -28,20 +28,18 @@ public class LambdaHostTest
     [Fact]
     public async Task LambdaHost_CrashesWithBadConfiguration_ThrowsException()
     {
-        await using var factory = new LambdaApplicationFactory<Program>().WithWebHostBuilder(
-            builder =>
-            {
-                builder.ConfigureServices(
-                    (_, services) =>
+        await using var factory = new LambdaApplicationFactory<Program>().WithHostBuilder(builder =>
+        {
+            builder.ConfigureServices(
+                (_, services) =>
+                {
+                    services.Configure<LambdaHostOptions>(options =>
                     {
-                        services.Configure<LambdaHostOptions>(options =>
-                        {
-                            options.BootstrapOptions.RuntimeApiEndpoint = "http://localhost:3002";
-                        });
-                    }
-                );
-            }
-        );
+                        options.BootstrapOptions.RuntimeApiEndpoint = "http://localhost:3002";
+                    });
+                }
+            );
+        });
 
         var client = factory.CreateClient();
         // No need to wait for next request - server handles this automatically

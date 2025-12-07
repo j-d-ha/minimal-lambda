@@ -67,7 +67,7 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
     /// <summary>
     /// Gets the <see cref="IReadOnlyList{LambdaApplicationFactory}"/> of factories created from this factory
     /// by further customizing the <see cref="IHostBuilder"/> when calling
-    /// <see cref="LambdaApplicationFactory{TEntryPoint}.WithWebHostBuilder(Action{IHostBuilder})"/>.
+    /// <see cref="WithHostBuilder"/>.
     /// </summary>
     public IReadOnlyList<LambdaApplicationFactory<TEntryPoint>> Factories =>
         _derivedFactories.AsReadOnly();
@@ -153,13 +153,13 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
     /// An <see cref="Action{IHostBuilder}"/> to configure the <see cref="IHostBuilder"/>.
     /// </param>
     /// <returns>A new <see cref="LambdaApplicationFactory{TEntryPoint}"/>.</returns>
-    public LambdaApplicationFactory<TEntryPoint> WithWebHostBuilder(
+    public LambdaApplicationFactory<TEntryPoint> WithHostBuilder(
         Action<IHostBuilder> configuration
-    ) => WithWebHostBuilderCore(configuration);
+    ) => WithHostBuilderCore(configuration);
 
     internal virtual LambdaTestServer CreateServer() => new();
 
-    internal virtual LambdaApplicationFactory<TEntryPoint> WithWebHostBuilderCore(
+    internal virtual LambdaApplicationFactory<TEntryPoint> WithHostBuilderCore(
         Action<IHostBuilder> configuration
     )
     {
@@ -492,8 +492,6 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
 
         public DelegatedLambdaApplicationFactory(
             LambdaApplicationFactoryClientOptions options,
-            // Func<IWebHostBuilder, TestServer> createServer,
-            // Func<IHostBuilder, LambdaTestServer> createServer,
             Func<LambdaTestServer> createServer,
             Func<IHostBuilder, IHost> createHost,
             Func<IHostBuilder?> createHostBuilder,
@@ -519,7 +517,7 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
 
         protected override void ConfigureWebHost(IHostBuilder builder) => _configuration(builder);
 
-        internal override LambdaApplicationFactory<TEntryPoint> WithWebHostBuilderCore(
+        internal override LambdaApplicationFactory<TEntryPoint> WithHostBuilderCore(
             Action<IHostBuilder> configuration
         ) =>
             new DelegatedLambdaApplicationFactory(
