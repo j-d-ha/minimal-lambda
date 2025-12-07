@@ -8,8 +8,6 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using System.Text.Json;
-using System.Text.Json.Serialization;
 using AwsLambda.Host.Builder.Extensions;
 using AwsLambda.Host.Options;
 using Microsoft.Extensions.Configuration;
@@ -24,10 +22,9 @@ namespace AwsLambda.Host.Testing;
 /// </summary>
 /// <typeparam name="TEntryPoint">A type in the entry point assembly of the application.
 /// Typically the Startup or Program classes can be used.</typeparam>
-public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposable
+public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposable
     where TEntryPoint : class
 {
-    // private readonly List<HttpClient> _clients = [];
     private readonly List<LambdaApplicationFactory<TEntryPoint>> _derivedFactories = [];
     private Action<IHostBuilder> _configuration;
     private bool _disposed;
@@ -68,7 +65,7 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
     /// <summary>
     /// Gets the <see cref="IReadOnlyList{LambdaApplicationFactory}"/> of factories created from this factory
     /// by further customizing the <see cref="IHostBuilder"/> when calling
-    /// <see cref="LambdaApplicationFactory{TEntryPoint}.WithWebHostBuilder(Action{IHostBuilder})"/>.
+    /// <see cref="WithHostBuilder"/>.
     /// </summary>
     public IReadOnlyList<LambdaApplicationFactory<TEntryPoint>> Factories =>
         _derivedFactories.AsReadOnly();
@@ -93,7 +90,6 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
         get
         {
             EnsureServer();
-            // return _host?.Services ?? _server.Host.Services;
             return _host!.Services;
         }
     }
@@ -106,9 +102,6 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
 
         if (_disposedAsync)
             return;
-
-        // foreach (var client in _clients)
-        //     client.Dispose();
 
         foreach (var factory in _derivedFactories)
             await ((IAsyncDisposable)factory).DisposeAsync().ConfigureAwait(false);
@@ -155,21 +148,22 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
     /// An <see cref="Action{IHostBuilder}"/> to configure the <see cref="IHostBuilder"/>.
     /// </param>
     /// <returns>A new <see cref="LambdaApplicationFactory{TEntryPoint}"/>.</returns>
-    public LambdaApplicationFactory<TEntryPoint> WithWebHostBuilder(
+    public LambdaApplicationFactory<TEntryPoint> WithHostBuilder(
         Action<IHostBuilder> configuration
-    ) => WithWebHostBuilderCore(configuration);
+    ) => WithHostBuilderCore(configuration);
 
-    internal virtual LambdaApplicationFactory<TEntryPoint> WithWebHostBuilderCore(
+    internal virtual LambdaTestServer CreateServer() => new();
+
+    internal virtual LambdaApplicationFactory<TEntryPoint> WithHostBuilderCore(
         Action<IHostBuilder> configuration
     )
     {
         var factory = new DelegatedLambdaApplicationFactory(
             ClientOptions,
-            // CreateServer,
+            CreateServer,
             CreateHost,
             CreateHostBuilder,
             GetTestAssemblies,
-            ConfigureClient,
             builder =>
             {
                 _configuration(builder);
@@ -202,7 +196,7 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
                 {
                     {
                         HostDefaults.ApplicationKey,
-                        typeof(TEntryPoint).Assembly.GetName()?.Name ?? string.Empty
+                        typeof(TEntryPoint).Assembly.GetName().Name ?? string.Empty
                     },
                 }
             );
@@ -237,10 +231,7 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
         SetContentRoot(hostBuilder);
         _configuration(hostBuilder);
 
-        var serializerOptions = new JsonSerializerOptions();
-        var routeManager = new LambdaRuntimeRouteManager();
-
-        _server = new LambdaTestServer(serializerOptions, routeManager);
+        _server = CreateServer();
 
         // set Lambda Bootstrap Http Client
         hostBuilder.ConfigureServices(services =>
@@ -250,7 +241,7 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
             services.PostConfigure<LambdaHostOptions>(options =>
             {
                 if (string.IsNullOrEmpty(options.BootstrapOptions.RuntimeApiEndpoint))
-                    options.BootstrapOptions.RuntimeApiEndpoint = "localhost:3002";
+                    options.BootstrapOptions.RuntimeApiEndpoint = "localhost";
             });
         });
 
@@ -262,10 +253,7 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
 
     private void SetContentRoot(IHostBuilder builder)
     {
-        var fromFile = File.Exists("MvcTestingAppManifest.json");
-        var contentRoot = fromFile
-            ? GetContentRootFromFile("MvcTestingAppManifest.json")
-            : GetContentRootFromAssembly();
+        var contentRoot = GetContentRootFromAssembly();
 
         if (contentRoot != null)
             builder.UseContentRoot(contentRoot);
@@ -308,22 +296,6 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
         );
     }
 
-    private static string? GetContentRootFromFile(string file)
-    {
-        var data = JsonSerializer.Deserialize(
-            File.ReadAllBytes(file),
-            CustomJsonSerializerContext.Default.IDictionaryStringString
-        )!;
-        var key = typeof(TEntryPoint).Assembly.GetName().FullName;
-
-        // If the `ContentRoot` is not provided in the app manifest, then return null
-        // and fallback to setting the content root relative to the entrypoint's assembly.
-        if (!data.TryGetValue(key, out var contentRoot))
-            return null;
-
-        return contentRoot == "~" ? AppContext.BaseDirectory : contentRoot;
-    }
-
     private string? GetContentRootFromAssembly()
     {
         var metadataAttributes = GetContentRootMetadataAttributes(
@@ -332,9 +304,8 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
         );
 
         string? contentRoot = null;
-        for (var i = 0; i < metadataAttributes.Length; i++)
+        foreach (var contentRootAttribute in metadataAttributes)
         {
-            var contentRootAttribute = metadataAttributes[i];
             var contentRootCandidate = Path.Combine(
                 AppContext.BaseDirectory,
                 contentRootAttribute.ContentRootPath
@@ -392,7 +363,7 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
             var context = DependencyContext.Default;
             if (context == null || context.CompileLibraries.Count == 0)
                 // The app domain friendly name will be populated in full framework.
-                return new[] { Assembly.Load(AppDomain.CurrentDomain.FriendlyName) };
+                return [Assembly.Load(AppDomain.CurrentDomain.FriendlyName)];
 
             var runtimeProjectLibraries = context.RuntimeLibraries.ToDictionary(
                 r => r.Name,
@@ -422,9 +393,12 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
 
             return testAssemblies;
         }
-        catch (Exception) { }
+        catch (Exception)
+        {
+            // Ignore
+        }
 
-        return Array.Empty<Assembly>();
+        return [];
     }
 
     private static void EnsureDepsFile()
@@ -480,17 +454,6 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
     protected virtual void ConfigureWebHost(IHostBuilder builder) { }
 
     /// <summary>
-    /// Configures <see cref="HttpClient"/> instances created by this <see cref="LambdaApplicationFactory{TEntryPoint}"/>.
-    /// </summary>
-    /// <param name="client">The <see cref="HttpClient"/> instance getting configured.</param>
-    protected virtual void ConfigureClient(HttpClient client)
-    {
-        ArgumentNullException.ThrowIfNull(client);
-
-        client.BaseAddress = new Uri("http://localhost");
-    }
-
-    /// <summary>
     /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
     /// </summary>
     /// <param name="disposing">
@@ -502,45 +465,39 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
         if (_disposed)
             return;
 
-        if (disposing)
-            if (!_disposedAsync)
-                DisposeAsync().AsTask().ConfigureAwait(false).GetAwaiter().GetResult();
+        if (disposing && !_disposedAsync)
+            DisposeAsync().AsTask().ConfigureAwait(false).GetAwaiter().GetResult();
 
         _disposed = true;
     }
 
-    [JsonSerializable(typeof(IDictionary<string, string>))]
-    private sealed partial class CustomJsonSerializerContext : JsonSerializerContext;
-
     private sealed class DelegatedLambdaApplicationFactory : LambdaApplicationFactory<TEntryPoint>
     {
-        private readonly Action<HttpClient> _configureClient;
-
-        // private readonly Func<IHostBuilder, LambdaTestServer> _createServer;
         private readonly Func<IHostBuilder, IHost> _createHost;
         private readonly Func<IHostBuilder?> _createHostBuilder;
+        private readonly Func<LambdaTestServer> _createServer;
         private readonly Func<IEnumerable<Assembly>> _getTestAssemblies;
 
         public DelegatedLambdaApplicationFactory(
             LambdaApplicationFactoryClientOptions options,
-            // Func<IHostBuilder, LambdaTestServer> createServer,
+            Func<LambdaTestServer> createServer,
             Func<IHostBuilder, IHost> createHost,
             Func<IHostBuilder?> createHostBuilder,
             Func<IEnumerable<Assembly>> getTestAssemblies,
-            Action<HttpClient> configureClient,
             Action<IHostBuilder> configureWebHost
         )
         {
             ClientOptions = options;
-            // _createServer = createServer;
+            _createServer = createServer;
             _createHost = createHost;
             _createHostBuilder = createHostBuilder;
             _getTestAssemblies = getTestAssemblies;
-            _configureClient = configureClient;
             _configuration = configureWebHost;
         }
 
         protected override IHost CreateHost(IHostBuilder builder) => _createHost(builder);
+
+        internal override LambdaTestServer CreateServer() => _createServer();
 
         protected override IHostBuilder? CreateHostBuilder() => _createHostBuilder();
 
@@ -548,18 +505,15 @@ public partial class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsync
 
         protected override void ConfigureWebHost(IHostBuilder builder) => _configuration(builder);
 
-        protected override void ConfigureClient(HttpClient client) => _configureClient(client);
-
-        internal override LambdaApplicationFactory<TEntryPoint> WithWebHostBuilderCore(
+        internal override LambdaApplicationFactory<TEntryPoint> WithHostBuilderCore(
             Action<IHostBuilder> configuration
         ) =>
             new DelegatedLambdaApplicationFactory(
                 ClientOptions,
-                // _createServer,
+                _createServer,
                 _createHost,
                 _createHostBuilder,
                 _getTestAssemblies,
-                _configureClient,
                 builder =>
                 {
                     _configuration(builder);
