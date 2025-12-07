@@ -82,17 +82,19 @@ public class LambdaHostTest
     }
 
     [Fact]
-    public async Task InvokeAsync_WithZeroTimeout_CancelsInvocation()
-    {
-        await using var factory = new WebApplicationFactory<Program>();
-        var client = factory
-            .CreateClient()
-            .ConfigureOptions(options =>
-                options.InvocationHeaderOptions.ClientWaitTimeout = TimeSpan.Zero
-            );
+    public async Task InvokeAsync_WithZeroTimeout_CancelsInvocation() =>
+        await Assert.ThrowsAsync<AggregateException>(async () =>
+        {
+            await using var factory = new WebApplicationFactory<Program>();
+            var client = factory
+                .CreateClient()
+                .ConfigureOptions(options =>
+                    options.InvocationHeaderOptions.ClientWaitTimeout = TimeSpan.Zero
+                );
 
-        await Assert.ThrowsAsync<AggregateException>(() =>
-            client.InvokeAsync<string, string>("Jonas", TestContext.Current.CancellationToken)
-        );
-    }
+            await client.InvokeAsync<string, string>(
+                "Jonas",
+                TestContext.Current.CancellationToken
+            );
+        });
 }
