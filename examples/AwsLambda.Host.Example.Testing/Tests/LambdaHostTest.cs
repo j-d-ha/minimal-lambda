@@ -1,5 +1,7 @@
+using AwsLambda.Host.Options;
 using AwsLambda.Host.Testing;
 using JetBrains.Annotations;
+using Microsoft.Extensions.DependencyInjection;
 using Xunit;
 
 namespace Lambda.Host.Example.HelloWorld;
@@ -11,6 +13,35 @@ public class LambdaHostTest
     public async Task LambdaHost_CanStartWithoutError()
     {
         await using var factory = new LambdaApplicationFactory<Program>();
+
+        var client = factory.CreateClient();
+        // No need to wait for next request - server handles this automatically
+        var response = await client.InvokeAsync<string, string>(
+            "Jonas",
+            TestContext.Current.CancellationToken
+        );
+        Assert.True(response.WasSuccess);
+        Assert.NotNull(response);
+        Assert.Equal("Hello Jonas!", response.Response);
+    }
+
+    [Fact]
+    public async Task LambdaHost_CrashesWithBadConfiguration_ThrowsException()
+    {
+        await using var factory = new LambdaApplicationFactory<Program>().WithWebHostBuilder(
+            builder =>
+            {
+                builder.ConfigureServices(
+                    (_, services) =>
+                    {
+                        services.Configure<LambdaHostOptions>(options =>
+                        {
+                            options.BootstrapOptions.RuntimeApiEndpoint = "http://localhost:3002";
+                        });
+                    }
+                );
+            }
+        );
 
         var client = factory.CreateClient();
         // No need to wait for next request - server handles this automatically
@@ -85,16 +116,24 @@ public class LambdaHostTest
     public async Task InvokeAsync_WithZeroTimeout_CancelsInvocation() =>
         await Assert.ThrowsAsync<AggregateException>(async () =>
         {
-            await using var factory = new LambdaApplicationFactory<Program>();
-            var client = factory
-                .CreateClient()
-                .ConfigureOptions(options =>
-                    options.InvocationHeaderOptions.ClientWaitTimeout = TimeSpan.Zero
-                );
+            try
+            {
+                await using var factory = new LambdaApplicationFactory<Program>();
+                var client = factory
+                    .CreateClient()
+                    .ConfigureOptions(options =>
+                        options.InvocationHeaderOptions.ClientWaitTimeout = TimeSpan.Zero
+                    );
 
-            await client.InvokeAsync<string, string>(
-                "Jonas",
-                TestContext.Current.CancellationToken
-            );
+                await client.InvokeAsync<string, string>(
+                    "Jonas",
+                    TestContext.Current.CancellationToken
+                );
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.GetType().FullName);
+                throw;
+            }
         });
 }
