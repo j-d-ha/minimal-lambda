@@ -49,13 +49,13 @@ public class LambdaClient
         // Create the event response with Lambda headers
         var eventResponse = CreateEventResponse(invokeEvent, requestId);
         var deadlineUtc = DateTimeOffset.UtcNow.Add(
-            _lambdaClientOptions.InvocationHeaderOptions.InvocationTimeout
+            _lambdaClientOptions.InvocationHeaderOptions.ClientWaitTimeout
         );
 
         // Queue invocation and wait for Bootstrap to process it
-        using var timeoutCts = new CancellationTokenSource(
-            _lambdaClientOptions.InvocationHeaderOptions.InvocationTimeout
-        );
+        var waitTimeout = _lambdaClientOptions.InvocationHeaderOptions.ClientWaitTimeout;
+
+        using var timeoutCts = new CancellationTokenSource(waitTimeout);
         using var linkedCts = CancellationTokenSource.CreateLinkedTokenSource(
             cancellationToken,
             timeoutCts.Token

@@ -36,8 +36,18 @@ public class LambdaInvocationHeaderOptions
     /// Gets or sets the maximum amount of time to wait for a response from the Lambda bootstrap.
     /// Defaults to the function timeout plus a small buffer.
     /// </summary>
-    public TimeSpan InvocationTimeout { get; set; } =
+    public TimeSpan ClientWaitTimeout { get; set; } =
         TimeSpan.FromMinutes(15).Add(TimeSpan.FromSeconds(5));
+
+    /// <summary>
+    /// Legacy property for client wait timeout. Prefer <see cref="ClientWaitTimeout"/>.
+    /// </summary>
+    [Obsolete("Use ClientWaitTimeout instead.")]
+    public TimeSpan InvocationTimeout
+    {
+        get => ClientWaitTimeout;
+        set => ClientWaitTimeout = value;
+    }
 
     /// <summary>
     /// Gets or sets the AWS X-Ray trace ID for distributed tracing.
