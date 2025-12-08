@@ -13,7 +13,13 @@ public class LambdaHostTest
     public async Task LambdaHost_CanStartWithoutError()
     {
         await using var factory = new LambdaApplicationFactory<Program>();
-        await factory.Server.StartAsync(TestContext.Current.CancellationToken);
+
+        var setup = await factory.Server.StartAsync(TestContext.Current.CancellationToken);
+
+        if (!setup.InitSuccess)
+            throw new Exception("Failed to initialize Lambda host");
+
+        var x = 0;
 
         var response = await factory.Server.InvokeAsync<string, string>(
             "Jonas",
@@ -111,7 +117,7 @@ public class LambdaHostTest
 
     [Fact]
     public async Task InvokeAsync_WithZeroTimeout_CancelsInvocation() =>
-        await Assert.ThrowsAsync<AggregateException>(async () =>
+        await Assert.ThrowsAsync<TaskCanceledException>(async () =>
         {
             await using var factory = new LambdaApplicationFactory<Program>();
             await factory.Server.StartAsync(TestContext.Current.CancellationToken);
@@ -125,4 +131,19 @@ public class LambdaHostTest
                 TestContext.Current.CancellationToken
             );
         });
+
+    [Fact]
+    public async Task StartAsync_WithFailingInit_ReturnsInitError()
+    {
+        // This test verifies that when OnInit returns false (as configured in Program.cs),
+        // the runtime posts to /runtime/init/error and StartAsync returns InitResponse with error
+        await using var factory = new LambdaApplicationFactory<Program>();
+
+        using var cts = new CancellationTokenSource(TimeSpan.FromSeconds(5));
+        var initResponse = await factory.Server.StartAsync(cts.Token);
+
+        Assert.False(initResponse.InitSuccess);
+        Assert.NotNull(initResponse.Error);
+        Assert.Equal(ServerState.Stopped, factory.Server.State);
+    }
 }

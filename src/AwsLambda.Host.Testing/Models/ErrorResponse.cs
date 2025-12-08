@@ -13,6 +13,9 @@ public class ErrorResponse
     [JsonPropertyName("cause")]
     public ErrorCause? Cause { get; set; }
 
+    [JsonPropertyName("causes")]
+    public List<ErrorCause>? Causes { get; set; }
+
     /// <summary>
     /// The error message describing what went wrong.
     /// </summary>

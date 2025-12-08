@@ -18,7 +18,6 @@ public class LambdaTestServer : IAsyncDisposable
     private readonly JsonSerializerOptions _jsonSerializerOptions;
     private readonly Task<Exception?> _entryPointCompletion;
     private int _requestCounter;
-    private Task? _entryPointMonitorTask;
     private ServerState _state;
 
     internal LambdaTestServer(
@@ -47,25 +46,17 @@ public class LambdaTestServer : IAsyncDisposable
     /// Only available after the server has been started.
     /// </summary>
     /// <exception cref="InvalidOperationException">Thrown if server is not in Running state.</exception>
-    public IServiceProvider Services
-    {
-        get
-        {
-            if (_state != ServerState.Running)
-                throw new InvalidOperationException(
-                    $"Services are only available when server is Running. Current state: {_state}. Call StartAsync() first."
-                );
-
-            return _host.Services;
-        }
-    }
+    public IServiceProvider Services => _host.Services;
 
     /// <summary>
-    /// Starts the Lambda host and begins processing invocations.
+    /// Starts the Lambda host and waits for initialization to complete.
+    /// Returns initialization result indicating success or failure.
+    /// If initialization fails, the server is automatically stopped.
     /// </summary>
     /// <param name="cancellationToken">Cancellation token.</param>
+    /// <returns>InitResponse indicating whether initialization succeeded or failed.</returns>
     /// <exception cref="InvalidOperationException">Thrown if server is not in Created state.</exception>
-    public async Task StartAsync(CancellationToken cancellationToken = default)
+    public async Task<InitResponse> StartAsync(CancellationToken cancellationToken = default)
     {
         if (_state != ServerState.Created)
             throw new InvalidOperationException(
@@ -76,8 +67,6 @@ public class LambdaTestServer : IAsyncDisposable
         {
             _state = ServerState.Starting;
 
-            EnsureEntryPointDidNotFault();
-
             // Start the host
             await _host.StartAsync(cancellationToken);
 
@@ -85,7 +74,31 @@ public class LambdaTestServer : IAsyncDisposable
             _processor.StartProcessing();
 
             _state = ServerState.Running;
-            BeginEntryPointMonitoring();
+
+            // Race initialization completion against entry point failure
+            var initTask = _processor.GetInitCompletionAsync();
+            var completed = await Task.WhenAny(initTask, _entryPointCompletion)
+                .WaitAsync(cancellationToken);
+
+            // Check if entry point failed before init completed
+            if (completed == _entryPointCompletion)
+            {
+                var exception = await _entryPointCompletion;
+                if (exception != null)
+                    throw new InvalidOperationException(
+                        "Entry point failed during initialization",
+                        exception
+                    );
+            }
+
+            // Wait for init to complete
+            var initResponse = await initTask;
+
+            // If init failed, auto-stop the server
+            if (!initResponse.InitSuccess)
+                await StopAsync(CancellationToken.None);
+
+            return initResponse;
         }
         catch
         {
@@ -237,16 +250,6 @@ public class LambdaTestServer : IAsyncDisposable
                     // Best effort - continue with disposal
                 }
 
-            if (_entryPointMonitorTask != null)
-                try
-                {
-                    await _entryPointMonitorTask.ConfigureAwait(false);
-                }
-                catch
-                {
-                    // Swallow monitoring errors during disposal
-                }
-
             // Dispose processor
             await _processor.DisposeAsync();
 
@@ -308,71 +311,4 @@ public class LambdaTestServer : IAsyncDisposable
 
     private string GetRequestId() =>
         Interlocked.Increment(ref _requestCounter).ToString().PadLeft(12, '0');
-
-    private void EnsureEntryPointDidNotFault()
-    {
-        if (!_entryPointCompletion.IsCompleted)
-            return;
-
-        PropagateEntryPointCompletion(_entryPointCompletion);
-    }
-
-    private void BeginEntryPointMonitoring()
-    {
-        if (_entryPointCompletion.IsCompleted)
-        {
-            PropagateEntryPointCompletion(_entryPointCompletion);
-            return;
-        }
-
-        _entryPointMonitorTask = MonitorEntryPointCompletionAsync();
-    }
-
-    private async Task MonitorEntryPointCompletionAsync()
-    {
-        try
-        {
-            var exception = await _entryPointCompletion.ConfigureAwait(false);
-            if (exception != null)
-                await HandleEntryPointFailureAsync(exception).ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            await HandleEntryPointFailureAsync(ex).ConfigureAwait(false);
-        }
-    }
-
-    private void PropagateEntryPointCompletion(Task<Exception?> completionTask)
-    {
-        if (completionTask.IsFaulted)
-            throw completionTask.Exception!.GetBaseException();
-
-        if (completionTask.Status == TaskStatus.Canceled)
-            throw new TaskCanceledException("Entry point execution was canceled.");
-
-        var exception =
-            completionTask.Status == TaskStatus.RanToCompletion ? completionTask.Result : null;
-
-        if (exception != null)
-            throw exception;
-    }
-
-    private async Task HandleEntryPointFailureAsync(Exception exception)
-    {
-        if (_state == ServerState.Disposed)
-            return;
-
-        _processor.FailPendingInvocations(exception);
-
-        try
-        {
-            await _host.StopAsync();
-        }
-        catch
-        {
-            // Best effort stop
-        }
-
-        _state = ServerState.Stopped;
-    }
 }

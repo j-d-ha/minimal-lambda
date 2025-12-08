@@ -19,6 +19,15 @@ internal class LambdaRuntimeRouteManager : ILambdaRuntimeRouteManager
         },
         new()
         {
+            Type = RequestType.PostInitError,
+            Method = HttpMethod.Post.Method,
+            Matcher = new TemplateMatcher(
+                TemplateParser.Parse("{version}/runtime/init/error"),
+                new RouteValueDictionary()
+            ),
+        },
+        new()
+        {
             Type = RequestType.PostResponse,
             Method = HttpMethod.Post.Method,
             Matcher = new TemplateMatcher(

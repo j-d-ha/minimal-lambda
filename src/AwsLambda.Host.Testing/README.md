@@ -178,6 +178,37 @@ Headers:
 
 ```
 
+```json
+{
+  "errorType": "AggregateException",
+  "errorMessage": "Encountered errors while running OnInit handlers: (Init failed)",
+  "stackTrace": [
+    "at AwsLambda.Host.Builder.LambdaOnInitBuilder.<Build>b__10_1(CancellationToken stoppingToken) in /Users/jonasha/Repos/CSharp/dotnet-lambda-host/src/AwsLambda.Host/Builder/LambdaOnInitBuilder.cs:line 65",
+    "at Amazon.Lambda.RuntimeSupport.LambdaBootstrap.InitializeAsync()"
+  ],
+  "cause": {
+    "errorType": "Exception",
+    "errorMessage": "Init failed",
+    "stackTrace": [
+      "at Program.<>c.<<Main>$>b__0_1() in /Users/jonasha/Repos/CSharp/dotnet-lambda-host/examples/AwsLambda.Host.Example.Testing/Lambda/Program.cs:line 18",
+      "at AwsLambda.Host.Core.Generated.<LambdaHandler_g>F0316F908774B11B609C941996D283BB313AD08F671E39F0BE1901FEE2BBA6D4C__GeneratedLambdaOnInitBuilderExtensions.<>c__DisplayClass0_0.<OnInitInterceptor0>g__OnInit|0(IServiceProvider serviceProvider, CancellationToken cancellationToken) in /Users/jonasha/Repos/CSharp/dotnet-lambda-host/examples/AwsLambda.Host.Example.Testing/Lambda/obj/Debug/net10.0/AwsLambda.Host.SourceGenerators/AwsLambda.Host.SourceGenerators.MapHandlerIncrementalGenerator/LambdaHandler.g.cs:line 109",
+      "at AwsLambda.Host.Builder.LambdaOnInitBuilder.RunInitHandler(LambdaInitDelegate handler, CancellationToken cancellationToken) in /Users/jonasha/Repos/CSharp/dotnet-lambda-host/src/AwsLambda.Host/Builder/LambdaOnInitBuilder.cs:line 81"
+    ]
+  },
+  "causes": [
+    {
+      "errorType": "Exception",
+      "errorMessage": "Init failed",
+      "stackTrace": [
+        "at Program.<>c.<<Main>$>b__0_1() in /Users/jonasha/Repos/CSharp/dotnet-lambda-host/examples/AwsLambda.Host.Example.Testing/Lambda/Program.cs:line 18",
+        "at AwsLambda.Host.Core.Generated.<LambdaHandler_g>F0316F908774B11B609C941996D283BB313AD08F671E39F0BE1901FEE2BBA6D4C__GeneratedLambdaOnInitBuilderExtensions.<>c__DisplayClass0_0.<OnInitInterceptor0>g__OnInit|0(IServiceProvider serviceProvider, CancellationToken cancellationToken) in /Users/jonasha/Repos/CSharp/dotnet-lambda-host/examples/AwsLambda.Host.Example.Testing/Lambda/obj/Debug/net10.0/AwsLambda.Host.SourceGenerators/AwsLambda.Host.SourceGenerators.MapHandlerIncrementalGenerator/LambdaHandler.g.cs:line 109",
+        "at AwsLambda.Host.Builder.LambdaOnInitBuilder.RunInitHandler(LambdaInitDelegate handler, CancellationToken cancellationToken) in /Users/jonasha/Repos/CSharp/dotnet-lambda-host/src/AwsLambda.Host/Builder/LambdaOnInitBuilder.cs:line 81"
+      ]
+    }
+  ]
+}
+```
+
 # In-Memory Lambda Testing Client Implementation Summary
 
 ## Overview
