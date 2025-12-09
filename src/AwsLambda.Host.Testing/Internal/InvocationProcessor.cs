@@ -27,10 +27,7 @@ internal class InvocationProcessor : IAsyncDisposable
     private ProcessorState _state;
     private Task? _processingTask;
 
-    internal InvocationProcessor(
-        JsonSerializerOptions? jsonSerializerOptions = null,
-        ILambdaRuntimeRouteManager? routeManager = null
-    )
+    internal InvocationProcessor()
     {
         _transactionChannel = Channel.CreateBounded<LambdaHttpTransaction>(
             new BoundedChannelOptions(TransactionChannelCapacity)
@@ -42,8 +39,8 @@ internal class InvocationProcessor : IAsyncDisposable
         );
         _pendingInvocationIds = new ConcurrentQueue<string>();
         _pendingInvocations = new ConcurrentDictionary<string, PendingInvocation>();
-        _routeManager = routeManager ?? new LambdaRuntimeRouteManager();
-        _jsonSerializerOptions = jsonSerializerOptions ?? new JsonSerializerOptions();
+        _routeManager = new LambdaRuntimeRouteManager();
+        _jsonSerializerOptions = new JsonSerializerOptions();
         _shutdownCts = new CancellationTokenSource();
         _initCompletionTcs = new TaskCompletionSource<InitResponse>(
             TaskCreationOptions.RunContinuationsAsynchronously

@@ -13,10 +13,10 @@ builder.Services.ConfigureLambdaHostOptions(options =>
 // Build the Lambda application
 var lambda = builder.Build();
 
-lambda.OnInit(() =>
-{
-    return false;
-});
+// lambda.OnInit(() =>
+// {
+//     return false;
+// });
 
 // Map your handler - the event is automatically injected
 lambda.MapHandler(([Event] string name) => $"Hello {name}!");

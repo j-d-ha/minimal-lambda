@@ -30,13 +30,13 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
     private bool _disposed;
     private bool _disposedAsync;
     private IHost? _host;
-    private LambdaTestServer? _server;
+    private LambdaServerV2? _server;
 
     /// <summary>
     /// <para>
     /// Creates an instance of <see cref="LambdaApplicationFactory{TEntryPoint}"/>. This factory can be used to
-    /// create a <see cref="LambdaTestServer"/> instance using the MVC application defined by <typeparamref name="TEntryPoint"/>
-    /// and one or more <see cref="HttpClient"/> instances used to send <see cref="HttpRequestMessage"/> to the <see cref="LambdaTestServer"/>.
+    /// create a <see cref="LambdaServerV2"/> instance using the MVC application defined by <typeparamref name="TEntryPoint"/>
+    /// and one or more <see cref="HttpClient"/> instances used to send <see cref="HttpRequestMessage"/> to the <see cref="LambdaServerV2"/>.
     /// The <see cref="LambdaApplicationFactory{TEntryPoint}"/> will find the entry point class of <typeparamref name="TEntryPoint"/>
     /// assembly and initialize the application by calling <c>IHostBuilder CreateWebHostBuilder(string [] args)</c>
     /// on <typeparamref name="TEntryPoint"/>.
@@ -71,9 +71,9 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
         _derivedFactories.AsReadOnly();
 
     /// <summary>
-    /// Gets the <see cref="LambdaTestServer"/> created by this <see cref="LambdaApplicationFactory{TEntryPoint}"/>.
+    /// Gets the <see cref="LambdaServerV2"/> created by this <see cref="LambdaApplicationFactory{TEntryPoint}"/>.
     /// </summary>
-    public LambdaTestServer Server
+    public LambdaServerV2 Server
     {
         get
         {
@@ -231,11 +231,10 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
         _host = CreateHost(hostBuilder);
 
         // Create the public server with the built (but not started) host
-        _server = new LambdaTestServer(
-            _host,
-            processor,
-            entryPointCompletion: entryPointCompletion
-        );
+        // _server = new LambdaServerV2(_host, processor, entryPointCompletion:
+        // entryPointCompletion);
+
+        _server = new LambdaServerV2(_host);
     }
 
     private void SetContentRoot(IHostBuilder builder)
@@ -402,7 +401,7 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
     }
 
     /// <summary>
-    /// Creates a <see cref="IHostBuilder"/> used to set up <see cref="LambdaTestServer"/>.
+    /// Creates a <see cref="IHostBuilder"/> used to set up <see cref="LambdaServerV2"/>.
     /// </summary>
     /// <remarks>
     /// The default implementation of this method looks for a <c>public static IHostBuilder CreateHostBuilder(string[] args)</c>
@@ -428,7 +427,7 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
     /// <param name="builder">The <see cref="IHostBuilder"/> used to create the host.</param>
     /// <returns>The <see cref="IHost"/> with the bootstrapped application.</returns>
     protected virtual IHost CreateHost(IHostBuilder builder) =>
-        // Build the host but DON'T start it - LambdaTestServer.StartAsync() will start it
+        // Build the host but DON'T start it - LambdaServerV2.StartAsync() will start it
         builder.Build();
 
     /// <summary>
