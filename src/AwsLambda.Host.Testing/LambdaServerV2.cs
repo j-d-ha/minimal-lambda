@@ -109,7 +109,8 @@ public class LambdaServerV2 : IAsyncDisposable
 
     public async ValueTask DisposeAsync()
     {
-        await StopAsync();
+        if (_state == ServerState.Running)
+            await StopAsync();
 
         _transactionChannel.Writer.TryComplete();
 
@@ -134,7 +135,9 @@ public class LambdaServerV2 : IAsyncDisposable
     public async Task<InitResponse> StartAsync(CancellationToken cancellationToken = default)
     {
         if (_state != ServerState.Created)
-            throw new InvalidOperationException("Server is already started.");
+            throw new InvalidOperationException(
+                "Server has already been started and cannot be restarted."
+            );
 
         if (_host is null)
             throw new InvalidOperationException("Host is not set.");
@@ -179,7 +182,9 @@ public class LambdaServerV2 : IAsyncDisposable
     )
     {
         if (_state != ServerState.Running)
-            throw new InvalidOperationException("Server is not started.");
+            throw new InvalidOperationException(
+                "Server is not Running and as such an event cannot be invoked."
+            );
 
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
@@ -234,7 +239,9 @@ public class LambdaServerV2 : IAsyncDisposable
     public async Task StopAsync(CancellationToken cancellationToken = default)
     {
         if (_state != ServerState.Running)
-            return;
+            throw new InvalidOperationException(
+                "Server is not running and as such cannot be stopped."
+            );
 
         _state = ServerState.Stopping;
 
