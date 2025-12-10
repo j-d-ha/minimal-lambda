@@ -289,19 +289,7 @@ public class LambdaServerV2 : IAsyncDisposable
             throw new InvalidOperationException($"Missing pending invocation for {requestId}");
 
         // Acknowledge to Bootstrap
-        transaction.Respond(
-            new HttpResponseMessage(HttpStatusCode.Accepted)
-            {
-                Content = new StringContent(
-                    """
-                    {"status":"success"}
-                    """,
-                    Encoding.UTF8,
-                    "application/json"
-                ),
-                Version = Version.Parse("1.1"),
-            }
-        );
+        transaction.Respond(CreateSuccessResponse());
 
         pending.ResponseTcs.SetResult(
             await CreateCompletionAsync(RequestType.PostResponse, transaction.Request)
@@ -311,7 +299,19 @@ public class LambdaServerV2 : IAsyncDisposable
     private async Task HandlePostErrorAsync(
         LambdaHttpTransaction transaction,
         RouteValueDictionary routeValues
-    ) { }
+    )
+    {
+        var requestId = routeValues["requestId"]?.ToString();
+        if (requestId is null || !_pendingInvocations.TryGetValue(requestId, out var pending))
+            throw new InvalidOperationException($"Missing pending invocation for {requestId}");
+
+        // Acknowledge to Bootstrap
+        transaction.Respond(CreateSuccessResponse());
+
+        pending.ResponseTcs.SetResult(
+            await CreateCompletionAsync(RequestType.PostError, transaction.Request)
+        );
+    }
 
     private async Task HandlePostInitErrorAsync(LambdaHttpTransaction transaction)
     {
@@ -406,6 +406,19 @@ public class LambdaServerV2 : IAsyncDisposable
 
         return new InvocationCompletion { Request = clonedRequest, RequestType = requestType };
     }
+
+    private static HttpResponseMessage CreateSuccessResponse() =>
+        new(HttpStatusCode.Accepted)
+        {
+            Content = new StringContent(
+                """
+                {"status":"success"}
+                """,
+                Encoding.UTF8,
+                "application/json"
+            ),
+            Version = Version.Parse("1.1"),
+        };
 }
 
 // public static class Temp
