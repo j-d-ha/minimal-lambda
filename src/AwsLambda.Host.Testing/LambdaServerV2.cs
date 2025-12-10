@@ -4,6 +4,7 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Channels;
+using AwsLambda.Host.Options;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -12,21 +13,81 @@ namespace AwsLambda.Host.Testing;
 
 public class LambdaServerV2 : IAsyncDisposable
 {
+    /// <summary>
+    /// Options used to configure how the server interacts with the Lambda.
+    /// </summary>
     private readonly LambdaClientOptions _clientOptions;
+
+    /// <summary>
+    /// Task that represents the running Host application that has been captured.
+    /// </summary>
     private readonly Task<Exception?> _entryPointCompletion;
-    private readonly TaskCompletionSource<InitResponse> _initCompletionTcs;
-    private readonly SemaphoreSlim _invocationAddedSignal;
+
+    /// <summary>
+    /// TCS used to signal the startup has completed
+    /// </summary>
+    private readonly TaskCompletionSource<InitResponse> _initCompletionTcs = new(
+        TaskCreationOptions.RunContinuationsAsynchronously
+    );
+
+    /// <summary>
+    /// JSON serializer options used to serialize/deserilize Lambda events and responses.
+    /// </summary>
     private readonly JsonSerializerOptions _jsonSerializerOptions;
-    private readonly Channel<string> _pendingInvocationIds;
-    private readonly ConcurrentDictionary<string, PendingInvocation> _pendingInvocations;
-    private readonly ILambdaRuntimeRouteManager _routeManager;
+
+    /// <summary>
+    /// Channel used to queue pending invocations in a FIFO manner.
+    /// </summary>
+    private readonly Channel<string> _pendingInvocationIds = Channel.CreateUnbounded<string>(
+        new UnboundedChannelOptions { SingleReader = true, SingleWriter = false }
+    );
+
+    /// <summary>
+    /// Dictionary to track all invocations that have been sent to Lambda.
+    /// </summary>
+    private readonly ConcurrentDictionary<string, PendingInvocation> _pendingInvocations = new();
+
+    /// <summary>
+    /// Route manager to determine the route of the incoming request from the Lambda.
+    /// </summary>
+    private readonly ILambdaRuntimeRouteManager _routeManager = new LambdaRuntimeRouteManager();
+
+    /// <summary>
+    /// CTS used to signal shutdown of the server and cancellation of pending tasks.
+    /// </summary>
     private readonly CancellationTokenSource _shutdownCts;
-    private readonly Channel<LambdaHttpTransaction> _transactionChannel;
+
+    /// <summary>
+    /// Channel used to by the Lambda to send events to the server.
+    /// </summary>
+    private readonly Channel<LambdaHttpTransaction> _transactionChannel =
+        Channel.CreateUnbounded<LambdaHttpTransaction>(
+            new UnboundedChannelOptions { SingleReader = true, SingleWriter = false }
+        );
+
+    /// <summary>
+    /// Host application lifetime used to signal shutdown to the captioned Host.
+    /// </summary>
     private IHostApplicationLifetime _applicationLifetime;
 
+    /// <summary>
+    /// The captured Host instance.
+    /// </summary>
     private IHost? _host;
+
+    /// <summary>
+    /// Task that is running the background processing loop to handle incoming requests from Lambda.
+    /// </summary>
     private Task? _processingTask;
+
+    /// <summary>
+    /// Counter used to generate unique request IDs.
+    /// </summary>
     private int _requestCounter;
+
+    /// <summary>
+    /// Current state of the server used to enforce lifecycle rules.
+    /// </summary>
     private ServerState _state;
 
     internal LambdaServerV2(
@@ -37,22 +98,10 @@ public class LambdaServerV2 : IAsyncDisposable
         ArgumentNullException.ThrowIfNull(entryPointCompletion);
 
         _entryPointCompletion = entryPointCompletion;
-
-        _transactionChannel = Channel.CreateUnbounded<LambdaHttpTransaction>(
-            new UnboundedChannelOptions { SingleReader = true, SingleWriter = false }
-        );
-        _pendingInvocationIds = Channel.CreateUnbounded<string>(
-            new UnboundedChannelOptions { SingleReader = true, SingleWriter = false }
-        );
-        _pendingInvocations = new ConcurrentDictionary<string, PendingInvocation>();
-        _routeManager = new LambdaRuntimeRouteManager();
-        _jsonSerializerOptions = new JsonSerializerOptions();
         _shutdownCts = CancellationTokenSource.CreateLinkedTokenSource(shutdownToken);
-        _initCompletionTcs = new TaskCompletionSource<InitResponse>(
-            TaskCreationOptions.RunContinuationsAsynchronously
-        );
-        _invocationAddedSignal = new SemaphoreSlim(0);
         _state = ServerState.Created;
+
+        _jsonSerializerOptions = DefaultLambdaJsonSerializerOptions.Create();
         _clientOptions = new LambdaClientOptions();
     }
 
@@ -63,6 +112,8 @@ public class LambdaServerV2 : IAsyncDisposable
         await StopAsync();
 
         _transactionChannel.Writer.TryComplete();
+
+        await _shutdownCts.CancelAsync();
 
         _state = ServerState.Disposed;
     }
@@ -215,11 +266,13 @@ public class LambdaServerV2 : IAsyncDisposable
         if (_state != ServerState.Running)
             return;
 
-        using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        _state = ServerState.Stopping;
+
+        await _shutdownCts.CancelAsync();
 
         _applicationLifetime.StopApplication();
 
-        await _entryPointCompletion;
+        var exceptions = await WhenAll(_entryPointCompletion, _processingTask!);
 
         _state = ServerState.Stopped;
     }
