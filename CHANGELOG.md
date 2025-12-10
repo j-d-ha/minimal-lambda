@@ -3,7 +3,31 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [Unreleased](https://github.com/j-d-ha/aws-lambda-host/compare/v1.2.1...HEAD)
+## [Unreleased](https://github.com/j-d-ha/aws-lambda-host/compare/v1.3.0...HEAD)
+
+## [v1.3.0](https://github.com/j-d-ha/aws-lambda-host/compare/v1.2.1...v1.3.0) - 2025-12-10
+
+## 🚀 Features
+
+* feat(source-generators): support multiple MapHandler invocations with custom feature providers (#214) @j-d-ha
+* docs: update MkDocs palette toggle configuration (#211) @j-d-ha
+
+## 🐛 Bug Fixes
+
+* fix: update third-party license attributions (#217) @j-d-ha
+
+## 📚 Documentation
+
+* docs: add comprehensive getting started guide and restructure documentation (#209) @j-d-ha
+
+## 🔄 Refactoring
+
+* refactor(host): migrate BootstrapHttpClient from options to dependency injection (#219) @j-d-ha
+* refactor(docs): replace ASPNETCORE_ENVIRONMENT with DOTNET_ENVIRONMENT (#216) @j-d-ha
+
+## 🔧 Maintenance
+
+* ci(github): optimize workflow triggers for draft PRs (#215) @j-d-ha
 
 ## [v1.2.1](https://github.com/j-d-ha/aws-lambda-host/compare/v1.2.0...v1.2.1) - 2025-11-30
 
