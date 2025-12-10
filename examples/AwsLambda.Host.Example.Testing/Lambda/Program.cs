@@ -1,4 +1,5 @@
 ﻿using AwsLambda.Host.Builder;
+using AwsLambda.Host.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -23,9 +24,9 @@ var lambda = builder.Build();
 
 // Map your handler - the event is automatically injected
 lambda.MapHandler(
-    async ([Event] string name, CancellationToken cancellationToken) =>
+    async ([Event] string name, ILambdaHostContext context, CancellationToken cancellationToken) =>
     {
-        // await Task.Delay(TimeSpan.FromSeconds(60), cancellationToken);
+        await Task.Delay(TimeSpan.FromSeconds(60), cancellationToken);
         if (string.IsNullOrWhiteSpace(name))
             throw new ArgumentNullException(nameof(name), "Name is required.");
 

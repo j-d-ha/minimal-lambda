@@ -3,19 +3,13 @@ namespace AwsLambda.Host.Testing;
 /// <summary>
 /// Headers returned in Lambda runtime API invocation responses.
 /// </summary>
-public class LambdaInvocationHeaderOptions
+public class LambdaInvocationOptions
 {
     /// <summary>
     /// Gets or sets additional custom headers to include in the Lambda invocation response.
     /// Use this to add any additional headers beyond the standard Lambda runtime headers.
     /// </summary>
     public Dictionary<string, string> AdditionalHeaders { get; set; } = new();
-
-    /// <summary>
-    /// Gets or sets the response date header.
-    /// Maps to the <c>Date</c> HTTP header. Defaults to current UTC time.
-    /// </summary>
-    public DateTime Date { get; set; } = DateTime.UtcNow;
 
     /// <summary>
     /// Gets or sets the ARN of the Lambda function being invoked.
@@ -33,31 +27,8 @@ public class LambdaInvocationHeaderOptions
     public TimeSpan FunctionTimeout { get; set; } = TimeSpan.FromMinutes(15);
 
     /// <summary>
-    /// Gets or sets the maximum amount of time to wait for a response from the Lambda bootstrap.
-    /// Defaults to the function timeout plus a small buffer.
-    /// </summary>
-    public TimeSpan ClientWaitTimeout { get; set; } =
-        TimeSpan.FromMinutes(15).Add(TimeSpan.FromSeconds(5));
-
-    /// <summary>
-    /// Legacy property for client wait timeout. Prefer <see cref="ClientWaitTimeout"/>.
-    /// </summary>
-    [Obsolete("Use ClientWaitTimeout instead.")]
-    public TimeSpan InvocationTimeout
-    {
-        get => ClientWaitTimeout;
-        set => ClientWaitTimeout = value;
-    }
-
-    /// <summary>
     /// Gets or sets the AWS X-Ray trace ID for distributed tracing.
     /// Maps to the <c>Lambda-Runtime-Trace-Id</c> header.
     /// </summary>
     public string TraceId { get; set; } = Guid.NewGuid().ToString();
-
-    /// <summary>
-    /// Gets or sets whether to use chunked transfer encoding.
-    /// Maps to the <c>Transfer-Encoding: chunked</c> HTTP header. Defaults to true.
-    /// </summary>
-    public bool TransferEncodingChunked { get; set; } = true;
 }

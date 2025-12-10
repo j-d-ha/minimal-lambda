@@ -21,6 +21,7 @@ public class LambdaHostTest
 
         var response = await factory.TestServer.InvokeAsync<string, string>(
             "Jonas",
+            "1",
             TestContext.Current.CancellationToken
         );
 
@@ -93,7 +94,7 @@ public class LambdaHostTest
             .ContainSingle(ex =>
                 ex is InvalidOperationException
                 && ex.Message.Contains(
-                    "Unexpected request: GET http://http//localhost:3002/2018-06-01/runtime/invocation/next"
+                    "Unexpected request received from the Lambda HTTP handler: GET http://http//localhost:3002/2018-06-01/runtime/invocation/next"
                 )
             );
     }
@@ -163,8 +164,8 @@ public class LambdaHostTest
     //         await using var factory = new LambdaApplicationFactory<Program>();
     //         await factory.TestServer.StartAsync(TestContext.Current.CancellationToken);
     //
-    //         var options = new LambdaClientOptions();
-    //         options.InvocationHeaderOptions.ClientWaitTimeout = TimeSpan.Zero;
+    //         var options = new LambdaServerOptions();
+    //         options.InvocationOptions.ClientWaitTimeout = TimeSpan.Zero;
     //
     //         await factory.TestServer.InvokeAsync<string, string>(
     //             "Jonas",

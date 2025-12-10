@@ -16,7 +16,7 @@ public class LambdaTestServer : IAsyncDisposable
     /// <summary>
     /// Options used to configure how the server interacts with the Lambda.
     /// </summary>
-    private readonly LambdaClientOptions _clientOptions;
+    private readonly LambdaServerOptions _serverOptions;
 
     /// <summary>
     /// Task that represents the running Host application that has been captured.
@@ -102,7 +102,7 @@ public class LambdaTestServer : IAsyncDisposable
         _state = ServerState.Created;
 
         _jsonSerializerOptions = DefaultLambdaJsonSerializerOptions.Create();
-        _clientOptions = new LambdaClientOptions();
+        _serverOptions = new LambdaServerOptions();
     }
 
     public IServiceProvider Services => _host!.Services;
@@ -142,10 +142,7 @@ public class LambdaTestServer : IAsyncDisposable
         if (_host is null)
             throw new InvalidOperationException("Host is not set.");
 
-        using var cts = CancellationTokenSource.CreateLinkedTokenSource(
-            cancellationToken,
-            _shutdownCts.Token
-        );
+        using var cts = LinkedCts(cancellationToken);
 
         _state = ServerState.Starting;
 
@@ -181,6 +178,7 @@ public class LambdaTestServer : IAsyncDisposable
 
     public async Task<InvocationResponse<TResponse>> InvokeAsync<TResponse, TEvent>(
         TEvent invokeEvent,
+        string? traceId = null,
         CancellationToken cancellationToken = default
     )
     {
@@ -189,27 +187,23 @@ public class LambdaTestServer : IAsyncDisposable
                 "TestServer is not Running and as such an event cannot be invoked."
             );
 
-        using var cts = CancellationTokenSource.CreateLinkedTokenSource(
-            cancellationToken,
-            _shutdownCts.Token
-        );
+        using var cts = LinkedCtsWithInvocationDeadline(cancellationToken);
+
+        traceId ??= Guid.NewGuid().ToString();
 
         // Generate unique request ID
         var requestId = GetRequestId();
 
         // Create the event response with Lambda headers
-        var eventResponse = CreateEventResponse(invokeEvent, requestId);
-        var deadlineUtc = DateTimeOffset.UtcNow.Add(
-            _clientOptions.InvocationHeaderOptions.ClientWaitTimeout
-        );
-
-        cts.CancelAfter(_clientOptions.InvocationHeaderOptions.ClientWaitTimeout);
+        var eventResponse = CreateEventResponse(invokeEvent, requestId, traceId);
+        var deadlineUtc = DateTimeOffset.UtcNow.Add(_serverOptions.FunctionTimeout);
 
         var pending = PendingInvocation.Create(requestId, eventResponse, deadlineUtc);
 
         _pendingInvocations.AddRequired(requestId, pending);
 
-        _pendingInvocationIds.Writer.TryWrite(requestId);
+        if (!_pendingInvocationIds.Writer.TryWrite(requestId))
+            throw new InvalidOperationException("Failed to enqueue pending invocation");
 
         var completion = await pending.ResponseTcs.Task.WaitAsync(cts.Token);
 
@@ -264,7 +258,7 @@ public class LambdaTestServer : IAsyncDisposable
     }
 
     //      ┌──────────────────────────────────────────────────────────┐
-    //      │                  Internal TestServer Logic                   │
+    //      │                Internal TestServer Logic                 │
     //      └──────────────────────────────────────────────────────────┘
 
     private async Task ProcessTransactionsAsync()
@@ -283,7 +277,7 @@ public class LambdaTestServer : IAsyncDisposable
                     )
                 )
                     throw new InvalidOperationException(
-                        $"Unexpected request: {transaction.Request.Method} {transaction.Request.RequestUri}"
+                        $"Unexpected request received from the Lambda HTTP handler: {transaction.Request.Method} {transaction.Request.RequestUri}"
                     );
 
                 switch (requestType!.Value)
@@ -382,7 +376,11 @@ public class LambdaTestServer : IAsyncDisposable
         );
     }
 
-    private HttpResponseMessage CreateEventResponse<TEvent>(TEvent invokeEvent, string requestId)
+    private HttpResponseMessage CreateEventResponse<TEvent>(
+        TEvent invokeEvent,
+        string requestId,
+        string traceId
+    )
     {
         var response = new HttpResponseMessage(HttpStatusCode.OK)
         {
@@ -395,28 +393,20 @@ public class LambdaTestServer : IAsyncDisposable
         };
 
         // Add standard HTTP headers
-        response.Headers.Date = new DateTimeOffset(_clientOptions.InvocationHeaderOptions.Date);
-        response.Headers.TransferEncodingChunked = _clientOptions
-            .InvocationHeaderOptions
-            .TransferEncodingChunked;
+        response.Headers.Date = new DateTimeOffset(DateTime.UtcNow, TimeSpan.Zero);
+        response.Headers.TransferEncodingChunked = true;
 
         // Add custom Lambda runtime headers
         var deadlineMs = DateTimeOffset
-            .UtcNow.Add(_clientOptions.InvocationHeaderOptions.FunctionTimeout)
+            .UtcNow.Add(_serverOptions.FunctionTimeout)
             .ToUnixTimeMilliseconds();
         response.Headers.Add("Lambda-Runtime-Deadline-Ms", deadlineMs.ToString());
         response.Headers.Add("Lambda-Runtime-Aws-Request-Id", requestId);
-        response.Headers.Add(
-            "Lambda-Runtime-Trace-Id",
-            _clientOptions.InvocationHeaderOptions.TraceId
-        );
-        response.Headers.Add(
-            "Lambda-Runtime-Invoked-Function-Arn",
-            _clientOptions.InvocationHeaderOptions.FunctionArn
-        );
+        response.Headers.Add("Lambda-Runtime-Trace-Id", traceId);
+        response.Headers.Add("Lambda-Runtime-Invoked-Function-Arn", _serverOptions.FunctionArn);
 
         // Add any additional custom headers
-        foreach (var header in _clientOptions.InvocationHeaderOptions.AdditionalHeaders)
+        foreach (var header in _serverOptions.AdditionalHeaders)
             response.Headers.Add(header.Key, header.Value);
 
         return response;
@@ -468,4 +458,20 @@ public class LambdaTestServer : IAsyncDisposable
             ),
             Version = Version.Parse("1.1"),
         };
+
+    private CancellationTokenSource LinkedCtsWithInvocationDeadline(
+        CancellationToken cancellationTokens
+    )
+    {
+        var cts = CancellationTokenSource.CreateLinkedTokenSource(
+            cancellationTokens,
+            _shutdownCts.Token
+        );
+        cts.CancelAfter(_serverOptions.FunctionTimeout);
+
+        return cts;
+    }
+
+    private CancellationTokenSource LinkedCts(CancellationToken cancellationTokens) =>
+        CancellationTokenSource.CreateLinkedTokenSource(cancellationTokens, _shutdownCts.Token);
 }
