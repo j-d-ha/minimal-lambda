@@ -30,6 +30,25 @@ public class LambdaHostTest
     }
 
     [Fact]
+    public async Task LambdaHost_HandlerReturnsError()
+    {
+        await using var factory = new LambdaApplicationFactory<Program>();
+
+        var setup = await factory.Server.StartAsync(TestContext.Current.CancellationToken);
+
+        setup.InitStatus.Should().Be(InitStatus.InitCompleted);
+
+        var response = await factory.Server.InvokeAsync<string, string>(
+            "",
+            TestContext.Current.CancellationToken
+        );
+
+        response.WasSuccess.Should().BeFalse();
+        response.Error.Should().NotBeNull();
+        response.Error?.ErrorMessage.Should().Be("Name is required. (Parameter 'name')");
+    }
+
+    [Fact]
     public async Task LambdaHost_CrashesWithBadConfiguration_ThrowsException()
     {
         await using var factory = new LambdaApplicationFactory<Program>().WithHostBuilder(builder =>
