@@ -69,6 +69,10 @@ internal sealed class DefaultLambdaHostContext : ILambdaHostContext, IAsyncDispo
 
     public TimeSpan RemainingTime => _lambdaContext.RemainingTime;
 
+    public string TenantId => _lambdaContext.TenantId;
+
+    public string TraceId => _lambdaContext.TraceId;
+
     //      ┌──────────────────────────────────────────────────────────┐
     //      │                    ILambdaHostContext                    │
     //      └──────────────────────────────────────────────────────────┘
