@@ -1,5 +1,7 @@
 using System.Collections.Concurrent;
+using System.Net;
 using System.Net.Http.Json;
+using System.Text;
 using System.Text.Json;
 using System.Threading.Channels;
 using Microsoft.AspNetCore.Routing;
@@ -13,14 +15,16 @@ public class LambdaServerV2 : IAsyncDisposable
     private readonly SemaphoreSlim _invocationAddedSignal;
     private readonly JsonSerializerOptions _jsonSerializerOptions;
     private readonly ConcurrentQueue<string> _pendingInvocationIds;
-    private readonly ConcurrentDictionary<string, PendingInvocation> _pendingInvocations;
+    private readonly ConcurrentDictionary<string, PendingInvocation> _pendingInvocations_old;
     private readonly ILambdaRuntimeRouteManager _routeManager;
     private readonly CancellationTokenSource _shutdownCts;
     private readonly Channel<LambdaHttpTransaction> _transactionChannel;
     private readonly Task<Exception?> _entryPointCompletion;
+    private readonly LambdaClientOptions _clientOptions;
+    private readonly Channel<PendingInvocation> _pendingInvocations;
 
     private IHost? _host;
-
+    private int _requestCounter;
     private Task? _processingTask;
     private ServerState _state;
 
@@ -36,8 +40,11 @@ public class LambdaServerV2 : IAsyncDisposable
         _transactionChannel = Channel.CreateUnbounded<LambdaHttpTransaction>(
             new UnboundedChannelOptions { SingleReader = true, SingleWriter = false }
         );
+        _pendingInvocations = Channel.CreateUnbounded<PendingInvocation>(
+            new UnboundedChannelOptions { SingleReader = true, SingleWriter = false }
+        );
         _pendingInvocationIds = new ConcurrentQueue<string>();
-        _pendingInvocations = new ConcurrentDictionary<string, PendingInvocation>();
+        // _pendingInvocations = new ConcurrentDictionary<string, PendingInvocation>();
         _routeManager = new LambdaRuntimeRouteManager();
         _jsonSerializerOptions = new JsonSerializerOptions();
         _shutdownCts = CancellationTokenSource.CreateLinkedTokenSource(shutdownToken);
@@ -46,6 +53,7 @@ public class LambdaServerV2 : IAsyncDisposable
         );
         _invocationAddedSignal = new SemaphoreSlim(0);
         _state = ServerState.Created;
+        _clientOptions = new LambdaClientOptions();
     }
 
     internal void SetHost(IHost host)
@@ -154,9 +162,48 @@ public class LambdaServerV2 : IAsyncDisposable
 
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
+        // Generate unique request ID
+        var requestId = GetRequestId();
+
+        // Create the event response with Lambda headers
+        var eventResponse = CreateEventResponse(invokeEvent, requestId);
+        var deadlineUtc = DateTimeOffset.UtcNow.Add(
+            _clientOptions.InvocationHeaderOptions.ClientWaitTimeout
+        );
+
+        cts.CancelAfter(_clientOptions.InvocationHeaderOptions.ClientWaitTimeout);
+
         var pending = PendingInvocation.Create(requestId, eventResponse, deadlineUtc);
 
-        return default;
+        _pendingInvocations.Writer.TryWrite(pending);
+
+        var completion = await pending.ResponseTcs.Task.WaitAsync(cts.Token);
+
+        var responseMessage = completion.Request;
+        var wasSuccess = completion.RequestType == RequestType.PostResponse;
+
+        var invocationResponse = new InvocationResponse<TResponse>
+        {
+            WasSuccess = wasSuccess,
+            Response = wasSuccess
+                ? await (
+                    responseMessage.Content?.ReadFromJsonAsync<TResponse>(
+                        _jsonSerializerOptions,
+                        cts.Token
+                    ) ?? Task.FromResult<TResponse?>(default)
+                )
+                : default,
+            Error = !wasSuccess
+                ? await (
+                    responseMessage.Content?.ReadFromJsonAsync<ErrorResponse>(
+                        _jsonSerializerOptions,
+                        cts.Token
+                    ) ?? Task.FromResult<ErrorResponse?>(null)
+                )
+                : null,
+        };
+
+        return invocationResponse;
     }
 
     public async Task StopAsync(CancellationToken cancellationToken = default)
@@ -263,6 +310,49 @@ public class LambdaServerV2 : IAsyncDisposable
             "Server is already started and as such an initialization error cannot be reported."
         );
     }
+
+    private HttpResponseMessage CreateEventResponse<TEvent>(TEvent invokeEvent, string requestId)
+    {
+        var response = new HttpResponseMessage(HttpStatusCode.OK)
+        {
+            Content = new StringContent(
+                JsonSerializer.Serialize(invokeEvent, _jsonSerializerOptions),
+                Encoding.UTF8,
+                "application/json"
+            ),
+            Version = Version.Parse("1.1"),
+        };
+
+        // Add standard HTTP headers
+        response.Headers.Date = new DateTimeOffset(_clientOptions.InvocationHeaderOptions.Date);
+        response.Headers.TransferEncodingChunked = _clientOptions
+            .InvocationHeaderOptions
+            .TransferEncodingChunked;
+
+        // Add custom Lambda runtime headers
+        var deadlineMs = DateTimeOffset
+            .UtcNow.Add(_clientOptions.InvocationHeaderOptions.FunctionTimeout)
+            .ToUnixTimeMilliseconds();
+        response.Headers.Add("Lambda-Runtime-Deadline-Ms", deadlineMs.ToString());
+        response.Headers.Add("Lambda-Runtime-Aws-Request-Id", requestId);
+        response.Headers.Add(
+            "Lambda-Runtime-Trace-Id",
+            _clientOptions.InvocationHeaderOptions.TraceId
+        );
+        response.Headers.Add(
+            "Lambda-Runtime-Invoked-Function-Arn",
+            _clientOptions.InvocationHeaderOptions.FunctionArn
+        );
+
+        // Add any additional custom headers
+        foreach (var header in _clientOptions.InvocationHeaderOptions.AdditionalHeaders)
+            response.Headers.Add(header.Key, header.Value);
+
+        return response;
+    }
+
+    private string GetRequestId() =>
+        Interlocked.Increment(ref _requestCounter).ToString().PadLeft(12, '0');
 }
 
 // public static class Temp
