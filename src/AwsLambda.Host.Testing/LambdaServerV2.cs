@@ -151,19 +151,9 @@ public class LambdaServerV2 : IAsyncDisposable
         // Start background processing
         _processingTask = Task.Run(ProcessTransactionsAsync, cts.Token);
 
-        var exceptions = await WhenAny(
-            _processingTask,
-            _entryPointCompletion,
-            _initCompletionTcs.Task
-        );
-
-        if (exceptions.Length > 0)
-            throw exceptions.Length > 0
-                ? new AggregateException(
-                    "Multiple exceptions encountered while running StartAsync",
-                    exceptions
-                )
-                : exceptions[0];
+        await TaskHelpers
+            .WhenAny(_processingTask, _entryPointCompletion, _initCompletionTcs.Task)
+            .UnwrapAndThrow("Exception(s) encountered while running StartAsync");
 
         if (_entryPointCompletion.IsCompleted)
             return new InitResponse { InitStatus = InitStatus.HostExited };
@@ -182,28 +172,6 @@ public class LambdaServerV2 : IAsyncDisposable
             "Server initialization failed with neither an error nor completion."
         );
     }
-
-    private static async Task<Exception[]> WhenAny(params Task[] tasks)
-    {
-        await Task.WhenAny(tasks);
-        return ExtractExceptions(tasks);
-    }
-
-    private static async Task<Exception[]> WhenAll(params Task[] tasks)
-    {
-        await Task.WhenAll(tasks);
-        return ExtractExceptions(tasks);
-    }
-
-    private static Exception[] ExtractExceptions(Task[] tasks) =>
-        tasks
-            .Where(t => t is { IsFaulted: true, Exception: not null })
-            .Select(e =>
-                e.Exception!.InnerExceptions.Count > 1
-                    ? e.Exception
-                    : e.Exception.InnerExceptions[0]
-            )
-            .ToArray();
 
     public async Task<InvocationResponse<TResponse>> InvokeAsync<TResponse, TEvent>(
         TEvent invokeEvent,
@@ -228,8 +196,8 @@ public class LambdaServerV2 : IAsyncDisposable
 
         var pending = PendingInvocation.Create(requestId, eventResponse, deadlineUtc);
 
-        if (!_pendingInvocations.TryAdd(requestId, pending))
-            throw new InvalidOperationException($"Duplicate request ID: {requestId}");
+        _pendingInvocations.AddRequired(requestId, pending);
+
         _pendingInvocationIds.Writer.TryWrite(requestId);
 
         var completion = await pending.ResponseTcs.Task.WaitAsync(cts.Token);
@@ -237,28 +205,30 @@ public class LambdaServerV2 : IAsyncDisposable
         var responseMessage = completion.Request;
         var wasSuccess = completion.RequestType == RequestType.PostResponse;
 
-        var invocationResponse = new InvocationResponse<TResponse>
+        var response = wasSuccess
+            ? await (
+                responseMessage.Content?.ReadFromJsonAsync<TResponse>(
+                    _jsonSerializerOptions,
+                    cts.Token
+                ) ?? Task.FromResult<TResponse?>(default)
+            )
+            : default;
+
+        var error = !wasSuccess
+            ? await (
+                responseMessage.Content?.ReadFromJsonAsync<ErrorResponse>(
+                    _jsonSerializerOptions,
+                    cts.Token
+                ) ?? Task.FromResult<ErrorResponse?>(null)
+            )
+            : null;
+
+        return new InvocationResponse<TResponse>
         {
             WasSuccess = wasSuccess,
-            Response = wasSuccess
-                ? await (
-                    responseMessage.Content?.ReadFromJsonAsync<TResponse>(
-                        _jsonSerializerOptions,
-                        cts.Token
-                    ) ?? Task.FromResult<TResponse?>(default)
-                )
-                : default,
-            Error = !wasSuccess
-                ? await (
-                    responseMessage.Content?.ReadFromJsonAsync<ErrorResponse>(
-                        _jsonSerializerOptions,
-                        cts.Token
-                    ) ?? Task.FromResult<ErrorResponse?>(null)
-                )
-                : null,
+            Response = response,
+            Error = error,
         };
-
-        return invocationResponse;
     }
 
     public async Task StopAsync(CancellationToken cancellationToken = default)
@@ -272,7 +242,9 @@ public class LambdaServerV2 : IAsyncDisposable
 
         _applicationLifetime.StopApplication();
 
-        var exceptions = await WhenAll(_entryPointCompletion, _processingTask!);
+        await TaskHelpers
+            .WhenAll(_entryPointCompletion, _processingTask!)
+            .UnwrapAndThrow("Exception(s) encountered while running StopAsync");
 
         _state = ServerState.Stopped;
     }
@@ -334,8 +306,7 @@ public class LambdaServerV2 : IAsyncDisposable
         if (await _pendingInvocationIds.Reader.WaitToReadAsync(_shutdownCts.Token))
         {
             var requestId = await _pendingInvocationIds.Reader.ReadAsync(_shutdownCts.Token);
-            if (!_pendingInvocations.TryGetValue(requestId, out var pendingInvocation))
-                throw new InvalidOperationException($"Missing pending invocation for {requestId}");
+            _pendingInvocations.GetRequired(requestId, out var pendingInvocation);
             transaction.ResponseTcs.SetResult(pendingInvocation.EventResponse);
         }
     }
@@ -345,9 +316,7 @@ public class LambdaServerV2 : IAsyncDisposable
         RouteValueDictionary routeValues
     )
     {
-        var requestId = routeValues["requestId"]?.ToString();
-        if (requestId is null || !_pendingInvocations.TryGetValue(requestId, out var pending))
-            throw new InvalidOperationException($"Missing pending invocation for {requestId}");
+        _pendingInvocations.GetRequired(routeValues["requestId"]?.ToString(), out var pending);
 
         // Acknowledge to Bootstrap
         transaction.Respond(CreateSuccessResponse());
@@ -362,9 +331,7 @@ public class LambdaServerV2 : IAsyncDisposable
         RouteValueDictionary routeValues
     )
     {
-        var requestId = routeValues["requestId"]?.ToString();
-        if (requestId is null || !_pendingInvocations.TryGetValue(requestId, out var pending))
-            throw new InvalidOperationException($"Missing pending invocation for {requestId}");
+        _pendingInvocations.GetRequired(routeValues["requestId"]?.ToString(), out var pending);
 
         // Acknowledge to Bootstrap
         transaction.Respond(CreateSuccessResponse());
@@ -481,14 +448,3 @@ public class LambdaServerV2 : IAsyncDisposable
             Version = Version.Parse("1.1"),
         };
 }
-
-// public static class Temp
-// {
-//     public static async Task Run()
-//     {
-//         await using var server = new LambdaServerV2();
-//         await server.StartAsync();
-//         var result = await server.InvokeAsync<string, string>("Jonas", CancellationToken.None);
-//         await server.StopAsync();
-//     }
-// }
