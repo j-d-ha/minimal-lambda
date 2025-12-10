@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.Json;
 using System.Threading.Channels;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace AwsLambda.Host.Testing;
@@ -21,6 +22,7 @@ public class LambdaServerV2 : IAsyncDisposable
     private readonly ILambdaRuntimeRouteManager _routeManager;
     private readonly CancellationTokenSource _shutdownCts;
     private readonly Channel<LambdaHttpTransaction> _transactionChannel;
+    private IHostApplicationLifetime _applicationLifetime;
 
     private IHost? _host;
     private Task? _processingTask;
@@ -54,7 +56,7 @@ public class LambdaServerV2 : IAsyncDisposable
         _clientOptions = new LambdaClientOptions();
     }
 
-    public IServiceProvider Services => _host.Services;
+    public IServiceProvider Services => _host!.Services;
 
     public async ValueTask DisposeAsync()
     {
@@ -89,6 +91,8 @@ public class LambdaServerV2 : IAsyncDisposable
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
 
         _state = ServerState.Starting;
+
+        _applicationLifetime = _host.Services.GetRequiredService<IHostApplicationLifetime>();
 
         // Start the host
         await _host.StartAsync(cts.Token);
@@ -212,6 +216,10 @@ public class LambdaServerV2 : IAsyncDisposable
             return;
 
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
+        _applicationLifetime.StopApplication();
+
+        await _entryPointCompletion;
 
         _state = ServerState.Stopped;
     }
