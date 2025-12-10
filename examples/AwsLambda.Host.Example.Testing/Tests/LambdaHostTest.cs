@@ -49,6 +49,27 @@ public class LambdaHostTest
     }
 
     [Fact]
+    public async Task LambdaHost_CanBeShutdown()
+    {
+        await using var factory = new LambdaApplicationFactory<Program>();
+
+        var setup = await factory.Server.StartAsync(TestContext.Current.CancellationToken);
+
+        setup.InitStatus.Should().Be(InitStatus.InitCompleted);
+
+        var response = await factory.Server.InvokeAsync<string, string>(
+            "Jonas",
+            TestContext.Current.CancellationToken
+        );
+
+        response.WasSuccess.Should().BeTrue();
+        response.Should().NotBeNull();
+        response.Response.Should().Be("Hello Jonas!");
+
+        await factory.Server.StopAsync(TestContext.Current.CancellationToken);
+    }
+
+    [Fact]
     public async Task LambdaHost_CrashesWithBadConfiguration_ThrowsException()
     {
         await using var factory = new LambdaApplicationFactory<Program>().WithHostBuilder(builder =>

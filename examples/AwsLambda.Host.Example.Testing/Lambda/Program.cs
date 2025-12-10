@@ -32,6 +32,11 @@ lambda.MapHandler(
     }
 );
 
+lambda.OnShutdown(() =>
+{
+    Console.WriteLine("Shutdown");
+});
+
 // Run the Lambda
 await lambda.RunAsync();
 
