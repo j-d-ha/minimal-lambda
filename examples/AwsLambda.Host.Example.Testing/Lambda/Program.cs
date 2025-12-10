@@ -22,7 +22,15 @@ var lambda = builder.Build();
 // });
 
 // Map your handler - the event is automatically injected
-lambda.MapHandler(([Event] string name) => $"Hello {name}!");
+lambda.MapHandler(
+    ([Event] string name) =>
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new ArgumentNullException(nameof(name), "Name is required.");
+
+        return $"Hello {name}!";
+    }
+);
 
 // Run the Lambda
 await lambda.RunAsync();
