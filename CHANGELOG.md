@@ -3,7 +3,14 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [Unreleased](https://github.com/j-d-ha/aws-lambda-host/compare/v1.3.0...HEAD)
+## [Unreleased](https://github.com/j-d-ha/aws-lambda-host/compare/v1.3.1...HEAD)
+
+## [v1.3.1](https://github.com/j-d-ha/aws-lambda-host/compare/v1.3.0...v1.3.1) - 2025-12-10
+
+### 🐛 Bug Fixes
+
+* fix(core): add missing TenantId and TraceId properties to DefaultLambdaHostContext (#224) @j-d-ha
+* fix(ci): remove sign-commits from changelog workflow (#223) @j-d-ha
 
 ## [v1.3.0](https://github.com/j-d-ha/aws-lambda-host/compare/v1.2.1...v1.3.0) - 2025-12-10
 
