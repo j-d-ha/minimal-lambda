@@ -1,9 +1,35 @@
 # Configuration
 
-`AwsLambda.Host` embraces the same configuration primitives as the rest of .NET: `IConfiguration` aggregates
+`MinimalLambda` embraces the same configuration primitives as the rest of .NET: `IConfiguration` aggregates
 settings from files and environment variables, and options bind those settings into strongly typed
 objects. On top of that, `LambdaHostOptions` control the Lambda-specific runtime behavior (timeouts,
 shutdown windows, serializer choices, etc.). This guide covers both layers.
+
+!!! warning "Breaking Change - Configuration Section Renamed"
+    Starting with version 2.0.0, the configuration section name has changed from `AwsLambdaHost` to `LambdaHost`.
+
+    **Migration Required:**
+
+    Update your `appsettings.json`:
+    ```json
+    // Before
+    {
+      "AwsLambdaHost": {
+        "InvocationCancellationBuffer": "00:00:05"
+      }
+    }
+
+    // After
+    {
+      "LambdaHost": {
+        "InvocationCancellationBuffer": "00:00:05"
+      }
+    }
+    ```
+
+    Update environment variables:
+    - `AwsLambdaHost__InvocationCancellationBuffer` → `LambdaHost__InvocationCancellationBuffer`
+    - Pattern: `AwsLambdaHost__*` → `LambdaHost__*`
 
 ## How Configuration Is Built
 
@@ -39,12 +65,12 @@ providers are added in the following order (later entries override earlier ones)
     );
     ```
 
-The builder also binds the `AwsLambdaHost` section (from JSON or environment variables) into
+The builder also binds the `LambdaHost` section (from JSON or environment variables) into
 `LambdaHostOptions` so framework settings can live next to your app configuration.
 
 ```json title="appsettings.json"
 {
-  "AwsLambdaHost": {
+  "LambdaHost": {
     "InitTimeout": "00:00:10",
     "InvocationCancellationBuffer": "00:00:05",
     "ShutdownDuration": "00:00:00.5000000",
@@ -54,11 +80,11 @@ The builder also binds the `AwsLambdaHost` section (from JSON or environment var
 }
 ```
 
-Alternatively, set environment variables using the `AwsLambdaHost__{Option}` naming convention:
+Alternatively, set environment variables using the `LambdaHost__{Option}` naming convention:
 
 ```bash
-AwsLambdaHost__InvocationCancellationBuffer=00:00:05
-AwsLambdaHost__ClearLambdaOutputFormatting=true
+LambdaHost__InvocationCancellationBuffer=00:00:05
+LambdaHost__ClearLambdaOutputFormatting=true
 ```
 
 ## LambdaHostOptions Reference
@@ -126,7 +152,7 @@ lambda.MapHandler(async ([Event] Order order, IOrderService service, Cancellatio
 ### `ShutdownDuration` and `ShutdownDurationBuffer`
 
 Lambda signals shutdown with SIGTERM and later SIGKILL. Configure how long you expect to have between
-those signals and how much buffer `AwsLambda.Host` should reserve before cancelling `OnShutdown`
+those signals and how much buffer `MinimalLambda` should reserve before cancelling `OnShutdown`
 handlers.
 
 ```csharp title="Program.cs" linenums="1"
@@ -151,7 +177,7 @@ Choose from the provided constants when possible:
 
 The .NET Lambda runtime captures stdout/stderr and wraps each line with its own structured record.
 When you rely on structured loggers (Serilog, MEL JSON) or run locally, disable that extra formatting.
-`AwsLambda.Host` registers the built-in OnInit handler automatically when this option is `true`.
+`MinimalLambda` registers the built-in OnInit handler automatically when this option is `true`.
 
 ```csharp title="Program.cs" linenums="1"
 builder.Services.ConfigureLambdaHostOptions(options =>
@@ -160,8 +186,8 @@ builder.Services.ConfigureLambdaHostOptions(options =>
 });
 ```
 
-Prefer configuration files? Set `"AwsLambdaHost": { "ClearLambdaOutputFormatting": true }` or the
-`AwsLambdaHost__ClearLambdaOutputFormatting` environment variable.
+Prefer configuration files? Set `"LambdaHost": { "ClearLambdaOutputFormatting": true }` or the
+`LambdaHost__ClearLambdaOutputFormatting` environment variable.
 
 ### `BootstrapHttpClient`
 
@@ -300,7 +326,7 @@ Resources:
         Variables:
           DATABASE__CONNECTIONSTRING: !Ref DatabaseConnectionString
           API_KEY: !Ref ApiKey
-          AwsLambdaHost__ClearLambdaOutputFormatting: true
+          LambdaHost__ClearLambdaOutputFormatting: true
 ```
 
 Prefer the double underscore `__` separator when targeting hierarchical keys.
@@ -319,7 +345,7 @@ builder.Services.Configure<ExternalApiOptions>(options =>
 
 ## JSON Serialization Configuration
 
-`AwsLambda.Host` defaults to `System.Text.Json` with camelCase naming, case-insensitive reads, and
+`MinimalLambda` defaults to `System.Text.Json` with camelCase naming, case-insensitive reads, and
 null-value ignoring. Because the Lambda serializer is an `ILambdaSerializer` singleton, you configure
 it by registering the serializer instance you want (either the built-in
 `DefaultLambdaJsonSerializer` with custom `JsonSerializerOptions` or your own implementation).
@@ -371,7 +397,7 @@ For more complex rules implement `IValidatableObject` or add a custom validator.
 - **Validate on startup** – `ValidateOnStart()` catches missing sections before Lambda accepts traffic.
 - **Copy `appsettings.*` to the output** – Without it, Lambda cannot load the files.
 - **Use environment variables for secrets** – Combine SAM/CDK parameters with Secrets Manager references.
-- **Stick to `AwsLambdaHost` section for framework knobs** – Keeps host settings discoverable and
+- **Stick to `LambdaHost` section for framework knobs** – Keeps host settings discoverable and
   separate from business configuration.
 - **Clear Lambda output formatting when you own logging** – Avoid double-wrapping JSON payloads.
 
@@ -384,8 +410,8 @@ For more complex rules implement `IValidatableObject` or add a custom validator.
 
 **Environment variable not loaded** – Remember to add `builder.Configuration.AddEnvironmentVariables()` if you call `CreateBuilder(new LambdaApplicationOptions { DisableDefaults = true })`.
 
-**LambdaHostOptions ignored** – Verify the JSON is under `"AwsLambdaHost"` or that the environment
-variable uses `AwsLambdaHost__OptionName`.
+**LambdaHostOptions ignored** – Verify the JSON is under `"LambdaHost"` or that the environment
+variable uses `LambdaHost__OptionName`.
 
 ## Next Steps
 

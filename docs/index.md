@@ -2,18 +2,16 @@
 title: ""
 ---
 
-# Build AWS Lambda Functions with .NET Hosting Patterns
+# MinimalLambda: ASP.NET Core Patterns for Lambda
 
-[![Main Build](https://github.com/j-d-ha/aws-lambda-host/actions/workflows/main-build.yaml/badge.svg)](https://github.com/j-d-ha/aws-lambda-host/actions/workflows/main-build.yaml)
-[![codecov](https://codecov.io/gh/j-d-ha/aws-lambda-host/graph/badge.svg?token=BWORPTQ0UK)](https://codecov.io/gh/j-d-ha/aws-lambda-host)
-[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=j-d-ha_aws-lambda-host&metric=alert_status&token=9fb519975d91379dcfbc6c13a4bd4207131af6e3)](https://sonarcloud.io/summary/new_code?id=j-d-ha_aws-lambda-host)
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/j-d-ha/aws-lambda-host/blob/main/LICENSE)
+[![Main Build](https://github.com/j-d-ha/minimal-lambda/actions/workflows/main-build.yaml/badge.svg)](https://github.com/j-d-ha/minimal-lambda/actions/workflows/main-build.yaml)
+[![codecov](https://codecov.io/gh/j-d-ha/minimal-lambda/graph/badge.svg?token=BWORPTQ0UK)](https://codecov.io/gh/j-d-ha/minimal-lambda)
+[![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=j-d-ha_minimal-lambda&metric=alert_status&token=9fb519975d91379dcfbc6c13a4bd4207131af6e3)](https://sonarcloud.io/summary/new_code?id=j-d-ha_minimal-lambda)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/j-d-ha/minimal-lambda/blob/main/LICENSE)
 
-AwsLambda.Host is a lightweight hosting framework for .NET developers who want the comfort of ASP.NET
-Core’s middleware, dependency injection, and lifecycle hooks inside AWS Lambda. Instead of wiring up
-scopes, serializers, and cancellation tokens by hand, you map strongly typed handlers and let the
-source-generated pipeline handle the plumbing. The result: less boilerplate, better testability, and
-handlers that feel like the rest of your .NET codebase.
+**If you know ASP.NET Core Minimal APIs, you already know MinimalLambda.**
+
+MinimalLambda brings the clean, declarative coding style of ASP.NET Core Minimal APIs to AWS Lambda – for **any event source** (SQS, SNS, API Gateway, Kinesis, S3, EventBridge, etc.). Use the same builder pattern, dependency injection, middleware pipeline, and handler mapping that you're familiar with from ASP.NET Core – but optimized for Lambda's execution model with source generation, proper scoped lifetimes, and automatic cancellation token handling.
 
 [Get Started](getting-started/index.md){ .md-button .md-button--primary }
 [Guides](guides/index.md){ .md-button }
@@ -21,7 +19,7 @@ handlers that feel like the rest of your .NET codebase.
 
 ---
 
-## Why AwsLambda.Host?
+## Why MinimalLambda?
 
 Stop wiring up DI scopes, serializers, and cancellation tokens by hand. Ship features with patterns you
 already know, while still embracing Lambda’s execution model.
@@ -74,7 +72,7 @@ already know, while still embracing Lambda’s execution model.
 
     ```
 
-=== "`AwsLambda.Host`"
+=== "`MinimalLambda`"
 
     ```csharp
     // ✅ Familiar .NET Core builder pattern
@@ -164,13 +162,13 @@ Small abstraction surface area keeps CPU and memory usage predictable inside Lam
 Install the NuGet package:
 
 ```bash
-dotnet add package AwsLambda.Host
+dotnet add package MinimalLambda
 ```
 
 Create your first Lambda handler:
 
 ```csharp
-using AwsLambda.Host.Builder;
+using MinimalLambda.Builder;
 
 var builder = LambdaApplication.CreateBuilder();
 var lambda = builder.Build();
@@ -195,9 +193,9 @@ for building AWS Lambda functions.
 
 | Package                                                          | Description                                   | NuGet                                                                                                                                    | Downloads                                                                                                                                      |
 |------------------------------------------------------------------|-----------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
-| [**AwsLambda.Host**](https://github.com/j-d-ha/aws-lambda-host/tree/main/src/AwsLambda.Host)                      | Core hosting framework with middleware and DI | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.svg)](https://www.nuget.org/packages/AwsLambda.Host)                             | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.svg)](https://www.nuget.org/packages/AwsLambda.Host/)                             |
-| [**AwsLambda.Host.Abstractions**](https://github.com/j-d-ha/aws-lambda-host/tree/main/src/AwsLambda.Host.Abstractions) | Core interfaces and contracts                 | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Abstractions.svg)](https://www.nuget.org/packages/AwsLambda.Host.Abstractions)   | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Abstractions.svg)](https://www.nuget.org/packages/AwsLambda.Host.Abstractions/)   |
-| [**AwsLambda.Host.OpenTelemetry**](features/open_telemetry.md)    | Distributed tracing and observability         | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.OpenTelemetry.svg)](https://www.nuget.org/packages/AwsLambda.Host.OpenTelemetry) | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.OpenTelemetry.svg)](https://www.nuget.org/packages/AwsLambda.Host.OpenTelemetry/) |
+| [**MinimalLambda**](https://github.com/j-d-ha/minimal-lambda/tree/main/src/MinimalLambda)                      | Core hosting framework with middleware and DI | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.svg)](https://www.nuget.org/packages/MinimalLambda)                             | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.svg)](https://www.nuget.org/packages/MinimalLambda/)                             |
+| [**MinimalLambda.Abstractions**](https://github.com/j-d-ha/minimal-lambda/tree/main/src/MinimalLambda.Abstractions) | Core interfaces and contracts                 | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Abstractions.svg)](https://www.nuget.org/packages/MinimalLambda.Abstractions)   | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.Abstractions.svg)](https://www.nuget.org/packages/MinimalLambda.Abstractions/)   |
+| [**MinimalLambda.OpenTelemetry**](features/open_telemetry.md)    | Distributed tracing and observability         | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.OpenTelemetry.svg)](https://www.nuget.org/packages/MinimalLambda.OpenTelemetry) | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.OpenTelemetry.svg)](https://www.nuget.org/packages/MinimalLambda.OpenTelemetry/) |
 
 ### Envelope Packages
 
@@ -213,14 +211,14 @@ deserialization.
 
 | Package                                                                                | Description                                           | NuGet                                                                                                                                                            | Downloads                                                                                                                                                              |
 |----------------------------------------------------------------------------------------|-------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| **AwsLambda.Host.Envelopes.Sqs**                          | Simple Queue Service events with typed message bodies | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Sqs.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sqs)                         | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Sqs.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sqs/)                         |
-| **AwsLambda.Host.Envelopes.Sns**                          | Simple Notification Service messages                  | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Sns.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sns)                         | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Sns.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sns/)                         |
-| **AwsLambda.Host.Envelopes.ApiGateway**           | REST, HTTP, and WebSocket APIs                        | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.ApiGateway.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.ApiGateway)           | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.ApiGateway.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.ApiGateway/)           |
-| **AwsLambda.Host.Envelopes.Kinesis**                  | Data Streams with typed records                       | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Kinesis.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Kinesis)                 | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Kinesis.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Kinesis/)                 |
-| **AwsLambda.Host.Envelopes.KinesisFirehose** | Data transformation                                   | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.KinesisFirehose.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.KinesisFirehose) | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.KinesisFirehose.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.KinesisFirehose/) |
-| **AwsLambda.Host.Envelopes.Kafka**                      | MSK and self-managed Kafka                            | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Kafka.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Kafka)                     | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Kafka.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Kafka/)                     |
-| **AwsLambda.Host.Envelopes.CloudWatchLogs**   | Log subscriptions                                     | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.CloudWatchLogs.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.CloudWatchLogs)   | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.CloudWatchLogs.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.CloudWatchLogs/)   |
-| **AwsLambda.Host.Envelopes.Alb**                          | Application Load Balancer requests                    | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Alb.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Alb)                         | [![Downloads](https://img.shields.io/nuget/dt/AwsLambda.Host.Envelopes.Alb.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Alb/)                         |
+| **MinimalLambda.Envelopes.Sqs**                          | Simple Queue Service events with typed message bodies | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.Sqs.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.Sqs)                         | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.Envelopes.Sqs.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.Sqs/)                         |
+| **MinimalLambda.Envelopes.Sns**                          | Simple Notification Service messages                  | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.Sns.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.Sns)                         | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.Envelopes.Sns.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.Sns/)                         |
+| **MinimalLambda.Envelopes.ApiGateway**           | REST, HTTP, and WebSocket APIs                        | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.ApiGateway.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.ApiGateway)           | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.Envelopes.ApiGateway.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.ApiGateway/)           |
+| **MinimalLambda.Envelopes.Kinesis**                  | Data Streams with typed records                       | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.Kinesis.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.Kinesis)                 | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.Envelopes.Kinesis.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.Kinesis/)                 |
+| **MinimalLambda.Envelopes.KinesisFirehose** | Data transformation                                   | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.KinesisFirehose.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.KinesisFirehose) | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.Envelopes.KinesisFirehose.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.KinesisFirehose/) |
+| **MinimalLambda.Envelopes.Kafka**                      | MSK and self-managed Kafka                            | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.Kafka.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.Kafka)                     | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.Envelopes.Kafka.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.Kafka/)                     |
+| **MinimalLambda.Envelopes.CloudWatchLogs**   | Log subscriptions                                     | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.CloudWatchLogs.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.CloudWatchLogs)   | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.Envelopes.CloudWatchLogs.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.CloudWatchLogs/)   |
+| **MinimalLambda.Envelopes.Alb**                          | Application Load Balancer requests                    | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.Alb.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.Alb)                         | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.Envelopes.Alb.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.Alb/)                         |
 
 [Browse all envelope packages](features/envelopes.md){ .md-button }
 
@@ -239,9 +237,9 @@ soon) for end-to-end Lambda samples that wire up middleware, envelopes, and DI.
 
 ### Get Involved
 
-- **[GitHub Repository](https://github.com/j-d-ha/aws-lambda-host)** – Source code, issues, and discussions.
+- **[GitHub Repository](https://github.com/j-d-ha/minimal-lambda)** – Source code, issues, and discussions.
 - **[Changelog](changelog.md)** – Version history and release notes.
-- **[License](https://github.com/j-d-ha/aws-lambda-host/blob/main/LICENSE)** – MIT License.
+- **[License](https://github.com/j-d-ha/minimal-lambda/blob/main/LICENSE)** – MIT License.
 
 ### Documentation
 
@@ -252,8 +250,8 @@ soon) for end-to-end Lambda samples that wire up middleware, envelopes, and DI.
 
 ### Support
 
-- Ask or search in [GitHub Discussions](https://github.com/j-d-ha/aws-lambda-host/discussions).
-- File bugs or feature requests via [GitHub Issues](https://github.com/j-d-ha/aws-lambda-host/issues).
+- Ask or search in [GitHub Discussions](https://github.com/j-d-ha/minimal-lambda/discussions).
+- File bugs or feature requests via [GitHub Issues](https://github.com/j-d-ha/minimal-lambda/issues).
 
 ---
 

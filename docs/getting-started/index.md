@@ -1,8 +1,8 @@
 # Getting Started
 
-**`AwsLambda.Host`** brings ASP.NET Core–style hosting, dependency injection, and middleware to AWS Lambda. Instead of wiring up serialization and context handling manually, you configure a Lambda-specific host that manages scopes, middleware, and strongly typed handlers at compile time.
+**`MinimalLambda`** brings ASP.NET Core–style hosting, dependency injection, and middleware to AWS Lambda. Instead of wiring up serialization and context handling manually, you configure a Lambda-specific host that manages scopes, middleware, and strongly typed handlers at compile time.
 
-### Why `AwsLambda.Host`?
+### Why `MinimalLambda`?
 
 - **Familiar patterns** – Builder APIs, DI, and middleware mirror ASP.NET Core.
 - **Source-generated handlers** – Avoid reflection while staying AOT ready.
@@ -49,7 +49,7 @@ Prefer to explore? Head directly to **[Guides](../guides/index.md)** or **[Examp
 
 If you run into issues or have questions:
 
-- **[GitHub Issues](https://github.com/j-d-ha/aws-lambda-host/issues)** – Report bugs or request features
-- **[GitHub Discussions](https://github.com/j-d-ha/aws-lambda-host/discussions)** – Ask questions and share ideas
+- **[GitHub Issues](https://github.com/j-d-ha/minimal-lambda/issues)** – Report bugs or request features
+- **[GitHub Discussions](https://github.com/j-d-ha/minimal-lambda/discussions)** – Ask questions and share ideas
 
 Continue with **[Installation](installation.md)** to configure your project.

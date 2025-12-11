@@ -17,8 +17,8 @@ tasks:
       - echo "🔧 Running CleanupCode for code cleanup and style enforcement..."
       - |
         dotnet jb cleanupcode  \
-          AwsLambda.Host.sln \
-          --settings="AwsLambda.Host.sln.DotSettings" \
+          MinimalLambda.sln \
+          --settings="MinimalLambda.sln.DotSettings" \
           --profile="Full Cleanup Custom" \
           --verbosity=INFO \
           --no-build

@@ -1,6 +1,6 @@
 # Features
 
-The `AwsLambda.Host` framework provides a rich ecosystem of features and extension packages that enhance AWS Lambda development beyond the core framework capabilities. These features are designed to be modular, type-safe, and performant, integrating seamlessly with the core hosting patterns.
+The `MinimalLambda` framework provides a rich ecosystem of features and extension packages that enhance AWS Lambda development beyond the core framework capabilities. These features are designed to be modular, type-safe, and performant, integrating seamlessly with the core hosting patterns.
 
 This section provides an overview of the available features.
 

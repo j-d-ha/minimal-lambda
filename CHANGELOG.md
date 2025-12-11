@@ -3,16 +3,16 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [Unreleased](https://github.com/j-d-ha/aws-lambda-host/compare/v1.3.1...HEAD)
+## [Unreleased](https://github.com/j-d-ha/minimal-lambda/compare/v1.3.1...HEAD)
 
-## [v1.3.1](https://github.com/j-d-ha/aws-lambda-host/compare/v1.3.0...v1.3.1) - 2025-12-10
+## [v1.3.1](https://github.com/j-d-ha/minimal-lambda/compare/v1.3.0...v1.3.1) - 2025-12-10
 
 ### 🐛 Bug Fixes
 
 * fix(core): add missing TenantId and TraceId properties to DefaultLambdaHostContext (#224) @j-d-ha
 * fix(ci): remove sign-commits from changelog workflow (#223) @j-d-ha
 
-## [v1.3.0](https://github.com/j-d-ha/aws-lambda-host/compare/v1.2.1...v1.3.0) - 2025-12-10
+## [v1.3.0](https://github.com/j-d-ha/minimal-lambda/compare/v1.2.1...v1.3.0) - 2025-12-10
 
 ## 🚀 Features
 
@@ -36,7 +36,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 * ci(github): optimize workflow triggers for draft PRs (#215) @j-d-ha
 
-## [v1.2.1](https://github.com/j-d-ha/aws-lambda-host/compare/v1.2.0...v1.2.1) - 2025-11-30
+## [v1.2.1](https://github.com/j-d-ha/minimal-lambda/compare/v1.2.0...v1.2.1) - 2025-11-30
 
 ## 🐛 Bug Fixes
 
@@ -53,7 +53,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * ci: skip build workflows for docs-only changes (#204) @j-d-ha
 * chore(github): enhance changelog update workflow (#201) @j-d-ha
 
-## [v1.2.0](https://github.com/j-d-ha/aws-lambda-host/compare/v1.1.0...v1.2.0) - 2025-11-29
+## [v1.2.0](https://github.com/j-d-ha/minimal-lambda/compare/v1.1.0...v1.2.0) - 2025-11-29
 
 ## 🚀 Features
 
@@ -83,7 +83,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * chore: cleanup repository formatting and documentation (#197) @j-d-ha
 * chore(ci): pinned release-drafter action to 6.0.0 (#182) @j-d-ha
 
-## [v1.1.0](https://github.com/j-d-ha/aws-lambda-host/compare/v1.0.0...v1.1.0) - 2025-11-27
+## [v1.1.0](https://github.com/j-d-ha/minimal-lambda/compare/v1.0.0...v1.1.0) - 2025-11-27
 
 ## 🚀 Features
 
@@ -104,7 +104,7 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 
 * chore(github): update changelog for v1.0.0 release (#170) @j-d-ha
 
-## [v1.0.0](https://github.com/j-d-ha/aws-lambda-host/compare/v0.1.3...v1.0.0) - 2025-11-24
+## [v1.0.0](https://github.com/j-d-ha/minimal-lambda/compare/v0.1.3...v1.0.0) - 2025-11-24
 
 ## 🚀 Features
 
@@ -155,19 +155,19 @@ See [Conventional Commits](https://conventionalcommits.org) for commit guideline
 * refactor(host): reorganize folder structure with hierarchical layers (#146) @j-d-ha
 * feat(envelopes): add modular envelope system for Lambda event handling (#131) @j-d-ha
 
-## [v0.1.3](https://github.com/j-d-ha/aws-lambda-host/compare/v0.1.2...v0.1.3) - 2025-11-10
+## [v0.1.3](https://github.com/j-d-ha/minimal-lambda/compare/v0.1.2...v0.1.3) - 2025-11-10
 
 ### 🐛 Bug Fixes
 
 * fix: prevent example projects from being packed during release (#115) @j-d-ha
 
-## [v0.1.2](https://github.com/j-d-ha/aws-lambda-host/compare/v0.1.1...v0.1.2) - 2025-11-10
+## [v0.1.2](https://github.com/j-d-ha/minimal-lambda/compare/v0.1.1...v0.1.2) - 2025-11-10
 
 ### 🔧 Maintenance
 
 * ci(github): get NuGet package version from release tag (#113) @j-d-ha
 
-## [v0.1.1](https://github.com/j-d-ha/aws-lambda-host/compare/v0.1.1) - 2025-11-09
+## [v0.1.1](https://github.com/j-d-ha/minimal-lambda/compare/v0.1.1) - 2025-11-09
 
 ### 🔧 Maintenance
 

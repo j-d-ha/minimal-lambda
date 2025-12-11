@@ -1,7 +1,0 @@
-<Project InitialTargets="AwsLambda_Host">
-  <Target Name="AwsLambda_Host">
-    <PropertyGroup>
-      <InterceptorsNamespaces>$(InterceptorsPreviewNamespaces);AwsLambda.Host.Core.Generated</InterceptorsNamespaces>
-    </PropertyGroup>
-  </Target>
-</Project>

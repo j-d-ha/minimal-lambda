@@ -2,7 +2,7 @@
 
 ## What is OpenTelemetry Integration?
 
-The `AwsLambda.Host.OpenTelemetry` package provides seamless integration with the official [`OpenTelemetry.Instrumentation.AWSLambda`](https://www.nuget.org/packages/OpenTelemetry.Instrumentation.AWSLambda) package. It acts as a smart adapter layer for `AwsLambda.Host`, using **C# 12 interceptors and source generation** to automatically instrument your Lambda handlers with minimal overhead.
+The `MinimalLambda.OpenTelemetry` package provides seamless integration with the official [`OpenTelemetry.Instrumentation.AWSLambda`](https://www.nuget.org/packages/OpenTelemetry.Instrumentation.AWSLambda) package. It acts as a smart adapter layer for `MinimalLambda`, using **C# 12 interceptors and source generation** to automatically instrument your Lambda handlers with minimal overhead.
 
 At compile time, it wraps your handler invocation in a root trace span, providing reflection-free, high-performance distributed tracing.
 
@@ -27,7 +27,7 @@ Install the OpenTelemetry integration package and any required exporter packages
 
 ```bash
 # Core integration package
-dotnet add package AwsLambda.Host.OpenTelemetry
+dotnet add package MinimalLambda.OpenTelemetry
 
 # Common packages for OTLP export
 dotnet add package OpenTelemetry.Exporter.OpenTelemetryProtocol
@@ -42,7 +42,7 @@ dotnet add package OpenTelemetry.Contrib.Extensions.AWSXRay
 This example demonstrates how to add basic OpenTelemetry instrumentation to your Lambda function.
 
 ```csharp title="Program.cs" linenums="1"
-using AwsLambda.Host.Builder;
+using MinimalLambda.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -106,7 +106,7 @@ internal record Response(string Message);
 !!! tip
     OpenTelemetry tracing can be configured in multiple ways, including manually creating a trace provider using the [OpenTelemetry](https://www.nuget.org/packages/OpenTelemetry), or through registering OpenTelemetry services in your DI container using [OpenTelemetry.Extensions.Hosting](https://www.nuget.org/packages/OpenTelemetry.Extensions.Hosting). 
 
-     When working with  `AwsLambda.Host`, its recommended to the latter approach and as such, this documentation focuses on it.
+     When working with  `MinimalLambda`, its recommended to the latter approach and as such, this documentation focuses on it.
 
 ---
 
@@ -128,13 +128,13 @@ The shutdown helpers (`OnShutdownFlushOpenTelemetry`, `OnShutdownFlushTracer`, a
 
 ---
 
-## Working With `AwsLambda.Host.OpenTelemetry`
+## Working With `MinimalLambda.OpenTelemetry`
 
 ### Configuration
 
 Configuration is done using the standard OpenTelemetry .NET SDK extension methods on `IServiceCollection`. Official documentation for these methods can be found [here](https://github.com/open-telemetry/opentelemetry-dotnet/blob/main/src/OpenTelemetry.Extensions.Hosting/README.md).
 
-`AwsLambda.Host.OpenTelemetry` expectes for an instance of `TracerProvider` to be registered in the DI container as this provider is used by `OpenTelemetry.Instrumentation.AWSLambda`. As such, it is your responsibility to configure the OpenTelemetry provider and ensure it is registered in the DI container. If it is not, an exception will be thrown at startup.
+`MinimalLambda.OpenTelemetry` expectes for an instance of `TracerProvider` to be registered in the DI container as this provider is used by `OpenTelemetry.Instrumentation.AWSLambda`. As such, it is your responsibility to configure the OpenTelemetry provider and ensure it is registered in the DI container. If it is not, an exception will be thrown at startup.
 
 ### Instrumenting The Invocation Pipeline
 
@@ -162,7 +162,7 @@ Because the middleware reads event and response types dynamically from the featu
 
 The OpenTelemetry `TracerProvider` and `MeterProvider` services both implement `IDisposable`. When the dependency injection container is disposed of during a normal application shutdown, it should trigger these providers to automatically flush any buffered telemetry. However, in a serverless environment where the lifecycle can be abrupt, this disposal is not always guaranteed to complete before the execution environment is frozen.
 
-For situations where you notice data being dropped, or if you want to guarantee a flush attempt is made, `AwsLambda.Host.OpenTelemetry` provides the following explicit helper methods. They register a function during the application's shutdown phase to manually force-flush pending telemetry.
+For situations where you notice data being dropped, or if you want to guarantee a flush attempt is made, `MinimalLambda.OpenTelemetry` provides the following explicit helper methods. They register a function during the application's shutdown phase to manually force-flush pending telemetry.
 
 The following methods are available to be called on the `LambdaApplication` instance:
 
@@ -186,12 +186,12 @@ All three methods also accept an optional `timeoutMilliseconds` parameter. This 
 
 ## Manual Instrumentation
 
-`AwsLambda.Host.OpenTelemetry` helps you instrement your Lambda handlers with [OpenTelemetry.Instrumentation.AWSLambda](https://www.nuget.org/packages/OpenTelemetry.Instrumentation.AWSLambda), but to get the most out of observability, you should add custom instrumentation to your application code. In this section we cover how this can be done easily with the Dependancy Injection support provided by `AwsLambda.Host`.
+`MinimalLambda.OpenTelemetry` helps you instrement your Lambda handlers with [OpenTelemetry.Instrumentation.AWSLambda](https://www.nuget.org/packages/OpenTelemetry.Instrumentation.AWSLambda), but to get the most out of observability, you should add custom instrumentation to your application code. In this section we cover how this can be done easily with the Dependancy Injection support provided by `MinimalLambda`.
 
 !!! note
-    This code is not specific to `AwsLambda.Host.OpenTelemetry` and follows the guidlines provided by Microsoft's [.NET distributed tracing documetation](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/distributed-tracing).
+    This code is not specific to `MinimalLambda.OpenTelemetry` and follows the guidlines provided by Microsoft's [.NET distributed tracing documetation](https://learn.microsoft.com/en-us/dotnet/core/diagnostics/distributed-tracing).
 
-A full working example of an instrumented Lambda application can be found [on GitHub](https://github.com/j-d-ha/aws-lambda-host/tree/main/examples/AwsLambda.Host.Example.OpenTelemetry).
+A full working example of an instrumented Lambda application can be found [on GitHub](https://github.com/j-d-ha/minimal-lambda/tree/main/examples/MinimalLambda.Example.OpenTelemetry).
 
 ### Custom Instrumentation Class
 
@@ -200,7 +200,7 @@ The [.NET distributed tracing guidance](https://learn.microsoft.com/en-us/dotnet
 ```csharp title="Instrumentation.cs" linenums="1"
 using System.Diagnostics;
 
-namespace AwsLambda.Host.Example.OpenTelemetry;
+namespace MinimalLambda.Example.OpenTelemetry;
 
 /// <summary>
 ///     It is recommended to use a custom type to hold references for ActivitySource. This avoids
@@ -227,7 +227,7 @@ Metrics follow a similar pattern: create a class that receives an `IMeterFactory
 ```csharp title="NameMetrics.cs" linenums="1"
 using System.Diagnostics.Metrics;
 
-namespace AwsLambda.Host.Example.OpenTelemetry;
+namespace MinimalLambda.Example.OpenTelemetry;
 
 public class NameMetrics
 {
@@ -253,7 +253,7 @@ Once the reusable helpers exist, wrap service logic in spans to capture timing, 
 ```csharp title="NameService.cs" linenums="1"
 using System.Diagnostics;
 
-namespace AwsLambda.Host.Example.OpenTelemetry;
+namespace MinimalLambda.Example.OpenTelemetry;
 
 internal class NameService(Instrumentation instrumentation, NameMetrics nameMetrics)
 {
@@ -280,12 +280,12 @@ The `using var activity = ...` pattern mirrors the BCL samples and guarantees sp
 
 ### Instrument A Handler
 
-Finally, surface the custom instrumentation inside your Lambda handler. `AwsLambda.Host` injects any registered services, so you can receive both `IService` and `Instrumentation` directly in the handler signature.
+Finally, surface the custom instrumentation inside your Lambda handler. `MinimalLambda` injects any registered services, so you can receive both `IService` and `Instrumentation` directly in the handler signature.
 
 ```csharp title="Function.cs" linenums="1"
-using AwsLambda.Host.Builder;
+using MinimalLambda.Builder;
 
-namespace AwsLambda.Host.Example.OpenTelemetry;
+namespace MinimalLambda.Example.OpenTelemetry;
 
 internal static class Function
 {

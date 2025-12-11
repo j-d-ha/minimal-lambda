@@ -2,8 +2,8 @@
 
 ## GENERAL
 
-- Repo link: https://github.com/j-d-ha/aws-lambda-host
-- GitHub Project Name: Lambda.Host Development
+- Repo link: https://github.com/j-d-ha/minimal-lambda
+- GitHub Project Name: MinimalLambda Development
 - All code in this project is designed to run on AWS Lambda or generate code that will then be run
   on AWS Lambda.
 - When writing PRs, ALWAYS use `./.github/pull_request_template.md` as the template for the PR.
@@ -193,9 +193,9 @@ messages):
 
 All 3 packages are versioned synchronously:
 
-- `AwsLambda.Host`
-- `AwsLambda.Host.Abstractions`
-- `AwsLambda.Host.OpenTelemetry`
+- `MinimalLambda`
+- `MinimalLambda.Abstractions`
+- `MinimalLambda.OpenTelemetry`
 
 Versions are stored in `/Directory.Build.props` as `<VersionPrefix>`.
 

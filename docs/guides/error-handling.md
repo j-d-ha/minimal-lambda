@@ -1,13 +1,13 @@
 # Error Handling
 
-`AwsLambda.Host` does not hide exceptions—it embraces the standard .NET model so you can decide where
+`MinimalLambda` does not hide exceptions—it embraces the standard .NET model so you can decide where
 to intercept failures. This guide explains how errors flow through handlers, middleware, and lifecycle
 hooks so you can add the right amount of protection without fighting the framework.
 
 ## Invocation Errors: What Happens by Default
 
 - Handlers run inside the middleware pipeline. If a handler throws and nothing catches the exception,
-  `AwsLambda.Host` lets it bubble back through the pipeline.
+  `MinimalLambda` lets it bubble back through the pipeline.
 - Once the exception leaves the outermost middleware, the AWS .NET Lambda runtime records the error,
   writes it to CloudWatch Logs, and returns a failed invocation (with retries governed by the event
   source).
@@ -82,7 +82,7 @@ lambda.MapHandler(async ([Event] CheckoutRequest request, ICheckoutService servi
 handler executes in its own DI scope and errors are aggregated:
 
 - **OnInit** – All handlers run concurrently with a token derived from
-  `LambdaHostOptions.InitTimeout`. Each handler can optionally return `bool`. `AwsLambda.Host` collects
+  `LambdaHostOptions.InitTimeout`. Each handler can optionally return `bool`. `MinimalLambda` collects
   every exception and throws an `AggregateException("Encountered errors while running OnInit handlers", …)`
   if any fail. If a handler returns `false`, initialization aborts even when no exception occurred.
 - **OnShutdown** – Handlers also run concurrently. Any exception is captured and rethrown as an
@@ -106,7 +106,7 @@ Because the host rethrows aggregate exceptions, CloudWatch logs clearly show eve
 
 ## Timeouts and Cancellation
 
-`AwsLambda.Host` links invocation tokens to the Lambda timeout using
+`MinimalLambda` links invocation tokens to the Lambda timeout using
 `LambdaHostOptions.InvocationCancellationBuffer`. Honor that token in services and middleware—if your
 code catches `OperationCanceledException`, log and rethrow so the runtime still marks the invocation
 as failed rather than silently succeeding.

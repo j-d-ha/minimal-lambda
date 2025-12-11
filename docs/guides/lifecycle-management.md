@@ -1,6 +1,6 @@
 # Lifecycle Management
 
-`AwsLambda.Host` exposes the entire Lambda container lifecycle so you can prepare resources during cold start, react to each invocation, and cleanly shut down when AWS reclaims the execution environment.
+`MinimalLambda` exposes the entire Lambda container lifecycle so you can prepare resources during cold start, react to each invocation, and cleanly shut down when AWS reclaims the execution environment.
 
 ## Execution Flow at a Glance
 
@@ -12,12 +12,12 @@ Cold Start → OnInit → Invocation 1..N → OnShutdown → Termination
 - **Invocation** – Runs for every event in the normal middleware/handler pipeline. Cancellation tokens respect `InvocationCancellationBuffer`.
 - **OnShutdown** – Runs once when the runtime receives SIGTERM or when the host stops. Used to flush telemetry or close connections.
 
-Both OnInit and OnShutdown execute outside the invocation pipeline, but `AwsLambda.Host` creates a brand-new `IServiceScope` for every handler so you can resolve scoped services safely.
+Both OnInit and OnShutdown execute outside the invocation pipeline, but `MinimalLambda` creates a brand-new `IServiceScope` for every handler so you can resolve scoped services safely.
 
 ## OnInit: Cold Start Hooks
 
 ```csharp title="Program.cs"
-using AwsLambda.Host;
+using MinimalLambda;
 using Microsoft.Extensions.DependencyInjection;
 
 var builder = LambdaApplication.CreateBuilder();
@@ -46,8 +46,8 @@ await lambda.RunAsync();
 
 - Runs once per execution environment and shares time with your first invocation.
 - Each handler receives a linked `CancellationToken` that cancels when `InitTimeout` elapses or the host stops (default 5 seconds).
-- You may register multiple handlers; `AwsLambda.Host` runs them **concurrently** via `Task.WhenAll`.
-- Returning a `bool`/`Task<bool>` is optional. If you return a value it controls whether the cold start continues (`true`) or aborts (`false`); if you return `void`/`Task`, `AwsLambda.Host` assumes success.
+- You may register multiple handlers; `MinimalLambda` runs them **concurrently** via `Task.WhenAll`.
+- Returning a `bool`/`Task<bool>` is optional. If you return a value it controls whether the cold start continues (`true`) or aborts (`false`); if you return `void`/`Task`, `MinimalLambda` assumes success.
 - Exceptions are aggregated. If any handler throws, the framework logs all failures and aborts initialization.
 
 ### Handling Failure and Timeouts
@@ -133,7 +133,7 @@ Both handlers are awaited simultaneously. Keep shutdown work small—only the re
 OnInit and OnShutdown handlers support the same source-generated dependency injection experience as middleware and handlers:
 
 - Request only what you need. The generated delegate resolves typed parameters (services, keyed services, `ILambdaHostContext`, `CancellationToken`, etc.).
-- `AwsLambda.Host` creates a new `IServiceScope` for every handler invocation, ensuring scoped services (database units of work, caches) are isolated even though you are outside the invocation pipeline.
+- `MinimalLambda` creates a new `IServiceScope` for every handler invocation, ensuring scoped services (database units of work, caches) are isolated even though you are outside the invocation pipeline.
 - The `IServiceProvider` parameter gives you direct access to the scope for manual resolution when needed.
 
 ```csharp title="Program.cs"

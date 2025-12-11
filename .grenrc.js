@@ -19,15 +19,15 @@ ${variables.body}
 ## Packages
 
 All 3 packages are included in this release:
-- \`AwsLambda.Host\`
-- \`AwsLambda.Host.Abstractions\`
-- \`AwsLambda.Host.OpenTelemetry\`
+- \`MinimalLambda\`
+- \`MinimalLambda.Abstractions\`
+- \`MinimalLambda.OpenTelemetry\`
 
-These packages have been automatically published to [NuGet.org](https://www.nuget.org/packages?q=AwsLambda.Host).
+These packages have been automatically published to [NuGet.org](https://www.nuget.org/packages?q=MinimalLambda).
 
 ---
 
-**Full Changelog:** [\`${variables.previousTag}...${variables.currentTag}\`](https://github.com/j-d-ha/aws-lambda-host/compare/${variables.previousTag}...${variables.currentTag})
+**Full Changelog:** [\`${variables.previousTag}...${variables.currentTag}\`](https://github.com/j-d-ha/minimal-lambda/compare/${variables.previousTag}...${variables.currentTag})
 `;
     },
     group: (variables) => {

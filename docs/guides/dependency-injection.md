@@ -1,6 +1,6 @@
 # Dependency Injection
 
-`aws-lambda-host` uses the same dependency injection container as ASP.NET Core
+`minimal-lambda` uses the same dependency injection container as ASP.NET Core
 (`Microsoft.Extensions.DependencyInjection`). If you're new to DI in .NET, start with the
 [official documentation](https://learn.microsoft.com/en-us/dotnet/core/extensions/dependency-injection)
 and then come back for Lambda-specific guidance. This guide focuses on what changes (and what stays the
@@ -147,4 +147,4 @@ lambda.MapHandler((
 - Use the options pattern for config and keyed services for multiple implementations.
 - For fundamentals, refer back to the [official DI docs](https://learn.microsoft.com/en-us/dotnet/core/extensions/dependency-injection).
 
-With these patterns, `AwsLambda.Host` feels just like ASP.NET Core, but tuned for the Lambda lifecycle.
+With these patterns, `MinimalLambda` feels just like ASP.NET Core, but tuned for the Lambda lifecycle.

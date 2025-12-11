@@ -9,7 +9,7 @@ Calling `LambdaApplication.CreateBuilder()` assembles a standard .NET host with 
 - **Configuration sources** – Adds `appsettings.json`, `appsettings.{Environment}.json`, user secrets (development), `AWS_` and `DOTNET_` prefixed environment variables, and ambient environment variables. The resulting `ConfigurationManager` is exposed via `builder.Configuration`.
 - **Environment & content root** – Sets `IHostEnvironment.ApplicationName` from `AWS_LAMBDA_FUNCTION_NAME` (when available) and resolves the content root by honoring `DOTNET_CONTENTROOT`, `AWS_LAMBDA_TASK_ROOT`, or falling back to `Directory.GetCurrentDirectory()`.
 - **Logging** – Registers console logging with activity tracking enabled. In Development, scope validation is turned on so singleton/scoped misuse throws during build.
-- **Dependency injection** – Every call to `builder.Services` hits the standard `IServiceCollection`. On `builder.Build()`, aws-lambda-host registers:
+- **Dependency injection** – Every call to `builder.Services` hits the standard `IServiceCollection`. On `builder.Build()`, minimal-lambda registers:
   - `ILambdaInvocationBuilderFactory`, `ILambdaOnInitBuilderFactory`, and `ILambdaOnShutdownBuilderFactory` so lambda-specific pipelines can be composed later.
   - `LambdaHostedService`, `ILambdaHandlerFactory`, feature collections, and `ILambdaBootstrapOrchestrator`.
   - Default implementations of `ILambdaSerializer` (System.Text.Json) and `ILambdaCancellationFactory` unless you already registered your own via `TryAddLambdaHostDefaultServices()`.
@@ -17,7 +17,7 @@ Calling `LambdaApplication.CreateBuilder()` assembles a standard .NET host with 
 Most applications can rely entirely on `CreateBuilder()` + `builder.Build()`—just add services, middleware, handlers, and call `await lambda.RunAsync();`.
 
 ```csharp title="Program.cs" linenums="1"
-using AwsLambda.Host.Builder;
+using MinimalLambda.Builder;
 using Microsoft.Extensions.DependencyInjection;
 
 var builder = LambdaApplication.CreateBuilder();

@@ -1,11 +1,11 @@
 # Handler Registration
 
-`MapHandler` is the entry point for telling `AwsLambda.Host` which delegate should process events. The call looks like an ordinary lambda registration, but source generators intercept it at compile time to wire up serialization, dependency injection, and middleware without reflection.
+`MapHandler` is the entry point for telling `MinimalLambda` which delegate should process events. The call looks like an ordinary lambda registration, but source generators intercept it at compile time to wire up serialization, dependency injection, and middleware without reflection.
 
 ## Registering a Handler
 
 ```csharp title="Program.cs" linenums="1"
-using AwsLambda.Host;
+using MinimalLambda;
 using Microsoft.Extensions.DependencyInjection;
 
 var builder = LambdaApplication.CreateBuilder();
@@ -84,7 +84,7 @@ await lambda.RunAsync();
 
 ## Handler Signatures and the `[Event]` Parameter
 
-Handlers that receive an incoming payload must identify exactly one parameter with `[Event]`. The generator uses that marker to synthesize deserialization logic (JSON by default, or whatever envelope/serializer is active). If your Lambda does **not** expect input (e.g., scheduled jobs, health checks, etc.), you can omit the `[Event]` attribute entirely—just define a handler with no payload parameter and `AwsLambda.Host` skips the event binding phase.
+Handlers that receive an incoming payload must identify exactly one parameter with `[Event]`. The generator uses that marker to synthesize deserialization logic (JSON by default, or whatever envelope/serializer is active). If your Lambda does **not** expect input (e.g., scheduled jobs, health checks, etc.), you can omit the `[Event]` attribute entirely—just define a handler with no payload parameter and `MinimalLambda` skips the event binding phase.
 
 - `[Event]` may appear on reference types, structs, records, collection types, or envelope types such as `ApiGatewayRequestEnvelope<T>`.
 - Handlers without payloads can simply omit `[Event]` by not declaring an event parameter at all.
@@ -191,7 +191,7 @@ At runtime:
 ## Patterns and Best Practices
 
 - Keep handlers thin. Delegate business logic to services so you can test them outside Lambda and reuse them across handlers.
-- Respect the provided `CancellationToken`; `AwsLambda.Host` fires it `InvocationCancellationBuffer` before the hard Lambda timeout.
+- Respect the provided `CancellationToken`; `MinimalLambda` fires it `InvocationCancellationBuffer` before the hard Lambda timeout.
 - Prefer strongly typed responses or envelopes instead of anonymous objects—serialization contracts stay predictable and versionable.
 - Use `ILambdaHostContext.Features` (e.g., `context.GetEvent<T>()`) to decouple middleware from handlers when you need shared metadata.
 - Avoid resolving services manually from `IServiceProvider` unless absolutely necessary. Let the generator inject what you need, or expose a dedicated facade service.

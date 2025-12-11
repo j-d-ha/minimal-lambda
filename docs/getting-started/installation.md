@@ -1,6 +1,6 @@
 # Installation
 
-This guide walks you through installing `AwsLambda.Host` and configuring your project to build Lambda functions.
+This guide walks you through installing `MinimalLambda` and configuring your project to build Lambda functions.
 
 ## System Requirements
 
@@ -27,17 +27,17 @@ Choose your preferred installation method:
     dotnet new console -n MyFirstLambda
     cd MyFirstLambda
 
-    # Add the AwsLambda.Host package
-    dotnet add package AwsLambda.Host
+    # Add the MinimalLambda package
+    dotnet add package MinimalLambda
     ```
 
-    *Tip: the `examples/AwsLambda.Host.Example.HelloWorld` project in this repo shows a fully configured Lambda app if you prefer copying a working template.*
+    *Tip: the `examples/MinimalLambda.Example.HelloWorld` project in this repo shows a fully configured Lambda app if you prefer copying a working template.*
 
 === "Visual Studio"
 
     1. Right-click on your project in Solution Explorer
     2. Select **Manage NuGet Packages**
-    3. Search for `AwsLambda.Host`
+    3. Search for `MinimalLambda`
     4. Click **Install**
 
 === "Package Reference"
@@ -46,7 +46,7 @@ Choose your preferred installation method:
 
     ```xml
     <ItemGroup>
-      <PackageReference Include="AwsLambda.Host" Version="1.2.1-beta.1" />
+      <PackageReference Include="MinimalLambda" Version="1.2.1-beta.1" />
     </ItemGroup>
     ```
 
@@ -118,13 +118,13 @@ Here's a complete, minimal `.csproj` file for a Lambda function:
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="AwsLambda.Host" Version="1.2.0" />
+    <PackageReference Include="MinimalLambda" Version="1.2.0" />
   </ItemGroup>
 </Project>
 ```
 
 !!! info "Source Generators"
-    The `AwsLambda.Host` package ships an MSBuild target that automatically registers the required interceptor namespaces. No additional configuration is needed in your project file.
+    The `MinimalLambda` package ships an MSBuild target that automatically registers the required interceptor namespaces. No additional configuration is needed in your project file.
 
 ## Verifying Installation
 
@@ -135,7 +135,7 @@ Let's verify everything is set up correctly by creating a simple Lambda function
 Create a `Program.cs` file with this minimal example:
 
 ```csharp title="Program.cs" linenums="1"
-using AwsLambda.Host;
+using MinimalLambda;
 
 var builder = LambdaApplication.CreateBuilder();
 var lambda = builder.Build();
@@ -174,15 +174,15 @@ Build succeeded.
 
 ## Package Overview
 
-The `AwsLambda.Host` framework includes multiple packages for different use cases:
+The `MinimalLambda` framework includes multiple packages for different use cases:
 
 ### Core Packages
 
 | Package                          | Purpose                   | When to Use                                   |
 |----------------------------------|---------------------------|-----------------------------------------------|
-| **AwsLambda.Host**               | Core framework            | Required for all Lambda functions             |
-| **AwsLambda.Host.Abstractions**  | Interfaces and contracts  | When creating custom extensions or middleware |
-| **AwsLambda.Host.OpenTelemetry** | Observability integration | When you need distributed tracing and metrics |
+| **MinimalLambda**               | Core framework            | Required for all Lambda functions             |
+| **MinimalLambda.Abstractions**  | Interfaces and contracts  | When creating custom extensions or middleware |
+| **MinimalLambda.OpenTelemetry** | Observability integration | When you need distributed tracing and metrics |
 
 ### Envelope Packages
 
@@ -190,17 +190,17 @@ Envelope packages provide type-safe, strongly-typed event handling for specific 
 
 | Package                                      | Event Source              | When to Use                   |
 |----------------------------------------------|---------------------------|-------------------------------|
-| **AwsLambda.Host.Envelopes.Sqs**             | Amazon SQS                | Processing SQS queue messages |
-| **AwsLambda.Host.Envelopes.Sns**             | Amazon SNS                | Handling SNS notifications    |
-| **AwsLambda.Host.Envelopes.ApiGateway**      | API Gateway               | Building REST/HTTP APIs       |
-| **AwsLambda.Host.Envelopes.Kinesis**         | Kinesis Data Streams      | Processing stream records     |
-| **AwsLambda.Host.Envelopes.KinesisFirehose** | Kinesis Firehose          | Transforming Firehose data    |
-| **AwsLambda.Host.Envelopes.Kafka**           | Apache Kafka / MSK        | Processing Kafka messages     |
-| **AwsLambda.Host.Envelopes.CloudWatchLogs**  | CloudWatch Logs           | Processing log subscriptions  |
-| **AwsLambda.Host.Envelopes.Alb**             | Application Load Balancer | ALB target Lambda functions   |
+| **MinimalLambda.Envelopes.Sqs**             | Amazon SQS                | Processing SQS queue messages |
+| **MinimalLambda.Envelopes.Sns**             | Amazon SNS                | Handling SNS notifications    |
+| **MinimalLambda.Envelopes.ApiGateway**      | API Gateway               | Building REST/HTTP APIs       |
+| **MinimalLambda.Envelopes.Kinesis**         | Kinesis Data Streams      | Processing stream records     |
+| **MinimalLambda.Envelopes.KinesisFirehose** | Kinesis Firehose          | Transforming Firehose data    |
+| **MinimalLambda.Envelopes.Kafka**           | Apache Kafka / MSK        | Processing Kafka messages     |
+| **MinimalLambda.Envelopes.CloudWatchLogs**  | CloudWatch Logs           | Processing log subscriptions  |
+| **MinimalLambda.Envelopes.Alb**             | Application Load Balancer | ALB target Lambda functions   |
 
 !!! info "Envelope Packages"
-    You only need envelope packages if you're working with those specific event sources. For simple use cases, just `AwsLambda.Host` is sufficient. Learn more in the [Envelopes documentation](../features/envelopes.md).
+    You only need envelope packages if you're working with those specific event sources. For simple use cases, just `MinimalLambda` is sufficient. Learn more in the [Envelopes documentation](../features/envelopes.md).
 
 ## Troubleshooting
 
@@ -231,12 +231,12 @@ Envelope packages provide type-safe, strongly-typed event handling for specific 
 
 If you encounter issues not covered here:
 
-- Search or ask in [GitHub Discussions](https://github.com/j-d-ha/aws-lambda-host/discussions)
-- Report bugs in [GitHub Issues](https://github.com/j-d-ha/aws-lambda-host/issues)
+- Search or ask in [GitHub Discussions](https://github.com/j-d-ha/minimal-lambda/discussions)
+- Report bugs in [GitHub Issues](https://github.com/j-d-ha/minimal-lambda/issues)
 
 ## Next Steps
 
-Now that you have `AwsLambda.Host` installed and verified, you're ready to build your first Lambda function!
+Now that you have `MinimalLambda` installed and verified, you're ready to build your first Lambda function!
 
 **→ Continue to [Your First Lambda](first-lambda.md)** to build a complete Lambda function step-by-step.
 

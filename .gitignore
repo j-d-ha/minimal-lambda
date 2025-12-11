@@ -69,13 +69,13 @@ nunit-*.xml
 /docs/claude/**
 
 # temp files used for dev
-**/Temp*.cs
-**/Temp*/
+**/Temp.cs
+**/Temp/
 
 **/*.env
 
 **/node_modules/
-/benchmarks/AwsLambda.Host.Benchmarks/BenchmarkDotNet.Artifacts/
+/benchmarks/MinimalLambda.Benchmarks/BenchmarkDotNet.Artifacts/
 /nupkg/
 /temp.md
 /.claude/

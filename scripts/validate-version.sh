@@ -2,8 +2,8 @@
 
 # Script to validate that a package version doesn't already exist on NuGet
 
-# Get the directory from the first argument, default to src/AwsLambda.Host
-DIR="${1:-src/AwsLambda.Host}"
+# Get the directory from the first argument, default to src/MinimalLambda
+DIR="${1:-src/MinimalLambda}"
 
 # Change to the project directory
 cd "$DIR" || exit 1

@@ -1,0 +1,7 @@
+<Project InitialTargets="MinimalLambda">
+  <Target Name="MinimalLambda">
+    <PropertyGroup>
+      <InterceptorsNamespaces>$(InterceptorsPreviewNamespaces);MinimalLambda.Generated</InterceptorsNamespaces>
+    </PropertyGroup>
+  </Target>
+</Project>

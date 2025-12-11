@@ -30,7 +30,7 @@ tasks:
     silent: true
     cmds:
       - echo "👀 Starting test watch mode"
-      - dotnet watch --project tests/AwsLambda.Host.Tests test --configuration Release
+      - dotnet watch --project tests/MinimalLambda.Tests test --configuration Release
 
   verbose:
     desc: Run tests with detailed output for debugging

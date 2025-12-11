@@ -1,7 +1,7 @@
 [project]
-name = "aws-lambda-host-docs"
+name = "minimal-lambda-docs"
 version = "0.1.0"
-description = "mkdocs for aws-lambda-host"
+description = "mkdocs for minimal-lambda"
 requires-python = ">=3.13"
 dependencies = [
     "mkdocs>=1.6.1",

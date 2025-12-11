@@ -1,6 +1,6 @@
 # Your First Lambda Function
 
-This tutorial walks you through building, testing, and deploying a complete Lambda function using `AwsLambda.Host`. You'll create a greeting service that demonstrates dependency injection, middleware, and type-safe handlers.
+This tutorial walks you through building, testing, and deploying a complete Lambda function using `MinimalLambda`. You'll create a greeting service that demonstrates dependency injection, middleware, and type-safe handlers.
 
 ## What We'll Build
 
@@ -17,7 +17,7 @@ A greeting service Lambda function with:
 
 Before starting, ensure you've completed the [Installation](installation.md) guide and have:
 
-- `AwsLambda.Host` NuGet package installed
+- `MinimalLambda` NuGet package installed
 - Project file properly configured
 - .NET 8 SDK installed
 
@@ -98,7 +98,7 @@ public class GreetingService : IGreetingService
 Set up the Lambda application builder and register your services with dependency injection.
 
 ```csharp title="Program.cs (continued)"
-using AwsLambda.Host.Builder;
+using MinimalLambda.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -188,7 +188,7 @@ Here's the complete code all together:
 using System;
 using System.Collections.Generic;
 using System.Text.Json.Serialization;
-using AwsLambda.Host.Builder;
+using MinimalLambda.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
@@ -573,7 +573,7 @@ sequenceDiagram
 
 **Error**: `The [Event] attribute is not recognized`
 
-**Solution**: Add `using AwsLambda.Host.Builder;` to the top of your file (or fully qualify `[AwsLambda.Host.Builder.Event]`). The attribute ships with the `AwsLambda.Host` package—no additional project configuration is required.
+**Solution**: Add `using MinimalLambda.Builder;` to the top of your file (or fully qualify `[MinimalLambda.Builder.Event]`). The attribute ships with the `MinimalLambda` package—no additional project configuration is required.
 
 ### Timeout Errors
 
@@ -594,7 +594,7 @@ sequenceDiagram
 
 Congratulations! You've built and deployed a complete Lambda function. You now understand:
 
-- ✅ How to structure Lambda functions with `AwsLambda.Host`
+- ✅ How to structure Lambda functions with `MinimalLambda`
 - ✅ Defining strongly-typed request/response models
 - ✅ Creating and registering services with dependency injection
 - ✅ Adding middleware for cross-cutting concerns

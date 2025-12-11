@@ -5,7 +5,7 @@ strongly typed payload accessors. Instead of deserializing JSON manually, you wo
 `BodyContent<T>`, `MessageContent<T>`, or similar properties that the framework populates before your
 handler executes.
 
-Behind the scenes, aws-lambda-host injects the `UseExtractAndPackEnvelope` middleware at the end of
+Behind the scenes, minimal-lambda injects the `UseExtractAndPackEnvelope` middleware at the end of
 every pipeline. That middleware automatically calls `IRequestEnvelope.ExtractPayload` before your
 handler runs and `IResponseEnvelope.PackPayload` after it finishes, guaranteeing consistent
 serialization for both built-in envelopes and your own custom envelope types.
@@ -26,14 +26,14 @@ Install only the envelopes you need; each one lives in its own NuGet package.
 
 | Event Source                    | Package                                                                                                                                                | NuGet                                                                                                                                                            |
 |---------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| SQS                             | [AwsLambda.Host.Envelopes.Sqs](https://github.com/j-d-ha/aws-lambda-host/tree/main/src/Envelopes/AwsLambda.Host.Envelopes.Sqs)                         | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Sqs.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sqs)                         |
-| SNS                             | [AwsLambda.Host.Envelopes.Sns](https://github.com/j-d-ha/aws-lambda-host/tree/main/src/Envelopes/AwsLambda.Host.Envelopes.Sns)                         | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Sns.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Sns)                         |
-| API Gateway / HTTP API          | [AwsLambda.Host.Envelopes.ApiGateway](https://github.com/j-d-ha/aws-lambda-host/tree/main/src/Envelopes/AwsLambda.Host.Envelopes.ApiGateway)           | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.ApiGateway.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.ApiGateway)           |
-| Kinesis Data Streams            | [AwsLambda.Host.Envelopes.Kinesis](https://github.com/j-d-ha/aws-lambda-host/tree/main/src/Envelopes/AwsLambda.Host.Envelopes.Kinesis)                 | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Kinesis.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Kinesis)                 |
-| Kinesis Data Firehose           | [AwsLambda.Host.Envelopes.KinesisFirehose](https://github.com/j-d-ha/aws-lambda-host/tree/main/src/Envelopes/AwsLambda.Host.Envelopes.KinesisFirehose) | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.KinesisFirehose.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.KinesisFirehose) |
-| Kafka (MSK / self-managed)      | [AwsLambda.Host.Envelopes.Kafka](https://github.com/j-d-ha/aws-lambda-host/tree/main/src/Envelopes/AwsLambda.Host.Envelopes.Kafka)                     | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Kafka.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Kafka)                     |
-| CloudWatch Logs                 | [AwsLambda.Host.Envelopes.CloudWatchLogs](https://github.com/j-d-ha/aws-lambda-host/tree/main/src/Envelopes/AwsLambda.Host.Envelopes.CloudWatchLogs)   | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.CloudWatchLogs.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.CloudWatchLogs)   |
-| Application Load Balancer (ALB) | [AwsLambda.Host.Envelopes.Alb](https://github.com/j-d-ha/aws-lambda-host/tree/main/src/Envelopes/AwsLambda.Host.Envelopes.Alb)                         | [![NuGet](https://img.shields.io/nuget/v/AwsLambda.Host.Envelopes.Alb.svg)](https://www.nuget.org/packages/AwsLambda.Host.Envelopes.Alb)                         |
+| SQS                             | [MinimalLambda.Envelopes.Sqs](https://github.com/j-d-ha/minimal-lambda/tree/main/src/Envelopes/MinimalLambda.Envelopes.Sqs)                         | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.Sqs.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.Sqs)                         |
+| SNS                             | [MinimalLambda.Envelopes.Sns](https://github.com/j-d-ha/minimal-lambda/tree/main/src/Envelopes/MinimalLambda.Envelopes.Sns)                         | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.Sns.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.Sns)                         |
+| API Gateway / HTTP API          | [MinimalLambda.Envelopes.ApiGateway](https://github.com/j-d-ha/minimal-lambda/tree/main/src/Envelopes/MinimalLambda.Envelopes.ApiGateway)           | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.ApiGateway.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.ApiGateway)           |
+| Kinesis Data Streams            | [MinimalLambda.Envelopes.Kinesis](https://github.com/j-d-ha/minimal-lambda/tree/main/src/Envelopes/MinimalLambda.Envelopes.Kinesis)                 | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.Kinesis.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.Kinesis)                 |
+| Kinesis Data Firehose           | [MinimalLambda.Envelopes.KinesisFirehose](https://github.com/j-d-ha/minimal-lambda/tree/main/src/Envelopes/MinimalLambda.Envelopes.KinesisFirehose) | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.KinesisFirehose.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.KinesisFirehose) |
+| Kafka (MSK / self-managed)      | [MinimalLambda.Envelopes.Kafka](https://github.com/j-d-ha/minimal-lambda/tree/main/src/Envelopes/MinimalLambda.Envelopes.Kafka)                     | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.Kafka.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.Kafka)                     |
+| CloudWatch Logs                 | [MinimalLambda.Envelopes.CloudWatchLogs](https://github.com/j-d-ha/minimal-lambda/tree/main/src/Envelopes/MinimalLambda.Envelopes.CloudWatchLogs)   | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.CloudWatchLogs.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.CloudWatchLogs)   |
+| Application Load Balancer (ALB) | [MinimalLambda.Envelopes.Alb](https://github.com/j-d-ha/minimal-lambda/tree/main/src/Envelopes/MinimalLambda.Envelopes.Alb)                         | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.Alb.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.Alb)                         |
 
 Each package ships with README examples in the repository if you need event-specific guidance.
 
@@ -44,13 +44,13 @@ handler. This SQS example demonstrates the pattern; swap `SqsEnvelope<T>` with a
 to handle SNS, API Gateway, etc.
 
 ```bash
-dotnet add package AwsLambda.Host.Envelopes.Sqs
+dotnet add package MinimalLambda.Envelopes.Sqs
 ```
 
 ```csharp title="Program.cs" linenums="1"
 using Amazon.Lambda.SQSEvents;
-using AwsLambda.Host.Builder;
-using AwsLambda.Host.Envelopes.Sqs;
+using MinimalLambda.Builder;
+using MinimalLambda.Envelopes.Sqs;
 
 var builder = LambdaApplication.CreateBuilder();
 var lambda = builder.Build();
@@ -102,7 +102,7 @@ envelope using `System.Xml`. See the SQS README in the repo for a complete XML s
 
 ### Advanced Configuration
 
-- **`LambdaDefaultJsonOptions`** – aws-lambda-host maintains a second `JsonSerializerOptions`
+- **`LambdaDefaultJsonOptions`** – minimal-lambda maintains a second `JsonSerializerOptions`
   instance for Lambda-specific envelopes (e.g., SNS→SQS fan-out). Most apps shouldn’t touch it; the
   host copies your `JsonOptions.TypeInfoResolver` automatically. Only override it when you need
   different converters for those hybrid envelopes.
@@ -127,8 +127,8 @@ the extraction logic.
 ```csharp title="CustomRequestEnvelope.cs" linenums="1"
 using System.Text.Json;
 using System.Text.Json.Serialization;
-using AwsLambda.Host.Envelopes;
-using AwsLambda.Host.Options;
+using MinimalLambda.Envelopes;
+using MinimalLambda.Options;
 
 public sealed class CustomRequestEnvelope : IRequestEnvelope
 {

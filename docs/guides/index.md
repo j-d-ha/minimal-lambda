@@ -1,6 +1,6 @@
 # Guides
 
-Comprehensive guides for building production Lambda functions with `AwsLambda.Host`. Each guide provides in-depth coverage of a specific framework feature with complete examples, best practices, and troubleshooting.
+Comprehensive guides for building production Lambda functions with `MinimalLambda`. Each guide provides in-depth coverage of a specific framework feature with complete examples, best practices, and troubleshooting.
 
 ## Core Framework Guides
 
@@ -104,7 +104,7 @@ Write comprehensive tests for your Lambda functions using xUnit, NSubstitute, an
 
 ## Learning Path
 
-### New to `AwsLambda.Host`?
+### New to `MinimalLambda`?
 
 Start with [Getting Started](../getting-started/index.md) to build your first Lambda function, then return here for deeper coverage of specific features.
 
@@ -126,8 +126,8 @@ After mastering the guides, explore [Advanced Topics](../advanced/index.md) for 
 
 If you encounter issues not covered in these guides:
 
-- Search or ask in [GitHub Discussions](https://github.com/j-d-ha/aws-lambda-host/discussions)
-- Report bugs in [GitHub Issues](https://github.com/j-d-ha/aws-lambda-host/issues)
+- Search or ask in [GitHub Discussions](https://github.com/j-d-ha/minimal-lambda/discussions)
+- Report bugs in [GitHub Issues](https://github.com/j-d-ha/minimal-lambda/issues)
 
 ---
 

@@ -1,11 +1,11 @@
-# Contributing to AWS Lambda Host
+# Contributing to MinimalLambda
 
-Thank you for your interest in contributing to the AWS Lambda Host project! This document provides guidelines and instructions for contributing.
+Thank you for your interest in contributing to the MinimalLambda project! This document provides guidelines and instructions for contributing.
 
 ## Table of Contents
 
 <!-- TOC -->
-* [Contributing to AWS Lambda Host](#contributing-to-aws-lambda-host)
+* [Contributing to MinimalLambda](#contributing-to-minimal-lambda)
   * [Table of Contents](#table-of-contents)
   * [Code of Conduct](#code-of-conduct)
   * [Getting Started](#getting-started)
@@ -33,12 +33,12 @@ We are committed to providing a welcoming and inclusive environment for all cont
 1. **Fork the repository** on GitHub
 2. **Clone your fork** locally:
    ```bash
-   git clone https://github.com/YOUR_USERNAME/aws-lambda-host.git
-   cd aws-lambda-host
+   git clone https://github.com/YOUR_USERNAME/minimal-lambda.git
+   cd minimal-lambda
    ```
 3. **Add the upstream remote**:
    ```bash
-   git remote add upstream https://github.com/j-d-ha/aws-lambda-host.git
+   git remote add upstream https://github.com/j-d-ha/minimal-lambda.git
    ```
 4. **Create a feature branch** (see [Branching Strategy](#branching-strategy))
 
@@ -80,7 +80,7 @@ The project uses two complementary tools:
 
 1. **CleanupCode**: JetBrains code cleanup tool
    - Applies code organization and style rules
-   - Uses the "Built-in: Full Cleanup" profile configured in `AwsLambda.Host.sln.DotSettings`
+   - Uses the "Built-in: Full Cleanup" profile configured in `MinimalLambda.sln.DotSettings`
    - Handles code structure and consistency
 
 2. **CSharpier**: Opinionated C# code formatter
@@ -115,7 +115,7 @@ fail, as the GitHub Actions workflow (`pr-build.yaml`) includes a code quality c
 
 If you're using **JetBrains Rider** or **Visual Studio** with ReSharper:
 
-- The solution includes `AwsLambda.Host.sln.DotSettings` with formatting rules
+- The solution includes `MinimalLambda.sln.DotSettings` with formatting rules
 - Format on save can be configured in your IDE settings
 - This ensures consistency even before running Task commands
 
@@ -212,7 +212,7 @@ when using extension method syntax.
 ### C# Conventions
 
 - **Indentation**: 4 spaces
-- **File-scoped namespaces**: Use `namespace AwsLambda.Host;` format
+- **File-scoped namespaces**: Use `namespace MinimalLambda;` format
 - **Nullable reference types**: Always enabled (`<Nullable>enable</Nullable>`)
 - **Modern syntax**: Use records, top-level statements, and nullable annotations where appropriate
 - **Line length**: Keep to 100 characters when practical
@@ -288,7 +288,7 @@ public class LambdaApplicationTest
 dotnet test
 
 # Run tests for specific project
-dotnet test tests/AwsLambda.Host.UnitTests
+dotnet test tests/MinimalLambda.UnitTests
 
 # Run with verbose output
 dotnet test --verbosity detailed
@@ -372,4 +372,4 @@ By contributing to this project, you agree that your contributions will be licen
 
 ---
 
-**Thank you for contributing to AWS Lambda Host!** 🚀
+**Thank you for contributing to MinimalLambda!** 🚀

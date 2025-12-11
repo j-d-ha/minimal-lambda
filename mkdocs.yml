@@ -2,13 +2,13 @@
 
 # https://github.com/mkdocs/catalog
 
-site_name: AwsLambda.Host
+site_name: MinimalLambda
 site_description: A modern .NET framework for building AWS Lambda functions using familiar .NET patterns.
-site_url: https://j-d-ha.github.io/aws-lambda-host/
+site_url: https://j-d-ha.github.io/minimal-lambda/
 site_author: Jonas Ha
 
-repo_name: j-d-ha/aws-lambda-host
-repo_url: https://github.com/j-d-ha/aws-lambda-host
+repo_name: j-d-ha/minimal-lambda
+repo_url: https://github.com/j-d-ha/minimal-lambda
 edit_uri: edit/main/docs/
 
 theme:

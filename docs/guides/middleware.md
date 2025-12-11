@@ -1,6 +1,6 @@
 # Middleware
 
-`aws-lambda-host` uses the same middleware model as ASP.NET Core: each component gets a context object,
+`minimal-lambda` uses the same middleware model as ASP.NET Core: each component gets a context object,
 runs code before/after the next component, and can short-circuit the pipeline. If you're new to the
 pattern, skim the [ASP.NET Core middleware overview](https://learn.microsoft.com/aspnet/core/fundamentals/middleware/)
 first. This guide focuses on Lambda-specific behavior: invocation scopes, feature access, and
@@ -91,7 +91,7 @@ collection lazily creates features by asking every registered `IFeatureProvider`
 first requested.
 
 ```csharp title="Program.cs"
-using AwsLambda.Host.Abstractions.Features;
+using MinimalLambda.Abstractions.Features;
 
 lambda.UseMiddleware(async (context, next) =>
 {
@@ -169,14 +169,14 @@ These methods are equivalent to calling `context.Features.Get<IEventFeature<T>>(
 
 ### Feature Providers in Practice
 
-When `context.Features.Get<T>()` runs, `AwsLambda.Host` walks through every registered `IFeatureProvider`
+When `context.Features.Get<T>()` runs, `MinimalLambda` walks through every registered `IFeatureProvider`
 until one returns the requested feature. Built-in providers handle common cases such as response
 serialization. Use the same pattern for your features.
 
 ```csharp title="DefaultResponseFeatureProvider.cs" linenums="1"
 using Amazon.Lambda.Core;
 
-namespace AwsLambda.Host.Core;
+namespace MinimalLambda;
 
 /// <summary>
 ///     Provides a default implementation of <see cref="IResponseFeature" /> for Lambda response
