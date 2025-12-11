@@ -34,7 +34,7 @@ namespace MinimalLambda.Core.Generated
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.DependencyInjection;
-    using MinimalLambda.Host.Builder;
+    using MinimalLambda.Builder;
 
     [GeneratedCode("MinimalLambda.SourceGenerators", "0.0.0")]
     file static class GeneratedLambdaOnShutdownBuilderExtensions

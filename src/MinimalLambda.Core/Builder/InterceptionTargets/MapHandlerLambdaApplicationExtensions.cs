@@ -1,7 +1,7 @@
 using System.Diagnostics;
 using System.Diagnostics.CodeAnalysis;
 
-namespace MinimalLambda.Host.Builder;
+namespace MinimalLambda.Builder;
 
 /// <summary>
 ///     Overloads for

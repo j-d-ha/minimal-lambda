@@ -8,7 +8,7 @@
 
 using System.Collections;
 
-namespace MinimalLambda.Host.Core;
+namespace MinimalLambda.Core;
 
 internal class DefaultFeatureCollection : IFeatureCollection
 {

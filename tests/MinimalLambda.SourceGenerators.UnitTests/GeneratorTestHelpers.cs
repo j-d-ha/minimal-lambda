@@ -9,7 +9,7 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
-using MinimalLambda.Host.Builder;
+using MinimalLambda.Builder;
 
 namespace MinimalLambda.SourceGenerators.UnitTests;
 

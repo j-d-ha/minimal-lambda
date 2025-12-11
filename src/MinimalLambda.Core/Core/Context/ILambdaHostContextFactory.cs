@@ -1,6 +1,6 @@
 using Amazon.Lambda.Core;
 
-namespace MinimalLambda.Host.Core;
+namespace MinimalLambda.Core;
 
 internal interface ILambdaHostContextFactory
 {

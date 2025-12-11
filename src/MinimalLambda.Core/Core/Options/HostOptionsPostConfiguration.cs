@@ -1,7 +1,7 @@
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 
-namespace MinimalLambda.Host.Options;
+namespace MinimalLambda.Options;
 
 internal class HostOptionsPostConfiguration : IPostConfigureOptions<HostOptions>
 {

@@ -1,6 +1,6 @@
 using Amazon.Lambda.Core;
 
-namespace MinimalLambda.Host.Core;
+namespace MinimalLambda.Core;
 
 /// <summary>
 ///     Provides a default implementation of <see cref="IResponseFeature" /> for Lambda response

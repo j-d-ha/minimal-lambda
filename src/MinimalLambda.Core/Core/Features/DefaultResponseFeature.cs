@@ -1,6 +1,6 @@
 using Amazon.Lambda.Core;
 
-namespace MinimalLambda.Host.Core;
+namespace MinimalLambda.Core;
 
 /// <summary>
 ///     Default implementation of <see cref="DefaultResponseFeature{T}" /> that is used by source

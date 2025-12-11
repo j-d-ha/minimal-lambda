@@ -1,7 +1,7 @@
 using Amazon.Lambda.RuntimeSupport.Bootstrap;
-using MinimalLambda.Host.Builder.Extensions;
+using MinimalLambda.Builder.Extensions;
 
-namespace MinimalLambda.Host.Options;
+namespace MinimalLambda.Options;
 
 /// <summary>Options for configuring Lambda hosting behavior.</summary>
 public class LambdaHostOptions

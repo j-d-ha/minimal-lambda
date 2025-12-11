@@ -1,4 +1,4 @@
-namespace MinimalLambda.Host.Builder;
+namespace MinimalLambda.Builder;
 
 /// <summary>Marks a parameter to receive the deserialized Lambda event object.</summary>
 /// <remarks>

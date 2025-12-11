@@ -15,7 +15,7 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
-namespace MinimalLambda.Host.Builder;
+namespace MinimalLambda.Builder;
 
 /// <summary>A builder for configuring and constructing an AWS Lambda Host application.</summary>
 /// <remarks>
@@ -59,7 +59,7 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
             ResolveContentRoot(settings);
         }
 
-        _hostBuilder = Microsoft.Extensions.Hosting.Host.CreateEmptyApplicationBuilder(
+        _hostBuilder = Host.CreateEmptyApplicationBuilder(
             new HostApplicationBuilderSettings
             {
                 DisableDefaults = settings.DisableDefaults,

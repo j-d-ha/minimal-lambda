@@ -1,7 +1,7 @@
 using Amazon.Lambda.Core;
 using Microsoft.Extensions.Options;
 
-namespace MinimalLambda.Host.Core;
+namespace MinimalLambda.Core;
 
 /// <summary>
 ///     Provides functionality to create a <see cref="CancellationTokenSource" /> with respect to

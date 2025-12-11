@@ -1,4 +1,4 @@
-namespace MinimalLambda.Host.Builder;
+namespace MinimalLambda.Builder;
 
 /// <summary>
 ///     Provides extension methods for clearing Lambda runtime output formatting in the middleware

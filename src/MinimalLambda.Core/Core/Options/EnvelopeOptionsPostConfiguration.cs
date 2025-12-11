@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Options;
 
-namespace MinimalLambda.Host.Options;
+namespace MinimalLambda.Options;
 
 internal class EnvelopeOptionsPostConfiguration : IPostConfigureOptions<EnvelopeOptions>
 {

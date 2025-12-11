@@ -1,6 +1,6 @@
 ﻿using System;
 using Microsoft.Extensions.Hosting;
-using MinimalLambda.Host.Builder;
+using MinimalLambda.Builder;
 
 // Create the application builder
 var builder = LambdaApplication.CreateBuilder();

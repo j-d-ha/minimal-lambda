@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Options;
 
-namespace MinimalLambda.Host.Builder;
+namespace MinimalLambda.Builder;
 
 /// <summary>Provides middleware for processing Lambda event and response envelopes.</summary>
 public static class RequestEnvelopeMiddleware

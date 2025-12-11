@@ -1,6 +1,6 @@
 using Amazon.Lambda.Core;
 
-namespace MinimalLambda.Host.Runtime;
+namespace MinimalLambda.Runtime;
 
 /// <summary>
 ///     Responsible for orchestrating the AWS Lambda bootstrap. Abstracts away AWS SDK complexity

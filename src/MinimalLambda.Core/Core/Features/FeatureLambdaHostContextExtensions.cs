@@ -1,6 +1,6 @@
 using System.Diagnostics.CodeAnalysis;
 
-namespace MinimalLambda.Host.Core;
+namespace MinimalLambda.Core;
 
 /// <summary>
 ///     Provides extension methods for safely accessing typed event and response data from the

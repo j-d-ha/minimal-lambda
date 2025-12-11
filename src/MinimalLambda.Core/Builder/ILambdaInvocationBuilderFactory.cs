@@ -1,4 +1,4 @@
-namespace MinimalLambda.Host.Builder;
+namespace MinimalLambda.Builder;
 
 internal interface ILambdaInvocationBuilderFactory
 {

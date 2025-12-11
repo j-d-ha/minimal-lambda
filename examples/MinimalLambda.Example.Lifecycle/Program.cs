@@ -4,7 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MinimalLambda.Host.Builder;
+using MinimalLambda.Builder;
 
 var builder = LambdaApplication.CreateBuilder();
 

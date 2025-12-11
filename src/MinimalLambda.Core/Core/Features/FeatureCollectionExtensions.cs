@@ -8,7 +8,7 @@
 
 using System.Diagnostics.CodeAnalysis;
 
-namespace MinimalLambda.Host.Core;
+namespace MinimalLambda.Core;
 
 /// <summary>Extension methods for feature collections.</summary>
 public static class FeatureCollectionExtensions

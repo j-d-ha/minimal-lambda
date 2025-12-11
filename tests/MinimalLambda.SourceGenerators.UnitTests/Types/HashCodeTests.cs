@@ -1,6 +1,6 @@
 using AwesomeAssertions;
 using JetBrains.Annotations;
-using HashCode = MinimalLambda.Host.SourceGenerators.Types.HashCode;
+using HashCode = MinimalLambda.SourceGenerators.Types.HashCode;
 
 namespace MinimalLambda.SourceGenerators.UnitTests.Types;
 

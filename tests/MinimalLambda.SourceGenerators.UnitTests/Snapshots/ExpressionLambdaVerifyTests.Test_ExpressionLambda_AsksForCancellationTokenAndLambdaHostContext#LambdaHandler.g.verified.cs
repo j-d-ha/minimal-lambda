@@ -32,8 +32,8 @@ namespace MinimalLambda.Core.Generated
     using System.CodeDom.Compiler;
     using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
-    using MinimalLambda.Host.Builder;
-    using MinimalLambda.Host.Core;
+    using MinimalLambda.Builder;
+    using MinimalLambda.Core;
     using Microsoft.Extensions.DependencyInjection;
 
     [GeneratedCode("MinimalLambda.SourceGenerators", "0.0.0")]
@@ -49,7 +49,7 @@ namespace MinimalLambda.Core.Generated
             Delegate handler
         )
         {
-            var castHandler = (global::System.Func<global::System.Threading.CancellationToken, global::MinimalLambda.Host.Core.ILambdaHostContext, string>)handler;
+            var castHandler = (global::System.Func<global::System.Threading.CancellationToken, global::MinimalLambda.Core.ILambdaHostContext, string>)handler;
 
             application.Handle(InvocationDelegate);
 

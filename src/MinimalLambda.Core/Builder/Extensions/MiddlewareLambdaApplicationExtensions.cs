@@ -1,4 +1,4 @@
-namespace MinimalLambda.Host.Builder;
+namespace MinimalLambda.Builder;
 
 /// <summary>Provides extension methods for adding middleware to the Lambda invocation pipeline.</summary>
 public static class MiddlewareLambdaApplicationExtensions

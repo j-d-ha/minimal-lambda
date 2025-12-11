@@ -3,7 +3,7 @@ using Amazon.Lambda.RuntimeSupport;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace MinimalLambda.Host.Runtime;
+namespace MinimalLambda.Runtime;
 
 /// <summary>
 ///     Adapts AWS Lambda bootstrap configuration and execution. This class abstracts away AWS SDK

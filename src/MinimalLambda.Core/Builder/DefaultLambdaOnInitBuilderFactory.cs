@@ -1,7 +1,7 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
-namespace MinimalLambda.Host.Builder;
+namespace MinimalLambda.Builder;
 
 internal class DefaultLambdaOnInitBuilderFactory(
     IServiceProvider serviceProvider,

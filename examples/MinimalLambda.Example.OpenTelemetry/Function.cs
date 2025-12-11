@@ -1,4 +1,4 @@
-using MinimalLambda.Host.Builder;
+using MinimalLambda.Builder;
 
 namespace MinimalLambda.Example.OpenTelemetry;
 

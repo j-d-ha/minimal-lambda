@@ -6,7 +6,7 @@
 // See THIRD-PARTY-LICENSES.txt file in the project root or visit
 // https://github.com/dotnet/aspnetcore/blob/v10.0.0/LICENSE.txt
 
-namespace MinimalLambda.Host.Core;
+namespace MinimalLambda.Core;
 
 internal class LambdaHostContextAccessor : ILambdaHostContextAccessor
 {

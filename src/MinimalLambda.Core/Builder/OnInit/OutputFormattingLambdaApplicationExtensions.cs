@@ -1,6 +1,6 @@
 using Microsoft.Extensions.Logging;
 
-namespace MinimalLambda.Host.Builder;
+namespace MinimalLambda.Builder;
 
 /// <summary>Provides extension methods for managing Lambda runtime output formatting.</summary>
 public static class OutputFormattingLambdaApplicationExtensions

@@ -1,5 +1,5 @@
 using Microsoft.Extensions.DependencyInjection;
-using MinimalLambda.Host.Builder.Extensions;
+using MinimalLambda.Builder.Extensions;
 
 namespace MinimalLambda.UnitTests.Builder.Extensions;
 

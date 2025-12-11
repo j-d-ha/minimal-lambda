@@ -1,4 +1,4 @@
-namespace MinimalLambda.Host.Options;
+namespace MinimalLambda.Options;
 
 /// <summary>
 ///     Provides predetermined timeout durations for AWS Lambda shutdown based on extension

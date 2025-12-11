@@ -1,6 +1,6 @@
 using Amazon.Lambda.Core;
 
-namespace MinimalLambda.Host.Runtime;
+namespace MinimalLambda.Runtime;
 
 /// <summary>
 ///     Responsible for creating and composing the Lambda handler. Handles middleware pipeline

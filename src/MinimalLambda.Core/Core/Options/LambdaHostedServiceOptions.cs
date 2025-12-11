@@ -1,4 +1,4 @@
-namespace MinimalLambda.Host.Options;
+namespace MinimalLambda.Options;
 
 internal class LambdaHostedServiceOptions
 {

@@ -1,7 +1,7 @@
 using Amazon.Lambda.Core;
 using Microsoft.Extensions.Options;
 
-namespace MinimalLambda.Host.Runtime;
+namespace MinimalLambda.Runtime;
 
 /// <summary>Builds and composes the Lambda invocation pipeline into a request handler.</summary>
 internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory
