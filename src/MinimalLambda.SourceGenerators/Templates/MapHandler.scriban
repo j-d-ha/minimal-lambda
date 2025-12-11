@@ -7,13 +7,13 @@ namespace MinimalLambda.Generated
     using MinimalLambda.Builder;
     using MinimalLambda;
     using Microsoft.Extensions.DependencyInjection;
-    
+
     {{ generated_code_attribute }}
     file static class GeneratedLambdaInvocationBuilderExtensions
     {
         private const string EventFeatureProviderKey = "__EventFeatureProvider";
         private const string ResponseFeatureProviderKey = "__ResponseFeatureProvider";
-    
+
         {{~ for call in map_handler_calls ~}}
         // Location: {{ call.location.display_location }}
         [InterceptsLocation({{ call.location.version }}, "{{ call.location.data }}")]
@@ -23,23 +23,23 @@ namespace MinimalLambda.Generated
         )
         {
             var castHandler = ({{ call.handler_signature }})handler;
-            
+
             application.Handle(InvocationDelegate);
             {{~ if call.is_event_feature_required ~}}
-            
+
             if (!application.Properties.ContainsKey(EventFeatureProviderKey))
                 application.Properties[EventFeatureProviderKey] = application
                     .Services.GetRequiredService<IEventFeatureProviderFactory>()
                     .Create<{{ call.input_event.type }}>();
             {{~ end ~}}
             {{~ if call.is_response_feature_required ~}}
-            
+
             if (!application.Properties.ContainsKey(ResponseFeatureProviderKey))
                 application.Properties[ResponseFeatureProviderKey] = application.
                     Services.GetRequiredService<IResponseFeatureProviderFactory>()
                     .Create<{{ call.output_response.response_type }}>();
             {{~ end ~}}
-            
+
             return application;
 
             {{ if call.should_await ~}} async {{ end ~}}Task InvocationDelegate(ILambdaHostContext context)

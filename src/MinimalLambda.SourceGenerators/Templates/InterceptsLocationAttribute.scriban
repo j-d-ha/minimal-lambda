@@ -14,7 +14,7 @@
 namespace System.Runtime.CompilerServices
 {
     using System.CodeDom.Compiler;
- 
+
     {{ generated_code_attribute }}   
     [AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
     file sealed class InterceptsLocationAttribute : Attribute
