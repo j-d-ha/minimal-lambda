@@ -70,7 +70,7 @@ If your handler doesn't need the Lambda payload, omit the `[Event]` parameter en
 !!! tip "Cancellation buffers"
     The cancellation token fires slightly **before** AWS kills the process:
 
-    - The runtime subtracts `LambdaHostOptions.InvocationCancellationBuffer` (default 3s) from the
+    - The runtime subtracts `LambdaHostOptions.InvocationCancellationBuffer` (default 500ms) from the
       remaining time when creating the token.
     - Always pass it down to outbound SDK calls and database queries so you can stop work cleanly.
 
@@ -131,12 +131,12 @@ lambda.MapHandler((
 
 ## Host-Specific Pitfalls
 
-| Pitfall | Impact | Fix |
-|---------|--------|-----|
+| Pitfall                               | Impact                                              | Fix                                                                                     |
+|---------------------------------------|-----------------------------------------------------|-----------------------------------------------------------------------------------------|
 | Singleton depends on a scoped service | Scoped instance from first invocation leaks forever | Inject `IServiceProvider`, create a scope, resolve the scoped service inside the method |
-| Storing scoped services in singletons | `ObjectDisposedException` on later invocations | Keep scoped dependencies scoped; pass data instead of services |
-| Over-injecting handlers | Hard-to-test functions with 8+ services | Move orchestration into services; keep handlers thin |
-| Forgetting cancellation tokens | Lambda kills the environment mid-work | Always inject `CancellationToken` and pass it down |
+| Storing scoped services in singletons | `ObjectDisposedException` on later invocations      | Keep scoped dependencies scoped; pass data instead of services                          |
+| Over-injecting handlers               | Hard-to-test functions with 8+ services             | Move orchestration into services; keep handlers thin                                    |
+| Forgetting cancellation tokens        | Lambda kills the environment mid-work               | Always inject `CancellationToken` and pass it down                                      |
 
 ## Key Takeaways
 

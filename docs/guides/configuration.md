@@ -79,15 +79,15 @@ builder.Services.ConfigureLambdaHostOptions(options =>
 });
 ```
 
-| Option                         | Type                     | Default                            | Description                                                                 |
-|--------------------------------|--------------------------|------------------------------------|-----------------------------------------------------------------------------|
-| `InitTimeout`                  | `TimeSpan`               | 5 seconds                          | Maximum time all `OnInit` handlers collectively have before cancellation.   |
-| `InvocationCancellationBuffer` | `TimeSpan`               | 3 seconds                          | Buffer subtracted from remaining time before the invocation token fires.   |
-| `ShutdownDuration`             | `TimeSpan`               | `ShutdownDuration.ExternalExtensions` (500 ms) | Expected window between SIGTERM and SIGKILL.                                 |
-| `ShutdownDurationBuffer`       | `TimeSpan`               | 50 ms                              | Safety margin deducted from `ShutdownDuration` to guarantee cleanup.       |
-| `ClearLambdaOutputFormatting`  | `bool`                   | `false`                            | Automatically register the built-in OnInit handler that clears console formatting. |
-| `BootstrapHttpClient`          | `HttpClient?`            | `null`                             | Custom client for the Lambda bootstrap runtime API.                        |
-| `BootstrapOptions`             | `LambdaBootstrapOptions` | `new()`                            | Low-level runtime bootstrap configuration (timeouts, heartbeats, etc.).    |
+| Option                         | Type                     | Default                                       | Description                                                                        |
+|--------------------------------|--------------------------|-----------------------------------------------|------------------------------------------------------------------------------------|
+| `InitTimeout`                  | `TimeSpan`               | 5 seconds                                     | Maximum time all `OnInit` handlers collectively have before cancellation.          |
+| `InvocationCancellationBuffer` | `TimeSpan`               | 500 milliseconds                              | Buffer subtracted from remaining time before the invocation token fires.           |
+| `ShutdownDuration`             | `TimeSpan`               | `ShutdownDuration.ExternalExtensions` (500ms) | Expected window between SIGTERM and SIGKILL.                                       |
+| `ShutdownDurationBuffer`       | `TimeSpan`               | 50ms                                          | Safety margin deducted from `ShutdownDuration` to guarantee cleanup.               |
+| `ClearLambdaOutputFormatting`  | `bool`                   | `false`                                       | Automatically register the built-in OnInit handler that clears console formatting. |
+| `BootstrapHttpClient`          | `HttpClient?`            | `null`                                        | Custom client for the Lambda bootstrap runtime API.                                |
+| `BootstrapOptions`             | `LambdaBootstrapOptions` | `new()`                                       | Low-level runtime bootstrap configuration (timeouts, heartbeats, etc.).            |
 
 ### `InitTimeout`
 
@@ -142,9 +142,9 @@ lambda.OnShutdown(async (ITelemetry telemetry, CancellationToken ct) =>
 
 Choose from the provided constants when possible:
 
-- `ShutdownDuration.NoExtensions` – No extensions installed (0 ms window).
-- `ShutdownDuration.InternalExtensions` – Only internal extensions (300 ms).
-- `ShutdownDuration.ExternalExtensions` – External extension installed (500 ms, default).
+- `ShutdownDuration.NoExtensions` – No extensions installed (0ms window).
+- `ShutdownDuration.InternalExtensions` – Only internal extensions (300ms).
+- `ShutdownDuration.ExternalExtensions` – External extension installed (500ms, default).
 - Any custom `TimeSpan` when your environment requires more/less time.
 
 ### `ClearLambdaOutputFormatting`
