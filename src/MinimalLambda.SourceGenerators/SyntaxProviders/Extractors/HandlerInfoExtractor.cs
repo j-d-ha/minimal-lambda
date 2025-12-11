@@ -213,7 +213,7 @@ internal static class HandlerInfoExtractor
                     (castParam, originalParam) =>
                         originalParam with
                         {
-                            TypeInfo = Microsoft.CodeAnalysis.TypeInfo.Create(castParam.Type),
+                            TypeInfo = TypeInfo.Create(castParam.Type),
                             LocationInfo = LocationInfo.CreateFrom(castParam),
                         }
                 )
@@ -228,7 +228,7 @@ internal static class HandlerInfoExtractor
                 && (invokeMethod.IsAsync || invokeMethod.ReturnType.IsTypeAwaitable());
 
             // get response type TypeInfo
-            var responseTypeInfo = Microsoft.CodeAnalysis.TypeInfo.Create(invokeMethod.ReturnType);
+            var responseTypeInfo = TypeInfo.Create(invokeMethod.ReturnType);
 
             return new DelegateInfo(
                 updatedParameters,
@@ -270,7 +270,7 @@ internal static class HandlerInfoExtractor
             && (methodSymbol.IsAsync || methodSymbol.ReturnType.IsTypeAwaitable());
 
         // get response type TypeInfo
-        var responseTypeInfo = Microsoft.CodeAnalysis.TypeInfo.Create(methodSymbol.ReturnType);
+        var responseTypeInfo = TypeInfo.Create(methodSymbol.ReturnType);
 
         return new DelegateInfo(parameters, isAwaitable, methodSymbol.IsAsync, responseTypeInfo);
     }
@@ -339,7 +339,7 @@ internal static class HandlerInfoExtractor
 
         // get response type TypeInfo
         TypeInfo? responseTypeInfo = returnType is not null
-            ? Microsoft.CodeAnalysis.TypeInfo.Create(returnType, returnTypeSyntax)
+            ? TypeInfo.Create(returnType, returnTypeSyntax)
             : null;
 
         // determine if the lambda is async by checking kind
@@ -367,7 +367,7 @@ internal static class HandlerInfoExtractor
             {
                 FullyQualifiedType = fullResponseType,
             }
-            : Microsoft.CodeAnalysis.TypeInfo.CreateFullyQualifiedType(fullResponseType);
+            : TypeInfo.CreateFullyQualifiedType(fullResponseType);
 
         // determine if the delegate is returning awaitable value
         var isAwaitable =
