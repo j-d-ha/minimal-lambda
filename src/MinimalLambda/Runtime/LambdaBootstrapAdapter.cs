@@ -21,13 +21,7 @@ internal sealed class LambdaBootstrapAdapter : ILambdaBootstrapOrchestrator
     {
         ArgumentNullException.ThrowIfNull(lambdaHostSettings);
 
-        // TODO: Remove this check once ILambdaBootstrapOrchestrator.BootstrapHttpClient is removed.
-        // until ILambdaBootstrapOrchestrator.BootstrapHttpClient is removed, we need to check for
-        // it if the keyed service is NOT present.
-#pragma warning disable CS0618 // Type or member is obsolete
-        _httpClient = httpClient ?? lambdaHostSettings.Value.BootstrapHttpClient;
-#pragma warning restore CS0618 // Type or member is obsolete
-
+        _httpClient = httpClient;
         _settings = lambdaHostSettings.Value;
     }
 
