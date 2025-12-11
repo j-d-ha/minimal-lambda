@@ -324,7 +324,7 @@ public class LambdaApplicationBuilderTests
         var builder = LambdaApplication.CreateBuilder();
 
         // Configure to enable ClearLambdaOutputFormatting via appsettings
-        builder.Configuration["AwsLambdaHost:ClearLambdaOutputFormatting"] = "true";
+        builder.Configuration["LambdaHost:ClearLambdaOutputFormatting"] = "true";
 
         var app = builder.Build();
 

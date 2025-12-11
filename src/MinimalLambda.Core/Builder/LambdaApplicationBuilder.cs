@@ -38,7 +38,7 @@ namespace MinimalLambda.Builder;
 /// <seealso cref="IHostApplicationBuilder" />
 public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
 {
-    private const string LambdaHostAppSettingsSectionName = "AwsLambdaHost";
+    private const string LambdaHostAppSettingsSectionName = "LambdaHost";
     private readonly HostApplicationBuilder _hostBuilder;
 
     private LambdaApplication? _builtApplication;
