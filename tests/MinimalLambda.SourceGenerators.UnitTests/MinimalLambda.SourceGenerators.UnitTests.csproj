@@ -34,7 +34,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\MinimalLambda.OpenTelemetry\MinimalLambda.OpenTelemetry.csproj" />
-    <ProjectReference Include="..\..\src\MinimalLambda.Core\MinimalLambda.Core.csproj" />
+    <ProjectReference Include="..\..\src\MinimalLambda\MinimalLambda.csproj" />
     <ProjectReference Include="..\..\src\MinimalLambda.SourceGenerators\MinimalLambda.SourceGenerators.csproj" />
     <ProjectReference Include="..\..\src\Envelopes\MinimalLambda.Envelopes.ApiGateway\MinimalLambda.Envelopes.ApiGateway.csproj" />
   </ItemGroup>

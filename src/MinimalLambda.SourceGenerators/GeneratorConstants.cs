@@ -5,7 +5,7 @@ internal static class TypeConstants
 {
     internal const string ILambdaContext = "global::Amazon.Lambda.Core.ILambdaContext";
 
-    internal const string ILambdaHostContext = "global::MinimalLambda.Core.ILambdaHostContext";
+    internal const string ILambdaHostContext = "global::MinimalLambda.ILambdaHostContext";
 
     internal const string CancellationToken = "global::System.Threading.CancellationToken";
 

@@ -1,4 +1,4 @@
-namespace MinimalLambda.Core;
+namespace MinimalLambda;
 
 /// <summary>Provides access to the Lambda invocation response.</summary>
 /// <remarks>

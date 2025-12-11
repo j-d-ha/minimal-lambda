@@ -1,4 +1,4 @@
-namespace MinimalLambda.Core;
+namespace MinimalLambda;
 
 /// <summary>
 ///     Provides access to the invocation event and response data for a Lambda function

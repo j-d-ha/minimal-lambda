@@ -1,4 +1,4 @@
-namespace MinimalLambda.Core;
+namespace MinimalLambda;
 
 internal interface IInvocationDataFeatureFactory
 {

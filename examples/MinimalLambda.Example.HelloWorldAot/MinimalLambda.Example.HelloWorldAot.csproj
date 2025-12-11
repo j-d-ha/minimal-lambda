@@ -24,7 +24,7 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\MinimalLambda.Core\MinimalLambda.Core.csproj" />
+    <ProjectReference Include="..\..\src\MinimalLambda\MinimalLambda.csproj" />
     <ProjectReference
       Include="..\..\src\MinimalLambda.SourceGenerators\MinimalLambda.SourceGenerators.csproj"
       ReferenceOutputAssembly="false"

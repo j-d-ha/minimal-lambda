@@ -1,5 +1,4 @@
 using Microsoft.Extensions.DependencyInjection;
-using MinimalLambda.Core;
 using OpenTelemetry.Instrumentation.AWSLambda;
 using OpenTelemetry.Trace;
 

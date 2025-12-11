@@ -1,7 +1,7 @@
 using Amazon.Lambda.Core;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace MinimalLambda.Core;
+namespace MinimalLambda;
 
 internal class LambdaHostContextFactory : ILambdaHostContextFactory
 {

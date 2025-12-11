@@ -30,6 +30,6 @@
     <PackageReference Include="xunit.v3" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\MinimalLambda.Core\MinimalLambda.Core.csproj" />
+    <ProjectReference Include="..\..\src\MinimalLambda\MinimalLambda.csproj" />
   </ItemGroup>
 </Project>

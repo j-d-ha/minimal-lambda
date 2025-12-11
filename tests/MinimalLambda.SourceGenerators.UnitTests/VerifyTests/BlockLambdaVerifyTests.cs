@@ -7,7 +7,7 @@ public class BlockLambdaVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -49,7 +49,7 @@ public class BlockLambdaVerifyTests
     public async Task Test_BlockLambda_ReturnString() =>
         await GeneratorTestHelpers.Verify(
             """
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -73,7 +73,7 @@ public class BlockLambdaVerifyTests
             """
             using System;
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.DependencyInjection;
             using Microsoft.Extensions.Hosting;
@@ -106,7 +106,7 @@ public class BlockLambdaVerifyTests
             """
             using System;
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
 
             var builder = LambdaApplication.CreateBuilder();
@@ -129,7 +129,7 @@ public class BlockLambdaVerifyTests
             """
             using System;
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
 
             var builder = LambdaApplication.CreateBuilder();
@@ -144,7 +144,7 @@ public class BlockLambdaVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -175,7 +175,7 @@ public class BlockLambdaVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -207,7 +207,7 @@ public class BlockLambdaVerifyTests
             """
             using System;
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -236,7 +236,7 @@ public class BlockLambdaVerifyTests
     public async Task Test_BlockLambda_ReturnImplicitNullable() =>
         await GeneratorTestHelpers.Verify(
             """
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -264,7 +264,7 @@ public class BlockLambdaVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System.IO;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -284,7 +284,7 @@ public class BlockLambdaVerifyTests
             """
             using System.Threading;
             using Amazon.Lambda.Core;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.DependencyInjection;
             using Microsoft.Extensions.Hosting;
@@ -321,7 +321,7 @@ public class BlockLambdaVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 

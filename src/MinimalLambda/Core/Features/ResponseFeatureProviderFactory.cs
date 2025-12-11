@@ -1,6 +1,6 @@
 using Amazon.Lambda.Core;
 
-namespace MinimalLambda.Core;
+namespace MinimalLambda;
 
 internal class ResponseFeatureProviderFactory(ILambdaSerializer lambdaSerializer)
     : IResponseFeatureProviderFactory

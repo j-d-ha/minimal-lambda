@@ -222,7 +222,7 @@ Register `IFeatureProvider` implementations to add your own features or override
 ```csharp title="DefaultResponseFeatureProvider.cs" linenums="1"
 using Amazon.Lambda.Core;
 
-namespace MinimalLambda.Core;
+namespace MinimalLambda;
 
 /// <summary>
 ///     Provides a default implementation of <see cref="IResponseFeature" /> for Lambda response

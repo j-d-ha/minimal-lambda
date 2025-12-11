@@ -26,14 +26,14 @@ namespace System.Runtime.CompilerServices
     }
 }
 
-namespace MinimalLambda.Core.Generated
+namespace MinimalLambda.Generated
 {
     using System;
     using System.CodeDom.Compiler;
     using System.Runtime.CompilerServices;
     using System.Threading.Tasks;
     using MinimalLambda.Builder;
-    using MinimalLambda.Core;
+    using MinimalLambda;
     using Microsoft.Extensions.DependencyInjection;
 
     [GeneratedCode("MinimalLambda.SourceGenerators", "0.0.0")]

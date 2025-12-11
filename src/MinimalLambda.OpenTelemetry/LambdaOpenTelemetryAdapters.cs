@@ -1,6 +1,5 @@
 using Amazon.Lambda.Core;
 using MinimalLambda;
-using MinimalLambda.Core;
 using OpenTelemetry.Instrumentation.AWSLambda;
 using OpenTelemetry.Trace;
 

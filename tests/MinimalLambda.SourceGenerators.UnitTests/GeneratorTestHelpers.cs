@@ -10,7 +10,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Options;
 using MinimalLambda.Builder;
-using MinimalLambda.Core;
 
 namespace MinimalLambda.SourceGenerators.UnitTests;
 

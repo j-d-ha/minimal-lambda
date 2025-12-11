@@ -7,7 +7,7 @@ public class MethodHandlerVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -32,7 +32,7 @@ public class MethodHandlerVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using Amazon.Lambda.Core;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.DependencyInjection;
             using Microsoft.Extensions.Hosting;
@@ -69,7 +69,7 @@ public class MethodHandlerVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -92,7 +92,7 @@ public class MethodHandlerVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -118,7 +118,7 @@ public class MethodHandlerVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -141,7 +141,7 @@ public class MethodHandlerVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -166,7 +166,7 @@ public class MethodHandlerVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -191,7 +191,7 @@ public class MethodHandlerVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -216,7 +216,7 @@ public class MethodHandlerVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 

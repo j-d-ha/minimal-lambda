@@ -8,7 +8,7 @@
     <IncludeBuildOutput>true</IncludeBuildOutput>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <!-- Package Metadata -->
-    <PackageId>MinimalLambda.Core</PackageId>
+    <PackageId>MinimalLambda</PackageId>
     <Description>.NET Host for AWS Lambda</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RootNamespace>MinimalLambda.Host</RootNamespace>
@@ -22,14 +22,9 @@
     <PackageReference Include="Microsoft.Extensions.Http" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="build\MinimalLambda.targets" Pack="true" PackagePath="build" Visible="true" />
     <None
-      Include="build\MinimalLambda.Core.targets"
-      Pack="true"
-      PackagePath="build"
-      Visible="true"
-    />
-    <None
-      Include="build\MinimalLambda.Core.targets"
+      Include="build\MinimalLambda.targets"
       Pack="true"
       PackagePath="buildTransitive"
       Visible="true"

@@ -1,4 +1,4 @@
-namespace MinimalLambda.Core;
+namespace MinimalLambda;
 
 internal class DefaultFeatureCollectionFactory(IEnumerable<IFeatureProvider> providers)
     : IFeatureCollectionFactory

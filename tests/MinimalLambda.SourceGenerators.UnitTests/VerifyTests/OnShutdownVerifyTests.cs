@@ -6,7 +6,7 @@ public class OnShutdownVerifyTests
     public async Task Test_OnShutdown_BaseMethodCall() =>
         await GeneratorTestHelpers.Verify(
             """
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -30,7 +30,7 @@ public class OnShutdownVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -52,7 +52,7 @@ public class OnShutdownVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -74,7 +74,7 @@ public class OnShutdownVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -96,7 +96,7 @@ public class OnShutdownVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -118,7 +118,7 @@ public class OnShutdownVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -142,7 +142,7 @@ public class OnShutdownVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -172,7 +172,7 @@ public class OnShutdownVerifyTests
             """
             using System.Threading;
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.DependencyInjection;
             using Microsoft.Extensions.Hosting;
@@ -208,7 +208,7 @@ public class OnShutdownVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -248,7 +248,7 @@ public class OnShutdownVerifyTests
     public async Task Test_OnShutdown_BlockLambda_ReturnsImplicitVoid() =>
         await GeneratorTestHelpers.Verify(
             """
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
             using System;

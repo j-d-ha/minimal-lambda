@@ -1,4 +1,4 @@
-namespace MinimalLambda.Core;
+namespace MinimalLambda;
 
 /// <summary>Creates feature providers for Lambda response serialization.</summary>
 /// <remarks>

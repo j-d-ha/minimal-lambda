@@ -30,7 +30,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.OpenTelemetry
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.SourceGenerators", "src\MinimalLambda.SourceGenerators\MinimalLambda.SourceGenerators.csproj", "{2CCDEC5D-5A84-2F11-A2F9-A6AF00F2112D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.Core", "src\MinimalLambda.Core\MinimalLambda.Core.csproj", "{6C9DE6F5-2E44-A1BE-0E21-D39850C45EF3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda", "src\MinimalLambda\MinimalLambda.csproj", "{6C9DE6F5-2E44-A1BE-0E21-D39850C45EF3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AB3BF05-4346-4AA6-1389-037BE0695223}"
 EndProject

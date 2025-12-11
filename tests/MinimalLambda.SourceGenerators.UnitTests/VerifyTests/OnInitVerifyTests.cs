@@ -6,7 +6,7 @@ public class OnInitVerifyTests
     public async Task Test_OnInit_BaseMethodCall() =>
         await GeneratorTestHelpers.Verify(
             """
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -30,7 +30,7 @@ public class OnInitVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -52,7 +52,7 @@ public class OnInitVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -71,7 +71,7 @@ public class OnInitVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -90,7 +90,7 @@ public class OnInitVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -109,7 +109,7 @@ public class OnInitVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -128,7 +128,7 @@ public class OnInitVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -147,7 +147,7 @@ public class OnInitVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -166,7 +166,7 @@ public class OnInitVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -185,7 +185,7 @@ public class OnInitVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -209,7 +209,7 @@ public class OnInitVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -239,7 +239,7 @@ public class OnInitVerifyTests
             """
             using System.Threading;
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.DependencyInjection;
             using Microsoft.Extensions.Hosting;
@@ -275,7 +275,7 @@ public class OnInitVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -316,7 +316,7 @@ public class OnInitVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -343,7 +343,7 @@ public class OnInitVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 
@@ -375,7 +375,7 @@ public class OnInitVerifyTests
         await GeneratorTestHelpers.Verify(
             """
             using System.Threading.Tasks;
-            using MinimalLambda.Core;
+            using MinimalLambda;
             using MinimalLambda.Builder;
             using Microsoft.Extensions.Hosting;
 

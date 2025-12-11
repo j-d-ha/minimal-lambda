@@ -1,4 +1,4 @@
-namespace MinimalLambda.Core;
+namespace MinimalLambda;
 
 /// <summary>Provides type-safe access to the Lambda invocation response of a specific type.</summary>
 /// <typeparam name="T">The type of the response object.</typeparam>
