@@ -1,5 +1,7 @@
-﻿using Microsoft.Extensions.Hosting;
+﻿using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using MinimalLambda.Builder;
+using MinimalLambda.Example.OpenTelemetry;
 
 var builder = LambdaApplication.CreateBuilder();
 
