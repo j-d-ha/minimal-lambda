@@ -30,11 +30,7 @@ internal static class LambdaApplicationBuilderBuildSyntaxProvider
                         {
                             Name: "Builder",
                             ContainingNamespace:
-                            {
-                                Name: "Host",
-                                ContainingNamespace:
-                                { Name: "AwsLambda", ContainingNamespace.IsGlobalNamespace: true },
-                            },
+                            { Name: "MinimalLambda", ContainingNamespace.IsGlobalNamespace: true },
                         },
                     },
                 } targetOperation
