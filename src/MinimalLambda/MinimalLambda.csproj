@@ -9,7 +9,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <!-- Package Metadata -->
     <PackageId>MinimalLambda</PackageId>
-    <Description>.NET Host for AWS Lambda</Description>
+    <Description>Minimal API-style framework for AWS Lambda functions</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
     <RootNamespace>MinimalLambda.Host</RootNamespace>
   </PropertyGroup>

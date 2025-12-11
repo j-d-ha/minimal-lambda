@@ -2,18 +2,16 @@
 title: ""
 ---
 
-# Build AWS Lambda Functions with .NET Hosting Patterns
+# MinimalLambda: ASP.NET Core Patterns for Lambda
 
 [![Main Build](https://github.com/j-d-ha/minimal-lambda/actions/workflows/main-build.yaml/badge.svg)](https://github.com/j-d-ha/minimal-lambda/actions/workflows/main-build.yaml)
 [![codecov](https://codecov.io/gh/j-d-ha/minimal-lambda/graph/badge.svg?token=BWORPTQ0UK)](https://codecov.io/gh/j-d-ha/minimal-lambda)
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=j-d-ha_minimal-lambda&metric=alert_status&token=9fb519975d91379dcfbc6c13a4bd4207131af6e3)](https://sonarcloud.io/summary/new_code?id=j-d-ha_minimal-lambda)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://github.com/j-d-ha/minimal-lambda/blob/main/LICENSE)
 
-MinimalLambda is a lightweight hosting framework for .NET developers who want the comfort of ASP.NET
-Core’s middleware, dependency injection, and lifecycle hooks inside AWS Lambda. Instead of wiring up
-scopes, serializers, and cancellation tokens by hand, you map strongly typed handlers and let the
-source-generated pipeline handle the plumbing. The result: less boilerplate, better testability, and
-handlers that feel like the rest of your .NET codebase.
+**If you know ASP.NET Core Minimal APIs, you already know MinimalLambda.**
+
+MinimalLambda brings the clean, declarative coding style of ASP.NET Core Minimal APIs to AWS Lambda – for **any event source** (SQS, SNS, API Gateway, Kinesis, S3, EventBridge, etc.). Use the same builder pattern, dependency injection, middleware pipeline, and handler mapping that you're familiar with from ASP.NET Core – but optimized for Lambda's execution model with source generation, proper scoped lifetimes, and automatic cancellation token handling.
 
 [Get Started](getting-started/index.md){ .md-button .md-button--primary }
 [Guides](guides/index.md){ .md-button }

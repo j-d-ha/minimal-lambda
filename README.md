@@ -5,32 +5,50 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=j-d-ha_minimal-lambda&metric=alert_status&token=9fb519975d91379dcfbc6c13a4bd4207131af6e3)](https://sonarcloud.io/summary/new_code?id=j-d-ha_minimal-lambda)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-A modern .NET framework for building AWS Lambda functions using familiar .NET patterns.
+**ASP.NET Core-style patterns for AWS Lambda** – Build Lambda functions (for any trigger) using the same clean, declarative patterns as ASP.NET Core Minimal APIs.
 
 > 📚 **[View Full Documentation](https://j-d-ha.github.io/minimal-lambda/)**
 
 ## Overview
 
-**minimal-lambda** is a .NET hosting framework that simplifies AWS Lambda development by following
-idiomatic .NET patterns and best practices. Instead of writing boilerplate code to handle Lambda
-events, context, and serialization, you get a clean, declarative API for defining Lambda handlers
-with dependency injection (similar to minimal APIs), middleware support, and modern async/await
-patterns. Built on the generic host from Microsoft.Extensions, it provides a .NET hosting experience
-similar to ASP.NET Core but tailored specifically for Lambda.
+**If you know ASP.NET Core Minimal APIs, you already know MinimalLambda.**
+
+MinimalLambda brings the clean, declarative coding style of ASP.NET Core Minimal APIs to AWS Lambda – for **any trigger type** (SQS, SNS, API Gateway, Kinesis, S3, EventBridge, and more):
+
+- **Same builder pattern**: `LambdaApplication.CreateBuilder()` → `Build()` → `RunAsync()`
+- **Same dependency injection**: `builder.Services.AddScoped<IMyService, MyService>()`
+- **Same handler mapping**: `lambda.MapHandler(...)` just like `app.MapGet(...)`
+- **Same middleware pipeline**: `lambda.Use(...)` for cross-cutting concerns
+- **Same foundation**: Built on `Microsoft.Extensions.Hosting` like ASP.NET Core
+
+Instead of writing boilerplate Lambda handlers, you get familiar .NET patterns with automatic dependency injection, proper scoped lifetimes, middleware support, and compile-time code generation for zero reflection overhead.
 
 ## Key Features
 
-- **.NET Hosting Patterns** – Use middleware, builder pattern, and dependency injection (similar to
-  ASP.NET Core), with proper scoped lifetime management per invocation
-- **Async-First Design** – Native support for async/await with proper Lambda timeout and
-  cancellation handling
-- **Source Generators & Interceptors** – Compile-time code generation and method interception for
-  optimal performance
-- **AOT Ready** – Support for Ahead-of-Time compilation for faster cold starts
-- **Built-in Observability** – OpenTelemetry integration for distributed tracing
-- **Flexible Handler Registration** – Simple, declarative API for mapping Lambda event types to
-  handlers
-- **Minimal Runtime Overhead** – No unnecessary abstractions; efficient use of Lambda resources
+- **Minimal API Pattern** – Map handlers with `lambda.MapHandler(...)` just like `app.MapGet()` in ASP.NET Core – clean, declarative, and intuitive
+- **Dependency Injection** – Constructor and parameter injection using `Microsoft.Extensions.DependencyInjection` with proper scoped lifetimes per invocation
+- **Middleware Pipeline** – Familiar `Use()` pattern for cross-cutting concerns like logging, validation, and error handling
+- **Source Generated** – Compile-time code generation for zero reflection overhead and optimal performance
+- **AOT Ready** – Native AOT compilation support for sub-100ms cold starts
+- **Built-in Observability** – OpenTelemetry integration for distributed tracing and metrics
+- **Type-Safe Envelopes** – Strongly-typed event wrappers for SQS, SNS, API Gateway, Kinesis, and more
+- **Minimal Runtime Overhead** – Lightweight abstraction layer built on the same foundation as ASP.NET Core
+
+## From ASP.NET Core to Lambda
+
+If you're familiar with ASP.NET Core Minimal APIs, the transition to MinimalLambda is seamless:
+
+| ASP.NET Core Minimal API | MinimalLambda |
+|---|---|
+| `WebApplication.CreateBuilder()` | `LambdaApplication.CreateBuilder()` |
+| `app.MapGet("/hello", ...)` | `lambda.MapHandler(...)` |
+| `builder.Services.AddScoped<T>()` | `builder.Services.AddScoped<T>()` |
+| `app.UseMiddleware<T>()` | `lambda.UseMiddleware<T>()` |
+| `app.RunAsync()` | `lambda.RunAsync()` |
+| `HttpContext` dependency injection | `ILambdaContext` dependency injection |
+| Route parameters | `[Event]` attribute for event binding |
+
+The patterns are intentionally identical – if you know one, you know the other.
 
 ## Packages
 

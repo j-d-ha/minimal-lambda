@@ -1,23 +1,34 @@
 # MinimalLambda
 
-Core framework for building AWS Lambda functions with dependency injection, middleware, and source
-generation.
+**ASP.NET Core Minimal API-style patterns for AWS Lambda** – Build Lambda functions for any trigger using familiar .NET patterns.
 
 > 📚 **[View Full Documentation](https://j-d-ha.github.io/minimal-lambda/)**
 
 ## Overview
 
-A modern .NET framework for building AWS Lambda functions using familiar ASP.NET Core patterns. The
-core runtime provides:
+**If you know ASP.NET Core Minimal APIs, you already know MinimalLambda.**
 
-- **Dependency Injection**: Built-in service container for managing application dependencies
-- **Middleware Pipeline**: Request/response processing similar to ASP.NET Core middleware
-- **Compile-time Code Generation**: Source generators reduce reflection overhead and improve startup
-  performance
-- **Native AOT Support**: Full compatibility with ahead-of-time compilation for minimal cold starts
-  and reduced package size
-- **Lambda-Optimized Design**: Event handling, cold start reduction, and efficient resource
-  utilization tailored to AWS Lambda constraints
+Write Lambda functions with the familiar minimal API pattern from ASP.NET Core:
+
+```csharp
+var builder = LambdaApplication.CreateBuilder();
+builder.Services.AddScoped<IMyService, MyService>();
+
+var lambda = builder.Build();
+lambda.MapHandler(([Event] string input, IMyService service) =>
+    service.Process(input));
+
+await lambda.RunAsync();
+```
+
+The framework provides:
+
+- **Minimal API Pattern**: `lambda.MapHandler(...)` just like `app.MapGet()` – clean and declarative
+- **Dependency Injection**: Same DI container as ASP.NET Core with proper scoped lifetimes per invocation
+- **Middleware Pipeline**: Familiar `Use()` pattern for cross-cutting concerns
+- **Source Generated**: Compile-time code generation for zero reflection overhead
+- **Native AOT Ready**: Full AOT support for sub-100ms cold starts
+- **Lambda-Optimized**: Automatic cancellation tokens, timeout handling, and efficient resource use
 
 ## Installation
 
