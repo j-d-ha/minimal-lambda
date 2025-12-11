@@ -1,0 +1,63 @@
+using Amazon.Lambda.Core;
+using Amazon.Lambda.RuntimeSupport;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
+
+namespace MinimalLambda.Host.Runtime;
+
+/// <summary>
+///     Adapts AWS Lambda bootstrap configuration and execution. This class abstracts away AWS SDK
+///     complexity and bootstrap configuration details.
+/// </summary>
+internal sealed class LambdaBootstrapAdapter : ILambdaBootstrapOrchestrator
+{
+    private readonly HttpClient? _httpClient;
+    private readonly LambdaHostOptions _settings;
+
+    public LambdaBootstrapAdapter(
+        IOptions<LambdaHostOptions> lambdaHostSettings,
+        [FromKeyedServices(typeof(ILambdaBootstrapOrchestrator))] HttpClient? httpClient = null
+    )
+    {
+        ArgumentNullException.ThrowIfNull(lambdaHostSettings);
+
+        // TODO: Remove this check once ILambdaBootstrapOrchestrator.BootstrapHttpClient is removed.
+        // until ILambdaBootstrapOrchestrator.BootstrapHttpClient is removed, we need to check for
+        // it if the keyed service is NOT present.
+#pragma warning disable CS0618 // Type or member is obsolete
+        _httpClient = httpClient ?? lambdaHostSettings.Value.BootstrapHttpClient;
+#pragma warning restore CS0618 // Type or member is obsolete
+
+        _settings = lambdaHostSettings.Value;
+    }
+
+    /// <inheritdoc />
+    public async Task RunAsync(
+        Func<Stream, ILambdaContext, Task<Stream>> handler,
+        Func<CancellationToken, Task<bool>>? initializer,
+        CancellationToken stoppingToken
+    )
+    {
+        var convertedInitializer = LambdaBootstrapInitializerAdapter(initializer, stoppingToken);
+
+        // Wrap the handler with HandlerWrapper to match Lambda runtime expectations.
+        using var wrappedHandler = HandlerWrapper.GetHandlerWrapper(handler);
+
+        // Create the bootstrap based on configuration.
+        using var bootstrap = _httpClient is null
+            ? new LambdaBootstrap(wrappedHandler, _settings.BootstrapOptions, convertedInitializer)
+            : new LambdaBootstrap(
+                _httpClient,
+                wrappedHandler,
+                _settings.BootstrapOptions,
+                convertedInitializer
+            );
+
+        await bootstrap.RunAsync(stoppingToken);
+    }
+
+    private static LambdaBootstrapInitializer LambdaBootstrapInitializerAdapter(
+        Func<CancellationToken, Task<bool>>? handler,
+        CancellationToken stoppingToken
+    ) => () => handler?.Invoke(stoppingToken) ?? Task.FromResult(true);
+}

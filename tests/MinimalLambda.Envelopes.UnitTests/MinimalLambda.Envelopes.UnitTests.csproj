@@ -1,0 +1,36 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net8.0;net9.0;net10.0</TargetFrameworks>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <IsPackable>false</IsPackable>
+    <IncludeSymbols>false</IncludeSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="JetBrains.Annotations" />
+    <PackageReference Include="Microsoft.NET.Test.Sdk" />
+    <PackageReference Include="NSubstitute" />
+    <PackageReference Include="AutoFixture" />
+    <PackageReference Include="AwesomeAssertions" />
+    <PackageReference Include="coverlet.collector" />
+    <PackageReference Include="NSubstitute.Analyzers.CSharp">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="xunit.runner.visualstudio">
+      <PrivateAssets>all</PrivateAssets>
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="xunit.v3" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Envelopes\MinimalLambda.Envelopes.ApiGateway\MinimalLambda.Envelopes.ApiGateway.csproj" />
+    <ProjectReference Include="..\..\src\Envelopes\MinimalLambda.Envelopes.Alb\MinimalLambda.Envelopes.Alb.csproj" />
+    <ProjectReference Include="..\..\src\Envelopes\MinimalLambda.Envelopes.CloudWatchLogs\MinimalLambda.Envelopes.CloudWatchLogs.csproj" />
+    <ProjectReference Include="..\..\src\Envelopes\MinimalLambda.Envelopes.Kafka\MinimalLambda.Envelopes.Kafka.csproj" />
+    <ProjectReference Include="..\..\src\Envelopes\MinimalLambda.Envelopes.KinesisFirehose\MinimalLambda.Envelopes.KinesisFirehose.csproj" />
+    <ProjectReference Include="..\..\src\Envelopes\MinimalLambda.Envelopes.Kinesis\MinimalLambda.Envelopes.Kinesis.csproj" />
+    <ProjectReference Include="..\..\src\Envelopes\MinimalLambda.Envelopes.Sns\MinimalLambda.Envelopes.Sns.csproj" />
+    <ProjectReference Include="..\..\src\Envelopes\MinimalLambda.Envelopes.Sqs\MinimalLambda.Envelopes.Sqs.csproj" />
+  </ItemGroup>
+</Project>

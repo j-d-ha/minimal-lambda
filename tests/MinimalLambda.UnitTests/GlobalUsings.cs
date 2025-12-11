@@ -1,0 +1,11 @@
+global using Amazon.Lambda.Core;
+global using AutoFixture;
+global using AutoFixture.Xunit3;
+global using AwesomeAssertions;
+global using JetBrains.Annotations;
+global using MinimalLambda.Host.Builder;
+global using MinimalLambda.Host.Core;
+global using MinimalLambda.Host.Options;
+global using MinimalLambda.Host.Runtime;
+global using NSubstitute;
+global using Xunit;

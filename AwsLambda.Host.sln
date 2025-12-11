@@ -2,11 +2,11 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "examples", "examples", "{B36A84DF-456D-A817-6EDD-3EC3E7F6E11F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Example.HelloWorldAot", "examples\AwsLambda.Host.Example.HelloWorldAot\AwsLambda.Host.Example.HelloWorldAot.csproj", "{6B8CD8FF-832E-9F88-FB36-2173461F6678}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.Example.HelloWorldAot", "examples\MinimalLambda.Example.HelloWorldAot\MinimalLambda.Example.HelloWorldAot.csproj", "{6B8CD8FF-832E-9F88-FB36-2173461F6678}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Example.HelloWorld", "examples\AwsLambda.Host.Example.HelloWorld\AwsLambda.Host.Example.HelloWorld.csproj", "{C055F84D-F8B7-DBCF-8A73-2EA183185033}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.Example.HelloWorld", "examples\MinimalLambda.Example.HelloWorld\MinimalLambda.Example.HelloWorld.csproj", "{C055F84D-F8B7-DBCF-8A73-2EA183185033}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Example.Lifecycle", "examples\AwsLambda.Host.Example.Lifecycle\AwsLambda.Host.Example.Lifecycle.csproj", "{0840D364-A48A-99D7-EE47-1CAC4643B29A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.Example.Lifecycle", "examples\MinimalLambda.Example.Lifecycle\MinimalLambda.Example.Lifecycle.csproj", "{0840D364-A48A-99D7-EE47-1CAC4643B29A}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{089100B1-113F-4E66-888A-E83F3999EAFD}"
 	ProjectSection(SolutionItems) = preProject
@@ -24,55 +24,52 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{827E0CD3-B72D-47B6-A68D-7590B98EB39B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Abstractions", "src\AwsLambda.Host.Abstractions\AwsLambda.Host.Abstractions.csproj", "{BA42EF68-C2E6-392F-8B5A-37D2EB4A7C06}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.Abstractions", "src\MinimalLambda.Abstractions\MinimalLambda.Abstractions.csproj", "{BA42EF68-C2E6-392F-8B5A-37D2EB4A7C06}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.OpenTelemetry", "src\AwsLambda.Host.OpenTelemetry\AwsLambda.Host.OpenTelemetry.csproj", "{6F7F539B-6D80-175E-8200-7B1E64323541}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.OpenTelemetry", "src\MinimalLambda.OpenTelemetry\MinimalLambda.OpenTelemetry.csproj", "{6F7F539B-6D80-175E-8200-7B1E64323541}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.SourceGenerators", "src\AwsLambda.Host.SourceGenerators\AwsLambda.Host.SourceGenerators.csproj", "{2CCDEC5D-5A84-2F11-A2F9-A6AF00F2112D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.SourceGenerators", "src\MinimalLambda.SourceGenerators\MinimalLambda.SourceGenerators.csproj", "{2CCDEC5D-5A84-2F11-A2F9-A6AF00F2112D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host", "src\AwsLambda.Host\AwsLambda.Host.csproj", "{6C9DE6F5-2E44-A1BE-0E21-D39850C45EF3}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.Core", "src\MinimalLambda.Core\MinimalLambda.Core.csproj", "{6C9DE6F5-2E44-A1BE-0E21-D39850C45EF3}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{0AB3BF05-4346-4AA6-1389-037BE0695223}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.SourceGenerators.UnitTests", "tests\AwsLambda.Host.SourceGenerators.UnitTests\AwsLambda.Host.SourceGenerators.UnitTests.csproj", "{00F4BB08-2770-56A6-1F85-B916CA14340E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.SourceGenerators.UnitTests", "tests\MinimalLambda.SourceGenerators.UnitTests\MinimalLambda.SourceGenerators.UnitTests.csproj", "{00F4BB08-2770-56A6-1F85-B916CA14340E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.UnitTests", "tests\AwsLambda.Host.UnitTests\AwsLambda.Host.UnitTests.csproj", "{5A3B3343-1E90-46DB-DD4C-DB87FD583D69}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.UnitTests", "tests\MinimalLambda.UnitTests\MinimalLambda.UnitTests.csproj", "{5A3B3343-1E90-46DB-DD4C-DB87FD583D69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Example.OpenTelemetry", "examples\AwsLambda.Host.Example.OpenTelemetry\AwsLambda.Host.Example.OpenTelemetry.csproj", "{BA5B805C-0187-4D3D-9F3F-297314F64B5B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.Example.OpenTelemetry", "examples\MinimalLambda.Example.OpenTelemetry\MinimalLambda.Example.OpenTelemetry.csproj", "{BA5B805C-0187-4D3D-9F3F-297314F64B5B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Example.Events", "examples\AwsLambda.Host.Example.Events\AwsLambda.Host.Example.Events.csproj", "{BA1CA0FB-A0C8-429B-9709-EDEEA4C187B9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.Example.Events", "examples\MinimalLambda.Example.Events\MinimalLambda.Example.Events.csproj", "{BA1CA0FB-A0C8-429B-9709-EDEEA4C187B9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Envelopes", "Envelopes", "{1C3C52D9-2936-4A0C-A9C8-F330F22B8359}"
 	ProjectSection(SolutionItems) = preProject
 		src\Envelopes\README.md = src\Envelopes\README.md
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Envelopes.Sqs", "src\Envelopes\AwsLambda.Host.Envelopes.Sqs\AwsLambda.Host.Envelopes.Sqs.csproj", "{8E3037D3-BEB0-4A0B-A09A-CF31F50D0508}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.Envelopes.Sqs", "src\Envelopes\MinimalLambda.Envelopes.Sqs\MinimalLambda.Envelopes.Sqs.csproj", "{8E3037D3-BEB0-4A0B-A09A-CF31F50D0508}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Envelopes.ApiGateway", "src\Envelopes\AwsLambda.Host.Envelopes.ApiGateway\AwsLambda.Host.Envelopes.ApiGateway.csproj", "{83E4EBD0-EE1C-422D-A22C-BC6A1895A879}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.Envelopes.ApiGateway", "src\Envelopes\MinimalLambda.Envelopes.ApiGateway\MinimalLambda.Envelopes.ApiGateway.csproj", "{83E4EBD0-EE1C-422D-A22C-BC6A1895A879}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Envelopes.UnitTests", "tests\AwsLambda.Host.Envelopes.UnitTests\AwsLambda.Host.Envelopes.UnitTests.csproj", "{0BBBEF49-6478-4394-9BD7-B9AFCA280B3D}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.Envelopes.UnitTests", "tests\MinimalLambda.Envelopes.UnitTests\MinimalLambda.Envelopes.UnitTests.csproj", "{0BBBEF49-6478-4394-9BD7-B9AFCA280B3D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.OpenTelemetry.UnitTests", "tests\AwsLambda.Host.OpenTelemetry.UnitTests\AwsLambda.Host.OpenTelemetry.UnitTests.csproj", "{B8FD7488-07A9-4CA0-8F40-483ECE109159}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.OpenTelemetry.UnitTests", "tests\MinimalLambda.OpenTelemetry.UnitTests\MinimalLambda.OpenTelemetry.UnitTests.csproj", "{B8FD7488-07A9-4CA0-8F40-483ECE109159}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Benchmarks", "benchmarks\AwsLambda.Host.Benchmarks\AwsLambda.Host.Benchmarks.csproj", "{C3E6B18E-A30A-4844-BB82-209A6CC52205}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.Benchmarks", "benchmarks\MinimalLambda.Benchmarks\MinimalLambda.Benchmarks.csproj", "{C3E6B18E-A30A-4844-BB82-209A6CC52205}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "benchmarks", "benchmarks", "{A193E0DE-D617-4E7E-83CA-2A9150E44841}"
-	ProjectSection(SolutionItems) = preProject
-		Properties\launchSettings.json = Properties\launchSettings.json
-	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Envelopes.Alb", "src\Envelopes\AwsLambda.Host.Envelopes.Alb\AwsLambda.Host.Envelopes.Alb.csproj", "{DD02E50C-625B-4A91-9BDF-7E3C08DF9E78}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.Envelopes.Alb", "src\Envelopes\MinimalLambda.Envelopes.Alb\MinimalLambda.Envelopes.Alb.csproj", "{DD02E50C-625B-4A91-9BDF-7E3C08DF9E78}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Envelopes.Sns", "src\Envelopes\AwsLambda.Host.Envelopes.Sns\AwsLambda.Host.Envelopes.Sns.csproj", "{3F7CDB17-2492-4670-930C-E87DD96A7BB9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.Envelopes.Sns", "src\Envelopes\MinimalLambda.Envelopes.Sns\MinimalLambda.Envelopes.Sns.csproj", "{3F7CDB17-2492-4670-930C-E87DD96A7BB9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Envelopes.Kinesis", "src\Envelopes\AwsLambda.Host.Envelopes.Kinesis\AwsLambda.Host.Envelopes.Kinesis.csproj", "{4A29DBDB-F707-419D-9024-B0B509A415DD}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.Envelopes.Kinesis", "src\Envelopes\MinimalLambda.Envelopes.Kinesis\MinimalLambda.Envelopes.Kinesis.csproj", "{4A29DBDB-F707-419D-9024-B0B509A415DD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Envelopes.KinesisFirehose", "src\Envelopes\AwsLambda.Host.Envelopes.KinesisFirehose\AwsLambda.Host.Envelopes.KinesisFirehose.csproj", "{71EB7C3D-6EFE-4189-BE50-DC7C83D666F5}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.Envelopes.KinesisFirehose", "src\Envelopes\MinimalLambda.Envelopes.KinesisFirehose\MinimalLambda.Envelopes.KinesisFirehose.csproj", "{71EB7C3D-6EFE-4189-BE50-DC7C83D666F5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Envelopes.Kafka", "src\Envelopes\AwsLambda.Host.Envelopes.Kafka\AwsLambda.Host.Envelopes.Kafka.csproj", "{DA647025-1B7B-425A-9405-8E015F6DA723}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.Envelopes.Kafka", "src\Envelopes\MinimalLambda.Envelopes.Kafka\MinimalLambda.Envelopes.Kafka.csproj", "{DA647025-1B7B-425A-9405-8E015F6DA723}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AwsLambda.Host.Envelopes.CloudWatchLogs", "src\Envelopes\AwsLambda.Host.Envelopes.CloudWatchLogs\AwsLambda.Host.Envelopes.CloudWatchLogs.csproj", "{6D40345B-6CCF-4A6C-8FA2-5BE6C693E3F7}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.Envelopes.CloudWatchLogs", "src\Envelopes\MinimalLambda.Envelopes.CloudWatchLogs\MinimalLambda.Envelopes.CloudWatchLogs.csproj", "{6D40345B-6CCF-4A6C-8FA2-5BE6C693E3F7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
