@@ -1,7 +1,7 @@
 {
   "name": "minimal-lambda",
   "version": "0.0.7",
-  "description": "AWS Lambda Host - .NET library for running code on AWS Lambda",
+  "description": "MinimalLambda - Modern .NET framework for building AWS Lambda functions",
   "private": true,
   "devDependencies": {
     "@commitlint/cli": "^20.1.0",

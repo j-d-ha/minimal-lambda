@@ -1,11 +1,11 @@
-# Contributing to AWS Lambda Host
+# Contributing to MinimalLambda
 
 Thank you for your interest in contributing to the AWS Lambda Host project! This document provides guidelines and instructions for contributing.
 
 ## Table of Contents
 
 <!-- TOC -->
-* [Contributing to AWS Lambda Host](#contributing-to-minimal-lambda)
+* [Contributing to MinimalLambda](#contributing-to-minimal-lambda)
   * [Table of Contents](#table-of-contents)
   * [Code of Conduct](#code-of-conduct)
   * [Getting Started](#getting-started)
