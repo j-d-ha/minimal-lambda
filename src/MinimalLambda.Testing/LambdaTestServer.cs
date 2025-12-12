@@ -30,11 +30,6 @@ namespace MinimalLambda.Testing;
 public class LambdaTestServer : IAsyncDisposable
 {
     /// <summary>
-    /// Options used to configure how the server interacts with the Lambda.
-    /// </summary>
-    private readonly LambdaServerOptions _serverOptions;
-
-    /// <summary>
     /// Task that represents the running Host application that has been captured.
     /// </summary>
     private readonly Task<Exception?> _entryPointCompletion;
@@ -69,6 +64,11 @@ public class LambdaTestServer : IAsyncDisposable
     private readonly LambdaRuntimeRouteManager _routeManager = new();
 
     /// <summary>
+    /// Options used to configure how the server interacts with the Lambda.
+    /// </summary>
+    private readonly LambdaServerOptions _serverOptions;
+
+    /// <summary>
     /// CTS used to signal shutdown of the server and cancellation of pending tasks.
     /// </summary>
     private readonly CancellationTokenSource _shutdownCts;
@@ -84,7 +84,7 @@ public class LambdaTestServer : IAsyncDisposable
     /// <summary>
     /// Host application lifetime used to signal shutdown to the captioned Host.
     /// </summary>
-    private IHostApplicationLifetime _applicationLifetime;
+    private IHostApplicationLifetime? _applicationLifetime;
 
     /// <summary>
     /// The captured Host instance.
@@ -393,7 +393,7 @@ public class LambdaTestServer : IAsyncDisposable
 
         await _shutdownCts.CancelAsync();
 
-        _applicationLifetime.StopApplication();
+        _applicationLifetime!.StopApplication();
 
         await TaskHelpers
             .WhenAll(_entryPointCompletion, _processingTask!)
@@ -426,18 +426,18 @@ public class LambdaTestServer : IAsyncDisposable
                         $"Unexpected request received from the Lambda HTTP handler: {transaction.Request.Method} {transaction.Request.RequestUri}"
                     );
 
-                switch (requestType!.Value)
+                switch (requestType.Value)
                 {
                     case RequestType.GetNextInvocation:
                         await HandleGetNextInvocationAsync(transaction);
                         break;
 
                     case RequestType.PostResponse:
-                        await HandlePostResponseAsync(transaction, routeValues!);
+                        await HandlePostResponseAsync(transaction, routeValues);
                         break;
 
                     case RequestType.PostError:
-                        await HandlePostErrorAsync(transaction, routeValues!);
+                        await HandlePostErrorAsync(transaction, routeValues);
                         break;
 
                     case RequestType.PostInitError:
