@@ -69,14 +69,11 @@ public class LambdaTestServer : IAsyncDisposable
     private readonly LambdaServerOptions _serverOptions;
 
     /// <summary>
-    /// Indicates whether the server has been disposed.
-    /// </summary>
-    private bool _disposed;
-
-    /// <summary>
     /// CTS used to signal shutdown of the server and cancellation of pending tasks.
     /// </summary>
     private readonly CancellationTokenSource _shutdownCts;
+
+    private readonly SemaphoreSlim _startSemaphore = new(1, 1);
 
     /// <summary>
     /// Channel used to by the Lambda to send events to the server.
@@ -92,6 +89,11 @@ public class LambdaTestServer : IAsyncDisposable
     private IHostApplicationLifetime? _applicationLifetime;
 
     /// <summary>
+    /// Indicates whether the server has been disposed.
+    /// </summary>
+    private bool _disposed;
+
+    /// <summary>
     /// The captured Host instance.
     /// </summary>
     private IHost? _host;
@@ -105,11 +107,6 @@ public class LambdaTestServer : IAsyncDisposable
     /// Counter used to generate unique request IDs.
     /// </summary>
     private int _requestCounter;
-
-    /// <summary>
-    /// Current state of the server used to enforce lifecycle rules.
-    /// </summary>
-    public ServerState State { get; private set; }
 
     internal LambdaTestServer(
         Task<Exception?>? entryPointCompletion,
@@ -142,6 +139,11 @@ public class LambdaTestServer : IAsyncDisposable
     /// Thrown if accessed before the host has been set via <see cref="SetHost"/>.
     /// </exception>
     public IServiceProvider Services => _host!.Services;
+
+    /// <summary>
+    /// Current state of the server used to enforce lifecycle rules.
+    /// </summary>
+    public ServerState State { get; private set; }
 
     /// <summary>
     /// Asynchronously releases all resources used by the <see cref="LambdaTestServer"/>.
@@ -182,12 +184,16 @@ public class LambdaTestServer : IAsyncDisposable
         _shutdownCts.Dispose();
 
         // Dispose the host (prefer async, fallback to sync)
-        if (_host is not null)
+        switch (_host)
         {
-            if (_host is IAsyncDisposable asyncDisposableHost)
+            case null:
+                break;
+            case IAsyncDisposable asyncDisposableHost:
                 await asyncDisposableHost.DisposeAsync();
-            else if (_host is IDisposable disposableHost)
+                break;
+            case IDisposable disposableHost:
                 disposableHost.Dispose();
+                break;
         }
 
         State = ServerState.Disposed;
@@ -237,46 +243,54 @@ public class LambdaTestServer : IAsyncDisposable
     /// </remarks>
     public async Task<InitResponse> StartAsync(CancellationToken cancellationToken = default)
     {
-        if (State != ServerState.Created)
-            throw new InvalidOperationException(
-                "TestServer has already been started and cannot be restarted."
-            );
-
-        if (_host is null)
-            throw new InvalidOperationException("Host is not set.");
-
-        using var cts = LinkedCts(cancellationToken);
-
-        State = ServerState.Starting;
-
-        _applicationLifetime = _host.Services.GetRequiredService<IHostApplicationLifetime>();
-
-        // Start the host
-        await _host.StartAsync(cts.Token);
-
-        // Start background processing
-        _processingTask = Task.Run(ProcessTransactionsAsync, cts.Token);
-
-        await TaskHelpers
-            .WhenAny(_processingTask, _entryPointCompletion, _initCompletionTcs.Task)
-            .UnwrapAndThrow("Exception(s) encountered while running StartAsync");
-
-        if (_entryPointCompletion.IsCompleted)
-            return new InitResponse { InitStatus = InitStatus.HostExited };
-
-        if (_initCompletionTcs.Task.IsCompleted)
+        await _startSemaphore.WaitAsync(cancellationToken);
+        try
         {
-            State =
-                _initCompletionTcs.Task.Result.InitStatus == InitStatus.InitCompleted
-                    ? ServerState.Running
-                    : ServerState.Stopped;
+            if (State != ServerState.Created)
+                throw new InvalidOperationException(
+                    "TestServer has already been started and cannot be restarted."
+                );
 
-            return _initCompletionTcs.Task.Result;
+            if (_host is null)
+                throw new InvalidOperationException("Host is not set.");
+
+            using var cts = LinkedCts(cancellationToken);
+
+            State = ServerState.Starting;
+
+            _applicationLifetime = _host.Services.GetRequiredService<IHostApplicationLifetime>();
+
+            // Start the host
+            await _host.StartAsync(cts.Token);
+
+            // Start background processing
+            _processingTask = Task.Run(ProcessTransactionsAsync, cts.Token);
+
+            await TaskHelpers
+                .WhenAny(_processingTask, _entryPointCompletion, _initCompletionTcs.Task)
+                .UnwrapAndThrow("Exception(s) encountered while running StartAsync");
+
+            if (_entryPointCompletion.IsCompleted)
+                return new InitResponse { InitStatus = InitStatus.HostExited };
+
+            if (_initCompletionTcs.Task.IsCompleted)
+            {
+                State =
+                    _initCompletionTcs.Task.Result.InitStatus == InitStatus.InitCompleted
+                        ? ServerState.Running
+                        : ServerState.Stopped;
+
+                return _initCompletionTcs.Task.Result;
+            }
+
+            throw new InvalidOperationException(
+                "TestServer initialization failed with neither an error nor completion."
+            );
         }
-
-        throw new InvalidOperationException(
-            "TestServer initialization failed with neither an error nor completion."
-        );
+        finally
+        {
+            _startSemaphore.Release();
+        }
     }
 
     /// <summary>
@@ -326,11 +340,21 @@ public class LambdaTestServer : IAsyncDisposable
     /// </remarks>
     public async Task<InvocationResponse<TResponse>> InvokeAsync<TResponse, TEvent>(
         TEvent? invokeEvent,
-        bool noResponse = false,
+        bool noResponse,
         string? traceId = null,
         CancellationToken cancellationToken = default
     )
     {
+        // inorder to allow
+        if (State == ServerState.Created)
+        {
+            var initResponse = await StartAsync(cancellationToken);
+            if (initResponse.InitStatus != InitStatus.InitCompleted)
+                throw new InvalidOperationException(
+                    $"{nameof(LambdaTestServer)} failed to initialize and returned a status of {initResponse.InitStatus.ToString()}."
+                );
+        }
+
         if (State != ServerState.Running)
             throw new InvalidOperationException(
                 "TestServer is not Running and as such an event cannot be invoked."
