@@ -92,6 +92,7 @@ public class LambdaTestServer : IAsyncDisposable
 
     internal LambdaTestServer(
         Task<Exception?>? entryPointCompletion,
+        LambdaServerOptions serverOptions,
         CancellationToken shutdownToken = default
     )
     {
@@ -102,7 +103,7 @@ public class LambdaTestServer : IAsyncDisposable
         _state = ServerState.Created;
 
         _jsonSerializerOptions = DefaultLambdaJsonSerializerOptions.Create();
-        _serverOptions = new LambdaServerOptions();
+        _serverOptions = serverOptions;
     }
 
     public IServiceProvider Services => _host!.Services;
