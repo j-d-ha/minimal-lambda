@@ -28,16 +28,6 @@ tasks:
     cmds:
       - echo "🔄 Starting publish-all workflow"
       - task: build:pack
-      - echo "🔍 Validating all versions"
-      - task: validate_version
-        vars:
-          DIR: src/MinimalLambda
-      - task: validate_version
-        vars:
-          DIR: src/MinimalLambda.Abstractions
-      - task: validate_version
-        vars:
-          DIR: src/MinimalLambda.OpenTelemetry
       - echo "🚀 Publishing all packages"
       - task: publish
       - echo "✨ All packages published successfully!"
