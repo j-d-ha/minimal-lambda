@@ -7,9 +7,10 @@ In-memory Lambda runtime for end-to-end and integration testing with the Minimal
 ## Overview
 
 MinimalLambda.Testing lets you run Lambda functions entirely in memory, exercising the same runtime
-API that AWS provides without deploying or opening network ports. It reuses your real `Program`
-entry point via `LambdaApplicationFactory<TEntryPoint>` and drives it through a `LambdaTestServer`
-that mimics the Lambda Runtime API (init, invocation, and shutdown).
+API that AWS provides without deploying or opening network ports. It follows the familiar ASP.NET
+Core `WebApplicationFactory` pattern: reusing your real `Program` entry point via
+`LambdaApplicationFactory<TEntryPoint>` and driving it through a `LambdaTestServer` that mimics the
+Lambda Runtime API (init, invocation, and shutdown).
 
 Use it to:
 
