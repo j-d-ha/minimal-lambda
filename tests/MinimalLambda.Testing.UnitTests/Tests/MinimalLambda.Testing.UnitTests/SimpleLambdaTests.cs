@@ -118,4 +118,20 @@ public class SimpleLambdaTests : IClassFixture<LambdaApplicationFactory<SimpleLa
                 )
             );
     }
+
+    [Fact]
+    public async Task SimpleLambda_WithPreCanceledToken_CancelsInvocation()
+    {
+        await using var factory = new LambdaApplicationFactory<Program>().WithCancelationToken(
+            TestContext.Current.CancellationToken
+        );
+        await factory.TestServer.StartAsync(TestContext.Current.CancellationToken);
+
+        using var cts = new CancellationTokenSource();
+        await cts.CancelAsync();
+
+        await Assert.ThrowsAsync<TaskCanceledException>(() =>
+            factory.TestServer.InvokeAsync<string, string>("Jonas", cts.Token)
+        );
+    }
 }
