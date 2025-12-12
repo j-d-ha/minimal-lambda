@@ -10,12 +10,18 @@ public static class LambdaTestServerExtensions
         ) =>
             server.InvokeAsync<TResponse, TEvent>(
                 invokeEvent,
+                false,
                 cancellationToken: cancellationToken
             );
 
         public Task<InvocationResponse<TResponse>> InvokeNoEventAsync<TResponse>(
             CancellationToken cancellationToken = default
-        ) => server.InvokeAsync<TResponse, object>(null, cancellationToken: cancellationToken);
+        ) =>
+            server.InvokeAsync<TResponse, object>(
+                null,
+                false,
+                cancellationToken: cancellationToken
+            );
 
         public async Task<InvocationResponse> InvokeNoResponseAsync<TEvent>(
             TEvent invokeEvent,
