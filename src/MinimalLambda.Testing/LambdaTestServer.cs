@@ -7,6 +7,7 @@ using System.Threading.Channels;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using MinimalLambda.Options;
 
 namespace MinimalLambda.Testing;
 

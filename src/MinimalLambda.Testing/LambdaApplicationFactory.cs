@@ -8,8 +8,12 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.Hosting;
+using MinimalLambda.Builder.Extensions;
+using MinimalLambda.Options;
 
 namespace MinimalLambda.Testing;
 

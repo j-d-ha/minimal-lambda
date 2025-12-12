@@ -9,15 +9,15 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <!-- Package Metadata -->
     <PackageId>MinimalLambda.Testing</PackageId>
-    <Description>Support for writting tests for AwsLambda.Host</Description>
+    <Description>Support for writting tests for MinimalLambda</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>
   <ItemGroup>
     <None Include="README.md" Pack="true" PackagePath="\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AwsLambda.Host.Abstractions\AwsLambda.Host.Abstractions.csproj" />
-    <ProjectReference Include="..\AwsLambda.Host\AwsLambda.Host.csproj" />
+    <ProjectReference Include="..\MinimalLambda.Abstractions\MinimalLambda.Abstractions.csproj" />
+    <ProjectReference Include="..\MinimalLambda\MinimalLambda.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" />
