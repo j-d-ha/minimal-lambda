@@ -11,6 +11,22 @@ using MinimalLambda.Options;
 
 namespace MinimalLambda.Testing;
 
+/// <summary>
+/// Provides an in-memory test server that simulates the AWS Lambda runtime environment for testing Lambda functions
+/// without deploying to AWS. This server intercepts HTTP requests from the Lambda bootstrap client, manages the
+/// invocation lifecycle, and provides a public API for test scenarios.
+/// </summary>
+/// <remarks>
+/// <para>
+/// The <see cref="LambdaTestServer"/> follows a strict state machine lifecycle:
+/// Created → Starting → Running → Stopping → Stopped → Disposed.
+/// </para>
+/// <para>
+/// This class is typically created and managed by <see cref="LambdaApplicationFactory{TEntryPoint}"/>
+/// rather than being instantiated directly. The server handles invocation queuing, response handling,
+/// timeout enforcement, and Lambda runtime API protocol compliance.
+/// </para>
+/// </remarks>
 public class LambdaTestServer : IAsyncDisposable
 {
     /// <summary>
@@ -106,8 +122,38 @@ public class LambdaTestServer : IAsyncDisposable
         _serverOptions = serverOptions;
     }
 
+    /// <summary>
+    /// Gets the <see cref="IServiceProvider"/> from the underlying <see cref="IHost"/> instance,
+    /// providing access to the dependency injection container for the Lambda application.
+    /// </summary>
+    /// <value>
+    /// The service provider from the captured host instance.
+    /// </value>
+    /// <remarks>
+    /// This property allows tests to resolve services from the Lambda application's DI container
+    /// for setup, assertion, or inspection purposes.
+    /// </remarks>
+    /// <exception cref="NullReferenceException">
+    /// Thrown if accessed before the host has been set via <see cref="SetHost"/>.
+    /// </exception>
     public IServiceProvider Services => _host!.Services;
 
+    /// <summary>
+    /// Asynchronously releases all resources used by the <see cref="LambdaTestServer"/>.
+    /// </summary>
+    /// <returns>A <see cref="ValueTask"/> representing the asynchronous dispose operation.</returns>
+    /// <remarks>
+    /// <para>
+    /// This method performs the following cleanup operations:
+    /// </para>
+    /// <list type="number">
+    /// <item><description>Stops the server if it is currently running</description></item>
+    /// <item><description>Completes the transaction channel to prevent new requests</description></item>
+    /// <item><description>Cancels the shutdown token to signal background tasks</description></item>
+    /// <item><description>Disposes the underlying <see cref="IHost"/> instance</description></item>
+    /// <item><description>Transitions the server state to <see cref="ServerState.Disposed"/></description></item>
+    /// </list>
+    /// </remarks>
     public async ValueTask DisposeAsync()
     {
         if (_state == ServerState.Running)
@@ -139,6 +185,32 @@ public class LambdaTestServer : IAsyncDisposable
     //      │                        Public API                        │
     //      └──────────────────────────────────────────────────────────┘
 
+    /// <summary>
+    /// Initializes and starts the Lambda test server, beginning the application host and preparing
+    /// it to accept invocations.
+    /// </summary>
+    /// <param name="cancellationToken">
+    /// A <see cref="CancellationToken"/> to observe while waiting for the server to start.
+    /// </param>
+    /// <returns>
+    /// A <see cref="Task{TResult}"/> that completes with an <see cref="InitResponse"/> indicating
+    /// whether initialization succeeded, failed with an error, or the host exited prematurely.
+    /// </returns>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if the server has already been started, if the host is not set, or if initialization
+    /// fails without an error or completion signal.
+    /// </exception>
+    /// <remarks>
+    /// <para>
+    /// This method can only be called once per server instance. The server must be in the
+    /// <see cref="ServerState.Created"/> state when this method is called.
+    /// </para>
+    /// <para>
+    /// The method starts the underlying <see cref="IHost"/>, begins background processing of
+    /// Lambda runtime HTTP transactions, and waits for the Lambda bootstrap to complete its
+    /// initialization phase by requesting the first invocation.
+    /// </para>
+    /// </remarks>
     public async Task<InitResponse> StartAsync(CancellationToken cancellationToken = default)
     {
         if (_state != ServerState.Created)
@@ -183,6 +255,46 @@ public class LambdaTestServer : IAsyncDisposable
         );
     }
 
+    /// <summary>
+    /// Invokes the Lambda function with the specified event and waits for the response or error.
+    /// </summary>
+    /// <typeparam name="TResponse">The expected type of the Lambda function's response.</typeparam>
+    /// <typeparam name="TEvent">The type of the Lambda event to send to the function.</typeparam>
+    /// <param name="invokeEvent">The event object to pass to the Lambda function.</param>
+    /// <param name="traceId">
+    /// The AWS X-Ray trace ID to use for this invocation. If <see langword="null"/>, a new GUID will be generated.
+    /// </param>
+    /// <param name="cancellationToken">
+    /// A <see cref="CancellationToken"/> to observe while waiting for the invocation to complete.
+    /// </param>
+    /// <returns>
+    /// A <see cref="Task{TResult}"/> that completes with an <see cref="InvocationResponse{TResponse}"/>
+    /// containing either the successful response or error information from the Lambda function.
+    /// </returns>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if the server is not in the <see cref="ServerState.Running"/> state, or if the
+    /// invocation cannot be enqueued.
+    /// </exception>
+    /// <exception cref="OperationCanceledException">
+    /// Thrown if the invocation times out based on <see cref="LambdaServerOptions.FunctionTimeout"/>
+    /// or if the <paramref name="cancellationToken"/> is cancelled.
+    /// </exception>
+    /// <remarks>
+    /// <para>
+    /// This method simulates the AWS Lambda invocation protocol by:
+    /// </para>
+    /// <list type="number">
+    /// <item><description>Generating a unique request ID</description></item>
+    /// <item><description>Creating an HTTP response with Lambda runtime headers</description></item>
+    /// <item><description>Queuing the invocation for the Lambda bootstrap to retrieve</description></item>
+    /// <item><description>Waiting for the Lambda function to respond or report an error</description></item>
+    /// <item><description>Deserializing the response or error information</description></item>
+    /// </list>
+    /// <para>
+    /// The invocation will timeout based on the <see cref="LambdaServerOptions.FunctionTimeout"/> setting,
+    /// which defaults to AWS Lambda's standard timeout behavior.
+    /// </para>
+    /// </remarks>
     public async Task<InvocationResponse<TResponse>> InvokeAsync<TResponse, TEvent>(
         TEvent invokeEvent,
         string? traceId = null,
@@ -243,6 +355,33 @@ public class LambdaTestServer : IAsyncDisposable
         };
     }
 
+    /// <summary>
+    /// Gracefully stops the running test server, shutting down the Lambda application host and
+    /// completing all background processing.
+    /// </summary>
+    /// <param name="cancellationToken">
+    /// A <see cref="CancellationToken"/> to observe while waiting for the server to stop.
+    /// </param>
+    /// <returns>A <see cref="Task"/> representing the asynchronous stop operation.</returns>
+    /// <exception cref="InvalidOperationException">
+    /// Thrown if the server is not currently in the <see cref="ServerState.Running"/> state.
+    /// </exception>
+    /// <remarks>
+    /// <para>
+    /// This method performs the following shutdown sequence:
+    /// </para>
+    /// <list type="number">
+    /// <item><description>Transitions the server state to <see cref="ServerState.Stopping"/></description></item>
+    /// <item><description>Cancels the internal shutdown token to signal background tasks</description></item>
+    /// <item><description>Stops the application host via <see cref="IHostApplicationLifetime"/></description></item>
+    /// <item><description>Waits for the entry point and processing tasks to complete</description></item>
+    /// <item><description>Transitions the server state to <see cref="ServerState.Stopped"/></description></item>
+    /// </list>
+    /// <para>
+    /// After stopping, the server cannot be restarted. A new <see cref="LambdaTestServer"/> instance
+    /// must be created for subsequent test runs.
+    /// </para>
+    /// </remarks>
     public async Task StopAsync(CancellationToken cancellationToken = default)
     {
         if (_state != ServerState.Running)
