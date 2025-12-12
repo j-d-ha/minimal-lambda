@@ -117,6 +117,12 @@ public class LambdaTestServer : IAsyncDisposable
 
         await _shutdownCts.CancelAsync();
 
+        if (_host is IAsyncDisposable asyncDisposableHost)
+            await asyncDisposableHost.DisposeAsync();
+
+        if (_host is IDisposable disposableHost)
+            disposableHost.Dispose();
+
         _state = ServerState.Disposed;
     }
 
