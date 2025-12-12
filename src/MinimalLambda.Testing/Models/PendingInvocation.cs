@@ -1,4 +1,4 @@
-namespace AwsLambda.Host.Testing;
+namespace MinimalLambda.Testing;
 
 /// <summary>
 /// Represents a pending Lambda invocation waiting for Bootstrap to process and respond.

@@ -9,7 +9,7 @@
 using System.Globalization;
 using System.Reflection;
 
-namespace AwsLambda.Host.Testing;
+namespace MinimalLambda.Testing;
 
 /// <summary>
 /// Metadata that <see cref="LambdaApplicationFactory{TEntryPoint}"/> uses to find out the content

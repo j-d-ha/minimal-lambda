@@ -1,4 +1,4 @@
-namespace AwsLambda.Host.Testing;
+namespace MinimalLambda.Testing;
 
 /// <summary>
 /// Represents a single HTTP transaction from the Lambda Bootstrap.

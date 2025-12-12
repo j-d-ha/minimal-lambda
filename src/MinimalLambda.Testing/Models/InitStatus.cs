@@ -1,4 +1,4 @@
-namespace AwsLambda.Host.Testing;
+namespace MinimalLambda.Testing;
 
 /// <summary>
 /// An enumeration of possible statuses for Lambda initialization.

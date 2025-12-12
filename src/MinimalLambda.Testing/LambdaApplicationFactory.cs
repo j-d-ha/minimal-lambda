@@ -8,14 +8,10 @@
 
 using System.Diagnostics.CodeAnalysis;
 using System.Reflection;
-using AwsLambda.Host.Builder.Extensions;
-using AwsLambda.Host.Options;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyModel;
 using Microsoft.Extensions.Hosting;
 
-namespace AwsLambda.Host.Testing;
+namespace MinimalLambda.Testing;
 
 /// <summary>
 /// Factory for bootstrapping an application in memory for functional end to end tests.

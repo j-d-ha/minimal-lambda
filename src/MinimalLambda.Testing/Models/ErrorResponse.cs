@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace AwsLambda.Host.Testing;
+namespace MinimalLambda.Testing;
 
 /// <summary>
 /// Represents an error response with type, message, stack trace, and optional cause.

@@ -1,3 +1,3 @@
-namespace AwsLambda.Host.Testing;
+namespace MinimalLambda.Testing;
 
 public class LambdaApplicationFactoryClientOptions { }

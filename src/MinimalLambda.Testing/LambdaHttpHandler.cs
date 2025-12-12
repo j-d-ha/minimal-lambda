@@ -1,6 +1,6 @@
 using System.Threading.Channels;
 
-namespace AwsLambda.Host.Testing;
+namespace MinimalLambda.Testing;
 
 /// <summary>
 /// HTTP message handler that intercepts Lambda Bootstrap HTTP calls and

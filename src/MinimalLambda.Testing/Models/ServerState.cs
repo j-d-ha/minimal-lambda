@@ -1,4 +1,4 @@
-namespace AwsLambda.Host.Testing;
+namespace MinimalLambda.Testing;
 
 /// <summary>
 /// Represents the lifecycle state of a LambdaTestServer.

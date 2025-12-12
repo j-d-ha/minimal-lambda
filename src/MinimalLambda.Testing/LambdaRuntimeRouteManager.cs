@@ -2,7 +2,7 @@ using System.Diagnostics.CodeAnalysis;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.AspNetCore.Routing.Template;
 
-namespace AwsLambda.Host.Testing;
+namespace MinimalLambda.Testing;
 
 internal class LambdaRuntimeRouteManager
 {

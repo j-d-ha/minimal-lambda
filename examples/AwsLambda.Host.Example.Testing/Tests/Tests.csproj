@@ -26,7 +26,7 @@
     <PackageReference Include="xunit.v3" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\AwsLambda.Host.Testing\AwsLambda.Host.Testing.csproj" />
+    <ProjectReference Include="..\..\..\src\MinimalLambda.Testing\MinimalLambda.Testing.csproj" />
     <ProjectReference Include="..\Lambda\Lambda.csproj" />
   </ItemGroup>
 </Project>

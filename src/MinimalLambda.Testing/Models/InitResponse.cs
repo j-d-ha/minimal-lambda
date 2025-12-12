@@ -1,4 +1,4 @@
-namespace AwsLambda.Host.Testing;
+namespace MinimalLambda.Testing;
 
 /// <summary>
 /// Represents the result of a Lambda function initialization attempt.

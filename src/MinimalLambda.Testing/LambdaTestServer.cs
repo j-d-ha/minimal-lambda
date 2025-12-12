@@ -4,12 +4,11 @@ using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Channels;
-using AwsLambda.Host.Options;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
-namespace AwsLambda.Host.Testing;
+namespace MinimalLambda.Testing;
 
 public class LambdaTestServer : IAsyncDisposable
 {

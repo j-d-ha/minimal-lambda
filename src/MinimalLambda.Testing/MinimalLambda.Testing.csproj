@@ -8,7 +8,7 @@
     <IncludeBuildOutput>true</IncludeBuildOutput>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <!-- Package Metadata -->
-    <PackageId>AwsLambda.Host.Testing</PackageId>
+    <PackageId>MinimalLambda.Testing</PackageId>
     <Description>Support for writting tests for AwsLambda.Host</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
   </PropertyGroup>

@@ -1,8 +1,7 @@
 using AwesomeAssertions;
-using AwsLambda.Host.Options;
-using AwsLambda.Host.Testing;
 using JetBrains.Annotations;
 using Microsoft.Extensions.DependencyInjection;
+using MinimalLambda.Testing;
 using Xunit;
 
 namespace Lambda.Host.Example.HelloWorld;
