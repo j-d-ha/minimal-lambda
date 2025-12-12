@@ -26,6 +26,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\src\MinimalLambda.Testing\MinimalLambda.Testing.csproj" />
+    <ProjectReference Include="..\..\Lambdas\MinimalLambda.Testing.UnitTests.NoEventLambda\MinimalLambda.Testing.UnitTests.NoEventLambda.csproj" />
     <ProjectReference Include="..\..\Lambdas\MinimalLambda.Testing.UnitTests.NoResponseLambda\MinimalLambda.Testing.UnitTests.NoResponseLambda.csproj" />
     <ProjectReference Include="..\..\Lambdas\MinimalLambda.Testing.UnitTests.SimpleLambda\MinimalLambda.Testing.UnitTests.SimpleLambda.csproj" />
   </ItemGroup>

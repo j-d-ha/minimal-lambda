@@ -5,10 +5,10 @@ var builder = LambdaApplication.CreateBuilder();
 
 await using var lambda = builder.Build();
 
-lambda.MapHandler(() => new Response("Hello World!", DateTime.UtcNow));
+lambda.MapHandler(() => new NoEventLambdaResponse("Hello World!", DateTime.UtcNow));
 
 await lambda.RunAsync();
 
 public class NoEventLambda;
 
-internal record Response(string Message, DateTime TimestampUtc);
+internal record NoEventLambdaResponse(string Message, DateTime TimestampUtc);
