@@ -8,7 +8,7 @@ public class NoEventLambdaTests : IClassFixture<LambdaApplicationFactory<NoEvent
 
     public NoEventLambdaTests(LambdaApplicationFactory<NoEventLambda> factory)
     {
-        factory.WithCancelationToken(TestContext.Current.CancellationToken);
+        factory.WithCancellationToken(TestContext.Current.CancellationToken);
         _server = factory.TestServer;
     }
 
@@ -29,7 +29,7 @@ public class NoEventLambdaTests : IClassFixture<LambdaApplicationFactory<NoEvent
     public async Task NoEvent_ConfigurationCanBeOverwritten()
     {
         var factory = new LambdaApplicationFactory<NoEventLambda>()
-            .WithCancelationToken(TestContext.Current.CancellationToken)
+            .WithCancellationToken(TestContext.Current.CancellationToken)
             .WithHostBuilder(builder =>
                 builder.ConfigureAppConfiguration(
                     (_, config) =>

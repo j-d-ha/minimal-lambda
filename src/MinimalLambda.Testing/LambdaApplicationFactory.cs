@@ -142,7 +142,7 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
     /// enabling graceful shutdown and faster test cleanup when tests are cancelled or time out.
     /// The cancellation token is passed to the <see cref="LambdaTestServer"/> during creation.
     /// </remarks>
-    public LambdaApplicationFactory<TEntryPoint> WithCancelationToken(
+    public LambdaApplicationFactory<TEntryPoint> WithCancellationToken(
         CancellationToken cancellationToken
     )
     {

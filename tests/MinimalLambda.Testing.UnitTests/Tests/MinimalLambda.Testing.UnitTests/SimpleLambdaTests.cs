@@ -9,16 +9,17 @@ public class SimpleLambdaTests : IClassFixture<LambdaApplicationFactory<SimpleLa
 
     public SimpleLambdaTests(LambdaApplicationFactory<SimpleLambda> factory)
     {
-        factory.WithCancelationToken(TestContext.Current.CancellationToken);
+        factory.WithCancellationToken(TestContext.Current.CancellationToken);
         _server = factory.TestServer;
     }
 
     [Fact]
     public async Task SimpleLambda_ReturnsExpectedValue()
     {
-        await using var factory = new LambdaApplicationFactory<SimpleLambda>().WithCancelationToken(
-            TestContext.Current.CancellationToken
-        );
+        await using var factory =
+            new LambdaApplicationFactory<SimpleLambda>().WithCancellationToken(
+                TestContext.Current.CancellationToken
+            );
         var setup = await factory.TestServer.StartAsync(TestContext.Current.CancellationToken);
         setup.InitStatus.Should().Be(InitStatus.InitCompleted);
 
@@ -125,7 +126,7 @@ public class SimpleLambdaTests : IClassFixture<LambdaApplicationFactory<SimpleLa
     public async Task SimpleLambda_ErrorsArePropagated()
     {
         await using var factory = new LambdaApplicationFactory<SimpleLambda>()
-            .WithCancelationToken(TestContext.Current.CancellationToken)
+            .WithCancellationToken(TestContext.Current.CancellationToken)
             .WithHostBuilder(builder =>
             {
                 builder.ConfigureServices(
@@ -152,9 +153,10 @@ public class SimpleLambdaTests : IClassFixture<LambdaApplicationFactory<SimpleLa
     [Fact]
     public async Task SimpleLambda_WithPreCanceledToken_CancelsInvocation()
     {
-        await using var factory = new LambdaApplicationFactory<SimpleLambda>().WithCancelationToken(
-            TestContext.Current.CancellationToken
-        );
+        await using var factory =
+            new LambdaApplicationFactory<SimpleLambda>().WithCancellationToken(
+                TestContext.Current.CancellationToken
+            );
         await factory.TestServer.StartAsync(TestContext.Current.CancellationToken);
 
         using var cts = new CancellationTokenSource();

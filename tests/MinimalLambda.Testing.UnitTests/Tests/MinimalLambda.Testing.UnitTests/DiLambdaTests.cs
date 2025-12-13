@@ -13,7 +13,7 @@ public class DiLambdaTests : IClassFixture<LambdaApplicationFactory<DiLambda>>
 
     public DiLambdaTests(LambdaApplicationFactory<DiLambda> factory)
     {
-        factory.WithCancelationToken(TestContext.Current.CancellationToken);
+        factory.WithCancellationToken(TestContext.Current.CancellationToken);
         _server = factory.TestServer;
     }
 
@@ -36,7 +36,7 @@ public class DiLambdaTests : IClassFixture<LambdaApplicationFactory<DiLambda>>
     {
         var lifecycleService = Substitute.For<ILifecycleService>();
         await using var factory = new LambdaApplicationFactory<DiLambda>()
-            .WithCancelationToken(TestContext.Current.CancellationToken)
+            .WithCancellationToken(TestContext.Current.CancellationToken)
             .WithHostBuilder(builder =>
                 builder.ConfigureServices(
                     (_, services) =>
@@ -59,7 +59,7 @@ public class DiLambdaTests : IClassFixture<LambdaApplicationFactory<DiLambda>>
         var lifecycleService = Substitute.For<ILifecycleService>();
 
         await using var factory = new LambdaApplicationFactory<DiLambda>()
-            .WithCancelationToken(TestContext.Current.CancellationToken)
+            .WithCancellationToken(TestContext.Current.CancellationToken)
             .WithHostBuilder(builder =>
                 builder.ConfigureServices(
                     (_, services) =>
@@ -85,7 +85,7 @@ public class DiLambdaTests : IClassFixture<LambdaApplicationFactory<DiLambda>>
     internal async Task DiLambda_ShutdownThrowsException(ILifecycleService lifecycleService)
     {
         await using var factory = new LambdaApplicationFactory<DiLambda>()
-            .WithCancelationToken(TestContext.Current.CancellationToken)
+            .WithCancellationToken(TestContext.Current.CancellationToken)
             .WithHostBuilder(builder =>
                 builder.ConfigureServices(
                     (_, services) =>
@@ -120,7 +120,7 @@ public class DiLambdaTests : IClassFixture<LambdaApplicationFactory<DiLambda>>
     )
     {
         await using var factory = new LambdaApplicationFactory<DiLambda>()
-            .WithCancelationToken(TestContext.Current.CancellationToken)
+            .WithCancellationToken(TestContext.Current.CancellationToken)
             .WithHostBuilder(builder =>
                 builder
                     .ConfigureContainer<ContainerBuilder>(
@@ -156,7 +156,7 @@ public class DiLambdaTests : IClassFixture<LambdaApplicationFactory<DiLambda>>
     )
     {
         await using var factory = new LambdaApplicationFactory<DiLambda>()
-            .WithCancelationToken(TestContext.Current.CancellationToken)
+            .WithCancellationToken(TestContext.Current.CancellationToken)
             .WithHostBuilder(builder =>
                 builder
                     .ConfigureContainer<ContainerBuilder>(

@@ -9,7 +9,7 @@ public class NoResponseLambdaTests : IClassFixture<LambdaApplicationFactory<NoRe
 
     public NoResponseLambdaTests(LambdaApplicationFactory<NoResponseLambda> factory)
     {
-        factory.WithCancelationToken(TestContext.Current.CancellationToken);
+        factory.WithCancellationToken(TestContext.Current.CancellationToken);
         _server = factory.TestServer;
     }
 
@@ -37,7 +37,7 @@ public class NoResponseLambdaTests : IClassFixture<LambdaApplicationFactory<NoRe
     public async Task NoResponseLambda_DisposeCanBeCalledMultipleTimes()
     {
         await using var factory =
-            new LambdaApplicationFactory<NoResponseLambda>().WithCancelationToken(
+            new LambdaApplicationFactory<NoResponseLambda>().WithCancellationToken(
                 TestContext.Current.CancellationToken
             );
 
