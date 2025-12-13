@@ -440,12 +440,10 @@ public class LambdaTestServer : IAsyncDisposable
 
         await _shutdownCts.CancelAsync();
 
-        var shutdownTask = _host?.WaitForShutdownAsync(cancellationToken) ?? Task.CompletedTask;
-
         _applicationLifetime!.StopApplication();
 
         await TaskHelpers
-            .WhenAll(_entryPointCompletion, _processingTask!, shutdownTask)
+            .WhenAll(_entryPointCompletion, _processingTask!)
             .UnwrapAndThrow("Exception(s) encountered while running StopAsync")
             .WaitAsync(cancellationToken);
 

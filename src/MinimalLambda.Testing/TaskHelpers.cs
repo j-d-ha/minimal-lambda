@@ -16,12 +16,23 @@ internal static class TaskHelpers
 
     private static Exception[] ExtractExceptions(Task[] tasks) =>
         tasks
-            .Where(t => t is { IsFaulted: true, Exception: not null })
-            .Select(e =>
-                e.Exception!.InnerExceptions.Count > 1
-                    ? e.Exception
-                    : e.Exception.InnerExceptions[0]
+            .Where(t =>
+                t
+                    is { Exception: not null }
+                        or Task<Exception?> { Status: TaskStatus.RanToCompletion, Result: not null }
+                        or Task<object?> { Status: TaskStatus.RanToCompletion, Result: Exception }
             )
+            .Select(t =>
+                t switch
+                {
+                    { Exception: not null } => t.Exception!,
+                    Task<Exception?> { Result: { } ex } => ex,
+                    Task<object?> { Result: Exception ex } => ex,
+                    _ => null,
+                }
+            )
+            .Where(static ex => ex is not null)
+            .Cast<Exception>()
             .ToArray();
 
     extension(Task<Exception[]> exceptionsTask)

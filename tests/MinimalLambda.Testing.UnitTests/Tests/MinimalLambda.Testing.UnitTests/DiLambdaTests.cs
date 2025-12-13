@@ -104,6 +104,7 @@ public class DiLambdaTests : IClassFixture<LambdaApplicationFactory<DiLambda>>
 
         (await act.Should().ThrowAsync<AggregateException>())
             .WithInnerException<AggregateException>()
+            .WithInnerException<AggregateException>()
             .WithInnerException<Exception>()
             .WithMessage("Test init error");
     }
