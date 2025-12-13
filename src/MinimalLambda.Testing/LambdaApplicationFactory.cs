@@ -485,12 +485,12 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
 
     /// <summary>
     /// Internal implementation of <see cref="LambdaApplicationFactory{TEntryPoint}"/> that delegates virtual method calls
-    /// to callbacks provided at construction. This class is used by <see cref="WithHostBuilder"/> to create derived
+    /// to callbacks provided at construction. This class is used by <see cref="LambdaApplicationFactory{TEntryPoint}.WithHostBuilder"/> to create derived
     /// factories with customized behavior without creating additional subclasses.
     /// </summary>
     /// <remarks>
     /// This class implements the delegation pattern to allow runtime customization of virtual methods.
-    /// Each virtual method (<see cref="CreateHost"/>, <see cref="CreateHostBuilder"/>, <see cref="GetTestAssemblies"/>,
+    /// Each virtual method (<see cref="CreateHost"/>, <see cref="GetTestAssemblies"/>,
     /// and <see cref="ConfigureWebHost"/>) delegates to a callback function provided in the constructor,
     /// enabling configuration chaining while reusing the base factory infrastructure.
     /// </remarks>
