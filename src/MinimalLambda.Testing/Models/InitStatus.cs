@@ -19,4 +19,9 @@ public enum InitStatus
     /// Initialization of the Lambda failed, and the Host process exited.
     /// </summary>
     HostExited,
+
+    /// <summary>
+    /// Initialization has already been completed and cannot be repeated.
+    /// </summary>
+    InitAlreadyCompleted,
 }

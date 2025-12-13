@@ -234,7 +234,9 @@ public class LambdaTestServer : IAsyncDisposable
         await _startSemaphore.WaitAsync(cancellationToken);
         try
         {
-            if (State != ServerState.Created)
+            if (State == ServerState.Running)
+                return new InitResponse { InitStatus = InitStatus.InitAlreadyCompleted };
+            else if (State != ServerState.Created)
                 throw new InvalidOperationException(
                     $"{nameof(LambdaTestServer)} has already been started and cannot be restarted."
                 );
@@ -267,7 +269,10 @@ public class LambdaTestServer : IAsyncDisposable
                 .UnwrapAndThrow("Exception(s) encountered while running StartAsync");
 
             if (_entryPointCompletion.IsCompleted)
+            {
+                State = ServerState.Stopped;
                 return new InitResponse { InitStatus = InitStatus.HostExited };
+            }
 
             if (_initCompletionTcs.Task.IsCompleted)
             {
@@ -342,10 +347,13 @@ public class LambdaTestServer : IAsyncDisposable
     )
     {
         // inorder to allow
-        if (State == ServerState.Created)
+        if (State != ServerState.Running)
         {
             var initResponse = await StartAsync(cancellationToken);
-            if (initResponse.InitStatus != InitStatus.InitCompleted)
+            if (
+                initResponse.InitStatus
+                is not (InitStatus.InitCompleted or InitStatus.InitAlreadyCompleted)
+            )
                 throw new InvalidOperationException(
                     $"{nameof(LambdaTestServer)} failed to initialize and returned a status of {initResponse.InitStatus.ToString()}."
                 );
