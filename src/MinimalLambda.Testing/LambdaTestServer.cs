@@ -203,7 +203,7 @@ public class LambdaTestServer : IAsyncDisposable
     }
 
     internal HttpMessageHandler CreateHandler() =>
-        new LambdaTestingHttpHandler(_transactionChannel);
+        new LambdaTestingHttpHandler(_transactionChannel, _shutdownCts.Token);
 
     //      ┌──────────────────────────────────────────────────────────┐
     //      │                        Public API                        │

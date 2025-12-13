@@ -6,19 +6,26 @@ namespace MinimalLambda.Testing;
 /// HTTP message handler that intercepts Lambda Bootstrap HTTP calls and
 /// routes them through the test server via transactions.
 /// </summary>
-internal class LambdaTestingHttpHandler(Channel<LambdaHttpTransaction> transactionChannel)
-    : HttpMessageHandler
+internal class LambdaTestingHttpHandler(
+    Channel<LambdaHttpTransaction> transactionChannel,
+    CancellationToken stoppingToken
+) : HttpMessageHandler
 {
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
         CancellationToken cancellationToken
     )
     {
+        using var cts = CancellationTokenSource.CreateLinkedTokenSource(
+            cancellationToken,
+            stoppingToken
+        );
+
         // Buffer the content to make it re-readable for downstream consumers
         if (request.Content != null)
         {
             var originalContent = request.Content;
-            var bytes = await originalContent.ReadAsByteArrayAsync(cancellationToken);
+            var bytes = await originalContent.ReadAsByteArrayAsync(cts.Token);
             var bufferedContent = new ByteArrayContent(bytes);
 
             foreach (var header in originalContent.Headers)
@@ -32,12 +39,12 @@ internal class LambdaTestingHttpHandler(Channel<LambdaHttpTransaction> transacti
         var transaction = LambdaHttpTransaction.Create(request);
 
         // Register cancellation to cancel the transaction TCS
-        await using var registration = cancellationToken.Register(() => transaction.Cancel());
+        await using var registration = cts.Token.Register(() => transaction.Cancel());
 
         // Send transaction to server
         try
         {
-            await transactionChannel.Writer.WriteAsync(transaction, cancellationToken);
+            await transactionChannel.Writer.WriteAsync(transaction, cts.Token);
         }
         catch (ChannelClosedException)
         {
@@ -45,7 +52,7 @@ internal class LambdaTestingHttpHandler(Channel<LambdaHttpTransaction> transacti
             var canceled = new TaskCompletionSource<HttpResponseMessage>(
                 TaskCreationOptions.RunContinuationsAsynchronously
             );
-            canceled.TrySetCanceled(cancellationToken);
+            canceled.TrySetCanceled(cts.Token);
             return await canceled.Task;
         }
 
