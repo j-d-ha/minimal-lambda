@@ -246,10 +246,10 @@ public class LambdaTestServer : IAsyncDisposable
 
             State = ServerState.Starting;
 
+            _applicationLifetime = _host.Services.GetRequiredService<IHostApplicationLifetime>();
+
             // Start the host
             await _host.StartAsync(cts.Token);
-
-            _applicationLifetime = _host.Services.GetRequiredService<IHostApplicationLifetime>();
 
             // Start background processing
             _processingTask = Task.Run(ProcessTransactionsAsync, cts.Token);
