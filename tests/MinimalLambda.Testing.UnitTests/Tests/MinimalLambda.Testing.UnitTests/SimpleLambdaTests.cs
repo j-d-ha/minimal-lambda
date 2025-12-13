@@ -110,13 +110,10 @@ public class SimpleLambdaTests : IClassFixture<LambdaApplicationFactory<SimpleLa
         var act = async () =>
             await factory.TestServer.StartAsync(TestContext.Current.CancellationToken);
 
-        (await act.Should().ThrowAsync<AggregateException>())
-            .And.InnerExceptions.Should()
-            .ContainSingle(ex =>
-                ex is InvalidOperationException
-                && ex.Message.Contains(
-                    "Unexpected request received from the Lambda HTTP handler: GET http://http//localhost:3002/2018-06-01/runtime/invocation/next"
-                )
+        await act.Should()
+            .ThrowAsync<InvalidOperationException>()
+            .WithMessage(
+                "Unexpected request received from the Lambda HTTP handler: GET http://http//localhost:3002/2018-06-01/runtime/invocation/next"
             );
     }
 
