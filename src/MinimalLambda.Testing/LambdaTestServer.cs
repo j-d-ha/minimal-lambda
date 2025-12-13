@@ -165,16 +165,15 @@ public class LambdaTestServer : IAsyncDisposable
         if (_disposed)
             return;
 
-        if (State == ServerState.Running)
-            // Best effort to stop the server, but don't fail the Dispose operation
-            await StopAsync().ConfigureAwait(ConfigureAwaitOptions.SuppressThrowing);
-
         // Complete both channels to prevent new items
         _transactionChannel.Writer.TryComplete();
         _pendingInvocationIds.Writer.TryComplete();
 
         // Cancel the shutdown token
         await _shutdownCts.CancelAsync();
+
+        if (State == ServerState.Running)
+            await StopAsync().ConfigureAwait(false);
 
         // Dispose the CancellationTokenSource
         _shutdownCts.Dispose();
@@ -257,7 +256,7 @@ public class LambdaTestServer : IAsyncDisposable
             }
 
             // Start the host
-            await _host.StartAsync(cts.Token);
+            _host.Start();
 
             // Start background processing
             _processingTask = Task.Run(ProcessTransactionsAsync, cts.Token);
@@ -456,7 +455,7 @@ public class LambdaTestServer : IAsyncDisposable
         _applicationLifetime?.StopApplication();
 
         await TaskHelpers
-            .WhenAll(_entryPointCompletion, _processingTask!)
+            .WhenAll(_entryPointCompletion, _processingTask ?? Task.CompletedTask)
             .UnwrapAndThrow("Exception(s) encountered while running StopAsync")
             .WaitAsync(cancellationToken);
 
