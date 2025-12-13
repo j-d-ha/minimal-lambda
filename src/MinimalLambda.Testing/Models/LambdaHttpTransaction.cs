@@ -35,11 +35,6 @@ internal class LambdaHttpTransaction
     internal bool Respond(HttpResponseMessage response) => ResponseTcs.TrySetResult(response);
 
     /// <summary>
-    /// Completes the transaction with an exception.
-    /// </summary>
-    internal bool Fail(Exception exception) => ResponseTcs.TrySetException(exception);
-
-    /// <summary>
     /// Completes the transaction with cancellation.
     /// </summary>
     internal bool Cancel() => ResponseTcs.TrySetCanceled();
