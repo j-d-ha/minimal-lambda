@@ -13,6 +13,9 @@ public class ErrorResponse
     [JsonPropertyName("cause")]
     public ErrorCause? Cause { get; set; }
 
+    /// <summary>
+    /// The underlying causes of this error, if any.
+    /// </summary>
     [JsonPropertyName("causes")]
     public List<ErrorCause>? Causes { get; set; }
 
@@ -55,7 +58,7 @@ public class ErrorResponse
         /// The type of error that occurred.
         /// </summary>
         [JsonPropertyName("errorType")]
-        public string ErrorType { get; set; }
+        public required string ErrorType { get; set; }
 
         /// <summary>
         /// The stack trace showing where the error occurred.
