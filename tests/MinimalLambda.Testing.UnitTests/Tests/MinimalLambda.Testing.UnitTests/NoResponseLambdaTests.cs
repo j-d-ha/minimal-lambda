@@ -3,20 +3,17 @@ using Microsoft.Extensions.Hosting;
 
 namespace MinimalLambda.Testing.UnitTests;
 
-public class NoResponseLambdaTests : IClassFixture<LambdaApplicationFactory<NoResponseLambda>>
+public class NoResponseLambdaTests
 {
-    private readonly LambdaTestServer _server;
-
-    public NoResponseLambdaTests(LambdaApplicationFactory<NoResponseLambda> factory)
-    {
-        factory.WithCancellationToken(TestContext.Current.CancellationToken);
-        _server = factory.TestServer;
-    }
-
     [Fact]
     public async Task NoResponseLambda_ReturnsExpectedValue()
     {
-        var response = await _server.InvokeNoResponseAsync<NoResponseLambdaRequest>(
+        await using var factory =
+            new LambdaApplicationFactory<NoResponseLambda>().WithCancellationToken(
+                TestContext.Current.CancellationToken
+            );
+
+        var response = await factory.TestServer.InvokeNoResponseAsync(
             new NoResponseLambdaRequest("World"),
             TestContext.Current.CancellationToken
         );
@@ -26,9 +23,14 @@ public class NoResponseLambdaTests : IClassFixture<LambdaApplicationFactory<NoRe
     }
 
     [Fact]
-    public void NoResponseLambda_ServicesIsAccessible()
+    public async Task NoResponseLambda_ServicesIsAccessible()
     {
-        var act = () => _server.Services.GetRequiredService<IHostApplicationLifetime>();
+        await using var factory =
+            new LambdaApplicationFactory<NoResponseLambda>().WithCancellationToken(
+                TestContext.Current.CancellationToken
+            );
+
+        var act = () => factory.TestServer.Services.GetRequiredService<IHostApplicationLifetime>();
 
         act.Should().NotThrow();
     }
