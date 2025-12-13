@@ -5,7 +5,7 @@ namespace MinimalLambda.Testing.UnitTests;
 [TestSubject(typeof(DictionaryExtensions))]
 public class DictionaryExtensionsTest
 {
-    private readonly IDictionary<string, string> _dictionary = new Dictionary<string, string>
+    private readonly Dictionary<string, string> _dictionary = new()
     {
         ["key1"] = "value1",
         ["key2"] = "value2",
