@@ -401,6 +401,8 @@ public class LambdaTestServer : IAsyncDisposable
             )
             : null;
 
+        _pendingInvocations.TryRemove(requestId, out _);
+
         return new InvocationResponse<TResponse>
         {
             WasSuccess = wasSuccess,
