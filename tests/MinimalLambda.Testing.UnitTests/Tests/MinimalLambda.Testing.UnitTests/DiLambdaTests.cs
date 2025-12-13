@@ -29,10 +29,10 @@ public class DiLambdaTests : IClassFixture<LambdaApplicationFactory<DiLambda>>
         response.Response.Message.Should().Be("Hello World!");
     }
 
-    [Theory]
-    [AutoNSubstituteData]
-    internal async Task DiLambda_InitStopped(ILifecycleService lifecycleService)
+    [Fact]
+    internal async Task DiLambda_InitStopped()
     {
+        var lifecycleService = Substitute.For<ILifecycleService>();
         await using var factory = new LambdaApplicationFactory<DiLambda>()
             .WithCancelationToken(TestContext.Current.CancellationToken)
             .WithHostBuilder(builder =>
@@ -51,10 +51,11 @@ public class DiLambdaTests : IClassFixture<LambdaApplicationFactory<DiLambda>>
         initResult.InitStatus.Should().Be(InitStatus.HostExited);
     }
 
-    [Theory]
-    [AutoNSubstituteData]
-    internal async Task DiLambda_InitThrowsException(ILifecycleService lifecycleService)
+    [Fact]
+    internal async Task DiLambda_InitThrowsException()
     {
+        var lifecycleService = Substitute.For<ILifecycleService>();
+
         await using var factory = new LambdaApplicationFactory<DiLambda>()
             .WithCancelationToken(TestContext.Current.CancellationToken)
             .WithHostBuilder(builder =>
