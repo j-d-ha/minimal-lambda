@@ -226,9 +226,12 @@ public class LambdaTestServer : IAsyncDisposable
     /// </remarks>
     public async Task<InitResponse> StartAsync(CancellationToken cancellationToken = default)
     {
-        await _startSemaphore.WaitAsync(cancellationToken);
+        var semaphoreAcquired = false;
         try
         {
+            await _startSemaphore.WaitAsync(cancellationToken);
+            semaphoreAcquired = true;
+
             if (State == ServerState.Running)
                 return new InitResponse { InitStatus = InitStatus.InitAlreadyCompleted };
             else if (State != ServerState.Created)
@@ -285,7 +288,8 @@ public class LambdaTestServer : IAsyncDisposable
         }
         finally
         {
-            _startSemaphore.Release();
+            if (semaphoreAcquired)
+                _startSemaphore.Release();
         }
     }
 
