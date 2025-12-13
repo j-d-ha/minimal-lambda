@@ -1,3 +1,5 @@
+using Autofac;
+using Autofac.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.DependencyInjection.Extensions;
 using MinimalLambda.UnitTests;
@@ -108,5 +110,77 @@ public class DiLambdaTests : IClassFixture<LambdaApplicationFactory<DiLambda>>
             .WithInnerException<AggregateException>()
             .WithInnerException<Exception>()
             .WithMessage("Test init error");
+    }
+
+    [Theory]
+    [AutoNSubstituteData]
+    internal async Task DiLambda_DiContainerCanBeReplaced(
+        ILifecycleService lifecycleService,
+        IService service
+    )
+    {
+        await using var factory = new LambdaApplicationFactory<DiLambda>()
+            .WithCancelationToken(TestContext.Current.CancellationToken)
+            .WithHostBuilder(builder =>
+                builder
+                    .ConfigureContainer<ContainerBuilder>(
+                        (_, containerBuilder) =>
+                        {
+                            containerBuilder.RegisterInstance(service).As<IService>();
+                            containerBuilder
+                                .RegisterInstance(lifecycleService)
+                                .As<ILifecycleService>();
+                        }
+                    )
+                    .UseServiceProviderFactory(new AutofacServiceProviderFactory())
+            );
+
+        service.GetMessage(Arg.Any<string>()).Returns("Hello Bob!");
+
+        var response = await factory.TestServer.InvokeAsync<DiLambdaRequest, DiLambdaResponse>(
+            new DiLambdaRequest("World"),
+            TestContext.Current.CancellationToken
+        );
+
+        response.Should().NotBeNull();
+        response.WasSuccess.Should().BeTrue();
+        response.Response.Should().NotBeNull();
+        response.Response.Message.Should().Be("Hello Bob!");
+    }
+
+    [Theory]
+    [AutoNSubstituteData]
+    internal async Task DiLambda_DiContainerCanBeReplacedWithFactory(
+        ILifecycleService lifecycleService,
+        IService service
+    )
+    {
+        await using var factory = new LambdaApplicationFactory<DiLambda>()
+            .WithCancelationToken(TestContext.Current.CancellationToken)
+            .WithHostBuilder(builder =>
+                builder
+                    .ConfigureContainer<ContainerBuilder>(
+                        (_, containerBuilder) =>
+                        {
+                            containerBuilder.RegisterInstance(service).As<IService>();
+                            containerBuilder
+                                .RegisterInstance(lifecycleService)
+                                .As<ILifecycleService>();
+                        }
+                    )
+                    .UseServiceProviderFactory(_ => new AutofacServiceProviderFactory())
+            );
+
+        service.GetMessage(Arg.Any<string>()).Returns("Hello Joe!");
+
+        var response = await factory.TestServer.InvokeAsync<DiLambdaRequest, DiLambdaResponse>(
+            new DiLambdaRequest("World"),
+            TestContext.Current.CancellationToken
+        );
+
+        response.Should().NotBeNull();
+        response.WasSuccess.Should().BeTrue();
+        response.Response.Should().NotBeNull();
+        response.Response.Message.Should().Be("Hello Joe!");
     }
 }
