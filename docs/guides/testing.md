@@ -135,6 +135,15 @@ test-specific values.
 - **Runtime headers** – Responses include the same headers Lambda sends (`Lambda-Runtime-*` plus any
   `AdditionalHeaders` you set); assert on them if you need to prove deadline/ARN behavior.
 
+!!! warning "Fixture reuse pitfalls"
+    - Using `IClassFixture`/`ICollectionFixture` with a single `LambdaApplicationFactory` means one
+      host instance is shared across all tests in that scope. Avoid this pattern if you need to test
+      startup/shutdown logic—use a fresh factory per test so OnInit/OnShutdown run predictably.
+    - Do not mix a fixture-based factory with new factories created inside individual tests; they can
+      overlap and run simultaneously, leading to multiple hosts executing in parallel and surprising
+      side effects. Choose one approach (per-test or shared fixture) for a given test class/collection
+      and clean up via `DisposeAsync`/`StopAsync` when done.
+
 Ready to go deeper? The MinimalLambda.Testing source (`src/MinimalLambda.Testing/`) and its unit
 tests (`tests/MinimalLambda.Testing.UnitTests/`) contain more examples of host overrides,
 cancellation, and error handling patterns.
