@@ -28,6 +28,8 @@ Before you begin, ensure you have:
 - **[Installation](installation.md)** – Add the NuGet packages and configure your csproj.
 - **[Your First Lambda](first-lambda.md)** – Walk through a handler, DI setup, and local testing.
 - **[Core Concepts](core-concepts.md)** – Learn about the host lifecycle, middleware, and source generation.
+- **Testing** – For in-memory, `WebApplicationFactory`-style integration tests, see
+  [MinimalLambda.Testing](../guides/testing.md).
 
 Prefer to explore? Head directly to **[Guides](../guides/index.md)** or **[Examples](../examples/index.md)** for deeper dives.
 
