@@ -56,4 +56,11 @@ public sealed class ApiGatewayV2Result
                 IsBase64Encoded = isBase64Encoded,
             }
         );
+
+    /// <summary>Creates an API Gateway v2 result from an existing response envelope.</summary>
+    /// <typeparam name="T">The type of content in the envelope's body.</typeparam>
+    /// <param name="envelope">The response envelope to wrap.</param>
+    /// <returns>An <see cref="ApiGatewayV2Result" /> wrapping the envelope.</returns>
+    public static ApiGatewayV2Result Create<T>(ApiGatewayV2ResponseEnvelope<T> envelope) =>
+        new(envelope);
 }

@@ -55,4 +55,10 @@ public sealed class AlbResult : ApplicationLoadBalancerResponse, IHttpResult<Alb
                 IsBase64Encoded = isBase64Encoded,
             }
         );
+
+    /// <summary>Creates an ALB result from an existing response envelope.</summary>
+    /// <typeparam name="T">The type of content in the envelope's body.</typeparam>
+    /// <param name="envelope">The response envelope to wrap.</param>
+    /// <returns>An <see cref="AlbResult" /> wrapping the envelope.</returns>
+    public static AlbResult Create<T>(AlbResponseEnvelope<T> envelope) => new(envelope);
 }

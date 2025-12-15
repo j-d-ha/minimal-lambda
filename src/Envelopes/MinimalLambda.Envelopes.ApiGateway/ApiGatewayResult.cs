@@ -54,4 +54,11 @@ public sealed class ApiGatewayResult : APIGatewayProxyResponse, IHttpResult<ApiG
                 IsBase64Encoded = isBase64Encoded,
             }
         );
+
+    /// <summary>Creates an API Gateway result from an existing response envelope.</summary>
+    /// <typeparam name="T">The type of content in the envelope's body.</typeparam>
+    /// <param name="envelope">The response envelope to wrap.</param>
+    /// <returns>An <see cref="ApiGatewayResult" /> wrapping the envelope.</returns>
+    public static ApiGatewayResult Create<T>(ApiGatewayResponseEnvelope<T> envelope) =>
+        new(envelope);
 }

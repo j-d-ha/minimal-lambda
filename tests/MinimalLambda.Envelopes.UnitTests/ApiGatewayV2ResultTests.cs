@@ -95,5 +95,29 @@ public class ApiGatewayV2ResultTests
         result.Body.Should().Be("null");
     }
 
+    [Fact]
+    public void Create_WithEnvelope_CreatesResultCorrectly()
+    {
+        // Arrange
+        var payload = _fixture.Create<TestPayload>();
+        var envelope = new ApiGatewayV2ResponseEnvelope<TestPayload>
+        {
+            StatusCode = 201,
+            BodyContent = payload,
+            Headers = new Dictionary<string, string> { ["X-Test"] = "Value" },
+            IsBase64Encoded = false,
+        };
+
+        // Act
+        var result = ApiGatewayV2Result.Create(envelope);
+
+        // Assert
+        result.Should().NotBeNull();
+        result.StatusCode.Should().Be(201);
+        result.Headers.Should().ContainKey("X-Test");
+        result.Headers["X-Test"].Should().Be("Value");
+        result.IsBase64Encoded.Should().Be(false);
+    }
+
     private record TestPayload(string Name, int Value);
 }
