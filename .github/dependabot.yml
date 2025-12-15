@@ -6,8 +6,8 @@ updates:
       interval: "weekly"
     open-pull-requests-limit: 10
     commit-message:
-      prefix: "chore(deps)"
-      prefix-development: "chore(deps)"
+      prefix: "chore"
+      prefix-development: "chore"
       include: "scope"
     groups:
       minor-and-patch:
@@ -21,8 +21,8 @@ updates:
       interval: "weekly"
     open-pull-requests-limit: 10
     commit-message:
-      prefix: "chore(deps)"
-      prefix-development: "chore(deps)"
+      prefix: "chore"
+      prefix-development: "chore"
       include: "scope"
     groups:
       minor-and-patch:
@@ -38,8 +38,8 @@ updates:
       interval: "weekly"
     open-pull-requests-limit: 10
     commit-message:
-      prefix: "chore(deps)"
-      prefix-development: "chore(deps)"
+      prefix: "chore"
+      prefix-development: "chore"
       include: "scope"
     groups:
       minor-and-patch:
@@ -52,8 +52,8 @@ updates:
     schedule:
       interval: "weekly"
     commit-message:
-      prefix: "chore(deps)"
-      prefix-development: "chore(deps)"
+      prefix: "chore"
+      prefix-development: "chore"
       include: "scope"
 
   - package-ecosystem: "pip"
@@ -62,8 +62,8 @@ updates:
       interval: "weekly"
     open-pull-requests-limit: 10
     commit-message:
-      prefix: "chore(deps)"
-      prefix-development: "chore(deps)"
+      prefix: "chore"
+      prefix-development: "chore"
       include: "scope"
     groups:
       minor-and-patch:
