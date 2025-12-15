@@ -1,3 +1,6 @@
+using System.Text.Json;
+using MinimalLambda.Options;
+
 namespace MinimalLambda.Testing;
 
 /// <summary>Configuration options for the Lambda test client.</summary>
@@ -24,4 +27,11 @@ public class LambdaServerOptions
     ///     <a href="https://docs.aws.amazon.com/lambda/latest/dg/configuration-timeout.html">timeout</a>.
     /// </summary>
     public TimeSpan FunctionTimeout { get; set; } = TimeSpan.FromSeconds(3);
+
+    /// <summary>
+    ///     Gets or sets the JSON serializer options used for Lambda event and response serialization.
+    ///     Defaults to the standard Lambda JSON configuration settings.
+    /// </summary>
+    public JsonSerializerOptions SerializerOptions { get; set; } =
+        DefaultLambdaJsonSerializerOptions.Create();
 }
