@@ -20,6 +20,7 @@ serialization:
 |--------------------------|-----------------------------------|---------------------------------------------|
 | `AlbRequestEnvelope<T>`  | `ApplicationLoadBalancerRequest`  | ALB requests with deserialized body content |
 | `AlbResponseEnvelope<T>` | `ApplicationLoadBalancerResponse` | ALB responses with typed body content       |
+| `AlbResult`              | `ApplicationLoadBalancerResponse` | ALB responses with fluent API builder       |
 
 ## Quick Start
 
@@ -59,6 +60,40 @@ internal record Request(string Name);
 
 internal record Response(string Message, DateTime TimestampUtc);
 ```
+
+## Response Builder API
+
+The `AlbResult` class provides a fluent API for building HTTP responses. **Key benefit**: Return
+multiple strongly typed models from the same handler (e.g., success vs. error responses with
+different types).
+
+```csharp
+lambda.MapHandler(([Event] AlbRequestEnvelope<Request> request) =>
+{
+    if (string.IsNullOrEmpty(request.BodyContent?.Name))
+        return AlbResult.BadRequest(new ErrorResponse("Name is required"));
+
+    return AlbResult.Ok(new SuccessResponse($"Hello {request.BodyContent.Name}!"));
+});
+```
+
+Available methods: `Ok()`, `Created()`, `NoContent()`, `BadRequest()`, `Unauthorized()`,
+`NotFound()`, `Conflict()`, `UnprocessableEntity()`, `InternalServerError()`, `StatusCode(int)`,
+`Text(int, string)`, `Json<T>(int, T)`.
+
+All methods have overloads with and without body content. Use `.Customize()` for fluent header
+customization.
+
+> [!NOTE]
+> `AlbResult` uses `AlbResponseEnvelope<T>` internally.
+
+## Choosing Between Envelopes and Results
+
+**Use `AlbResult`** when you need to return multiple strongly typed models from the same handler
+(e.g., different success and error types). Provides convenient methods for common HTTP status codes.
+
+**Use `AlbResponseEnvelope<T>` directly** when you need custom serialization (e.g., XML) or want to
+extend envelope base classes for custom behavior.
 
 ## Custom Envelopes
 
@@ -104,6 +139,17 @@ When using .NET Native AOT, register all envelope and payload types in your `Jso
 [JsonSerializable(typeof(AlbResponseEnvelope<Response>))]
 [JsonSerializable(typeof(Request))]
 [JsonSerializable(typeof(Response))]
+internal partial class SerializerContext : JsonSerializerContext;
+```
+
+**When using `AlbResult` with multiple return types**, register each type separately:
+
+```csharp
+[JsonSerializable(typeof(AlbRequestEnvelope<Request>))]
+[JsonSerializable(typeof(AlbResult))]
+[JsonSerializable(typeof(Request))]
+[JsonSerializable(typeof(SuccessResponse))]
+[JsonSerializable(typeof(ErrorResponse))]
 internal partial class SerializerContext : JsonSerializerContext;
 ```
 
