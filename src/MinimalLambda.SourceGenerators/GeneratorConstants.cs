@@ -31,6 +31,8 @@ internal static class AttributeConstants
 {
     internal const string EventAttribute = "MinimalLambda.Builder.EventAttribute";
 
+    internal const string FromEventAttribute = "MinimalLambda.Builder.FromEventAttribute";
+
     internal const string FromKeyedService =
         "Microsoft.Extensions.DependencyInjection.FromKeyedServicesAttribute";
 }

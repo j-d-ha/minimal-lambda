@@ -129,7 +129,7 @@ public class ExpressionLambdaVerifyTests
             var lambda = builder.Build();
 
             lambda.MapHandler(
-                async ([Event] string input, IService service) => service.GetMessage().ToUpper()
+                async ([FromEvent] string input, IService service) => service.GetMessage().ToUpper()
             );
 
             await lambda.RunAsync();
@@ -155,7 +155,7 @@ public class ExpressionLambdaVerifyTests
             var lambda = builder.Build();
 
             lambda.MapHandler(
-                async ([Event] string input, IService service) => (await service.GetMessage()).ToUpper()
+                async ([FromEvent] string input, IService service) => (await service.GetMessage()).ToUpper()
             );
 
             await lambda.RunAsync();
@@ -182,7 +182,7 @@ public class ExpressionLambdaVerifyTests
             var lambda = builder.Build();
 
             lambda.MapHandler(
-                async ([Event] Event input, IService service) =>
+                async ([FromEvent] Event input, IService service) =>
                     new Response((await service.GetMessage()).ToUpper())
             );
 
@@ -215,7 +215,7 @@ public class ExpressionLambdaVerifyTests
             var lambda = builder.Build();
 
             lambda.MapHandler(
-                IService ([Event] string input) => input == "other" ? new Service() : new OtherService()
+                IService ([FromEvent] string input) => input == "other" ? new Service() : new OtherService()
             );
 
             await lambda.RunAsync();
@@ -249,7 +249,7 @@ public class ExpressionLambdaVerifyTests
             var builder = LambdaApplication.CreateBuilder();
             var lambda = builder.Build();
 
-            lambda.MapHandler(([Event] string? input, IService service) => service.GetMessage());
+            lambda.MapHandler(([FromEvent] string? input, IService service) => service.GetMessage());
 
             await lambda.RunAsync();
 
@@ -271,7 +271,7 @@ public class ExpressionLambdaVerifyTests
             var builder = LambdaApplication.CreateBuilder();
             var lambda = builder.Build();
 
-            lambda.MapHandler(string? ([Event] int? input, IService service) => service.GetMessage());
+            lambda.MapHandler(string? ([FromEvent] int? input, IService service) => service.GetMessage());
 
             await lambda.RunAsync();
 
@@ -298,7 +298,7 @@ public class ExpressionLambdaVerifyTests
             var lambda = builder.Build();
 
             lambda.MapHandler(
-                async ([Event] CustomRequest request, IService service, ILambdaContext context) =>
+                async ([FromEvent] CustomRequest request, IService service, ILambdaContext context) =>
                     new CustomResponse { Result = await service.GetMessage(), Success = true }
             );
 
@@ -431,7 +431,7 @@ public class ExpressionLambdaVerifyTests
 
             var lambda = builder.Build();
 
-            lambda.MapHandler(([Event] Stream input) => { });
+            lambda.MapHandler(([FromEvent] Stream input) => { });
 
             await lambda.RunAsync();
             """

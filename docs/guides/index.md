@@ -45,7 +45,7 @@ Register type-safe Lambda handlers with automatic dependency injection and sourc
 **Topics covered:**
 
 - MapHandler method usage
-- `[Event]` attribute requirements
+- `[FromEvent]` attribute requirements
 - Injectable parameter types
 - Return type handling
 - Source generation benefits

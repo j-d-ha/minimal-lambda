@@ -89,7 +89,7 @@ builder.Services.AddScoped<IGreetingService, GreetingService>();
 var lambda = builder.Build();
 
 // Inject the service directly into the handler
-lambda.MapHandler(([Event] string input, IGreetingService greeting) => greeting.Greet(input));
+lambda.MapHandler(([FromEvent] string input, IGreetingService greeting) => greeting.Greet(input));
 
 await lambda.RunAsync();
 

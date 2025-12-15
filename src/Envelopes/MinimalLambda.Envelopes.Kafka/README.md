@@ -31,7 +31,7 @@ var lambda = builder.Build();
 
 // KafkaEnvelope<OrderEvent> provides access to the Kafka event and deserialized OrderEvent payloads
 lambda.MapHandler(
-    ([Event] KafkaEnvelope<OrderEvent> envelope, ILogger<Program> logger) =>
+    ([FromEvent] KafkaEnvelope<OrderEvent> envelope, ILogger<Program> logger) =>
     {
         foreach (var topic in envelope.Records)
         {

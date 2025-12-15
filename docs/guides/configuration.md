@@ -145,7 +145,7 @@ builder.Services.ConfigureLambdaHostOptions(options =>
     options.InvocationCancellationBuffer = TimeSpan.FromSeconds(5);
 });
 
-lambda.MapHandler(async ([Event] Order order, IOrderService service, CancellationToken ct) =>
+lambda.MapHandler(async ([FromEvent] Order order, IOrderService service, CancellationToken ct) =>
     await service.ProcessAsync(order, ct));
 ```
 

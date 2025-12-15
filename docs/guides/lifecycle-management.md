@@ -37,7 +37,7 @@ lambda.OnInit(async (IDistributedCache cache, ILogger<Program> logger, Cancellat
     return true; // Keep hosting if every handler returns true
 });
 
-lambda.MapHandler(([Event] Request request) => new Response("OK"));
+lambda.MapHandler(([FromEvent] Request request) => new Response("OK"));
 
 await lambda.RunAsync();
 ```

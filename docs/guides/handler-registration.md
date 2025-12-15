@@ -14,7 +14,7 @@ builder.Services.AddScoped<IGreetingService, GreetingService>();
 
 var lambda = builder.Build();
 
-lambda.MapHandler(([Event] string name, IGreetingService greetings) =>
+lambda.MapHandler(([FromEvent] string name, IGreetingService greetings) =>
     greetings.Greet(name)
 );
 
@@ -55,7 +55,7 @@ public static class OrderHandlers
 {
     public static void MapOrderHandler(this ILambdaInvocationBuilder app)
     {
-        app.MapHandler(([Event] OrderRequest req, IOrderService orders) =>
+        app.MapHandler(([FromEvent] OrderRequest req, IOrderService orders) =>
             orders.ProcessAsync(req)
         );
     }
@@ -82,13 +82,13 @@ await lambda.RunAsync();
 - Feature providers are registered when `MapHandler` is called, so ensure the registered handler matches your expected event/response types
 - This pattern is designed for **conditional registration**, not for handling multiple event types in a single Lambda (which requires a custom routing solution)
 
-## Handler Signatures and the `[Event]` Parameter
+## Handler Signatures and the `[FromEvent]` Parameter
 
-Handlers that receive an incoming payload must identify exactly one parameter with `[Event]`. The generator uses that marker to synthesize deserialization logic (JSON by default, or whatever envelope/serializer is active). If your Lambda does **not** expect input (e.g., scheduled jobs, health checks, etc.), you can omit the `[Event]` attribute entirely—just define a handler with no payload parameter and `MinimalLambda` skips the event binding phase.
+Handlers that receive an incoming payload must identify exactly one parameter with `[FromEvent]`. The generator uses that marker to synthesize deserialization logic (JSON by default, or whatever envelope/serializer is active). If your Lambda does **not** expect input (e.g., scheduled jobs, health checks, etc.), you can omit the `[FromEvent]` attribute entirely—just define a handler with no payload parameter and `MinimalLambda` skips the event binding phase.
 
-- `[Event]` may appear on reference types, structs, records, collection types, or envelope types such as `ApiGatewayRequestEnvelope<T>`.
-- Handlers without payloads can simply omit `[Event]` by not declaring an event parameter at all.
-- When you do accept a payload, exactly one parameter must be annotated. Missing or duplicate `[Event]` attributes trigger compile-time diagnostics so you catch signature issues early.
+- `[FromEvent]` may appear on reference types, structs, records, collection types, or envelope types such as `ApiGatewayRequestEnvelope<T>`.
+- Handlers without payloads can simply omit `[FromEvent]` by not declaring an event parameter at all.
+- When you do accept a payload, exactly one parameter must be annotated. Missing or duplicate `[FromEvent]` attributes trigger compile-time diagnostics so you catch signature issues early.
 
 ```csharp title="Program.cs" linenums="1"
 // No incoming event required
@@ -104,7 +104,7 @@ Handlers can mix lambda events with services, context objects, and cancellation 
 
 | Parameter                                        | Source                                                                                              |
 |--------------------------------------------------|-----------------------------------------------------------------------------------------------------|
-| `[Event] T event`                                | Deserialized from the Lambda payload (or envelope). Optional—only include when the handler expects an input. |
+| `[FromEvent] T event`                                | Deserialized from the Lambda payload (or envelope). Optional—only include when the handler expects an input. |
 | `IServiceType service`                           | Resolved from the DI container using the invocation scope.                                          |
 | `[FromKeyedServices("key")] IServiceType keyed`  | Resolves a keyed service registered with `AddKeyed*`. Keys must be constants supported by the BCL.  |
 | `ILambdaHostContext context`                     | Framework context that extends `ILambdaContext`, exposes scoped `ServiceProvider`, `Items`, `Features`, `Properties`, and the invocation `CancellationToken`. |
@@ -113,7 +113,7 @@ Handlers can mix lambda events with services, context objects, and cancellation 
 
 ```csharp title="Program.cs" linenums="1"
 lambda.MapHandler(async (
-    [Event] OrderRequest request,
+    [FromEvent] OrderRequest request,
     [FromKeyedServices("primary")] IOrderProcessor orderProcessor,
     ILambdaHostContext context,
     CancellationToken ct
@@ -146,7 +146,7 @@ Each invocation receives its own dependency injection scope and `ILambdaHostCont
 
 ```csharp title="Program.cs" linenums="1"
 lambda.MapHandler(async (
-    [Event] ApiGatewayRequestEnvelope<Order> request,
+    [FromEvent] ApiGatewayRequestEnvelope<Order> request,
     ILambdaHostContext context,
     ILogger<Program> logger,
     CancellationToken ct
@@ -178,7 +178,7 @@ lambda.MapHandler(async (
 `MapHandler` is decorated as a C# 12 interceptor target. During compilation the generator:
 
 1. Ensures the project is built with C# 11+ so interceptors are available (otherwise `LH0004`).
-2. When a payload parameter exists, verifies exactly one `[Event]` annotation is present.
+2. When a payload parameter exists, verifies exactly one `[FromEvent]` annotation is present.
 3. Validates keyed service metadata so the requested key matches the DI container's capabilities (`LH0003` when the key uses an unsupported type such as arrays).
 4. Emits a strongly typed `Handle` call that deserializes the payload (if any), resolves services via generated code, sets up features, and serializes the response.
 
@@ -211,7 +211,7 @@ At runtime:
     static class Handlers
     {
         public static async Task<Response> HandleAsync(
-            [Event] Request request,
+            [FromEvent] Request request,
             IService service,
             CancellationToken ct
         )
@@ -223,9 +223,9 @@ At runtime:
 
 ## Troubleshooting
 
-**`LH0002: No parameter marked with [Event]`**
+**`LH0002: No parameter marked with [FromEvent]`**
 
-Add a `[Event]` attribute when your handler accepts an input payload. This diagnostic does **not** appear for payload-less handlers because no event parameter is required in that case.
+Add a `[FromEvent]` attribute when your handler accepts an input payload. This diagnostic does **not** appear for payload-less handlers because no event parameter is required in that case.
 
 **`InvalidOperationException: No service for type ... has been registered`**
 

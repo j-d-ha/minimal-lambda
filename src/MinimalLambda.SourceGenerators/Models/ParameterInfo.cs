@@ -57,6 +57,7 @@ internal readonly record struct ParameterInfo(
             switch (attribute.AttributeClass?.ToString())
             {
                 case AttributeConstants.EventAttribute:
+                case AttributeConstants.FromEventAttribute:
                     return (ParameterSource.Event, null);
 
                 case AttributeConstants.FromKeyedService:

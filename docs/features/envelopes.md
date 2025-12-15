@@ -62,7 +62,7 @@ var builder = LambdaApplication.CreateBuilder();
 var lambda = builder.Build();
 
 lambda.MapHandler(
-    ([Event] SqsEnvelope<OrderMessage> envelope, ILogger<Program> logger) =>
+    ([FromEvent] SqsEnvelope<OrderMessage> envelope, ILogger<Program> logger) =>
     {
         foreach (var record in envelope.Records)
         {
@@ -90,7 +90,7 @@ different success and error response types.
 ```csharp title="API Gateway Example" linenums="1"
 using MinimalLambda.Envelopes.ApiGateway;
 
-lambda.MapHandler(([Event] ApiGatewayRequestEnvelope<LoginRequest> request) =>
+lambda.MapHandler(([FromEvent] ApiGatewayRequestEnvelope<LoginRequest> request) =>
 {
     // Each return statement uses a different strongly typed model
     if (string.IsNullOrEmpty(request.BodyContent?.Username))
@@ -273,7 +273,7 @@ public sealed class CustomRequestEnvelope : IRequestEnvelope
 In a handler:
 
 ```csharp title="Program.cs" linenums="1"
-lambda.MapHandler(([Event] CustomRequestEnvelope envelope) =>
+lambda.MapHandler(([FromEvent] CustomRequestEnvelope envelope) =>
 {
     if (envelope.PayloadContent is null)
         return new { Error = "Invalid payload" };

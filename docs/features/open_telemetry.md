@@ -76,7 +76,7 @@ lambda.UseOpenTelemetryTracing();// (7)!
 lambda.OnShutdownFlushOpenTelemetry();// (8)!
 
 lambda.MapHandler(// (9)!
-    async ([Event] Request request, ILogger<Program> logger, CancellationToken cancellationToken) =>
+    async ([FromEvent] Request request, ILogger<Program> logger, CancellationToken cancellationToken) =>
     {
         logger.LogInformation("Responding to {Name}", request.Name);
 
@@ -290,7 +290,7 @@ namespace MinimalLambda.Example.OpenTelemetry;
 internal static class Function
 {
     internal static async Task<Response> Handler(
-        [Event] Request request,
+        [FromEvent] Request request,
         IService service,
         Instrumentation instrumentation,
         CancellationToken cancellationToken

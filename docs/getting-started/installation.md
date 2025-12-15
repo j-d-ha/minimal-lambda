@@ -140,7 +140,7 @@ using MinimalLambda;
 var builder = LambdaApplication.CreateBuilder();
 var lambda = builder.Build();
 
-lambda.MapHandler(([Event] string input) => input.ToUpper());
+lambda.MapHandler(([FromEvent] string input) => input.ToUpper());
 
 await lambda.RunAsync();
 ```

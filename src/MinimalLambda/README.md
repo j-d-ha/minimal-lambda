@@ -13,7 +13,7 @@ var builder = LambdaApplication.CreateBuilder();
 builder.Services.AddScoped<IMyService, MyService>();
 
 var lambda = builder.Build();
-lambda.MapHandler(([Event] string input, IMyService service) =>
+lambda.MapHandler(([FromEvent] string input, IMyService service) =>
     service.Process(input));
 
 await lambda.RunAsync();
@@ -57,17 +57,17 @@ using Microsoft.Extensions.Hosting;
 var builder = LambdaApplication.CreateBuilder();
 var lambda = builder.Build();
 
-// The [Event] attribute marks the parameter that receives the deserialized Lambda event
-lambda.MapHandler(([Event] string input) => $"Hello {input}!");
+// The [FromEvent] attribute marks the parameter that receives the deserialized Lambda event
+lambda.MapHandler(([FromEvent] string input) => $"Hello {input}!");
 
 await lambda.RunAsync();
 ```
 
-The `[Event]` attribute tells the framework which parameter receives the deserialized event. You can
+The `[FromEvent]` attribute tells the framework which parameter receives the deserialized event. You can
 also inject dependencies:
 
 ```csharp
-lambda.MapHandler(([Event] Order order, IOrderService service) =>
+lambda.MapHandler(([FromEvent] Order order, IOrderService service) =>
     service.Process(order)
 );
 ```
@@ -131,14 +131,14 @@ lambda.OnShutdown(ITelemetryService telemetryService =>
 Register your Lambda handler with the builder. The framework uses source generation to analyze your
 handler signature:
 
-- The `[Event]` attribute marks the input parameter type
+- The `[FromEvent]` attribute marks the input parameter type
 - The return type determines the response type
 - Source generation handles serialization/deserialization automatically
 
 Handlers can inject dependencies alongside the event:
 
 ```csharp
-lambda.MapHandler(([Event] Order order, IOrderService service) =>
+lambda.MapHandler(([FromEvent] Order order, IOrderService service) =>
     service.Process(order)  // Return type automatically serialized to JSON
 );
 ```

@@ -155,12 +155,12 @@ lambda.UseMiddleware(
 
 ## Step 6: Register the Handler
 
-Map your handler function with the `[Event]` attribute to mark the Lambda event parameter.
+Map your handler function with the `[FromEvent]` attribute to mark the Lambda event parameter.
 
 ```csharp title="Program.cs (continued)"
 // Register the handler with dependency injection
 lambda.MapHandler(
-    ([Event] GreetingRequest request, IGreetingService service) =>
+    ([FromEvent] GreetingRequest request, IGreetingService service) =>
     {
         var message = service.GetGreeting(request.Name, request.Language);
         return new GreetingResponse(message, DateTime.UtcNow);
@@ -168,8 +168,8 @@ lambda.MapHandler(
 );
 ```
 
-!!! warning "The [Event] Attribute"
-    Add `[Event]` to at most one handler parameter to mark it as the deserialized Lambda event. If your handler does not accept an event payload (e.g., scheduled invocations or DI-only inputs), you can omit the attribute entirely.
+!!! warning "The [FromEvent] Attribute"
+    Add `[FromEvent]` to at most one handler parameter to mark it as the deserialized Lambda event. If your handler does not accept an event payload (e.g., scheduled invocations or DI-only inputs), you can omit the attribute entirely.
 
 ## Step 7: Run the Lambda
 
@@ -219,7 +219,7 @@ lambda.UseMiddleware(
 
 // Handler
 lambda.MapHandler(
-    ([Event] GreetingRequest request, IGreetingService service) =>
+    ([FromEvent] GreetingRequest request, IGreetingService service) =>
     {
         var message = service.GetGreeting(request.Name, request.Language);
         return new GreetingResponse(message, DateTime.UtcNow);
@@ -569,9 +569,9 @@ sequenceDiagram
 
 **Solution**: Verify you've added `[property: JsonPropertyName("...")]` attributes to your record properties.
 
-### Build Errors with [Event] Attribute
+### Build Errors with [FromEvent] Attribute
 
-**Error**: `The [Event] attribute is not recognized`
+**Error**: `The [FromEvent] attribute is not recognized`
 
 **Solution**: Add `using MinimalLambda.Builder;` to the top of your file (or fully qualify `[MinimalLambda.Builder.Event]`). The attribute ships with the `MinimalLambda` package—no additional project configuration is required.
 
@@ -598,7 +598,7 @@ Congratulations! You've built and deployed a complete Lambda function. You now u
 - ✅ Defining strongly-typed request/response models
 - ✅ Creating and registering services with dependency injection
 - ✅ Adding middleware for cross-cutting concerns
-- ✅ Using the `[Event]` attribute for handler parameters
+- ✅ Using the `[FromEvent]` attribute for handler parameters
 - ✅ Testing locally with the Lambda Test Tool
 - ✅ Deploying to AWS with SAM, CDK, or manual methods
 

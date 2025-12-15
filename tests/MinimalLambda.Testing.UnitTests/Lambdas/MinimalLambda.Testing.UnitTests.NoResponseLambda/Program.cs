@@ -5,7 +5,7 @@ var builder = LambdaApplication.CreateBuilder();
 
 await using var lambda = builder.Build();
 
-lambda.MapHandler(([Event] NoResponseLambdaRequest request) => { });
+lambda.MapHandler(([FromEvent] NoResponseLambdaRequest request) => { });
 
 await lambda.RunAsync();
 

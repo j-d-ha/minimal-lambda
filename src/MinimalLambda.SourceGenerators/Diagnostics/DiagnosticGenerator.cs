@@ -16,7 +16,7 @@ internal static class DiagnosticGenerator
 
         // Validate parameters
         foreach (var invocationInfo in delegateInfos)
-            // check for multiple parameters that use the `[Event]` attribute
+            // check for multiple parameters that use the `[FromEvent]` attribute
             if (
                 invocationInfo.DelegateInfo.Parameters.Count(p => p.Source == ParameterSource.Event)
                 > 1
@@ -28,7 +28,7 @@ internal static class DiagnosticGenerator
                             Diagnostic.Create(
                                 Diagnostics.MultipleParametersUseAttribute,
                                 p.LocationInfo?.ToLocation(),
-                                AttributeConstants.EventAttribute
+                                AttributeConstants.FromEventAttribute
                             )
                         )
                 );

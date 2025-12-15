@@ -48,7 +48,7 @@ Every event runs through the middleware pipeline and handler you registered with
 **Invocation steps:**
 
 1. Lambda runtime delivers the JSON payload.
-2. The generated handler deserializes it (if you marked a parameter with `[Event]`).
+2. The generated handler deserializes it (if you marked a parameter with `[FromEvent]`).
 3. `MinimalLambda` creates a scoped `IServiceProvider` for the invocation.
 4. Middleware executes in the order it was registered.
 5. Your handler runs and can resolve services/contexts from DI.
@@ -132,7 +132,7 @@ Every middleware component and handler can ask for `ILambdaHostContext`. Think o
 
 ```csharp title="Program.cs" linenums="1"
 lambda.MapHandler(async (
-    [Event] OrderRequest request,
+    [FromEvent] OrderRequest request,
     ILambdaHostContext context,
     IOrderService service,
     CancellationToken ct
@@ -151,7 +151,7 @@ lambda.MapHandler(async (
 
 Handlers and lifecycle hooks can request multiple parameter types simultaneously:
 
-- `[Event] T event` – Optional marker for the deserialized payload. Include it only when your Lambda expects input; the generator enforces that at most one parameter carries `[Event]`.
+- `[FromEvent] T event` – Optional marker for the deserialized payload. Include it only when your Lambda expects input; the generator enforces that at most one parameter carries `[FromEvent]`.
 - Services – Any registered service, keyed service (`[FromKeyedServices("key")]`), or options type.
 - Context – `ILambdaHostContext` or the raw `ILambdaContext` from the AWS SDK.
 - `CancellationToken` – Linked to end-to-end timeouts; pass it downstream.
@@ -176,7 +176,7 @@ lambda.UseMiddleware(async (context, next) =>
     await next(context);
 });
 
-lambda.MapHandler(([Event] OrderRequest order) => new OrderResponse(order.Id, true));
+lambda.MapHandler(([FromEvent] OrderRequest order) => new OrderResponse(order.Id, true));
 ```
 
 **Ordering guidance:**

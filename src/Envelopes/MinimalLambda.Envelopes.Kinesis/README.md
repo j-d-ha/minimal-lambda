@@ -30,7 +30,7 @@ var lambda = builder.Build();
 
 // KinesisEnvelope<StreamRecord> provides access to the Kinesis event and deserialized StreamRecord payloads
 lambda.MapHandler(
-    ([Event] KinesisEnvelope<StreamRecord> envelope, ILogger<Program> logger) =>
+    ([FromEvent] KinesisEnvelope<StreamRecord> envelope, ILogger<Program> logger) =>
     {
         foreach (var record in envelope.Records)
         {

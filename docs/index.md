@@ -85,7 +85,7 @@ already know, while still embracing Lambda’s execution model.
     lambda.MapHandler(
         async (
             // ✅ Automatic envelope deserialization with strong typing
-            [Event] ApiGatewayRequestEnvelope<GreetingRequest> request,
+            [FromEvent] ApiGatewayRequestEnvelope<GreetingRequest> request,
             // ✅ Automatic DI injection - proper scoped lifetime per invocation
             IGreetingService service,
             // ✅ Automatic cancellation token - framework manages timeout
@@ -168,7 +168,7 @@ using MinimalLambda.Builder;
 var builder = LambdaApplication.CreateBuilder();
 var lambda = builder.Build();
 
-lambda.MapHandler(([Event] string name) => $"Hello {name}!");
+lambda.MapHandler(([FromEvent] string name) => $"Hello {name}!");
 
 await lambda.RunAsync();
 ```

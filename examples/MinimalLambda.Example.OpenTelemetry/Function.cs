@@ -5,7 +5,7 @@ namespace MinimalLambda.Example.OpenTelemetry;
 internal static class Function
 {
     internal static async Task<Response> Handler(
-        [Event] Request request,
+        [FromEvent] Request request,
         IService service,
         Instrumentation instrumentation,
         CancellationToken cancellationToken

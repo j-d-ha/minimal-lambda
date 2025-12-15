@@ -30,7 +30,7 @@ var lambda = builder.Build();
 
 // SnsEnvelope<Message> provides access to the SNS event and deserialized Message payloads
 lambda.MapHandler(
-    ([Event] SnsEnvelope<Message> envelope, ILogger<Program> logger) =>
+    ([FromEvent] SnsEnvelope<Message> envelope, ILogger<Program> logger) =>
     {
         foreach (var record in envelope.Records)
         {

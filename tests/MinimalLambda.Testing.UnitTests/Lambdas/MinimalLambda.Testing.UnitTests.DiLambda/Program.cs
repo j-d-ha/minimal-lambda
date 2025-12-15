@@ -30,7 +30,7 @@ lambda.UseMiddleware(
 );
 
 lambda.MapHandler(
-    ([Event] DiLambdaRequest diLambdaRequest, IService service, ILogger<DiLambda> logger) =>
+    ([FromEvent] DiLambdaRequest diLambdaRequest, IService service, ILogger<DiLambda> logger) =>
     {
         logger.LogInformation("Lambda handler");
         return new DiLambdaResponse(service.GetMessage(diLambdaRequest.Name), DateTime.UtcNow);

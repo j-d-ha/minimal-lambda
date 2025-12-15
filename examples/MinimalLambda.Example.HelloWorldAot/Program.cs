@@ -31,7 +31,7 @@ lambda.UseMiddleware(
 );
 
 lambda.MapHandler(
-    ([Event] string input) =>
+    ([FromEvent] string input) =>
     {
         Console.WriteLine("hello world from aot");
         return "hello world from aot";

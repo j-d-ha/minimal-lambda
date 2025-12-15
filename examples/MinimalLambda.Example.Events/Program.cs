@@ -26,7 +26,7 @@ builder.Services.AddLambdaSerializerWithContext<SerializerContext>();
 var lambda = builder.Build();
 
 lambda.MapHandler(
-    ([Event] ApiGatewayRequestEnvelope<Request> request, ILogger<Program> logger) =>
+    ([FromEvent] ApiGatewayRequestEnvelope<Request> request, ILogger<Program> logger) =>
     {
         logger.LogInformation("In Handler. Payload: {Payload}", request.Body);
 

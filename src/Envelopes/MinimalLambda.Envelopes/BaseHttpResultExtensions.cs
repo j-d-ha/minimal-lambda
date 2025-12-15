@@ -3,21 +3,21 @@ namespace MinimalLambda.Envelopes;
 /// <summary>Provides factory extension methods for creating HTTP results.</summary>
 public static class BaseHttpResultExtensions
 {
-    extension<THttpResult>(IHttpResult<THttpResult>)
-        where THttpResult : IHttpResult<THttpResult>
+    extension<TResult>(IHttpResult<TResult>)
+        where TResult : IHttpResult<TResult>
     {
         /// <summary>Creates an HTTP result with the specified status code.</summary>
         /// <param name="statusCode">The HTTP status code.</param>
         /// <returns>An HTTP result with the status code.</returns>
-        public static THttpResult StatusCode(int statusCode) =>
-            THttpResult.Create<object?>(statusCode, null, new Dictionary<string, string>(), false);
+        public static TResult StatusCode(int statusCode) =>
+            TResult.Create<object?>(statusCode, null, new Dictionary<string, string>(), false);
 
         /// <summary>Creates a text/plain HTTP result.</summary>
         /// <param name="statusCode">The HTTP status code.</param>
         /// <param name="body">The plain text response body.</param>
         /// <returns>An HTTP result with text/plain content type.</returns>
-        public static THttpResult Text(int statusCode, string body) =>
-            THttpResult
+        public static TResult Text(int statusCode, string body) =>
+            TResult
                 .Create<object?>(
                     statusCode,
                     null,
@@ -34,8 +34,8 @@ public static class BaseHttpResultExtensions
         /// <param name="statusCode">The HTTP status code.</param>
         /// <param name="bodyContent">The content to serialize as JSON.</param>
         /// <returns>An HTTP result with application/json content type.</returns>
-        public static THttpResult Json<T>(int statusCode, T bodyContent) =>
-            THttpResult.Create(
+        public static TResult Json<T>(int statusCode, T bodyContent) =>
+            TResult.Create(
                 statusCode,
                 bodyContent,
                 new Dictionary<string, string>
@@ -46,13 +46,13 @@ public static class BaseHttpResultExtensions
             );
     }
 
-    extension<THttpResult>(THttpResult result)
-        where THttpResult : IHttpResult<THttpResult>
+    extension<TResult>(TResult result)
+        where TResult : IHttpResult<TResult>
     {
         /// <summary>Applies customizations to the result.</summary>
         /// <param name="customizer">An action to customize the result properties.</param>
         /// <returns>The same instance for method chaining.</returns>
-        public THttpResult Customize(Action<THttpResult> customizer)
+        public TResult Customize(Action<TResult> customizer)
         {
             customizer(result);
             return result;

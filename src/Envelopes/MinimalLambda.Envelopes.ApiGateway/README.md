@@ -42,7 +42,7 @@ var lambda = builder.Build();
 // ApiGatewayRequestEnvelope<Request> provides the API Gateway event with deserialized request body
 // ApiGatewayResponseEnvelope<Response> wraps the response and serializes it to the body
 lambda.MapHandler(
-    ([Event] ApiGatewayRequestEnvelope<Request> request, ILogger<Program> logger) =>
+    ([FromEvent] ApiGatewayRequestEnvelope<Request> request, ILogger<Program> logger) =>
     {
         logger.LogInformation("Request: {Name}", request.BodyContent?.Name);
 
@@ -74,7 +74,7 @@ success vs. error responses with different types).
 
 ```csharp
 // REST API / HTTP API v1 / WebSocket
-lambda.MapHandler(([Event] ApiGatewayRequestEnvelope<Request> request) =>
+lambda.MapHandler(([FromEvent] ApiGatewayRequestEnvelope<Request> request) =>
 {
     if (string.IsNullOrEmpty(request.BodyContent?.Name))
         return ApiGatewayResult.BadRequest(new ErrorResponse("Name is required"));
@@ -83,7 +83,7 @@ lambda.MapHandler(([Event] ApiGatewayRequestEnvelope<Request> request) =>
 });
 
 // HTTP API v2
-lambda.MapHandler(([Event] ApiGatewayV2RequestEnvelope<Request> request) =>
+lambda.MapHandler(([FromEvent] ApiGatewayV2RequestEnvelope<Request> request) =>
 {
     if (string.IsNullOrEmpty(request.BodyContent?.Name))
         return ApiGatewayV2Result.BadRequest(new ErrorResponse("Name is required"));

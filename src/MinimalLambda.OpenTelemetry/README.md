@@ -98,7 +98,7 @@ var lambda = builder.Build();
 // Enable automatic tracing for Lambda invocations
 lambda.UseOpenTelemetryTracing();
 
-lambda.MapHandler(([Event] string input) => $"Hello {input}!");
+lambda.MapHandler(([FromEvent] string input) => $"Hello {input}!");
 
 // Flush traces on Lambda shutdown
 lambda.OnShutdownFlushTracer();
@@ -179,7 +179,7 @@ builder.Services.AddSingleton<Instrumentation>();
 var lambda = builder.Build();
 
 // In your handler:
-lambda.MapHandler(([Event] Request request, Instrumentation instrumentation) =>
+lambda.MapHandler(([FromEvent] Request request, Instrumentation instrumentation) =>
 {
     using var activity = instrumentation.ActivitySource.StartActivity("ProcessRequest");
     activity?.SetAttribute("request.name", request.Name);

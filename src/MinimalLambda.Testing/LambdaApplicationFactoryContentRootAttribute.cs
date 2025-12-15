@@ -12,8 +12,8 @@ using System.Reflection;
 namespace MinimalLambda.Testing;
 
 /// <summary>
-///     Metadata that <see cref="LambdaApplicationFactory{TEntryPoint}" /> uses to find out the
-///     content root for the web application represented by <c>TEntryPoint</c>.
+///     Metadata that <see cref="LambdaApplicationFactory{TEntryPoint}" /> uses to find out the content
+///     root for the web application represented by <c>TEntryPoint</c>.
 ///     <see cref="LambdaApplicationFactory{TEntryPoint}" /> will iterate over all the instances of
 ///     <see cref="LambdaApplicationFactoryContentRootAttribute" />, filter the instances whose
 ///     <see cref="Key" /> is equal to <c>TEntryPoint</c> <see cref="Assembly.FullName" />, order them

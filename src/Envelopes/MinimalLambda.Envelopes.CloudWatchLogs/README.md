@@ -39,7 +39,7 @@ var lambda = builder.Build();
 // CloudWatchLogsEnvelope<T> provides access to the CloudWatch Logs event with each log message
 // deserialized into type T
 lambda.MapHandler(
-    ([Event] CloudWatchLogsEnvelope<Log> logs, ILogger<Program> logger) =>
+    ([FromEvent] CloudWatchLogsEnvelope<Log> logs, ILogger<Program> logger) =>
     {
         foreach (var logEvent in logs.AwslogsContent!.LogEvents)
         {

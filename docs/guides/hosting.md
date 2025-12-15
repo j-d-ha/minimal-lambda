@@ -26,7 +26,7 @@ builder.Services.AddSingleton<IGreetingService, GreetingService>();
 
 var lambda = builder.Build();
 
-lambda.MapHandler(([Event] string name, IGreetingService service) =>
+lambda.MapHandler(([FromEvent] string name, IGreetingService service) =>
     service.Greet(name)
 );
 

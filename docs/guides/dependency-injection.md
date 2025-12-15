@@ -46,7 +46,7 @@ across middleware and handlers:
 
 ```csharp title="Handlers"
 lambda.MapHandler(async (
-    [Event] OrderRequest request,
+    [FromEvent] OrderRequest request,
     IOrderService orders,          // scoped service
     ILambdaHostContext context,    // framework context
     CancellationToken cancellation // host-managed token
@@ -65,7 +65,7 @@ lambda.MapHandler(async (
 - `Properties` – cross-invocation storage backed by the singleton container
 - `Features` – typed feature collections (advanced scenarios)
 
-If your handler doesn't need the Lambda payload, omit the `[Event]` parameter entirely and inject only services.
+If your handler doesn't need the Lambda payload, omit the `[FromEvent]` parameter entirely and inject only services.
 
 !!! tip "Cancellation buffers"
     The cancellation token fires slightly **before** AWS kills the process:
@@ -119,7 +119,7 @@ builder.Services.AddKeyedSingleton<INotifier, EmailNotifier>("email");
 builder.Services.AddKeyedSingleton<INotifier, SmsNotifier>("sms");
 
 lambda.MapHandler((
-    [Event] Order order,
+    [FromEvent] Order order,
     [FromKeyedServices("sms")] INotifier notifier
 ) => notifier.NotifyAsync(order));
 ```

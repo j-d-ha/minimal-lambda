@@ -53,7 +53,7 @@ public class MethodHandlerVerifyTests
             public static class HandlerFactory
             {
                 public static string Handler(
-                    [Event] string input,
+                    [FromEvent] string input,
                     ILambdaContext context,
                     [FromKeyedServices("key")] IService service
                 )

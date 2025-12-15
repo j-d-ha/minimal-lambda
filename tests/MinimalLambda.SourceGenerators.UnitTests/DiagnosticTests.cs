@@ -66,7 +66,7 @@ public class MapHandlerIncrementalGeneratorDiagnosticTests
 
             var lambda = builder.Build();
 
-            lambda.MapHandler(([Event] string input1, [Event] string input2) => "hello world");
+            lambda.MapHandler(([FromEvent] string input1, [FromEvent] string input2) => "hello world");
 
             await lambda.RunAsync();
             """

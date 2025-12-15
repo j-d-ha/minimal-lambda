@@ -29,7 +29,7 @@ lambda.UseMiddleware(async (context, next) =>
     Console.WriteLine("[Metrics] After handler");
 });
 
-lambda.MapHandler(([Event] Request request) => new Response("ok"));
+lambda.MapHandler(([FromEvent] Request request) => new Response("ok"));
 await lambda.RunAsync();
 ```
 

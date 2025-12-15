@@ -38,7 +38,7 @@ var lambda = builder.Build();
 // KinesisFirehoseEventEnvelope<InputData> provides the Firehose event with deserialized records
 // KinesisFirehoseResponseEnvelope<OutputData> wraps the response and serializes the transformed data
 lambda.MapHandler(
-    ([Event] KinesisFirehoseEventEnvelope<InputData> request, ILogger<Program> logger) =>
+    ([FromEvent] KinesisFirehoseEventEnvelope<InputData> request, ILogger<Program> logger) =>
     {
         var response = new KinesisFirehoseResponseEnvelope<OutputData>
         {

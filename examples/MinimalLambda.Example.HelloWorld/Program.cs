@@ -10,7 +10,7 @@ var lambda = builder.Build();
 
 // Map your handler - the event is automatically injected
 lambda.MapHandler(
-    ([Event] Request request) => new Response($"Hello {request.Name}!", DateTime.UtcNow)
+    ([FromEvent] Request request) => new Response($"Hello {request.Name}!", DateTime.UtcNow)
 );
 
 // Run the Lambda

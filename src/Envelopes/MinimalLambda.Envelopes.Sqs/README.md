@@ -33,7 +33,7 @@ var lambda = builder.Build();
 
 // SqsEnvelope<Message> provides access to the SQS event and deserialized Message payloads
 lambda.MapHandler(
-    ([Event] SqsEnvelope<Message> envelope, ILogger<Program> logger) =>
+    ([FromEvent] SqsEnvelope<Message> envelope, ILogger<Program> logger) =>
     {
         // In order to handle any errors or unprocessed messages, you must return a SQSBatchResponse
         var batchResponse = new SQSBatchResponse();

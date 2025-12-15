@@ -15,7 +15,7 @@ public class BlockLambdaVerifyTests
             var lambda = builder.Build();
 
             lambda.MapHandler(
-                IService ([Event] string input, IService service) =>
+                IService ([FromEvent] string input, IService service) =>
                 {
                     if (input == "other")
                     {
@@ -57,7 +57,7 @@ public class BlockLambdaVerifyTests
             var lambda = builder.Build();
 
             lambda.MapHandler(
-                ([Event] string input) =>
+                ([FromEvent] string input) =>
                 {
                     return input;
                 }
@@ -216,7 +216,7 @@ public class BlockLambdaVerifyTests
 
             lambda.MapHandler(
                 (Action<string, IService>)(
-                    ([Event] string input, IService service) =>
+                    ([FromEvent] string input, IService service) =>
                     {
                         Console.WriteLine("hello world");
                     }
@@ -244,7 +244,7 @@ public class BlockLambdaVerifyTests
             var lambda = builder.Build();
 
             lambda.MapHandler(
-                ([Event] string input, IService service) =>
+                ([FromEvent] string input, IService service) =>
                 {
                     return service.GetMessage();
                 }
@@ -297,7 +297,7 @@ public class BlockLambdaVerifyTests
 
             lambda.MapHandler(
                 (
-                    [Event] string request,
+                    [FromEvent] string request,
                     ILambdaContext context,
                     CancellationToken cancellationToken,
                     [FromKeyedServices("key0")] IService service0,

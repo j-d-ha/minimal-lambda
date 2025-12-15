@@ -15,7 +15,7 @@ hooks so you can add the right amount of protection without fighting the framewo
   want different logging, metrics, or response shaping.
 
 ```csharp title="Program.cs" linenums="1"
-lambda.MapHandler(([Event] OrderRequest request, IOrderService service) =>
+lambda.MapHandler(([FromEvent] OrderRequest request, IOrderService service) =>
     service.ProcessAsync(request) // unhandled exception flows to Lambda runtime
 );
 ```
@@ -63,7 +63,7 @@ Keep handlers thin, but do catch exceptions when you want a different payload or
 logic. Leave everything else to your middleware/global policy.
 
 ```csharp title="Program.cs" linenums="1"
-lambda.MapHandler(async ([Event] CheckoutRequest request, ICheckoutService service) =>
+lambda.MapHandler(async ([FromEvent] CheckoutRequest request, ICheckoutService service) =>
 {
     try
     {

@@ -40,7 +40,7 @@ var lambda = builder.Build();
 // AlbRequestEnvelope<Request> provides the ALB event with deserialized request body
 // AlbResponseEnvelope<Response> wraps the response and serializes it to the body
 lambda.MapHandler(
-    ([Event] AlbRequestEnvelope<Request> request, ILogger<Program> logger) =>
+    ([FromEvent] AlbRequestEnvelope<Request> request, ILogger<Program> logger) =>
     {
         logger.LogInformation("Request: {Name}", request.BodyContent?.Name);
 
@@ -68,7 +68,7 @@ multiple strongly typed models from the same handler (e.g., success vs. error re
 different types).
 
 ```csharp
-lambda.MapHandler(([Event] AlbRequestEnvelope<Request> request) =>
+lambda.MapHandler(([FromEvent] AlbRequestEnvelope<Request> request) =>
 {
     if (string.IsNullOrEmpty(request.BodyContent?.Name))
         return AlbResult.BadRequest(new ErrorResponse("Name is required"));
