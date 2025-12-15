@@ -47,7 +47,7 @@ tasks:
     desc: Start the AWS Lambda test tool
     silent: true
     cmds:
-      - dotnet lambda-test-tool start --lambda-emulator-port 5050
+      - dotnet lambda-test-tool start --lambda-emulator-port 5050 --config-storage-path ./lambda_test_tool
   
   run-docs:
     desc: Run MKDocs server locally
