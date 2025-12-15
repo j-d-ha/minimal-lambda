@@ -31,7 +31,7 @@ public sealed class AlbResult : ApplicationLoadBalancerResponse, IHttpResult<Alb
         Body = ((ApplicationLoadBalancerResponse)_inner).Body;
     }
 
-    public AlbResult Configure(Action<AlbResult> customizer)
+    public AlbResult Customize(Action<AlbResult> customizer)
     {
         customizer(this);
         return this;

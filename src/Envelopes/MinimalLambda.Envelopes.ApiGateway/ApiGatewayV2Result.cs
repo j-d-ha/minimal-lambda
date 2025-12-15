@@ -31,7 +31,7 @@ public sealed class ApiGatewayV2Result
         Body = ((APIGatewayHttpApiV2ProxyResponse)_inner).Body;
     }
 
-    public ApiGatewayV2Result Configure(Action<ApiGatewayV2Result> customizer)
+    public ApiGatewayV2Result Customize(Action<ApiGatewayV2Result> customizer)
     {
         customizer(this);
         return this;

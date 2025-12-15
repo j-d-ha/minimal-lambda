@@ -29,7 +29,7 @@ public sealed class ApiGatewayResult : APIGatewayProxyResponse, IHttpResult<ApiG
         Body = ((APIGatewayProxyResponse)_inner).Body;
     }
 
-    public ApiGatewayResult Configure(Action<ApiGatewayResult> customizer)
+    public ApiGatewayResult Customize(Action<ApiGatewayResult> customizer)
     {
         customizer(this);
         return this;

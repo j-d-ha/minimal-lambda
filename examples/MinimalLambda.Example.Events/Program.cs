@@ -35,7 +35,7 @@ lambda.MapHandler(
         if (request.BodyContent.Name == "error")
             return ApiGatewayResult
                 .BadRequest(new ErrorDetails("bummer"))
-                .Configure(response =>
+                .Customize(response =>
                 {
                     response.Headers.Add("X-Custom-Header", "Custom Value");
                     response.MultiValueHeaders.Add("X-Custom-Header", ["Custom Value 2"]);
@@ -43,7 +43,7 @@ lambda.MapHandler(
 
         return ApiGatewayResult
             .Ok(new Response($"Hello {request.BodyContent?.Name}!", DateTime.UtcNow))
-            .AddHeader("X-Custom-Header", "Custom Value");
+            .Customize(result => result.Headers.Add("X-Custom-Header", "Custom Value"));
     }
 );
 

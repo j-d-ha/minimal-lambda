@@ -19,5 +19,5 @@ public interface IHttpResult<out TSelf> : IResponseEnvelope
         bool isBase64Encoded
     );
 
-    public TSelf Configure(Action<TSelf> customizer);
+    public TSelf Customize(Action<TSelf> customizer);
 }
