@@ -44,8 +44,7 @@ public sealed class ApiGatewayV2Result
     public static ApiGatewayV2Result Create<T>(
         int statusCode,
         T? bodyContent,
-        string? body,
-        IDictionary<string, string>? headers,
+        IDictionary<string, string> headers,
         bool isBase64Encoded
     ) =>
         new(
@@ -53,7 +52,6 @@ public sealed class ApiGatewayV2Result
             {
                 StatusCode = statusCode,
                 BodyContent = bodyContent,
-                Body = body ?? string.Empty,
                 Headers = headers,
                 IsBase64Encoded = isBase64Encoded,
             }

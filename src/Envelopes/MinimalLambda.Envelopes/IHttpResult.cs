@@ -28,15 +28,47 @@ public interface IHttpResult<out TSelf> : IResponseEnvelope
     /// <typeparam name="TResponse">The type of content being returned.</typeparam>
     /// <param name="statusCode">The HTTP status code.</param>
     /// <param name="bodyContent">The typed content to serialize into the body.</param>
-    /// <param name="body">A pre-serialized body string.</param>
-    /// <param name="headers">Optional response headers.</param>
+    /// <param name="headers">Response headers.</param>
     /// <param name="isBase64Encoded">Whether the body is base64-encoded.</param>
     /// <returns>A new HTTP result instance.</returns>
     static abstract TSelf Create<TResponse>(
         int statusCode,
         TResponse? bodyContent,
-        string? body,
-        IDictionary<string, string>? headers,
+        IDictionary<string, string> headers,
         bool isBase64Encoded
     );
+}
+
+public interface IHttpResult2<out TSelf> : IResponseEnvelope
+    where TSelf : IHttpResult2<TSelf>
+{
+    public string Body { get; set; }
+
+    public IDictionary<string, string> Headers { get; set; }
+
+    public bool IsBase64Encoded { get; set; }
+
+    public int StatusCode { get; set; }
+
+    public IResponseEnvelope ResponseEnvelope { get; set; }
+}
+
+public static class MyExtension
+{
+    extension<THttpResult>(IHttpResult<THttpResult>)
+        where THttpResult : IHttpResult<THttpResult>, new()
+    {
+        public static THttpResult Create<TResponse>(
+            int statusCode,
+            TResponse? bodyContent,
+            IDictionary<string, string> headers,
+            bool isBase64Encoded
+        ) =>
+            new()
+            {
+                StatusCode = statusCode,
+                Headers = headers,
+                IsBase64Encoded = isBase64Encoded,
+            };
+    }
 }

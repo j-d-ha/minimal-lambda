@@ -10,26 +10,24 @@ public static class BaseHttpResultExtensions
         /// <param name="statusCode">The HTTP status code.</param>
         /// <returns>An HTTP result with the status code.</returns>
         public static THttpResult StatusCode(int statusCode) =>
-            THttpResult.Create<object?>(
-                statusCode,
-                null,
-                null,
-                new Dictionary<string, string>(),
-                false
-            );
+            THttpResult.Create<object?>(statusCode, null, new Dictionary<string, string>(), false);
 
         /// <summary>Creates a text/plain HTTP result.</summary>
         /// <param name="statusCode">The HTTP status code.</param>
         /// <param name="body">The plain text response body.</param>
         /// <returns>An HTTP result with text/plain content type.</returns>
         public static THttpResult Text(int statusCode, string body) =>
-            THttpResult.Create<object?>(
-                statusCode,
-                null,
-                body,
-                new Dictionary<string, string> { ["Content-Type"] = "text/plain; charset=utf-8" },
-                false
-            );
+            THttpResult
+                .Create<object?>(
+                    statusCode,
+                    null,
+                    new Dictionary<string, string>
+                    {
+                        ["Content-Type"] = "text/plain; charset=utf-8",
+                    },
+                    false
+                )
+                .Customize(result => result.Body = body);
 
         /// <summary>Creates an application/json HTTP result.</summary>
         /// <typeparam name="T">The type of content to serialize.</typeparam>
@@ -40,7 +38,6 @@ public static class BaseHttpResultExtensions
             THttpResult.Create(
                 statusCode,
                 bodyContent,
-                null,
                 new Dictionary<string, string>
                 {
                     ["Content-Type"] = "application/json; charset=utf-8",

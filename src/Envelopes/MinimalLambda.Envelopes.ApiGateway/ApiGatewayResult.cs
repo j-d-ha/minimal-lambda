@@ -42,8 +42,7 @@ public sealed class ApiGatewayResult : APIGatewayProxyResponse, IHttpResult<ApiG
     public static ApiGatewayResult Create<T>(
         int statusCode,
         T? bodyContent,
-        string? body,
-        IDictionary<string, string>? headers,
+        IDictionary<string, string> headers,
         bool isBase64Encoded
     ) =>
         new(
@@ -51,7 +50,6 @@ public sealed class ApiGatewayResult : APIGatewayProxyResponse, IHttpResult<ApiG
             {
                 StatusCode = statusCode,
                 BodyContent = bodyContent,
-                Body = body ?? string.Empty,
                 Headers = headers,
                 IsBase64Encoded = isBase64Encoded,
             }
