@@ -29,6 +29,8 @@ updates:
         update-types:
           - "minor"
           - "patch"
+    ignore:
+      - dependency-name: "release-drafter/release-drafter"
 
   - package-ecosystem: "npm"
     directory: "/"
