@@ -5,6 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using MinimalLambda.Builder;
+using MinimalLambda.Envelopes;
 using MinimalLambda.Envelopes.ApiGateway;
 
 var builder = LambdaApplication.CreateBuilder();
