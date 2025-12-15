@@ -16,6 +16,7 @@ public sealed class ApiGatewayV2Result
         _inner = response as IResponseEnvelope;
         StatusCode = response.StatusCode;
         Headers = response.Headers;
+        Cookies = response.Cookies;
         Body = response.Body;
         IsBase64Encoded = response.IsBase64Encoded;
     }
@@ -28,6 +29,12 @@ public sealed class ApiGatewayV2Result
 
         _inner.PackPayload(options);
         Body = ((APIGatewayHttpApiV2ProxyResponse)_inner).Body;
+    }
+
+    public ApiGatewayV2Result Configure(Action<ApiGatewayV2Result> customizer)
+    {
+        customizer(this);
+        return this;
     }
 
     public static ApiGatewayV2Result Create<T>(

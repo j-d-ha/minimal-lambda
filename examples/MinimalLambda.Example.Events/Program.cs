@@ -33,7 +33,13 @@ lambda.MapHandler(
             return ApiGatewayResult.InternalServerError(new BadErrorDetails("Bad error"));
 
         if (request.BodyContent.Name == "error")
-            return ApiGatewayResult.BadRequest(new ErrorDetails("bummer"));
+            return ApiGatewayResult
+                .BadRequest(new ErrorDetails("bummer"))
+                .Configure(response =>
+                {
+                    response.Headers.Add("X-Custom-Header", "Custom Value");
+                    response.MultiValueHeaders.Add("X-Custom-Header", ["Custom Value 2"]);
+                });
 
         return ApiGatewayResult
             .Ok(new Response($"Hello {request.BodyContent?.Name}!", DateTime.UtcNow))

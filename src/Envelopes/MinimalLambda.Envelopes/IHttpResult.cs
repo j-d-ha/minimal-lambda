@@ -18,4 +18,6 @@ public interface IHttpResult<out TSelf> : IResponseEnvelope
         IDictionary<string, string>? headers,
         bool isBase64Encoded
     );
+
+    public TSelf Configure(Action<TSelf> customizer);
 }

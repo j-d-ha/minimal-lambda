@@ -1,18 +1,20 @@
 using System.Text.Json.Serialization;
-using Amazon.Lambda.APIGatewayEvents;
+using Amazon.Lambda.ApplicationLoadBalancerEvents;
+using MinimalLambda.Envelopes.ApiGateway;
 using MinimalLambda.Options;
 
-namespace MinimalLambda.Envelopes.ApiGateway;
+namespace MinimalLambda.Envelopes.Alb;
 
-public sealed class ApiGatewayResult : APIGatewayProxyResponse, IHttpResult<ApiGatewayResult>
+public sealed class AlbResult : ApplicationLoadBalancerResponse, IHttpResult<AlbResult>
 {
     [JsonIgnore]
     private readonly IResponseEnvelope? _inner;
 
-    private ApiGatewayResult(APIGatewayProxyResponse response)
+    private AlbResult(ApplicationLoadBalancerResponse response)
     {
         _inner = response as IResponseEnvelope;
         StatusCode = response.StatusCode;
+        StatusDescription = response.StatusDescription;
         Headers = response.Headers;
         MultiValueHeaders = response.MultiValueHeaders;
         Body = response.Body;
@@ -26,16 +28,16 @@ public sealed class ApiGatewayResult : APIGatewayProxyResponse, IHttpResult<ApiG
             return;
 
         _inner.PackPayload(options);
-        Body = ((APIGatewayProxyResponse)_inner).Body;
+        Body = ((ApplicationLoadBalancerResponse)_inner).Body;
     }
 
-    public ApiGatewayResult Configure(Action<ApiGatewayResult> customizer)
+    public AlbResult Configure(Action<AlbResult> customizer)
     {
         customizer(this);
         return this;
     }
 
-    public static ApiGatewayResult Create<T>(
+    public static AlbResult Create<T>(
         int statusCode,
         T? bodyContent,
         string? body,
@@ -43,7 +45,7 @@ public sealed class ApiGatewayResult : APIGatewayProxyResponse, IHttpResult<ApiG
         bool isBase64Encoded
     ) =>
         new(
-            new ApiGatewayResponseEnvelope<T>
+            new AlbResponseEnvelope<T>
             {
                 StatusCode = statusCode,
                 BodyContent = bodyContent,
