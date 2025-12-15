@@ -2,63 +2,6 @@ using Microsoft.AspNetCore.Http;
 
 namespace MinimalLambda.Envelopes.ApiGateway;
 
-public interface IHttpResult<out TSelf> : IResponseEnvelope
-    where TSelf : IHttpResult<TSelf>
-{
-    public int StatusCode { get; set; }
-
-    public IDictionary<string, string> Headers { get; set; }
-
-    public string Body { get; set; }
-
-    public bool IsBase64Encoded { get; set; }
-
-    static abstract TSelf Create<TResponse>(
-        int statusCode,
-        TResponse? bodyContent,
-        string? body,
-        IDictionary<string, string>? headers,
-        bool isBase64Encoded
-    );
-}
-
-public static class BaseHttpResultExtensions
-{
-    extension<THttpResult>(IHttpResult<THttpResult>)
-        where THttpResult : IHttpResult<THttpResult>
-    {
-        public static THttpResult StatusCode(int statusCode) =>
-            THttpResult.Create<object?>(
-                statusCode,
-                null,
-                null,
-                new Dictionary<string, string>(),
-                false
-            );
-
-        public static THttpResult Text(int statusCode, string body) =>
-            THttpResult.Create<object?>(
-                statusCode,
-                null,
-                body,
-                new Dictionary<string, string> { ["Content-Type"] = "text/plain; charset=utf-8" },
-                false
-            );
-
-        public static THttpResult Json<T>(int statusCode, T bodyContent) =>
-            THttpResult.Create(
-                statusCode,
-                bodyContent,
-                null,
-                new Dictionary<string, string>
-                {
-                    ["Content-Type"] = "application/json; charset=utf-8",
-                },
-                false
-            );
-    }
-}
-
 public static class HttpResultExtensions
 {
     extension<THttpResult>(IHttpResult<THttpResult>)
@@ -151,21 +94,5 @@ public static class HttpResultExtensions
                 StatusCodes.Status500InternalServerError,
                 bodyContent
             );
-    }
-}
-
-public static class UpdateHttpResultExtensions
-{
-    extension<THttpResult>(THttpResult result)
-        where THttpResult : IHttpResult<THttpResult>
-    {
-        public THttpResult AddHeader(string key, string value)
-        {
-            result.Headers[key] = value;
-            return result;
-        }
-
-        public THttpResult AddContentType(string contentType) =>
-            result.AddHeader("Content-Type", contentType);
     }
 }

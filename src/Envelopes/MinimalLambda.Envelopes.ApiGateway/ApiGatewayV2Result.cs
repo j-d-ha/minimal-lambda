@@ -4,15 +4,17 @@ using MinimalLambda.Options;
 
 namespace MinimalLambda.Envelopes.ApiGateway;
 
-public sealed class ApiGatewayResult : APIGatewayProxyResponse, IHttpResult<ApiGatewayResult>
+public sealed class ApiGatewayV2Result
+    : APIGatewayHttpApiV2ProxyResponse,
+        IHttpResult<ApiGatewayV2Result>
 {
     [JsonIgnore]
     private readonly IResponseEnvelope? _inner;
 
-    private ApiGatewayResult(APIGatewayProxyResponse response)
+    private ApiGatewayV2Result(APIGatewayHttpApiV2ProxyResponse response)
     {
         _inner = response as IResponseEnvelope;
-        base.StatusCode = response.StatusCode;
+        StatusCode = response.StatusCode;
         Headers = response.Headers;
         Body = response.Body;
         IsBase64Encoded = response.IsBase64Encoded;
@@ -25,10 +27,10 @@ public sealed class ApiGatewayResult : APIGatewayProxyResponse, IHttpResult<ApiG
             return;
 
         _inner.PackPayload(options);
-        Body = ((APIGatewayProxyResponse)_inner).Body;
+        Body = ((APIGatewayHttpApiV2ProxyResponse)_inner).Body;
     }
 
-    public static ApiGatewayResult Create<T>(
+    public static ApiGatewayV2Result Create<T>(
         int statusCode,
         T? bodyContent,
         string? body,
@@ -36,7 +38,7 @@ public sealed class ApiGatewayResult : APIGatewayProxyResponse, IHttpResult<ApiG
         bool isBase64Encoded
     ) =>
         new(
-            new ApiGatewayResponseEnvelope<T>
+            new ApiGatewayV2ResponseEnvelope<T>
             {
                 StatusCode = statusCode,
                 BodyContent = bodyContent,
