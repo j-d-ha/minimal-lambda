@@ -26,6 +26,7 @@ Install only the envelopes you need; each one lives in its own NuGet package.
 
 | Event Source                    | Package                                                                                                                                                | NuGet                                                                                                                                                            |
 |---------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Infrastructure / Base           | [MinimalLambda.Envelopes](https://github.com/j-d-ha/minimal-lambda/tree/main/src/Envelopes/MinimalLambda.Envelopes)                                 | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes)                                 |
 | SQS                             | [MinimalLambda.Envelopes.Sqs](https://github.com/j-d-ha/minimal-lambda/tree/main/src/Envelopes/MinimalLambda.Envelopes.Sqs)                         | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.Sqs.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.Sqs)                         |
 | SNS                             | [MinimalLambda.Envelopes.Sns](https://github.com/j-d-ha/minimal-lambda/tree/main/src/Envelopes/MinimalLambda.Envelopes.Sns)                         | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.Sns.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.Sns)                         |
 | API Gateway / HTTP API          | [MinimalLambda.Envelopes.ApiGateway](https://github.com/j-d-ha/minimal-lambda/tree/main/src/Envelopes/MinimalLambda.Envelopes.ApiGateway)           | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.ApiGateway.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.ApiGateway)           |
@@ -34,6 +35,11 @@ Install only the envelopes you need; each one lives in its own NuGet package.
 | Kafka (MSK / self-managed)      | [MinimalLambda.Envelopes.Kafka](https://github.com/j-d-ha/minimal-lambda/tree/main/src/Envelopes/MinimalLambda.Envelopes.Kafka)                     | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.Kafka.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.Kafka)                     |
 | CloudWatch Logs                 | [MinimalLambda.Envelopes.CloudWatchLogs](https://github.com/j-d-ha/minimal-lambda/tree/main/src/Envelopes/MinimalLambda.Envelopes.CloudWatchLogs)   | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.CloudWatchLogs.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.CloudWatchLogs)   |
 | Application Load Balancer (ALB) | [MinimalLambda.Envelopes.Alb](https://github.com/j-d-ha/minimal-lambda/tree/main/src/Envelopes/MinimalLambda.Envelopes.Alb)                         | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.Alb.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.Alb)                         |
+
+!!! note "Infrastructure Package"
+    `MinimalLambda.Envelopes` is automatically referenced by ALB and API Gateway packages. It provides
+    `IHttpResult<TSelf>` and extension methods for the response builder API. You don't need to install
+    it directly.
 
 Each package ships with README examples in the repository if you need event-specific guidance.
 
@@ -74,6 +80,125 @@ await lambda.RunAsync();
 
 internal sealed record OrderMessage(string OrderId, decimal Amount);
 ```
+
+## Response Builder API
+
+For HTTP-based event sources (API Gateway, ALB), result classes provide a fluent API for building
+responses. **Key benefit**: Return multiple strongly typed models from the same handler—for example,
+different success and error response types.
+
+```csharp title="API Gateway Example" linenums="1"
+using MinimalLambda.Envelopes.ApiGateway;
+
+lambda.MapHandler(([Event] ApiGatewayRequestEnvelope<LoginRequest> request) =>
+{
+    // Each return statement uses a different strongly typed model
+    if (string.IsNullOrEmpty(request.BodyContent?.Username))
+        return ApiGatewayResult.BadRequest(new ValidationError("Username required"));
+
+    if (!authService.Authenticate(request.BodyContent))
+        return ApiGatewayResult.Unauthorized(new AuthError("Invalid credentials"));
+
+    return ApiGatewayResult.Ok(new LoginSuccess(token, expiresAt));
+});
+
+internal record LoginRequest(string Username, string Password);
+internal record ValidationError(string Message);
+internal record AuthError(string Message);
+internal record LoginSuccess(string Token, DateTime ExpiresAt);
+```
+
+### Available Result Classes
+
+| Class                  | Package                              | Use Case                                    |
+|------------------------|--------------------------------------|---------------------------------------------|
+| `AlbResult`            | MinimalLambda.Envelopes.Alb          | Application Load Balancer responses         |
+| `ApiGatewayResult`     | MinimalLambda.Envelopes.ApiGateway   | REST API / HTTP API v1 / WebSocket          |
+| `ApiGatewayV2Result`   | MinimalLambda.Envelopes.ApiGateway   | HTTP API v2 responses                       |
+
+Common methods: `Ok()`, `Created()`, `NoContent()`, `BadRequest()`, `Unauthorized()`, `NotFound()`,
+`Conflict()`, `UnprocessableEntity()`, `InternalServerError()`, `StatusCode(int)`, `Text(int,
+string)`, `Json<T>(int, T)`. All methods have overloads with and without body content.
+
+### When to Use Results vs. Envelopes
+
+**Use result classes** when you need to return multiple strongly typed models from the same handler.
+Provides convenient methods for common HTTP status codes.
+
+**Use envelope classes directly** when you need custom serialization (e.g., XML) or want to extend
+envelope base classes for custom behavior.
+
+!!! tip "Complete API Reference"
+    For detailed method documentation, AOT configuration, and advanced usage, see the package README
+    files:
+
+    - [ALB Package README](https://github.com/j-d-ha/minimal-lambda/tree/main/src/Envelopes/MinimalLambda.Envelopes.Alb)
+    - [API Gateway Package README](https://github.com/j-d-ha/minimal-lambda/tree/main/src/Envelopes/MinimalLambda.Envelopes.ApiGateway)
+
+!!! note
+    Result classes use their respective envelope classes internally (`AlbResponseEnvelope<T>`,
+    `ApiGatewayResponseEnvelope<T>`, etc.). They're a convenience layer over the envelope
+    infrastructure.
+
+## AOT Support
+
+When using .NET Native AOT, register all envelope and payload types in your `JsonSerializerContext`.
+
+!!! tip "Register Both Envelope and Payload Types"
+    You must register **both** the envelope type (e.g., `ApiGatewayRequestEnvelope<LoginRequest>`)
+    **and** the inner payload type (e.g., `LoginRequest`). The envelope wraps the AWS event
+    structure, while the payload is your business type inside the envelope.
+
+### Basic Envelope Setup
+
+```csharp title="Program.cs" linenums="1"
+using System.Text.Json.Serialization;
+
+[JsonSerializable(typeof(ApiGatewayRequestEnvelope<LoginRequest>))]  // Envelope wrapper
+[JsonSerializable(typeof(ApiGatewayResponseEnvelope<LoginSuccess>))] // Envelope wrapper
+[JsonSerializable(typeof(LoginRequest))]                             // Inner payload type
+[JsonSerializable(typeof(LoginSuccess))]                             // Inner payload type
+internal partial class SerializerContext : JsonSerializerContext;
+```
+
+### Result Classes with Multiple Return Types
+
+When using result classes (`AlbResult`, `ApiGatewayResult`, `ApiGatewayV2Result`), register each
+response type separately:
+
+```csharp title="Program.cs" linenums="1"
+using System.Text.Json.Serialization;
+
+[JsonSerializable(typeof(ApiGatewayRequestEnvelope<LoginRequest>))]
+[JsonSerializable(typeof(ApiGatewayResult))]
+[JsonSerializable(typeof(LoginRequest))]
+[JsonSerializable(typeof(ValidationError))]
+[JsonSerializable(typeof(AuthError))]
+[JsonSerializable(typeof(LoginSuccess))]
+internal partial class SerializerContext : JsonSerializerContext;
+```
+
+### Registering the Serializer Context
+
+Register the serializer and configure envelope options to use the context:
+
+```csharp title="Program.cs" linenums="1"
+var builder = LambdaApplication.CreateBuilder();
+
+builder.Services.AddLambdaSerializerWithContext<SerializerContext>();
+
+builder.Services.ConfigureEnvelopeOptions(options =>
+{
+    options.JsonOptions.TypeInfoResolver = SerializerContext.Default;
+});
+```
+
+!!! important "Why Register in Two Places?"
+    The context must be registered as the type resolver for **both** the envelope options and the
+    Lambda serializer because deserialization happens at different steps:
+
+    1. **Lambda serializer** deserializes the raw AWS event (e.g., API Gateway event structure)
+    2. **Envelope options** deserialize the envelope content into your payload types
 
 ## Custom Serialization & EnvelopeOptions
 
