@@ -95,12 +95,7 @@ already know, while still embracing Lambda’s execution model.
             var greeting = await service.GreetAsync(request.BodyContent.Name, cancellationToken);
 
             // ✅ Type-safe response - automatic JSON serialization
-            return new ApiGatewayResponseEnvelope<GreetingResponse>
-            {
-                BodyContent = new GreetingResponse(greeting, DateTime.UtcNow),
-                StatusCode = 200,
-                Headers = new Dictionary<string, string> { ["Content-Type"] = "application/json" },
-            };
+            return ApiGatewayResult.Ok(new GreetingResponse(greeting, DateTime.UtcNow));
         }
     );
 
@@ -211,6 +206,7 @@ deserialization.
 
 | Package                                                                                | Description                                           | NuGet                                                                                                                                                            | Downloads                                                                                                                                                              |
 |----------------------------------------------------------------------------------------|-------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| **MinimalLambda.Envelopes**                              | Infrastructure package for HTTP response builders     | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes)                                 | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.Envelopes.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes/)                                 |
 | **MinimalLambda.Envelopes.Sqs**                          | Simple Queue Service events with typed message bodies | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.Sqs.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.Sqs)                         | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.Envelopes.Sqs.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.Sqs/)                         |
 | **MinimalLambda.Envelopes.Sns**                          | Simple Notification Service messages                  | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.Sns.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.Sns)                         | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.Envelopes.Sns.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.Sns/)                         |
 | **MinimalLambda.Envelopes.ApiGateway**           | REST, HTTP, and WebSocket APIs                        | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.ApiGateway.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.ApiGateway)           | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.Envelopes.ApiGateway.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.ApiGateway/)           |

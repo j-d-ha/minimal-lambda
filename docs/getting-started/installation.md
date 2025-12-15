@@ -190,6 +190,7 @@ Envelope packages provide type-safe, strongly-typed event handling for specific 
 
 | Package                                      | Event Source              | When to Use                   |
 |----------------------------------------------|---------------------------|-------------------------------|
+| **MinimalLambda.Envelopes**                 | Infrastructure            | HTTP response builders (auto-referenced) |
 | **MinimalLambda.Envelopes.Sqs**             | Amazon SQS                | Processing SQS queue messages |
 | **MinimalLambda.Envelopes.Sns**             | Amazon SNS                | Handling SNS notifications    |
 | **MinimalLambda.Envelopes.ApiGateway**      | API Gateway               | Building REST/HTTP APIs       |
