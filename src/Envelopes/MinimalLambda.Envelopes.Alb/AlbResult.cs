@@ -1,6 +1,5 @@
 using System.Text.Json.Serialization;
 using Amazon.Lambda.ApplicationLoadBalancerEvents;
-using MinimalLambda.Envelopes.ApiGateway;
 using MinimalLambda.Options;
 
 namespace MinimalLambda.Envelopes.Alb;
@@ -38,13 +37,6 @@ public sealed class AlbResult : ApplicationLoadBalancerResponse, IHttpResult<Alb
 
         _inner.PackPayload(options);
         Body = ((ApplicationLoadBalancerResponse)_inner).Body;
-    }
-
-    /// <inheritdoc />
-    public AlbResult Customize(Action<AlbResult> customizer)
-    {
-        customizer(this);
-        return this;
     }
 
     /// <inheritdoc />

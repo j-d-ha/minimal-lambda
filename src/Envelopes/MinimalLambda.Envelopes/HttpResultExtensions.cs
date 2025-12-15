@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Http;
 
-namespace MinimalLambda.Envelopes.ApiGateway;
+namespace MinimalLambda.Envelopes;
 
 /// <summary>Provides convenience extension methods for common HTTP status codes.</summary>
 public static class HttpResultExtensions

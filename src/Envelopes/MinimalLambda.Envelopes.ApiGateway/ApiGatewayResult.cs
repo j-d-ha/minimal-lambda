@@ -39,13 +39,6 @@ public sealed class ApiGatewayResult : APIGatewayProxyResponse, IHttpResult<ApiG
     }
 
     /// <inheritdoc />
-    public ApiGatewayResult Customize(Action<ApiGatewayResult> customizer)
-    {
-        customizer(this);
-        return this;
-    }
-
-    /// <inheritdoc />
     public static ApiGatewayResult Create<T>(
         int statusCode,
         T? bodyContent,

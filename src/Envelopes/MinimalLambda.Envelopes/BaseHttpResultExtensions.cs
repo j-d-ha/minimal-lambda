@@ -1,9 +1,9 @@
-namespace MinimalLambda.Envelopes.ApiGateway;
+namespace MinimalLambda.Envelopes;
 
 /// <summary>Provides factory extension methods for creating HTTP results.</summary>
 public static class BaseHttpResultExtensions
 {
-    extension<THttpResult>(IHttpResult<THttpResult>)
+    extension<THttpResult>(IHttpResult<THttpResult> result)
         where THttpResult : IHttpResult<THttpResult>
     {
         /// <summary>Creates an HTTP result with the specified status code.</summary>
@@ -47,5 +47,18 @@ public static class BaseHttpResultExtensions
                 },
                 false
             );
+    }
+
+    extension<THttpResult>(THttpResult result)
+        where THttpResult : IHttpResult<THttpResult>
+    {
+        /// <summary>Applies customizations to the result.</summary>
+        /// <param name="customizer">An action to customize the result properties.</param>
+        /// <returns>The same instance for method chaining.</returns>
+        public THttpResult Customize(Action<THttpResult> customizer)
+        {
+            customizer(result);
+            return result;
+        }
     }
 }

@@ -1,4 +1,4 @@
-namespace MinimalLambda.Envelopes.ApiGateway;
+namespace MinimalLambda.Envelopes;
 
 /// <summary>
 ///     Defines the contract for HTTP response results returned from ALB, API Gateway v1, and API
@@ -39,9 +39,4 @@ public interface IHttpResult<out TSelf> : IResponseEnvelope
         IDictionary<string, string>? headers,
         bool isBase64Encoded
     );
-
-    /// <summary>Applies customizations to the result.</summary>
-    /// <param name="customizer">An action to customize the result properties.</param>
-    /// <returns>The same instance for method chaining.</returns>
-    public TSelf Customize(Action<TSelf> customizer);
 }
