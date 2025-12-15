@@ -38,37 +38,3 @@ public interface IHttpResult<out TSelf> : IResponseEnvelope
         bool isBase64Encoded
     );
 }
-
-public interface IHttpResult2<out TSelf> : IResponseEnvelope
-    where TSelf : IHttpResult2<TSelf>
-{
-    public string Body { get; set; }
-
-    public IDictionary<string, string> Headers { get; set; }
-
-    public bool IsBase64Encoded { get; set; }
-
-    public int StatusCode { get; set; }
-
-    public IResponseEnvelope ResponseEnvelope { get; set; }
-}
-
-public static class MyExtension
-{
-    extension<THttpResult>(IHttpResult<THttpResult>)
-        where THttpResult : IHttpResult<THttpResult>, new()
-    {
-        public static THttpResult Create<TResponse>(
-            int statusCode,
-            TResponse? bodyContent,
-            IDictionary<string, string> headers,
-            bool isBase64Encoded
-        ) =>
-            new()
-            {
-                StatusCode = statusCode,
-                Headers = headers,
-                IsBase64Encoded = isBase64Encoded,
-            };
-    }
-}
