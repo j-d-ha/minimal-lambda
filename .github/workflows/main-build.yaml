@@ -48,7 +48,7 @@ jobs:
           distribution: 'zulu'
 
       - name: Cache SonarQube packages
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.sonar/cache
           key: ${{ runner.os }}-sonar
@@ -56,7 +56,7 @@ jobs:
 
       - name: Cache SonarQube scanner
         id: cache-sonar-scanner
-        uses: actions/cache@v4
+        uses: actions/cache@v5
         with:
           path: ~/.sonar/scanner
           key: ${{ runner.os }}-sonar-scanner

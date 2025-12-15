@@ -6,8 +6,8 @@ updates:
       interval: "weekly"
     open-pull-requests-limit: 10
     commit-message:
-      prefix: "chore(deps)"
-      prefix-development: "chore(deps)"
+      prefix: "chore"
+      prefix-development: "chore"
       include: "scope"
     groups:
       minor-and-patch:
@@ -21,14 +21,16 @@ updates:
       interval: "weekly"
     open-pull-requests-limit: 10
     commit-message:
-      prefix: "chore(deps)"
-      prefix-development: "chore(deps)"
+      prefix: "chore"
+      prefix-development: "chore"
       include: "scope"
     groups:
       minor-and-patch:
         update-types:
           - "minor"
           - "patch"
+    ignore:
+      - dependency-name: "release-drafter/release-drafter"
 
   - package-ecosystem: "npm"
     directory: "/"
@@ -36,8 +38,8 @@ updates:
       interval: "weekly"
     open-pull-requests-limit: 10
     commit-message:
-      prefix: "chore(deps)"
-      prefix-development: "chore(deps)"
+      prefix: "chore"
+      prefix-development: "chore"
       include: "scope"
     groups:
       minor-and-patch:
@@ -50,6 +52,21 @@ updates:
     schedule:
       interval: "weekly"
     commit-message:
-      prefix: "chore(deps)"
-      prefix-development: "chore(deps)"
+      prefix: "chore"
+      prefix-development: "chore"
       include: "scope"
+
+  - package-ecosystem: "pip"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore"
+      prefix-development: "chore"
+      include: "scope"
+    groups:
+      minor-and-patch:
+        update-types:
+          - "minor"
+          - "patch"
