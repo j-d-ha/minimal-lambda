@@ -43,7 +43,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y pngquant
 
       - name: Setup Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v6
         with:
           python-version-file: "pyproject.toml"
           
@@ -64,7 +64,7 @@ jobs:
           uv run mkdocs build --clean
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: site
 
