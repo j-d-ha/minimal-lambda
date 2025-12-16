@@ -1,4 +1,3 @@
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace MinimalLambda.UnitTests.Application;
@@ -6,19 +5,8 @@ namespace MinimalLambda.UnitTests.Application;
 [TestSubject(typeof(LambdaApplication))]
 public class LambdaApplicationTests
 {
-    private static IHost CreateHostWithServices()
-    {
-        var builder = Host.CreateDefaultBuilder();
-        builder.ConfigureServices(services =>
-        {
-            services.ConfigureLambdaHostOptions(_ => { });
-            services.AddLambdaHostCoreServices();
-            services.TryAddLambdaHostDefaultServices();
-            services.AddSingleton<ILifetimeStopwatch, LifetimeStopwatch>();
-        });
-
-        return builder.Build();
-    }
+    private static IHost CreateHostWithServices() =>
+        new LambdaApplicationBuilder(new LambdaApplicationOptions()).Build();
 
     [Fact]
     public void Constructor_WithNullHost_ThrowsArgumentNullException()
