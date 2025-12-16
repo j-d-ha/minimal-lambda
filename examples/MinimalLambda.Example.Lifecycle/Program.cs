@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using MinimalLambda.Builder;
 
 var builder = LambdaApplication.CreateBuilder();
@@ -20,22 +21,21 @@ var lambda = builder.Build();
 
 lambda.UseClearLambdaOutputFormatting();
 
-lambda.OnInit(
-    Task<bool> (IServiceCollection services, CancellationToken cancellationToken) =>
-    {
-        Console.WriteLine("Initializing...");
-        return Task.FromResult(true);
-    }
-);
+lambda.OnInit(() =>
+{
+    Console.WriteLine("Initializing...");
+    return Task.FromResult(true);
+});
 
 lambda.OnInit(
-    async Task<bool> (IServiceCollection services, CancellationToken cancellationToken) =>
+    async Task<bool> (ILogger<Program> logger, CancellationToken cancellationToken) =>
     {
         var stopwatch = Stopwatch.StartNew();
         while (!cancellationToken.IsCancellationRequested)
         {
-            Console.WriteLine(
-                $"Waiting for init to timeout. {stopwatch.ElapsedMilliseconds}ms elapsed"
+            logger.LogInformation(
+                "Waiting for init to timeout. {ElapsedMilliseconds}ms elapsed",
+                stopwatch.ElapsedMilliseconds
             );
             try
             {
@@ -58,7 +58,7 @@ lambda.MapHandler(() =>
 });
 
 lambda.OnShutdown(
-    (IServiceCollection services, CancellationToken token) =>
+    (CancellationToken token) =>
     {
         Console.WriteLine("Shutting down...");
         return Task.CompletedTask;
