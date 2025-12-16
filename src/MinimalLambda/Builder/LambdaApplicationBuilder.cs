@@ -46,6 +46,8 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
     /// <summary>Main internal constructor.</summary>
     internal LambdaApplicationBuilder(LambdaApplicationOptions? settings)
     {
+        var lifetimeStopwatch = new LifetimeStopwatch();
+
         settings ??= new LambdaApplicationOptions();
 
         if (!settings.DisableDefaults)
@@ -97,6 +99,7 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
 
         // Register core services that are required for Lambda Host to run
         Services.AddLambdaHostCoreServices();
+        Services.AddSingleton(lifetimeStopwatch);
     }
 
     /// <inheritdoc />
