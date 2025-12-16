@@ -4,17 +4,14 @@ namespace MinimalLambda;
 ///     A callback delegate invoked during the AWS Lambda Function Init phase, before any handler
 ///     invocation.
 /// </summary>
-/// <param name="services">A scoped <see cref="IServiceProvider" /> for resolving dependencies.</param>
-/// <param name="cancellationToken">Signals the handler to stop during the Function Init phase.</param>
+/// <param name="context">
+///     The <see cref="ILambdaLifecycleContext" /> providing access to the scoped
+///     <see cref="IServiceProvider" /> and <see cref="CancellationToken" /> for the Function Init phase.
+/// </param>
 /// <returns>
 ///     A <see cref="Task{TResult}" /> that completes with <c>true</c> to allow the Function Init
 ///     phase to continue, or <c>false</c> to abort the Function Init phase. Exceptions thrown are
 ///     collected and rethrown after all delegates complete.
 /// </returns>
 /// <seealso cref="ILambdaOnInitBuilder.OnInit(LambdaInitDelegate)" />
-public delegate Task<bool> LambdaInitDelegate(
-    IServiceProvider services,
-    CancellationToken cancellationToken
-);
-
-public delegate Task<bool> LambdaInitDelegate2(ILambdaLifecycleContext context);
+public delegate Task<bool> LambdaInitDelegate(ILambdaLifecycleContext context);
