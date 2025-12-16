@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Options;
 
@@ -5,30 +6,36 @@ namespace MinimalLambda.Builder;
 
 internal class LambdaOnInitBuilder : ILambdaOnInitBuilder
 {
-    private readonly IList<LambdaInitDelegate> _handlers = [];
+    private readonly IList<LambdaInitDelegate2> _handlers = [];
     private readonly LambdaHostOptions _options;
     private readonly IServiceScopeFactory _scopeFactory;
+    private readonly ILambdaLifecycleContextFactory _contextFactory;
 
     public LambdaOnInitBuilder(
         IServiceProvider serviceProvider,
         IServiceScopeFactory scopeFactory,
-        IOptions<LambdaHostOptions> options
+        IOptions<LambdaHostOptions> options,
+        ILambdaLifecycleContextFactory contextFactory
     )
     {
         ArgumentNullException.ThrowIfNull(serviceProvider);
         ArgumentNullException.ThrowIfNull(scopeFactory);
         ArgumentNullException.ThrowIfNull(options);
+        ArgumentNullException.ThrowIfNull(contextFactory);
 
         Services = serviceProvider;
         _scopeFactory = scopeFactory;
         _options = options.Value;
+        _contextFactory = contextFactory;
     }
 
     public IServiceProvider Services { get; }
 
-    public IReadOnlyList<LambdaInitDelegate> InitHandlers => _handlers.AsReadOnly();
+    public ConcurrentDictionary<string, object?> Properties { get; } = new();
 
-    public ILambdaOnInitBuilder OnInit(LambdaInitDelegate handler)
+    public IReadOnlyList<LambdaInitDelegate2> InitHandlers => _handlers.AsReadOnly();
+
+    public ILambdaOnInitBuilder OnInit(LambdaInitDelegate2 handler)
     {
         ArgumentNullException.ThrowIfNull(handler);
 
@@ -36,9 +43,9 @@ internal class LambdaOnInitBuilder : ILambdaOnInitBuilder
         return this;
     }
 
-    public Func<CancellationToken, Task<bool>> Build() =>
+    public Func<CancellationToken, Task<bool>>? Build() =>
         _handlers.Count == 0
-            ? _ => Task.FromResult(true)
+            ? null
             : async Task<bool> (stoppingToken) =>
             {
                 using var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
@@ -71,16 +78,20 @@ internal class LambdaOnInitBuilder : ILambdaOnInitBuilder
             };
 
     private async Task<(Exception? Error, bool ShouldContinue)> RunInitHandler(
-        LambdaInitDelegate handler,
+        LambdaInitDelegate2 handler,
         CancellationToken cancellationToken
     )
     {
         try
         {
-            using var scope = _scopeFactory.CreateScope();
-            var result = await handler(scope.ServiceProvider, cancellationToken)
-                .ConfigureAwait(false);
-            return (null, result);
+            var context = _contextFactory.Create(Properties, cancellationToken);
+
+            await using (context as IAsyncDisposable)
+            {
+                using var scope = _scopeFactory.CreateScope();
+                var result = await handler(context).ConfigureAwait(false);
+                return (null, result);
+            }
         }
         catch (Exception ex)
         {

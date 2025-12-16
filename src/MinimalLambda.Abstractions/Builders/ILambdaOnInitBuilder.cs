@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+
 namespace MinimalLambda.Builder;
 
 /// <summary>Builder for composing Lambda init handlers that execute during the Init phase.</summary>
@@ -16,7 +18,10 @@ namespace MinimalLambda.Builder;
 public interface ILambdaOnInitBuilder
 {
     /// <summary>Gets the read-only list of registered Init handlers.</summary>
-    IReadOnlyList<LambdaInitDelegate> InitHandlers { get; }
+    IReadOnlyList<LambdaInitDelegate2> InitHandlers { get; }
+
+    /// <summary>Gets a dictionary for storing state that is shared across Init handlers.</summary>
+    ConcurrentDictionary<string, object?> Properties { get; }
 
     /// <summary>Gets the service provider for dependency injection.</summary>
     IServiceProvider Services { get; }
@@ -24,7 +29,7 @@ public interface ILambdaOnInitBuilder
     /// <summary>Registers a handler to execute during the Lambda Init phase.</summary>
     /// <param name="handler">The <see cref="LambdaInitDelegate" /> to register.</param>
     /// <returns>The current <see cref="ILambdaOnInitBuilder" /> instance for method chaining.</returns>
-    ILambdaOnInitBuilder OnInit(LambdaInitDelegate handler);
+    ILambdaOnInitBuilder OnInit(LambdaInitDelegate2 handler);
 
     /// <summary>Builds the final init delegate by composing all registered handlers.</summary>
     /// <remarks>
@@ -39,5 +44,5 @@ public interface ILambdaOnInitBuilder
     ///     A function that accepts a <see cref="CancellationToken" /> and executes all registered
     ///     handlers concurrently. Ready for the Lambda Init phase.
     /// </returns>
-    Func<CancellationToken, Task<bool>> Build();
+    Func<CancellationToken, Task<bool>>? Build();
 }

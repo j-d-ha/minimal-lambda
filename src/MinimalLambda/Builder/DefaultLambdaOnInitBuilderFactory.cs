@@ -6,9 +6,10 @@ namespace MinimalLambda.Builder;
 internal class DefaultLambdaOnInitBuilderFactory(
     IServiceProvider serviceProvider,
     IServiceScopeFactory scopeFactory,
-    IOptions<LambdaHostOptions> options
+    IOptions<LambdaHostOptions> options,
+    ILambdaLifecycleContextFactory contextFactory
 ) : ILambdaOnInitBuilderFactory
 {
     public ILambdaOnInitBuilder CreateBuilder() =>
-        new LambdaOnInitBuilder(serviceProvider, scopeFactory, options);
+        new LambdaOnInitBuilder(serviceProvider, scopeFactory, options, contextFactory);
 }

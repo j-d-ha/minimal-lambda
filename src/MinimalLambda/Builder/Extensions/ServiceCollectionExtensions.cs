@@ -29,6 +29,7 @@ public static class ServiceCollectionExtensions
             >();
             services.AddSingleton<IFeatureCollectionFactory, DefaultFeatureCollectionFactory>();
             services.AddSingleton<ILambdaHostContextFactory, LambdaHostContextFactory>();
+            services.AddSingleton<ILambdaLifecycleContextFactory, LambdaLifecycleContextFactory>();
             services.AddSingleton<IInvocationDataFeatureFactory, InvocationDataFeatureFactory>();
 
             // Register internal Lambda execution components

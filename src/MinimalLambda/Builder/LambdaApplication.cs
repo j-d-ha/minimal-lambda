@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -111,10 +112,14 @@ public sealed class LambdaApplication
     //      └──────────────────────────────────────────────────────────┘
 
     /// <inheritdoc />
-    public IReadOnlyList<LambdaInitDelegate> InitHandlers => _onInitBuilder.InitHandlers;
+    public IReadOnlyList<LambdaInitDelegate2> InitHandlers => _onInitBuilder.InitHandlers;
 
     /// <inheritdoc />
-    public ILambdaOnInitBuilder OnInit(LambdaInitDelegate handler)
+    ConcurrentDictionary<string, object?> ILambdaOnInitBuilder.Properties =>
+        _onInitBuilder.Properties;
+
+    /// <inheritdoc />
+    public ILambdaOnInitBuilder OnInit(LambdaInitDelegate2 handler)
     {
         _onInitBuilder.OnInit(handler);
         return this;

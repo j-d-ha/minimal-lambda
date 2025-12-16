@@ -16,3 +16,5 @@ public delegate Task<bool> LambdaInitDelegate(
     IServiceProvider services,
     CancellationToken cancellationToken
 );
+
+public delegate Task<bool> LambdaInitDelegate2(ILambdaLifecycleContext context);
