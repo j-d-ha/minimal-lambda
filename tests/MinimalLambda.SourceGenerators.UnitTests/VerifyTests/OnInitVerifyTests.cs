@@ -15,7 +15,7 @@ public class OnInitVerifyTests
             var lambda = builder.Build();
 
             lambda.OnInit(
-                async (services, token) =>
+                async (context) =>
                 {
                     return true;
                 }

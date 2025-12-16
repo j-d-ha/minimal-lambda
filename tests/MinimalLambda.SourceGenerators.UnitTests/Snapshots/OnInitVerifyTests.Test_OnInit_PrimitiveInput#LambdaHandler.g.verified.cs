@@ -46,19 +46,21 @@ namespace MinimalLambda.Generated
             Delegate handler
         )
         {
-            var castHandler = (global::System.Func<string, int, global::System.Threading.Tasks.Task<bool>>)handler;
+            var castHandler = Cast(handler, global::System.Threading.Tasks.Task<bool> (string arg0, int arg1) => throw null!);
 
             return application.OnInit(OnInit);
 
-            Task<bool> OnInit(IServiceProvider serviceProvider, CancellationToken cancellationToken)
+            Task<bool> OnInit(ILambdaLifecycleContext context)
             {
                 // ParameterInfo { Type = string, Name = x, Source = Service, IsNullable = False, IsOptional = False}
-                var arg0 = serviceProvider.GetRequiredService<string>();
+                var arg0 = context.ServiceProvider.GetRequiredService<string>();
                 // ParameterInfo { Type = int, Name = y, Source = Service, IsNullable = False, IsOptional = False}
-                var arg1 = serviceProvider.GetRequiredService<int>();
+                var arg1 = context.ServiceProvider.GetRequiredService<int>();
                 var response = castHandler.Invoke(arg0, arg1);
                 return response;
             }
         }
+        
+        private static T Cast<T>(Delegate d, T _) where T : Delegate => (T)d;
     }
 }

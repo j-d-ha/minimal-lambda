@@ -46,29 +46,31 @@ namespace MinimalLambda.Generated
             Delegate handler
         )
         {
-            var castHandler = (global::System.Func<global::System.Threading.CancellationToken, global::IService, global::IService?, global::IService, global::IService?, global::System.Threading.Tasks.Task<bool>>)handler;
+            var castHandler = Cast(handler, global::System.Threading.Tasks.Task<bool> (global::System.Threading.CancellationToken arg0, global::IService arg1, global::IService? arg2, global::IService arg3, global::IService? arg4) => throw null!);
 
             return application.OnInit(OnInit);
 
-            Task<bool> OnInit(IServiceProvider serviceProvider, CancellationToken cancellationToken)
+            Task<bool> OnInit(ILambdaLifecycleContext context)
             {
-                if (serviceProvider.GetService<IServiceProviderIsService>() is not IServiceProviderIsKeyedService)
+                if (context.ServiceProvider.GetService<IServiceProviderIsService>() is not IServiceProviderIsKeyedService)
                 {
                     throw new InvalidOperationException($"Unable to resolve service referenced by {nameof(FromKeyedServicesAttribute)}. The service provider doesn't support keyed services.");
                 }
                 // ParameterInfo { Type = global::System.Threading.CancellationToken, Name = token, Source = CancellationToken, IsNullable = False, IsOptional = False}
-                var arg0 = cancellationToken;
+                var arg0 = context.CancellationToken;
                 // ParameterInfo { Type = global::IService, Name = service1, Source = KeyedService, IsNullable = False, IsOptional = False, KeyedServiceKeyInfo { DisplayValue = "key1", Type = string, BaseType = object } }
-                var arg1 = serviceProvider.GetRequiredKeyedService<global::IService>("key1");
+                var arg1 = context.ServiceProvider.GetRequiredKeyedService<global::IService>("key1");
                 // ParameterInfo { Type = global::IService?, Name = service2, Source = KeyedService, IsNullable = True, IsOptional = False, KeyedServiceKeyInfo { DisplayValue = "key2", Type = string, BaseType = object } }
-                var arg2 = serviceProvider.GetKeyedService<global::IService?>("key2");
+                var arg2 = context.ServiceProvider.GetKeyedService<global::IService?>("key2");
                 // ParameterInfo { Type = global::IService, Name = service3, Source = Service, IsNullable = False, IsOptional = False}
-                var arg3 = serviceProvider.GetRequiredService<global::IService>();
+                var arg3 = context.ServiceProvider.GetRequiredService<global::IService>();
                 // ParameterInfo { Type = global::IService?, Name = service4, Source = Service, IsNullable = True, IsOptional = False}
-                var arg4 = serviceProvider.GetService<global::IService?>();
+                var arg4 = context.ServiceProvider.GetService<global::IService?>();
                 var response = castHandler.Invoke(arg0, arg1, arg2, arg3, arg4);
                 return response;
             }
         }
+        
+        private static T Cast<T>(Delegate d, T _) where T : Delegate => (T)d;
     }
 }
