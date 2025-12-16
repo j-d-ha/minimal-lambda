@@ -1,3 +1,5 @@
+using System.Collections.Concurrent;
+
 namespace MinimalLambda.Builder;
 
 /// <summary>Builder for composing Lambda shutdown handlers that execute during the Shutdown phase.</summary>
@@ -16,6 +18,9 @@ public interface ILambdaOnShutdownBuilder
 {
     /// <summary>Gets the service provider for dependency injection.</summary>
     IServiceProvider Services { get; }
+
+    /// <summary>Gets a dictionary for storing state that is shared between handlers.</summary>
+    ConcurrentDictionary<string, object?> Properties { get; }
 
     /// <summary>Gets the read-only list of registered shutdown handlers.</summary>
     IReadOnlyList<LambdaShutdownDelegate> ShutdownHandlers { get; }

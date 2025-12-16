@@ -20,7 +20,7 @@ public interface ILambdaOnInitBuilder
     /// <summary>Gets the read-only list of registered Init handlers.</summary>
     IReadOnlyList<LambdaInitDelegate> InitHandlers { get; }
 
-    /// <summary>Gets a dictionary for storing state that is shared across Init handlers.</summary>
+    /// <summary>Gets a dictionary for storing state that is shared between handlers.</summary>
     ConcurrentDictionary<string, object?> Properties { get; }
 
     /// <summary>Gets the service provider for dependency injection.</summary>
