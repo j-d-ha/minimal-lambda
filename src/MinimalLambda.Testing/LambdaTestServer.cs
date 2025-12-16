@@ -7,7 +7,6 @@ using System.Threading.Channels;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using MinimalLambda.Options;
 
 namespace MinimalLambda.Testing;
 
@@ -94,7 +93,7 @@ public class LambdaTestServer : IAsyncDisposable
         _shutdownCts = CancellationTokenSource.CreateLinkedTokenSource(shutdownToken);
         State = ServerState.Created;
 
-        _jsonSerializerOptions = DefaultLambdaJsonSerializerOptions.Create();
+        _jsonSerializerOptions = serverOptions.SerializerOptions;
         _serverOptions = serverOptions;
     }
 

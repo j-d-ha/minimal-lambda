@@ -33,6 +33,9 @@ Write an end-to-end test with xUnit v3:
 using MinimalLambda.Testing;
 using Xunit;
 
+public record MyEvent(string Name);
+public record MyResponse(string Message);
+
 public class HelloWorldTests
 {
     [Fact]
@@ -45,13 +48,13 @@ public class HelloWorldTests
         var initResult = await factory.TestServer.StartAsync(TestContext.Current.CancellationToken);
         Assert.Equal(InitStatus.InitCompleted, initResult.InitStatus);
 
-        var response = await factory.TestServer.InvokeAsync<string, string>(
-            "World",
+        var response = await factory.TestServer.InvokeAsync<MyEvent, MyResponse>(
+            new MyEvent("World"),
             TestContext.Current.CancellationToken
         );
 
         Assert.True(response.WasSuccess);
-        Assert.Equal("Hello World!", response.Response);
+        Assert.Equal("Hello World!", response.Response.Message);
     }
 }
 ```
@@ -72,9 +75,9 @@ public class HelloWorldTests
 
 Pass a custom `traceId` to control the `Lambda-Runtime-Trace-Id` header for correlation in logs and telemetry:
 
-```csharp
-var response = await factory.TestServer.InvokeAsync<Request, Response>(
-    new Request(),
+```csharp linenums="1"
+var response = await factory.TestServer.InvokeAsync<MyEvent, MyResponse>(
+    new MyEvent("test"),
     TestContext.Current.CancellationToken,
     traceId: "custom-trace-id-12345"
 );
@@ -128,11 +131,137 @@ Add `LambdaApplicationFactoryContentRootAttribute` to your test assembly when yo
 content root (e.g., static files, JSON fixtures). The factory will pick it up and set the content
 root before booting the host.
 
+### Shared Fixtures with IClassFixture
+
+Use xUnit's `IClassFixture` to share a single `LambdaApplicationFactory` across all tests in a class.
+This improves test performance by reusing the same Lambda host instance:
+
+```csharp linenums="1"
+public class SimpleLambdaTests(LambdaApplicationFactory<Program> factory)
+    : IClassFixture<LambdaApplicationFactory<Program>>
+{
+    private readonly LambdaTestServer _server = factory.TestServer;
+
+    [Fact]
+    public async Task SimpleLambda_ReturnsExpectedValue()
+    {
+        var response = await _server.InvokeAsync<MyEvent, MyResponse>(
+            new MyEvent("World"),
+            TestContext.Current.CancellationToken
+        );
+
+        response.WasSuccess.Should().BeTrue();
+        response.Response.Message.Should().Be("Hello World!");
+    }
+
+    [Fact]
+    public async Task SimpleLambda_WithDifferentInput_ReturnsExpectedValue()
+    {
+        var response = await _server.InvokeAsync<MyEvent, MyResponse>(
+            new MyEvent("Lambda"),
+            TestContext.Current.CancellationToken
+        );
+
+        response.WasSuccess.Should().BeTrue();
+        response.Response.Message.Should().Be("Hello Lambda!");
+    }
+}
+```
+
+**Important:** The same factory instance is used for all tests in the class. This means:
+
+- OnInit runs once when the first test executes
+- OnShutdown runs once when all tests complete
+- Singleton services are shared across all tests in the class
+- Do not use this pattern if you need to test initialization/shutdown behavior (use a fresh factory
+  per test instead)
+
+#### Custom Factory for Reusable Configuration
+
+For more complex scenarios, extend `LambdaApplicationFactory<TProgram>` to create a reusable fixture
+with pre-configured test doubles and settings:
+
+=== "Custom Factory"
+
+    ```csharp linenums="1"
+    public class CustomLambdaApplicationFactory<TProgram> : LambdaApplicationFactory<TProgram>
+        where TProgram : class
+    {
+        // Expose test doubles as properties for easy access in tests
+        public ILifecycleService LifecycleService { get; } = Substitute.For<ILifecycleService>();
+
+        protected override void ConfigureWebHost(IHostBuilder builder)
+        {
+            builder.ConfigureServices((_, services) =>
+            {
+                // Replace real implementations with test doubles
+                services.RemoveAll<ILifecycleService>();
+                services.AddSingleton<ILifecycleService>(_ => LifecycleService);
+            });
+
+            builder.UseEnvironment("Development");
+        }
+    }
+    ```
+
+=== "Test Class"
+
+    ```csharp linenums="1"
+    public class MyLambdaTests(CustomLambdaApplicationFactory<Program> factory)
+        : IClassFixture<CustomLambdaApplicationFactory<Program>>
+    {
+        private readonly LambdaTestServer _server = factory.TestServer;
+
+        [Fact]
+        public async Task Lambda_WithMockedDependency_ReturnsExpectedValue()
+        {
+            // Configure the test double for this specific test
+            factory.LifecycleService.OnStart().Returns(true);
+
+            var response = await _server.InvokeAsync<MyEvent, MyResponse>(
+                new MyEvent("World"),
+                TestContext.Current.CancellationToken
+            );
+
+            response.WasSuccess.Should().BeTrue();
+            response.Response.Message.Should().Be("Hello World!");
+        }
+    }
+    ```
+
+This pattern is useful when:
+
+- Multiple test classes need the same test setup
+- You want to expose test doubles as properties for easy configuration
+- You need consistent environment settings across many tests
+
 ### Tuning the Runtime Shim
 
-`LambdaServerOptions` controls the simulated runtime headers and timing (ARN, deadline/timeout,
-extra headers). Access it via `factory.ServerOptions` before starting the server if you need
-test-specific values.
+`LambdaServerOptions` controls the simulated runtime headers, timing, and serialization behavior.
+Access it via `factory.ServerOptions` before starting the server if you need test-specific values:
+
+- **Runtime headers** – `FunctionArn`, `AdditionalHeaders` for custom Lambda runtime headers
+- **Timeout behavior** – `FunctionTimeout` controls invocation deadline (defaults to 3 seconds)
+- **JSON serialization** – `SerializerOptions` controls how the test server serializes events and
+  responses sent to your handler
+
+```csharp linenums="1"
+await using var factory = new LambdaApplicationFactory<Program>();
+
+// Configure test server options before starting
+factory.ServerOptions.FunctionTimeout = TimeSpan.FromSeconds(10);
+factory.ServerOptions.FunctionArn = "arn:aws:lambda:us-east-1:123456789012:function:MyFunc";
+factory.ServerOptions.SerializerOptions = new JsonSerializerOptions
+{
+    PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower,
+    WriteIndented = true
+};
+
+var response = await factory.TestServer.InvokeAsync<MyEvent, MyResponse>(
+    new MyEvent("test"),
+    TestContext.Current.CancellationToken
+);
+```
 
 ## Initialization and Shutdown Behavior
 
@@ -164,15 +293,15 @@ test-specific values.
 
 Validate error handling by asserting on `InvocationResponse.Error`:
 
-```csharp
+```csharp linenums="1"
 [Fact]
 public async Task Handler_WithInvalidInput_ReturnsStructuredError()
 {
     await using var factory = new LambdaApplicationFactory<Program>()
         .WithCancellationToken(TestContext.Current.CancellationToken);
 
-    var response = await factory.TestServer.InvokeAsync<string, string>(
-        "", // Invalid input
+    var response = await factory.TestServer.InvokeAsync<MyEvent, MyResponse>(
+        new MyEvent(""), // Invalid: empty name
         TestContext.Current.CancellationToken
     );
 
@@ -187,7 +316,7 @@ public async Task Handler_WithInvalidInput_ReturnsStructuredError()
 
 The test server handles concurrent invocations safely with FIFO ordering:
 
-```csharp
+```csharp linenums="1"
 [Fact]
 public async Task ConcurrentInvocations_AreHandledInOrder()
 {
@@ -196,8 +325,8 @@ public async Task ConcurrentInvocations_AreHandledInOrder()
 
     // Launch multiple concurrent invocations
     var tasks = Enumerable.Range(1, 10)
-        .Select(i => factory.TestServer.InvokeAsync<int, string>(
-            i,
+        .Select(i => factory.TestServer.InvokeAsync<MyEvent, MyResponse>(
+            new MyEvent($"User{i}"),
             TestContext.Current.CancellationToken))
         .ToArray();
 
@@ -207,9 +336,9 @@ public async Task ConcurrentInvocations_AreHandledInOrder()
     responses.Should().AllSatisfy(r => r.WasSuccess.Should().BeTrue());
 
     // Responses maintain FIFO order
-    responses.Select(r => r.Response)
-        .Should().ContainInOrder("Hello 1!", "Hello 2!", "Hello 3!", "Hello 4!", "Hello 5!",
-                                  "Hello 6!", "Hello 7!", "Hello 8!", "Hello 9!", "Hello 10!");
+    responses.Select(r => r.Response.Message)
+        .Should().ContainInOrder("Hello User1!", "Hello User2!", "Hello User3!", "Hello User4!", "Hello User5!",
+                                  "Hello User6!", "Hello User7!", "Hello User8!", "Hello User9!", "Hello User10!");
 }
 ```
 
@@ -217,15 +346,15 @@ public async Task ConcurrentInvocations_AreHandledInOrder()
 
 Verify middleware behavior by inspecting response metadata or side effects:
 
-```csharp
+```csharp linenums="1"
 [Fact]
 public async Task CustomMiddleware_AddsExpectedHeaders()
 {
     await using var factory = new LambdaApplicationFactory<Program>()
         .WithCancellationToken(TestContext.Current.CancellationToken);
 
-    var response = await factory.TestServer.InvokeAsync<Request, Response>(
-        new Request(),
+    var response = await factory.TestServer.InvokeAsync<MyEvent, MyResponse>(
+        new MyEvent("test"),
         TestContext.Current.CancellationToken
     );
 
@@ -240,7 +369,7 @@ public async Task CustomMiddleware_AddsExpectedHeaders()
 
 #### OnInit That Signals Shutdown
 
-```csharp
+```csharp linenums="1"
 [Fact]
 public async Task OnInit_WhenReturningFalse_ShutsDownGracefully()
 {
@@ -252,7 +381,7 @@ public async Task OnInit_WhenReturningFalse_ShutsDownGracefully()
             builder.ConfigureServices((_, services) =>
             {
                 services.RemoveAll<IMyService>();
-                services.AddSingleton(mockService);
+                services.AddSingleton<IMyService>(mockService);
             }));
 
     var initResult = await factory.TestServer.StartAsync(
@@ -265,7 +394,7 @@ public async Task OnInit_WhenReturningFalse_ShutsDownGracefully()
 
 #### OnInit That Throws Exceptions
 
-```csharp
+```csharp linenums="1"
 [Fact]
 public async Task OnInit_WhenThrowingException_ReturnsInitError()
 {
@@ -277,7 +406,7 @@ public async Task OnInit_WhenThrowingException_ReturnsInitError()
             builder.ConfigureServices((_, services) =>
             {
                 services.RemoveAll<IMyService>();
-                services.AddSingleton(mockService);
+                services.AddSingleton<IMyService>(mockService);
             }));
 
     var initResult = await factory.TestServer.StartAsync(
@@ -291,7 +420,7 @@ public async Task OnInit_WhenThrowingException_ReturnsInitError()
 
 #### OnShutdown Exception Handling
 
-```csharp
+```csharp linenums="1"
 [Fact]
 public async Task OnShutdown_WhenThrowingException_AggregatesExceptions()
 {
@@ -303,7 +432,7 @@ public async Task OnShutdown_WhenThrowingException_AggregatesExceptions()
             builder.ConfigureServices((_, services) =>
             {
                 services.RemoveAll<IMyService>();
-                services.AddSingleton(mockService);
+                services.AddSingleton<IMyService>(mockService);
             }));
 
     await factory.TestServer.StartAsync(TestContext.Current.CancellationToken);
@@ -318,35 +447,11 @@ public async Task OnShutdown_WhenThrowingException_AggregatesExceptions()
 }
 ```
 
-### Inspecting Services After Invocation
-
-Resolve singleton services from `factory.TestServer.Services` to validate state:
-
-```csharp
-[Fact]
-public async Task AfterInvocation_CanInspectSingletonState()
-{
-    await using var factory = new LambdaApplicationFactory<Program>()
-        .WithCancellationToken(TestContext.Current.CancellationToken);
-
-    await factory.TestServer.InvokeAsync<Request, Response>(
-        new Request("test"),
-        TestContext.Current.CancellationToken
-    );
-
-    // Inspect singleton services after invocation
-    var metricsCollector = factory.TestServer.Services
-        .GetRequiredService<IMetricsCollector>();
-
-    metricsCollector.InvocationCount.Should().Be(1);
-}
-```
-
 ### Alternative DI Containers
 
 Replace the default DI container with Autofac, DryIoc, or other containers:
 
-```csharp
+```csharp linenums="1"
 [Fact]
 public async Task WithAutofac_CustomContainerWorks()
 {
@@ -359,35 +464,8 @@ public async Task WithAutofac_CustomContainerWorks()
                     containerBuilder.RegisterType<MyService>().As<IMyService>();
                 }));
 
-    var response = await factory.TestServer.InvokeAsync<Request, Response>(
-        new Request(),
-        TestContext.Current.CancellationToken
-    );
-
-    response.WasSuccess.Should().BeTrue();
-}
-```
-
-### Custom JSON Serialization
-
-Override JSON serialization options to match your Lambda's configuration:
-
-```csharp
-[Fact]
-public async Task CustomJsonOptions_AreRespected()
-{
-    await using var factory = new LambdaApplicationFactory<Program>()
-        .WithHostBuilder(builder =>
-            builder.ConfigureServices((_, services) =>
-            {
-                services.Configure<JsonOptions>(options =>
-                {
-                    options.SerializerOptions.PropertyNamingPolicy = JsonNamingPolicy.SnakeCaseLower;
-                });
-            }));
-
-    var response = await factory.TestServer.InvokeAsync<Request, Response>(
-        new Request { UserName = "test" },
+    var response = await factory.TestServer.InvokeAsync<MyEvent, MyResponse>(
+        new MyEvent("test"),
         TestContext.Current.CancellationToken
     );
 
@@ -399,7 +477,7 @@ public async Task CustomJsonOptions_AreRespected()
 
 Measure initialization and invocation performance:
 
-```csharp
+```csharp linenums="1"
 [Fact]
 public async Task ColdStart_InitCompletesWithinTimeout()
 {
