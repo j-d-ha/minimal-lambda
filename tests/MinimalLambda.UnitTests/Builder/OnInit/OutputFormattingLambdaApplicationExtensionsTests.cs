@@ -75,7 +75,7 @@ public class OutputFormattingLambdaApplicationExtensionsTests
         // Act
         var builder = (ILambdaOnInitBuilder)app;
         var buildResult = builder.Build();
-        var result = await buildResult(CancellationToken.None);
+        var result = await buildResult!(CancellationToken.None);
 
         // Assert
         result.Should().BeTrue();

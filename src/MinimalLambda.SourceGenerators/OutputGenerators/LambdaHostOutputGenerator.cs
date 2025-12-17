@@ -29,7 +29,23 @@ internal static class LambdaHostOutputGenerator
         var generatedCodeAttribute =
             $"[GeneratedCode(\"{generatorName}\", \"{generatorVersion}\")]";
 
-        List<string?> outputs = [CommonSources.Generate(generatedCodeAttribute)];
+        List<string?> outputs =
+        [
+            CommonSources.Generate(generatedCodeAttribute),
+            """
+                namespace MinimalLambda.Generated
+                {
+                    using System;
+                    using System.CodeDom.Compiler;
+                    using System.Runtime.CompilerServices;
+                    using System.Threading;
+                    using System.Threading.Tasks;
+                    using Microsoft.Extensions.DependencyInjection;
+                    using MinimalLambda;
+                    using MinimalLambda.Builder;
+
+                """,
+        ];
 
         // if MapHandler calls found, generate the source code.
         if (compilationInfo.MapHandlerInvocationInfos.Count >= 1)
@@ -66,6 +82,16 @@ internal static class LambdaHostOutputGenerator
                     generatedCodeAttribute
                 )
             );
+
+        outputs.Add(
+            """
+                file static class Utilities
+                {
+                    internal static T Cast<T>(Delegate d, T _) where T : Delegate => (T)d;
+                }
+            }
+            """
+        );
 
         // join all the source code together and add it to the compilation context.
         var outCode = string.Join("\n", outputs.Where(s => s != null));

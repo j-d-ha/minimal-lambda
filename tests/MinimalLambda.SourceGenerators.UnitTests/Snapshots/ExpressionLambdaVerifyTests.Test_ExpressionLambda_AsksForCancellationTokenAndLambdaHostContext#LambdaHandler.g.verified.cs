@@ -31,10 +31,11 @@ namespace MinimalLambda.Generated
     using System;
     using System.CodeDom.Compiler;
     using System.Runtime.CompilerServices;
+    using System.Threading;
     using System.Threading.Tasks;
-    using MinimalLambda.Builder;
-    using MinimalLambda;
     using Microsoft.Extensions.DependencyInjection;
+    using MinimalLambda;
+    using MinimalLambda.Builder;
 
     [GeneratedCode("MinimalLambda.SourceGenerators", "0.0.0")]
     file static class GeneratedLambdaInvocationBuilderExtensions
@@ -48,7 +49,7 @@ namespace MinimalLambda.Generated
             Delegate handler
         )
         {
-            var castHandler = (global::System.Func<global::System.Threading.CancellationToken, global::MinimalLambda.ILambdaHostContext, string>)handler;
+            var castHandler = Utilities.Cast(handler, string (global::System.Threading.CancellationToken arg0, global::MinimalLambda.ILambdaHostContext arg1) => throw null!);
 
             application.Handle(InvocationDelegate);
 
@@ -74,5 +75,10 @@ namespace MinimalLambda.Generated
                 return Task.CompletedTask;
             }
         }
+    }
+
+    file static class Utilities
+    {
+        internal static T Cast<T>(Delegate d, T _) where T : Delegate => (T)d;
     }
 }

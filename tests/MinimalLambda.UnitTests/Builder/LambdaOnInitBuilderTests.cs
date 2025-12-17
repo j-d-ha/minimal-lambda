@@ -287,7 +287,7 @@ public class LambdaOnInitBuilderTests
 
         // Act
         var buildFunc = builder.Build();
-        var result = await buildFunc(CancellationToken.None);
+        var result = await buildFunc!(CancellationToken.None);
 
         // Assert
         result.Should().BeFalse();
@@ -337,7 +337,7 @@ public class LambdaOnInitBuilderTests
 
         // Act
         var buildFunc = builder.Build();
-        var result = await buildFunc(CancellationToken.None);
+        var result = await buildFunc!(CancellationToken.None);
 
         // Assert
         result.Should().BeTrue();
@@ -373,7 +373,7 @@ public class LambdaOnInitBuilderTests
 
         // Act
         var buildFunc = builder.Build();
-        var result = await buildFunc(CancellationToken.None);
+        var result = await buildFunc!(CancellationToken.None);
 
         // Assert
         result.Should().BeFalse();
@@ -403,7 +403,7 @@ public class LambdaOnInitBuilderTests
 
         // Act
         var buildFunc = builder.Build();
-        Func<Task> act = () => buildFunc(CancellationToken.None);
+        Func<Task> act = () => buildFunc!(CancellationToken.None);
 
         // Assert
         await act.Should().ThrowAsync<AggregateException>();
@@ -437,7 +437,7 @@ public class LambdaOnInitBuilderTests
 
         // Act
         var buildFunc = builder.Build();
-        Func<Task> act = () => buildFunc(CancellationToken.None);
+        Func<Task> act = () => buildFunc!(CancellationToken.None);
 
         // Assert
         await act.Should().ThrowAsync<AggregateException>();
@@ -472,7 +472,7 @@ public class LambdaOnInitBuilderTests
 
         // Act
         var buildFunc = builder.Build();
-        var act = () => buildFunc(CancellationToken.None);
+        var act = () => buildFunc!(CancellationToken.None);
 
         // Assert
         await act.Should().ThrowAsync<OperationCanceledException>();
@@ -509,7 +509,7 @@ public class LambdaOnInitBuilderTests
 
         // Act
         var buildFunc = builder.Build();
-        await buildFunc(CancellationToken.None);
+        await buildFunc!(CancellationToken.None);
 
         // Assert
         scopeUsed.Should().BeTrue();

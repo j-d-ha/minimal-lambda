@@ -34,6 +34,7 @@ namespace MinimalLambda.Generated
     using System.Threading;
     using System.Threading.Tasks;
     using Microsoft.Extensions.DependencyInjection;
+    using MinimalLambda;
     using MinimalLambda.Builder;
 
     [GeneratedCode("MinimalLambda.SourceGenerators", "0.0.0")]
@@ -45,7 +46,7 @@ namespace MinimalLambda.Generated
             Delegate handler
         )
         {
-            var castHandler = Cast(handler, global::System.Threading.Tasks.Task (global::System.Threading.CancellationToken arg0, global::IService arg1, global::IService? arg2, global::IService arg3, global::IService? arg4) => throw null!);
+            var castHandler = Utilities.Cast(handler, global::System.Threading.Tasks.Task (global::System.Threading.CancellationToken arg0, global::IService arg1, global::IService? arg2, global::IService arg3, global::IService? arg4) => throw null!);
 
             return application.OnShutdown(OnShutdown);
 
@@ -69,7 +70,9 @@ namespace MinimalLambda.Generated
                 return response;
             }
         }
-        
-        private static T Cast<T>(Delegate d, T _) where T : Delegate => (T)d;
+    }
+    file static class Utilities
+    {
+        internal static T Cast<T>(Delegate d, T _) where T : Delegate => (T)d;
     }
 }

@@ -25,3 +25,20 @@ namespace System.Runtime.CompilerServices
         }
     }
 }
+
+namespace MinimalLambda.Generated
+{
+    using System;
+    using System.CodeDom.Compiler;
+    using System.Runtime.CompilerServices;
+    using System.Threading;
+    using System.Threading.Tasks;
+    using Microsoft.Extensions.DependencyInjection;
+    using MinimalLambda;
+    using MinimalLambda.Builder;
+
+    file static class Utilities
+    {
+        internal static T Cast<T>(Delegate d, T _) where T : Delegate => (T)d;
+    }
+}
