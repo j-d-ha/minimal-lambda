@@ -54,7 +54,7 @@ Other customization hooks:
 - `LambdaApplicationOptions.Args` – Flow command-line arguments into configuration.
 - `builder.Services.ConfigureLambdaHostOptions(...)` – Override runtime behavior (Init/Shutdown timeouts, invocation cancellation buffer, output formatting).
 - `builder.Services.AddLambdaSerializerWithContext<TContext>()` – Swap the default serializer with a source-generated one (or register any `ILambdaSerializer` manually).
-- Register an `ILambdaHostContextAccessor` if you need to resolve `ILambdaHostContext` outside handlers/middleware.
+- Register an `ILambdaInvocationContextAccessor` if you need to resolve `ILambdaInvocationContext` outside handlers/middleware.
 
 ## Build Phase
 

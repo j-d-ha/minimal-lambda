@@ -129,11 +129,11 @@ graph LR
 - Transients behave the same as ASP.NET Core—be mindful of repeated expensive setup.
 - Never store scoped services on singletons; resolve them per invocation or pass data explicitly.
 
-### Working with `ILambdaHostContext`
+### Working with `ILambdaInvocationContext`
 
-Every middleware component and handler can ask for `ILambdaHostContext`. Think of it as `HttpContext` for Lambda.
+Every middleware component and handler can ask for `ILambdaInvocationContext`. Think of it as `HttpContext` for Lambda.
 
-`ILambdaHostContext` exposes:
+`ILambdaInvocationContext` exposes:
 
 - `ServiceProvider` – the scoped provider for the current invocation.
 - `CancellationToken` – fires `InvocationCancellationBuffer` before the hard Lambda timeout.
@@ -144,7 +144,7 @@ Every middleware component and handler can ask for `ILambdaHostContext`. Think o
 ```csharp title="Program.cs" linenums="1"
 lambda.MapHandler(async (
     [FromEvent] OrderRequest request,
-    ILambdaHostContext context,
+    ILambdaInvocationContext context,
     IOrderService service,
     CancellationToken ct
 ) =>
@@ -164,7 +164,7 @@ Handlers and lifecycle hooks can request multiple parameter types simultaneously
 
 - `[FromEvent] T event` – Optional marker for the deserialized payload. Include it only when your Lambda expects input; the generator enforces that at most one parameter carries `[FromEvent]`.
 - Services – Any registered service, keyed service (`[FromKeyedServices("key")]`), or options type.
-- Context – `ILambdaHostContext` or the raw `ILambdaContext` from the AWS SDK.
+- Context – `ILambdaInvocationContext` or the raw `ILambdaContext` from the AWS SDK.
 - `CancellationToken` – Linked to end-to-end timeouts; pass it downstream.
 
 ## Middleware Pipeline
@@ -198,7 +198,7 @@ lambda.MapHandler(([FromEvent] OrderRequest order) => new OrderResponse(order.Id
 
 ## Feature System
 
-Features provide decoupled access to invocation data—mirroring ASP.NET Core’s `HttpContext.Features` and Azure Functions’ binding features. Instead of injecting every dependency everywhere, middleware and handlers trade typed capabilities through the `ILambdaHostContext.Features` collection.
+Features provide decoupled access to invocation data—mirroring ASP.NET Core’s `HttpContext.Features` and Azure Functions’ binding features. Instead of injecting every dependency everywhere, middleware and handlers trade typed capabilities through the `ILambdaInvocationContext.Features` collection.
 
 Built-in feature types include:
 

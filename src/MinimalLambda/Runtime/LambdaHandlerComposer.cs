@@ -7,7 +7,7 @@ namespace MinimalLambda.Runtime;
 internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory
 {
     private readonly ILambdaCancellationFactory _cancellationFactory;
-    private readonly ILambdaHostContextFactory _contextFactory;
+    private readonly ILambdaInvocationContextFactory _contextFactory;
     private readonly IInvocationDataFeatureFactory _invocationDataFeatureFactory;
     private readonly ILambdaInvocationBuilderFactory _lambdaInvocationBuilderFactory;
     private readonly LambdaHostedServiceOptions _options;
@@ -16,7 +16,7 @@ internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory
         ILambdaInvocationBuilderFactory lambdaInvocationBuilderFactory,
         ILambdaCancellationFactory cancellationFactory,
         IOptions<LambdaHostedServiceOptions> options,
-        ILambdaHostContextFactory contextFactory,
+        ILambdaInvocationContextFactory contextFactory,
         IInvocationDataFeatureFactory invocationDataFeatureFactory
     )
     {
@@ -63,22 +63,26 @@ internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory
 
             // Create a new lambda host context. This will also create a new service scope
             // the first time that the service container is accessed.
-            var lambdaHostContext = _contextFactory.Create(
+            var LambdaInvocationContext = _contextFactory.Create(
                 lambdaContext,
                 builder.Properties,
                 linkedTokenSource.Token
             );
 
-            await using (lambdaHostContext as IAsyncDisposable)
+            await using (LambdaInvocationContext as IAsyncDisposable)
             {
                 using var invocationDataFeature = _invocationDataFeatureFactory.Create(inputStream);
-                lambdaHostContext.Features.Set(invocationDataFeature);
+                LambdaInvocationContext.Features.Set(invocationDataFeature);
 
                 // Invoke the handler wrapped in the middleware pipeline.
-                await handler.Invoke(lambdaHostContext).ConfigureAwait(false);
+                await handler.Invoke(LambdaInvocationContext).ConfigureAwait(false);
 
-                if (lambdaHostContext.Features.TryGet<IResponseFeature>(out var responseFeature))
-                    responseFeature.SerializeToStream(lambdaHostContext);
+                if (
+                    LambdaInvocationContext.Features.TryGet<IResponseFeature>(
+                        out var responseFeature
+                    )
+                )
+                    responseFeature.SerializeToStream(LambdaInvocationContext);
 
                 // If no serializer is provided, return an empty stream.
                 return invocationDataFeature.ResponseStream;

@@ -11,7 +11,7 @@ namespace MinimalLambda;
 public interface IEventFeature
 {
     /// <summary>Gets the deserialized Lambda invocation event.</summary>
-    /// <param name="context">The <see cref="ILambdaHostContext" /> for the current invocation.</param>
+    /// <param name="context">The <see cref="ILambdaInvocationContext" /> for the current invocation.</param>
     /// <returns>The deserialized event object, or <c>null</c> if the event cannot be deserialized.</returns>
-    object? GetEvent(ILambdaHostContext context);
+    object? GetEvent(ILambdaInvocationContext context);
 }

@@ -30,7 +30,7 @@ internal class DefaultResponseFeature<T> : IResponseFeature<T>
 
     public T? GetResponse() => _isSet ? _response : default;
 
-    public void SerializeToStream(ILambdaHostContext context)
+    public void SerializeToStream(ILambdaInvocationContext context)
     {
         if (!_isSet)
             return;

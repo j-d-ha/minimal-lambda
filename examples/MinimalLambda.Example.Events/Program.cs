@@ -4,6 +4,7 @@ using System.Text.Json.Serialization;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using MinimalLambda;
 using MinimalLambda.Builder;
 using MinimalLambda.Envelopes;
 using MinimalLambda.Envelopes.ApiGateway;
@@ -26,7 +27,11 @@ builder.Services.AddLambdaSerializerWithContext<SerializerContext>();
 var lambda = builder.Build();
 
 lambda.MapHandler(
-    ([FromEvent] ApiGatewayRequestEnvelope<Request> request, ILogger<Program> logger) =>
+    (
+        [FromEvent] ApiGatewayRequestEnvelope<Request> request,
+        ILogger<Program> logger,
+        ILambdaInvocationContext context
+    ) =>
     {
         logger.LogInformation("In Handler. Payload: {Payload}", request.Body);
 

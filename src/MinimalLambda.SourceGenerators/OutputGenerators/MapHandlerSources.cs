@@ -90,7 +90,7 @@ internal static class MapHandlerSources
                     ParameterSource.Event =>
                         $"context.GetRequiredEvent<{param.TypeInfo.FullyQualifiedType}>()",
 
-                    // ILambdaContext OR ILambdaHostContext -> use context directly
+                    // ILambdaContext OR ILambdaInvocationContext -> use context directly
                     ParameterSource.HostContext => "context",
 
                     // CancellationToken -> get from context

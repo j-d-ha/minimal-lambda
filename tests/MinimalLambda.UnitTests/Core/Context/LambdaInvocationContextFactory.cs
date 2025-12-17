@@ -2,8 +2,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MinimalLambda.UnitTests.Core.Context;
 
-[TestSubject(typeof(LambdaHostContextFactory))]
-public class LambdaHostContextFactoryTests
+[TestSubject(typeof(LambdaInvocationContextFactory))]
+public class LambdaInvocationContextFactoryTests
 {
     [Fact]
     public void Constructor_WithNullServiceScopeFactory_ThrowsArgumentNullException()
@@ -11,7 +11,10 @@ public class LambdaHostContextFactoryTests
         // Arrange & Act & Assert
         var act = () =>
         {
-            _ = new LambdaHostContextFactory(null!, Substitute.For<IFeatureCollectionFactory>());
+            _ = new LambdaInvocationContextFactory(
+                null!,
+                Substitute.For<IFeatureCollectionFactory>()
+            );
         };
         act.Should().Throw<ArgumentNullException>();
     }
@@ -22,7 +25,7 @@ public class LambdaHostContextFactoryTests
         // Arrange & Act & Assert
         var act = () =>
         {
-            _ = new LambdaHostContextFactory(Substitute.For<IServiceScopeFactory>(), null!);
+            _ = new LambdaInvocationContextFactory(Substitute.For<IServiceScopeFactory>(), null!);
         };
         act.Should().Throw<ArgumentNullException>();
     }
@@ -35,7 +38,10 @@ public class LambdaHostContextFactoryTests
     )
     {
         // Act
-        var factory = new LambdaHostContextFactory(serviceScopeFactory, featureCollectionFactory);
+        var factory = new LambdaInvocationContextFactory(
+            serviceScopeFactory,
+            featureCollectionFactory
+        );
 
         // Assert
         factory.Should().NotBeNull();
@@ -45,7 +51,7 @@ public class LambdaHostContextFactoryTests
     public void Constructor_WithNullContextAccessor_SuccessfullyConstructs()
     {
         // Act
-        var factory = new LambdaHostContextFactory(
+        var factory = new LambdaInvocationContextFactory(
             Substitute.For<IServiceScopeFactory>(),
             Substitute.For<IFeatureCollectionFactory>()
         );
@@ -64,7 +70,10 @@ public class LambdaHostContextFactoryTests
     )
     {
         // Arrange
-        var factory = new LambdaHostContextFactory(serviceScopeFactory, featureCollectionFactory);
+        var factory = new LambdaInvocationContextFactory(
+            serviceScopeFactory,
+            featureCollectionFactory
+        );
 
         // Act
         _ = factory.Create(lambdaContext, properties, CancellationToken.None);
@@ -76,7 +85,7 @@ public class LambdaHostContextFactoryTests
     [Theory]
     [AutoNSubstituteData]
     internal void Create_WithContextAccessor_SetsContextOnAccessor(
-        [Frozen] ILambdaHostContextAccessor? contextAccessor,
+        [Frozen] ILambdaInvocationContextAccessor? contextAccessor,
         IServiceScopeFactory serviceScopeFactory,
         IFeatureCollectionFactory featureCollectionFactory,
         ILambdaContext lambdaContext,
@@ -84,7 +93,7 @@ public class LambdaHostContextFactoryTests
     )
     {
         // Arrange
-        var factory = new LambdaHostContextFactory(
+        var factory = new LambdaInvocationContextFactory(
             serviceScopeFactory,
             featureCollectionFactory,
             contextAccessor
@@ -94,7 +103,7 @@ public class LambdaHostContextFactoryTests
         _ = factory.Create(lambdaContext, properties, CancellationToken.None);
 
         // Assert
-        contextAccessor!.LambdaHostContext.Should().NotBeNull();
+        contextAccessor!.LambdaInvocationContext.Should().NotBeNull();
     }
 
     [Theory]
@@ -103,8 +112,8 @@ public class LambdaHostContextFactoryTests
         [Frozen] IFeatureCollectionFactory featureCollectionFactory,
         IFeatureProvider eventFeatureProvider,
         IFeatureProvider responseFeatureProvider,
-        ILambdaHostContext lambdaContext,
-        LambdaHostContextFactory factory
+        ILambdaInvocationContext lambdaContext,
+        LambdaInvocationContextFactory factory
     )
     {
         // Arrange

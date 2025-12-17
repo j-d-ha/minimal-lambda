@@ -8,23 +8,23 @@
 
 namespace MinimalLambda;
 
-internal class LambdaHostContextAccessor : ILambdaHostContextAccessor
+internal class LambdaInvocationContextFactoryAccessor : ILambdaInvocationContextAccessor
 {
-    private static readonly AsyncLocal<LambdaHostContextHolder> ContextHolder = new();
+    private static readonly AsyncLocal<LambdaInvocationContextFactoryHolder> ContextHolder = new();
 
-    public ILambdaHostContext? LambdaHostContext
+    public ILambdaInvocationContext? LambdaInvocationContext
     {
         get => ContextHolder.Value?.Context;
         set
         {
             ContextHolder.Value?.Context = null;
             if (value is not null)
-                ContextHolder.Value = new LambdaHostContextHolder { Context = value };
+                ContextHolder.Value = new LambdaInvocationContextFactoryHolder { Context = value };
         }
     }
 
-    private sealed class LambdaHostContextHolder
+    private sealed class LambdaInvocationContextFactoryHolder
     {
-        internal ILambdaHostContext? Context;
+        internal ILambdaInvocationContext? Context;
     }
 }

@@ -15,7 +15,7 @@ public class ExpressionLambdaVerifyTests
 
             var lambda = builder.Build();
 
-            lambda.Handle(Task (ILambdaHostContext context) => Task.CompletedTask);
+            lambda.Handle(Task (ILambdaInvocationContext context) => Task.CompletedTask);
 
             await lambda.RunAsync();
             """
@@ -36,7 +36,7 @@ public class ExpressionLambdaVerifyTests
 
             var lambda = builder.Build();
 
-            lambda.Handle(Task (ILambdaHostContext context) => Task.CompletedTask);
+            lambda.Handle(Task (ILambdaInvocationContext context) => Task.CompletedTask);
 
             await lambda.RunAsync();
             """
@@ -400,7 +400,7 @@ public class ExpressionLambdaVerifyTests
         );
 
     [Fact]
-    public async Task Test_ExpressionLambda_AsksForCancellationTokenAndLambdaHostContext() =>
+    public async Task Test_ExpressionLambda_AsksForCancellationTokenAndLambdaInvocationContext() =>
         await GeneratorTestHelpers.Verify(
             """
             using System.Threading;
@@ -412,7 +412,7 @@ public class ExpressionLambdaVerifyTests
             var builder = LambdaApplication.CreateBuilder();
             var lambda = builder.Build();
 
-            lambda.MapHandler((CancellationToken ct, ILambdaHostContext ctx) => "hello world");
+            lambda.MapHandler((CancellationToken ct, ILambdaInvocationContext ctx) => "hello world");
 
             await lambda.RunAsync();
             """

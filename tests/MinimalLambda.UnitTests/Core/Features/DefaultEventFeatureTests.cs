@@ -15,7 +15,7 @@ public class DefaultEventFeatureTests
         [Frozen] IInvocationDataFeature dataFeature,
         [Frozen] Stream stream,
         DefaultEventFeature<string> feature,
-        ILambdaHostContext context
+        ILambdaInvocationContext context
     )
     {
         // Arrange
@@ -64,7 +64,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_WithSimpleStringEvent_ReturnsDeserializedString(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<string> feature,
-        ILambdaHostContext context
+        ILambdaInvocationContext context
     )
     {
         // Arrange
@@ -84,7 +84,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_WithComplexObject_ReturnsDeserializedObject(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<TestEvent> feature,
-        ILambdaHostContext context
+        ILambdaInvocationContext context
     )
     {
         // Arrange
@@ -104,7 +104,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_WithNullableEvent_ReturnsDeserializedNullValue(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<string?> feature,
-        ILambdaHostContext context
+        ILambdaInvocationContext context
     )
     {
         // Arrange
@@ -127,7 +127,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_CallsDeserializerOnFirstInvocation(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<string> feature,
-        ILambdaHostContext context
+        ILambdaInvocationContext context
     )
     {
         // Arrange
@@ -146,7 +146,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_CachesResultAndDoesNotDeserializeOnSecondInvocation(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<string> feature,
-        ILambdaHostContext context
+        ILambdaInvocationContext context
     )
     {
         // Arrange
@@ -168,7 +168,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_ReturnsSameCachedInstanceOnMultipleInvocations(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<TestEvent> feature,
-        ILambdaHostContext context
+        ILambdaInvocationContext context
     )
     {
         // Arrange
@@ -190,9 +190,9 @@ public class DefaultEventFeatureTests
     [AutoNSubstituteData]
     internal void GetEvent_WithMultipleInstances_CachesPerInstance(
         ILambdaSerializer serializer1,
-        ILambdaHostContext context1,
+        ILambdaInvocationContext context1,
         ILambdaSerializer serializer2,
-        ILambdaHostContext context2
+        ILambdaInvocationContext context2
     )
     {
         // Arrange
@@ -225,7 +225,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_WithGenericListType_ReturnsDeserializedList(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<List<TestEvent>> feature,
-        ILambdaHostContext context
+        ILambdaInvocationContext context
     )
     {
         // Arrange
@@ -249,7 +249,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_WithGenericDictionaryType_ReturnsDeserializedDictionary(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<Dictionary<string, int>> feature,
-        ILambdaHostContext context
+        ILambdaInvocationContext context
     )
     {
         // Arrange
@@ -268,7 +268,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_WithNestedGenericType_ReturnsDeserializedNestedType(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<NestedEvent> feature,
-        ILambdaHostContext context
+        ILambdaInvocationContext context
     )
     {
         // Arrange
@@ -297,7 +297,7 @@ public class DefaultEventFeatureTests
     internal void IEventFeatureGetEvent_ReturnsObjectCastFromGenericGetEvent(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<string> feature,
-        ILambdaHostContext context
+        ILambdaInvocationContext context
     )
     {
         // Arrange
@@ -316,7 +316,7 @@ public class DefaultEventFeatureTests
     internal void IEventFeatureGetEvent_AndGenericGetEvent_ReturnSameCachedInstance(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<TestEvent> feature,
-        ILambdaHostContext context
+        ILambdaInvocationContext context
     )
     {
         // Arrange
@@ -354,7 +354,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_WhenDeserializerThrowsException_PropagatesException(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<string> feature,
-        ILambdaHostContext context
+        ILambdaInvocationContext context
     )
     {
         // Arrange
@@ -372,7 +372,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_AfterDeserializationException_RethrowsExceptionOnNextCall(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<string> feature,
-        ILambdaHostContext context
+        ILambdaInvocationContext context
     )
     {
         // Arrange
@@ -399,7 +399,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_WithEmptyMemoryStream_DeserializesEmptyStream(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<string> feature,
-        ILambdaHostContext context
+        ILambdaInvocationContext context
     )
     {
         // Arrange
@@ -417,7 +417,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_WithValueTypeDefaultValue_ReturnsDefaultOfT(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<int> feature,
-        ILambdaHostContext context
+        ILambdaInvocationContext context
     )
     {
         // Arrange
@@ -435,7 +435,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_WithLargeObject_ReturnsDeserializedLargeObject(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<TestEvent> feature,
-        ILambdaHostContext context
+        ILambdaInvocationContext context
     )
     {
         // Arrange
@@ -455,7 +455,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_WithNullableStruct_ReturnsDeserializedNullValue(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<int?> feature,
-        ILambdaHostContext context
+        ILambdaInvocationContext context
     )
     {
         // Arrange
@@ -474,7 +474,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_WithNullableStructValue_ReturnsDeserializedValue(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<int?> feature,
-        ILambdaHostContext context
+        ILambdaInvocationContext context
     )
     {
         // Arrange

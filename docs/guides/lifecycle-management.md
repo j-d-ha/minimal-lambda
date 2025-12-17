@@ -204,7 +204,7 @@ lambda.OnInit(async (ILambdaLifecycleContext context, ILogger<Program> logger) =
 });
 ```
 
-The `Properties` dictionary is backed by a thread-safe `ConcurrentDictionary<string, object?>` and is shared across all OnInit handlers. Properties set during OnInit are also available to invocation handlers via `ILambdaHostContext.Properties`.
+The `Properties` dictionary is backed by a thread-safe `ConcurrentDictionary<string, object?>` and is shared across all OnInit handlers. Properties set during OnInit are also available to invocation handlers via `ILambdaInvocationContext.Properties`.
 
 ### Available Context Properties
 

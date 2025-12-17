@@ -85,7 +85,7 @@ public class DefaultEventFeatureProviderTests
     internal void TryCreate_WithIEventFeatureType_InitializesFeatureWithSerializer(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeatureProvider<string> provider,
-        ILambdaHostContext context
+        ILambdaInvocationContext context
     )
     {
         // Arrange

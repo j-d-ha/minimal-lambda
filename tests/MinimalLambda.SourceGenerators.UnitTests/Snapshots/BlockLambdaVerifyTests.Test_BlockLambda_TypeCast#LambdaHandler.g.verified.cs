@@ -59,7 +59,7 @@ namespace MinimalLambda.Generated
 
             return application;
 
-            Task InvocationDelegate(ILambdaHostContext context)
+            Task InvocationDelegate(ILambdaInvocationContext context)
             {
                 // ParameterInfo { Type = global::IService, Name = service, Source = Service, IsNullable = False, IsOptional = False}
                 var arg0 = context.ServiceProvider.GetRequiredService<global::IService>();

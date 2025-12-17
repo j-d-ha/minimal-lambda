@@ -196,7 +196,7 @@ builder.Services.AddScoped<IRepository, Repository>();    // New per invocation
 
 Each invocation receives its own scope—scoped services are isolated per request. `OnInit()` and
 `OnShutdown()` handlers receive their own scopes as well. You can also request the
-`ILambdaHostContext` or `CancellationToken` in any handler, and they're automatically injected.
+`ILambdaInvocationContext` or `CancellationToken` in any handler, and they're automatically injected.
 
 ### Source Generation & Interceptors
 

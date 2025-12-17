@@ -140,7 +140,7 @@ public class DefaultResponseFeatureTests
         [Frozen] Stream responseStream,
         [Frozen] ILambdaSerializer serializer,
         DefaultResponseFeature<string> feature,
-        ILambdaHostContext context,
+        ILambdaInvocationContext context,
         string testData
     )
     {
@@ -159,7 +159,7 @@ public class DefaultResponseFeatureTests
     internal void SerializeToStream_WhenResponseNotSet_DoesNotCallSerializer(
         [Frozen] ILambdaSerializer serializer,
         DefaultResponseFeature<string> feature,
-        ILambdaHostContext context
+        ILambdaInvocationContext context
     )
     {
         // Act
@@ -174,7 +174,7 @@ public class DefaultResponseFeatureTests
     internal void SerializeToStream_WhenResponseIsSet_ClearsResponseStream(
         [Frozen] Stream responseStream,
         DefaultResponseFeature<string> feature,
-        ILambdaHostContext context,
+        ILambdaInvocationContext context,
         string testData
     )
     {
@@ -193,7 +193,7 @@ public class DefaultResponseFeatureTests
     internal void SerializeToStream_WhenResponseIsSet_ResetsStreamPosition(
         [Frozen] Stream responseStream,
         DefaultResponseFeature<string> feature,
-        ILambdaHostContext context,
+        ILambdaInvocationContext context,
         string testData
     )
     {

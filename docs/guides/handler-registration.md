@@ -107,7 +107,7 @@ Handlers can mix lambda events with services, context objects, and cancellation 
 | `[FromEvent] T event`                                | Deserialized from the Lambda payload (or envelope). Optional—only include when the handler expects an input. |
 | `IServiceType service`                           | Resolved from the DI container using the invocation scope.                                          |
 | `[FromKeyedServices("key")] IServiceType keyed`  | Resolves a keyed service registered with `AddKeyed*`. Keys must be constants supported by the BCL.  |
-| `ILambdaHostContext context`                     | Framework context that extends `ILambdaContext`, exposes scoped `ServiceProvider`, `Items`, `Features`, `Properties`, and the invocation `CancellationToken`. |
+| `ILambdaInvocationContext context`                     | Framework context that extends `ILambdaContext`, exposes scoped `ServiceProvider`, `Items`, `Features`, `Properties`, and the invocation `CancellationToken`. |
 | `ILambdaContext lambdaContext`                   | Raw AWS Lambda context for folks that prefer the SDK contract.                                      |
 | `CancellationToken cancellationToken`            | Cancels when `InvocationCancellationBuffer` elapses before the Lambda timeout.                      |
 
@@ -115,7 +115,7 @@ Handlers can mix lambda events with services, context objects, and cancellation 
 lambda.MapHandler(async (
     [FromEvent] OrderRequest request,
     [FromKeyedServices("primary")] IOrderProcessor orderProcessor,
-    ILambdaHostContext context,
+    ILambdaInvocationContext context,
     CancellationToken ct
 ) =>
 {
@@ -128,7 +128,7 @@ lambda.MapHandler(async (
 });
 ```
 
-`ILambdaHostContext.ServiceProvider` is lazily created for each invocation. Prefer constructor- or parameter-injected services because they participate in disposal automatically, but the scoped provider is available for advanced scenarios.
+`ILambdaInvocationContext.ServiceProvider` is lazily created for each invocation. Prefer constructor- or parameter-injected services because they participate in disposal automatically, but the scoped provider is available for advanced scenarios.
 
 ## Return Values and Serialization
 
@@ -138,16 +138,16 @@ The generator also emits serialization code for the delegate's return value. Sup
 - `Task<T>` and `ValueTask<T>` for asynchronous responses.
 - `Task` or `ValueTask` when no result should be written (Lambda receives `null`).
 
-By default responses are serialized through the configured `ILambdaSerializer` (System.Text.Json unless you swap it). Envelope packages often provide specialized features that capture the response inside an `IResponseFeature`, so the `ILambdaHostContext` can retrieve or mutate it later.
+By default responses are serialized through the configured `ILambdaSerializer` (System.Text.Json unless you swap it). Envelope packages often provide specialized features that capture the response inside an `IResponseFeature`, so the `ILambdaInvocationContext` can retrieve or mutate it later.
 
 ## Invocation Scope and Context
 
-Each invocation receives its own dependency injection scope and `ILambdaHostContext`. Use it to share data across middleware and handlers without introducing service-locator patterns.
+Each invocation receives its own dependency injection scope and `ILambdaInvocationContext`. Use it to share data across middleware and handlers without introducing service-locator patterns.
 
 ```csharp title="Program.cs" linenums="1"
 lambda.MapHandler(async (
     [FromEvent] ApiGatewayRequestEnvelope<Order> request,
-    ILambdaHostContext context,
+    ILambdaInvocationContext context,
     ILogger<Program> logger,
     CancellationToken ct
 ) =>
@@ -193,7 +193,7 @@ At runtime:
 - Keep handlers thin. Delegate business logic to services so you can test them outside Lambda and reuse them across handlers.
 - Respect the provided `CancellationToken`; `MinimalLambda` fires it `InvocationCancellationBuffer` before the hard Lambda timeout.
 - Prefer strongly typed responses or envelopes instead of anonymous objects—serialization contracts stay predictable and versionable.
-- Use `ILambdaHostContext.Features` (e.g., `context.GetEvent<T>()`) to decouple middleware from handlers when you need shared metadata.
+- Use `ILambdaInvocationContext.Features` (e.g., `context.GetEvent<T>()`) to decouple middleware from handlers when you need shared metadata.
 - Avoid resolving services manually from `IServiceProvider` unless absolutely necessary. Let the generator inject what you need, or expose a dedicated facade service.
 - Prefer referencing a static method on a static class when you want to exercise the handler logic outside of the Lambda host. Mapping a method group (`lambda.MapHandler(MyHandler.HandleAsync);`) makes it trivial to unit test the handler by invoking it directly.
 

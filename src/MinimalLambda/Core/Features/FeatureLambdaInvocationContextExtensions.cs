@@ -4,11 +4,11 @@ namespace MinimalLambda;
 
 /// <summary>
 ///     Provides extension methods for safely accessing typed event and response data from the
-///     <see cref="IFeatureCollection" /> on <see cref="ILambdaHostContext" />.
+///     <see cref="IFeatureCollection" /> on <see cref="ILambdaInvocationContext" />.
 /// </summary>
-public static class FeatureLambdaHostContextExtensions
+public static class FeatureLambdaInvocationContextExtensions
 {
-    extension(ILambdaHostContext context)
+    extension(ILambdaInvocationContext context)
     {
         /// <summary>Gets the typed event data from the <see cref="IEventFeature" /> in the Lambda context.</summary>
         /// <typeparam name="T">The type of event data to retrieve.</typeparam>

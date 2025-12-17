@@ -3,14 +3,14 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MinimalLambda;
 
-internal sealed class DefaultLambdaHostContext : ILambdaHostContext, IAsyncDisposable
+internal sealed class LambdaInvocationContext : ILambdaInvocationContext, IAsyncDisposable
 {
     private readonly ILambdaContext _lambdaContext;
     private readonly IServiceScopeFactory _serviceScopeFactory;
 
     private IServiceScope? _instanceServicesScope;
 
-    public DefaultLambdaHostContext(
+    public LambdaInvocationContext(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
         IDictionary<string, object?> properties,
@@ -74,7 +74,7 @@ internal sealed class DefaultLambdaHostContext : ILambdaHostContext, IAsyncDispo
     public string TraceId => _lambdaContext.TraceId;
 
     //      ┌──────────────────────────────────────────────────────────┐
-    //      │                    ILambdaHostContext                    │
+    //      │                    ILambdaInvocationContext                    │
     //      └──────────────────────────────────────────────────────────┘
 
     public IServiceProvider ServiceProvider

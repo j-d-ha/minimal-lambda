@@ -70,7 +70,7 @@ internal readonly record struct ParameterInfo(
         {
             TypeConstants.CancellationToken => (ParameterSource.CancellationToken, null),
             TypeConstants.ILambdaContext => (ParameterSource.HostContext, null),
-            TypeConstants.ILambdaHostContext => (ParameterSource.HostContext, null),
+            TypeConstants.ILambdaInvocationContext => (ParameterSource.HostContext, null),
             TypeConstants.ILambdaLifecycleContext => (ParameterSource.LifecycleContext, null),
             _ => (ParameterSource.Service, null),
         };

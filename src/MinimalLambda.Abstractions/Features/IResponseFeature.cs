@@ -15,6 +15,6 @@ public interface IResponseFeature
     object? GetResponse();
 
     /// <summary>Serializes the response object to the Lambda response stream.</summary>
-    /// <param name="context">The <see cref="ILambdaHostContext" /> for the current invocation.</param>
-    void SerializeToStream(ILambdaHostContext context);
+    /// <param name="context">The <see cref="ILambdaInvocationContext" /> for the current invocation.</param>
+    void SerializeToStream(ILambdaInvocationContext context);
 }

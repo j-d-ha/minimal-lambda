@@ -59,7 +59,7 @@ namespace MinimalLambda.Generated
 
             return application;
 
-            Task InvocationDelegate(ILambdaHostContext context)
+            Task InvocationDelegate(ILambdaInvocationContext context)
             {
                 // ParameterInfo { Type = string, Name = input, Source = Event, IsNullable = False, IsOptional = False}
                 var arg0 = context.GetRequiredEvent<string>();

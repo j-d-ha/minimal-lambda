@@ -15,7 +15,7 @@ public static class MiddlewareLambdaApplicationExtensions
         ///     </para>
         /// </remarks>
         /// <param name="middleware">
-        ///     A function that receives the <see cref="ILambdaHostContext" /> and the
+        ///     A function that receives the <see cref="ILambdaInvocationContext" /> and the
         ///     next <see cref="LambdaInvocationDelegate" /> in the pipeline, and returns a <see cref="Task" />
         ///     representing the asynchronous operation.
         /// </param>
@@ -26,7 +26,7 @@ public static class MiddlewareLambdaApplicationExtensions
         /// </exception>
         /// <seealso cref="ILambdaInvocationBuilder.Use" />
         public ILambdaInvocationBuilder UseMiddleware(
-            Func<ILambdaHostContext, LambdaInvocationDelegate, Task> middleware
+            Func<ILambdaInvocationContext, LambdaInvocationDelegate, Task> middleware
         )
         {
             ArgumentNullException.ThrowIfNull(application);

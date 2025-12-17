@@ -112,7 +112,7 @@ This design separates concerns between request/response handling, initialization
 cleanup. See [MinimalLambda](../MinimalLambda/README.md) for detailed usage examples and the
 complete builder API.
 
-### ILambdaHostContext
+### ILambdaInvocationContext
 
 Encapsulates a single Lambda invocation and provides access to contextual information and services:
 
@@ -172,7 +172,7 @@ implementations.
 **LambdaInvocationDelegate**
 
 ```csharp
-Task LambdaInvocationDelegate(ILambdaHostContext context)
+Task LambdaInvocationDelegate(ILambdaInvocationContext context)
 ```
 
 Processes a Lambda invocation.

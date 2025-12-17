@@ -4,7 +4,7 @@ namespace MinimalLambda;
 /// <remarks>
 ///     <para>
 ///         The <see cref="LambdaInvocationDelegate" /> is the core handler for processing Lambda
-///         invocations. It receives an <see cref="ILambdaHostContext" /> that contains the
+///         invocations. It receives an <see cref="ILambdaInvocationContext" /> that contains the
 ///         deserialized event, response storage, service provider, and other invocation-specific
 ///         information.
 ///     </para>
@@ -20,7 +20,7 @@ namespace MinimalLambda;
 ///     </para>
 /// </remarks>
 /// <param name="context">
-///     The <see cref="ILambdaHostContext" /> containing invocation information,
+///     The <see cref="ILambdaInvocationContext" /> containing invocation information,
 ///     services, event data, and a location to store the response.
 /// </param>
 /// <returns>A <see cref="Task" /> representing the asynchronous operation.</returns>
@@ -28,4 +28,4 @@ namespace MinimalLambda;
 /// <seealso cref="LambdaShutdownDelegate" />
 /// <seealso cref="ILambdaInvocationBuilder.Handle" />
 /// <seealso cref="ILambdaInvocationBuilder.Use" />
-public delegate Task LambdaInvocationDelegate(ILambdaHostContext context);
+public delegate Task LambdaInvocationDelegate(ILambdaInvocationContext context);

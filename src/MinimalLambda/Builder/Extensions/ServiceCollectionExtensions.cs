@@ -28,7 +28,10 @@ public static class ServiceCollectionExtensions
                 DefaultLambdaOnShutdownBuilderFactory
             >();
             services.AddSingleton<IFeatureCollectionFactory, DefaultFeatureCollectionFactory>();
-            services.AddSingleton<ILambdaHostContextFactory, LambdaHostContextFactory>();
+            services.AddSingleton<
+                ILambdaInvocationContextFactory,
+                LambdaInvocationContextFactory
+            >();
             services.AddSingleton<ILambdaLifecycleContextFactory, LambdaLifecycleContextFactory>();
             services.AddSingleton<IInvocationDataFeatureFactory, InvocationDataFeatureFactory>();
 
@@ -78,21 +81,24 @@ public static class ServiceCollectionExtensions
         }
 
         /// <summary>
-        ///     Registers the <see cref="ILambdaHostContextAccessor" /> service into the dependency
+        ///     Registers the <see cref="ILambdaInvocationContextAccessor" /> service into the dependency
         ///     injection container.
         /// </summary>
         /// <remarks>
         ///     This service allows components throughout the application to access the current
-        ///     <see cref="ILambdaHostContext" /> via dependency injection without requiring it to be passed as
+        ///     <see cref="ILambdaInvocationContext" /> via dependency injection without requiring it to be passed as
         ///     a parameter. The accessor is registered as a singleton and stores the context per invocation
         ///     for convenient access throughout the dependency injection container.
         /// </remarks>
         /// <returns>The service collection for chaining.</returns>
-        public IServiceCollection AddLambdaHostContextAccessor()
+        public IServiceCollection AddLambdaInvocationContextAccessor()
         {
             ArgumentNullException.ThrowIfNull(services);
 
-            services.AddSingleton<ILambdaHostContextAccessor, LambdaHostContextAccessor>();
+            services.AddSingleton<
+                ILambdaInvocationContextAccessor,
+                LambdaInvocationContextFactoryAccessor
+            >();
 
             return services;
         }

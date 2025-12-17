@@ -59,7 +59,7 @@ namespace MinimalLambda.Generated
 
             return application;
 
-            Task InvocationDelegate(ILambdaHostContext context)
+            Task InvocationDelegate(ILambdaInvocationContext context)
             {
                 // ParameterInfo { Type = global::System.Threading.CancellationToken, Name = ct, Source = CancellationToken, IsNullable = False, IsOptional = False}
                 var arg0 = context.CancellationToken;

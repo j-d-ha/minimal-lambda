@@ -6,7 +6,7 @@ namespace MinimalLambda;
 ///     Encapsulates the information about a Lambda invocation. It extends
 ///     <see cref="ILambdaContext" /> with additional properties.
 /// </summary>
-public interface ILambdaHostContext : ILambdaContext
+public interface ILambdaInvocationContext : ILambdaContext
 {
     /// <summary>
     ///     Gets the <see cref="CancellationToken" /> that signals a Lambda invocation is being

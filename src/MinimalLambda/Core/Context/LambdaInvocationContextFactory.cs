@@ -3,17 +3,17 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MinimalLambda;
 
-internal class LambdaHostContextFactory : ILambdaHostContextFactory
+internal class LambdaInvocationContextFactory : ILambdaInvocationContextFactory
 {
-    private readonly ILambdaHostContextAccessor? _contextAccessor;
+    private readonly ILambdaInvocationContextAccessor? _contextAccessor;
     private readonly IFeatureCollectionFactory _featureCollectionFactory;
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private IFeatureProvider[]? _featureProviders;
 
-    public LambdaHostContextFactory(
+    public LambdaInvocationContextFactory(
         IServiceScopeFactory serviceScopeFactory,
         IFeatureCollectionFactory featureCollectionFactory,
-        ILambdaHostContextAccessor? contextAccessor = null
+        ILambdaInvocationContextAccessor? contextAccessor = null
     )
     {
         ArgumentNullException.ThrowIfNull(serviceScopeFactory);
@@ -24,7 +24,7 @@ internal class LambdaHostContextFactory : ILambdaHostContextFactory
         _featureCollectionFactory = featureCollectionFactory;
     }
 
-    public ILambdaHostContext Create(
+    public ILambdaInvocationContext Create(
         ILambdaContext lambdaContext,
         IDictionary<string, object?> properties,
         CancellationToken cancellationToken
@@ -32,7 +32,7 @@ internal class LambdaHostContextFactory : ILambdaHostContextFactory
     {
         _featureProviders ??= CreateFeatureProviders(properties);
 
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             _serviceScopeFactory,
             properties,
@@ -40,7 +40,7 @@ internal class LambdaHostContextFactory : ILambdaHostContextFactory
             cancellationToken
         );
 
-        _contextAccessor?.LambdaHostContext = context;
+        _contextAccessor?.LambdaInvocationContext = context;
 
         return context;
     }

@@ -53,7 +53,7 @@ lambda.UseMiddleware(async (context, next) =>
 
 - Register error-handling middleware first so it wraps every other component.
 - Use the helper extensions (`context.GetResponse<T>()`, `context.GetEvent<T>()`, etc.) from
-  `FeatureLambdaHostContextExtensions` (they wrap `ILambdaHostContext.Features`) when you need to read
+  `FeatureLambdaInvocationContextExtensions` (they wrap `ILambdaInvocationContext.Features`) when you need to read
   or replace the outgoing payload instead of throwing.
 - Still rethrow fatal errors so the runtime produces accurate CloudWatch metrics and DLQ/SQS retries.
 

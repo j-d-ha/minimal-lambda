@@ -13,7 +13,7 @@ public class MiddlewareLambdaApplicationExtensionsTests
     {
         // Arrange
         ILambdaInvocationBuilder? application = null;
-        Func<ILambdaHostContext, LambdaInvocationDelegate, Task> middleware = async (_, _) =>
+        Func<ILambdaInvocationContext, LambdaInvocationDelegate, Task> middleware = async (_, _) =>
             await Task.CompletedTask;
 
         // Act
@@ -29,7 +29,7 @@ public class MiddlewareLambdaApplicationExtensionsTests
         // Arrange
         var host = CreateHostWithServices();
         var app = new LambdaApplication(host);
-        Func<ILambdaHostContext, LambdaInvocationDelegate, Task> middleware = async (_, _) =>
+        Func<ILambdaInvocationContext, LambdaInvocationDelegate, Task> middleware = async (_, _) =>
             await Task.CompletedTask;
 
         // Act
@@ -45,7 +45,7 @@ public class MiddlewareLambdaApplicationExtensionsTests
         // Arrange
         var host = CreateHostWithServices();
         var app = new LambdaApplication(host);
-        Func<ILambdaHostContext, LambdaInvocationDelegate, Task> middleware = async (_, _) =>
+        Func<ILambdaInvocationContext, LambdaInvocationDelegate, Task> middleware = async (_, _) =>
             await Task.CompletedTask;
 
         // Act
@@ -61,7 +61,7 @@ public class MiddlewareLambdaApplicationExtensionsTests
         // Arrange
         var host = CreateHostWithServices();
         var app = new LambdaApplication(host);
-        Func<ILambdaHostContext, LambdaInvocationDelegate, Task> middleware = async (_, _) =>
+        Func<ILambdaInvocationContext, LambdaInvocationDelegate, Task> middleware = async (_, _) =>
             await Task.CompletedTask;
 
         // Act
@@ -79,10 +79,10 @@ public class MiddlewareLambdaApplicationExtensionsTests
         var host = CreateHostWithServices();
         var app = new LambdaApplication(host);
         var middlewareWasCalled = false;
-        ILambdaHostContext? capturedContext = null;
+        ILambdaInvocationContext? capturedContext = null;
         LambdaInvocationDelegate? capturedNext = null;
 
-        Func<ILambdaHostContext, LambdaInvocationDelegate, Task> middleware = async (
+        Func<ILambdaInvocationContext, LambdaInvocationDelegate, Task> middleware = async (
             context,
             next
         ) =>
@@ -100,7 +100,7 @@ public class MiddlewareLambdaApplicationExtensionsTests
         var builtPipeline = app.Build();
 
         // Act
-        var mockContext = Substitute.For<ILambdaHostContext>();
+        var mockContext = Substitute.For<ILambdaInvocationContext>();
         await builtPipeline(mockContext);
 
         // Assert

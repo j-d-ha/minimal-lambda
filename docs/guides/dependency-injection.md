@@ -39,16 +39,16 @@ Lambda containers live across multiple invocations. Map the standard lifetimes t
 - Transients work the same as in ASP.NET Core, but prefer Scoped unless you truly need a new instance
   every time a constructor runs.
 
-## Invocation Scope and `ILambdaHostContext`
+## Invocation Scope and `ILambdaInvocationContext`
 
-Every invocation gets its own scope. You can access it via the `ILambdaHostContext` and it is shared
+Every invocation gets its own scope. You can access it via the `ILambdaInvocationContext` and it is shared
 across middleware and handlers:
 
 ```csharp title="Handlers"
 lambda.MapHandler(async (
     [FromEvent] OrderRequest request,
     IOrderService orders,          // scoped service
-    ILambdaHostContext context,    // framework context
+    ILambdaInvocationContext context,    // framework context
     CancellationToken cancellation // host-managed token
 ) =>
 {
@@ -57,7 +57,7 @@ lambda.MapHandler(async (
 });
 ```
 
-`ILambdaHostContext` exposes:
+`ILambdaInvocationContext` exposes:
 
 - `ServiceProvider` – the scoped service provider for the invocation
 - `CancellationToken` – automatically linked to Lambda remaining time
@@ -76,7 +76,7 @@ If your handler doesn't need the Lambda payload, omit the `[FromEvent]` paramete
 
 ## Middleware and Lifecycle Hooks: Source-Generated DI
 
-- Middleware receives the invocation scope via the `ILambdaHostContext` argument. Resolve services with
+- Middleware receives the invocation scope via the `ILambdaInvocationContext` argument. Resolve services with
   `context.ServiceProvider` or create reusable middleware classes with constructor injection.
 - `OnInit` and `OnShutdown` handlers now use the same source-generated dependency injection as your main
   handlers. Each executes inside its own scoped service provider so you can warm caches, seed connections,

@@ -1,7 +1,7 @@
 namespace MinimalLambda.UnitTests.Core.Features;
 
-[TestSubject(typeof(FeatureLambdaHostContextExtensions))]
-public class FeatureLambdaHostContextExtensionsTest
+[TestSubject(typeof(FeatureLambdaInvocationContextExtensions))]
+public class FeatureLambdaInvocationContextExtensionsTest
 {
     #region GetEvent Tests
 
@@ -9,7 +9,7 @@ public class FeatureLambdaHostContextExtensionsTest
     [AutoNSubstituteData]
     public void GetEvent_ReturnsEventWhenFeatureExistsAndTypeMatches(
         [Frozen] IFeatureCollection features,
-        ILambdaHostContext context,
+        ILambdaInvocationContext context,
         IEventFeature<TestEvent> eventFeature,
         TestEvent expectedEvent
     )
@@ -29,7 +29,7 @@ public class FeatureLambdaHostContextExtensionsTest
     [AutoNSubstituteData]
     public void GetEvent_ReturnsNullWhenFeatureNotInCollection(
         [Frozen] IFeatureCollection features,
-        ILambdaHostContext context
+        ILambdaInvocationContext context
     )
     {
         // Arrange
@@ -46,7 +46,7 @@ public class FeatureLambdaHostContextExtensionsTest
     [AutoNSubstituteData]
     public void GetEvent_ReturnsNullWhenGetEventReturnsNull(
         [Frozen] IFeatureCollection features,
-        ILambdaHostContext context,
+        ILambdaInvocationContext context,
         IEventFeature eventFeature
     )
     {
@@ -65,7 +65,7 @@ public class FeatureLambdaHostContextExtensionsTest
     [AutoNSubstituteData]
     public void GetEvent_ReturnsNullWhenEventTypeDoesNotMatch(
         [Frozen] IFeatureCollection features,
-        ILambdaHostContext context,
+        ILambdaInvocationContext context,
         IEventFeature eventFeature,
         string wrongTypeEvent
     )
@@ -85,7 +85,7 @@ public class FeatureLambdaHostContextExtensionsTest
     [AutoNSubstituteData]
     public void GetEvent_WorksWithDifferentEventTypes(
         [Frozen] IFeatureCollection features,
-        ILambdaHostContext context,
+        ILambdaInvocationContext context,
         IEventFeature<string> eventFeature,
         string stringEvent
     )
@@ -109,7 +109,7 @@ public class FeatureLambdaHostContextExtensionsTest
     [AutoNSubstituteData]
     public void TryGetEvent_ReturnsTrueWhenEventExists(
         [Frozen] IFeatureCollection features,
-        ILambdaHostContext context,
+        ILambdaInvocationContext context,
         IEventFeature<TestEvent> eventFeature,
         TestEvent expectedEvent
     )
@@ -130,7 +130,7 @@ public class FeatureLambdaHostContextExtensionsTest
     [AutoNSubstituteData]
     public void TryGetEvent_ReturnsFalseWhenFeatureNotFound(
         [Frozen] IFeatureCollection features,
-        ILambdaHostContext context
+        ILambdaInvocationContext context
     )
     {
         // Arrange
@@ -148,7 +148,7 @@ public class FeatureLambdaHostContextExtensionsTest
     [AutoNSubstituteData]
     public void TryGetEvent_ReturnsFalseWhenTypeDoesNotMatch(
         [Frozen] IFeatureCollection features,
-        ILambdaHostContext context,
+        ILambdaInvocationContext context,
         IEventFeature eventFeature,
         string wrongTypeEvent
     )
@@ -169,7 +169,7 @@ public class FeatureLambdaHostContextExtensionsTest
     [AutoNSubstituteData]
     public void TryGetEvent_WorksWithDifferentEventTypes(
         [Frozen] IFeatureCollection features,
-        ILambdaHostContext context,
+        ILambdaInvocationContext context,
         IEventFeature<string> eventFeature,
         string stringEvent
     )
@@ -194,7 +194,7 @@ public class FeatureLambdaHostContextExtensionsTest
     [AutoNSubstituteData]
     public void GetResponse_ReturnsResponseWhenFeatureExistsAndTypeMatches(
         [Frozen] IFeatureCollection features,
-        ILambdaHostContext context,
+        ILambdaInvocationContext context,
         IResponseFeature<TestResponse> responseFeature,
         TestResponse expectedResponse
     )
@@ -214,7 +214,7 @@ public class FeatureLambdaHostContextExtensionsTest
     [AutoNSubstituteData]
     public void GetResponse_ReturnsNullWhenFeatureNotInCollection(
         [Frozen] IFeatureCollection features,
-        ILambdaHostContext context
+        ILambdaInvocationContext context
     )
     {
         // Arrange
@@ -231,7 +231,7 @@ public class FeatureLambdaHostContextExtensionsTest
     [AutoNSubstituteData]
     public void GetResponse_ReturnsNullWhenGetResponseReturnsNull(
         [Frozen] IFeatureCollection features,
-        ILambdaHostContext context,
+        ILambdaInvocationContext context,
         IResponseFeature responseFeature
     )
     {
@@ -250,7 +250,7 @@ public class FeatureLambdaHostContextExtensionsTest
     [AutoNSubstituteData]
     public void GetResponse_ReturnsNullWhenResponseTypeDoesNotMatch(
         [Frozen] IFeatureCollection features,
-        ILambdaHostContext context,
+        ILambdaInvocationContext context,
         IResponseFeature responseFeature,
         string wrongTypeResponse
     )
@@ -270,7 +270,7 @@ public class FeatureLambdaHostContextExtensionsTest
     [AutoNSubstituteData]
     public void GetResponse_WorksWithDifferentResponseTypes(
         [Frozen] IFeatureCollection features,
-        ILambdaHostContext context,
+        ILambdaInvocationContext context,
         IResponseFeature<string> responseFeature,
         string stringResponse
     )
@@ -294,7 +294,7 @@ public class FeatureLambdaHostContextExtensionsTest
     [AutoNSubstituteData]
     public void TryGetResponse_ReturnsTrueWhenResponseExists(
         [Frozen] IFeatureCollection features,
-        ILambdaHostContext context,
+        ILambdaInvocationContext context,
         IResponseFeature<TestResponse> responseFeature,
         TestResponse expectedResponse
     )
@@ -315,7 +315,7 @@ public class FeatureLambdaHostContextExtensionsTest
     [AutoNSubstituteData]
     public void TryGetResponse_ReturnsFalseWhenFeatureNotFound(
         [Frozen] IFeatureCollection features,
-        ILambdaHostContext context
+        ILambdaInvocationContext context
     )
     {
         // Arrange
@@ -333,7 +333,7 @@ public class FeatureLambdaHostContextExtensionsTest
     [AutoNSubstituteData]
     public void TryGetResponse_ReturnsFalseWhenTypeDoesNotMatch(
         [Frozen] IFeatureCollection features,
-        ILambdaHostContext context,
+        ILambdaInvocationContext context,
         IResponseFeature responseFeature,
         string wrongTypeResponse
     )
@@ -354,7 +354,7 @@ public class FeatureLambdaHostContextExtensionsTest
     [AutoNSubstituteData]
     public void TryGetResponse_WorksWithDifferentResponseTypes(
         [Frozen] IFeatureCollection features,
-        ILambdaHostContext context,
+        ILambdaInvocationContext context,
         IResponseFeature<string> responseFeature,
         string stringResponse
     )
@@ -379,7 +379,7 @@ public class FeatureLambdaHostContextExtensionsTest
     [AutoNSubstituteData]
     public void GetRequiredEvent_ReturnsEventWhenFeatureExistsAndTypeMatches(
         [Frozen] IFeatureCollection features,
-        ILambdaHostContext context,
+        ILambdaInvocationContext context,
         IEventFeature<TestEvent> eventFeature,
         TestEvent expectedEvent
     )
@@ -399,7 +399,7 @@ public class FeatureLambdaHostContextExtensionsTest
     [AutoNSubstituteData]
     public void GetRequiredEvent_ThrowsInvalidOperationExceptionWhenFeatureNotFound(
         [Frozen] IFeatureCollection features,
-        ILambdaHostContext context
+        ILambdaInvocationContext context
     )
     {
         // Arrange
@@ -418,7 +418,7 @@ public class FeatureLambdaHostContextExtensionsTest
     [AutoNSubstituteData]
     public void GetRequiredEvent_ThrowsInvalidOperationExceptionWhenEventIsNull(
         [Frozen] IFeatureCollection features,
-        ILambdaHostContext context,
+        ILambdaInvocationContext context,
         IEventFeature eventFeature
     )
     {
@@ -439,7 +439,7 @@ public class FeatureLambdaHostContextExtensionsTest
     [AutoNSubstituteData]
     public void GetRequiredEvent_ThrowsInvalidOperationExceptionWhenTypeDoesNotMatch(
         [Frozen] IFeatureCollection features,
-        ILambdaHostContext context,
+        ILambdaInvocationContext context,
         IEventFeature eventFeature,
         string wrongTypeEvent
     )
@@ -461,7 +461,7 @@ public class FeatureLambdaHostContextExtensionsTest
     [AutoNSubstituteData]
     public void GetRequiredEvent_WorksWithDifferentEventTypes(
         [Frozen] IFeatureCollection features,
-        ILambdaHostContext context,
+        ILambdaInvocationContext context,
         IEventFeature<string> eventFeature,
         string stringEvent
     )
@@ -485,7 +485,7 @@ public class FeatureLambdaHostContextExtensionsTest
     [AutoNSubstituteData]
     public void GetRequiredResponse_ReturnsResponseWhenFeatureExistsAndTypeMatches(
         [Frozen] IFeatureCollection features,
-        ILambdaHostContext context,
+        ILambdaInvocationContext context,
         IResponseFeature<TestResponse> responseFeature,
         TestResponse expectedResponse
     )
@@ -505,7 +505,7 @@ public class FeatureLambdaHostContextExtensionsTest
     [AutoNSubstituteData]
     public void GetRequiredResponse_ThrowsInvalidOperationExceptionWhenFeatureNotFound(
         [Frozen] IFeatureCollection features,
-        ILambdaHostContext context
+        ILambdaInvocationContext context
     )
     {
         // Arrange
@@ -524,7 +524,7 @@ public class FeatureLambdaHostContextExtensionsTest
     [AutoNSubstituteData]
     public void GetRequiredResponse_ThrowsInvalidOperationExceptionWhenResponseIsNull(
         [Frozen] IFeatureCollection features,
-        ILambdaHostContext context,
+        ILambdaInvocationContext context,
         IResponseFeature responseFeature
     )
     {
@@ -545,7 +545,7 @@ public class FeatureLambdaHostContextExtensionsTest
     [AutoNSubstituteData]
     public void GetRequiredResponse_ThrowsInvalidOperationExceptionWhenTypeDoesNotMatch(
         [Frozen] IFeatureCollection features,
-        ILambdaHostContext context,
+        ILambdaInvocationContext context,
         IResponseFeature responseFeature,
         string wrongTypeResponse
     )
@@ -567,7 +567,7 @@ public class FeatureLambdaHostContextExtensionsTest
     [AutoNSubstituteData]
     public void GetRequiredResponse_WorksWithDifferentResponseTypes(
         [Frozen] IFeatureCollection features,
-        ILambdaHostContext context,
+        ILambdaInvocationContext context,
         IResponseFeature<string> responseFeature,
         string stringResponse
     )
@@ -591,7 +591,7 @@ public class FeatureLambdaHostContextExtensionsTest
     public void GetEvent_ThrowsArgumentNullExceptionWhenContextIsNull()
     {
         // Act & Assert
-        var act = () => ((ILambdaHostContext?)null)!.GetEvent<TestEvent>();
+        var act = () => ((ILambdaInvocationContext?)null)!.GetEvent<TestEvent>();
         act.Should().ThrowExactly<ArgumentNullException>();
     }
 
@@ -599,7 +599,7 @@ public class FeatureLambdaHostContextExtensionsTest
     public void TryGetEvent_ThrowsArgumentNullExceptionWhenContextIsNull()
     {
         // Act & Assert
-        var act = () => ((ILambdaHostContext?)null)!.TryGetEvent(out TestEvent? _);
+        var act = () => ((ILambdaInvocationContext?)null)!.TryGetEvent(out TestEvent? _);
         act.Should().ThrowExactly<ArgumentNullException>();
     }
 
@@ -607,7 +607,7 @@ public class FeatureLambdaHostContextExtensionsTest
     public void GetResponse_ThrowsArgumentNullExceptionWhenContextIsNull()
     {
         // Act & Assert
-        var act = () => ((ILambdaHostContext?)null)!.GetResponse<TestResponse>();
+        var act = () => ((ILambdaInvocationContext?)null)!.GetResponse<TestResponse>();
         act.Should().ThrowExactly<ArgumentNullException>();
     }
 
@@ -615,7 +615,7 @@ public class FeatureLambdaHostContextExtensionsTest
     public void TryGetResponse_ThrowsArgumentNullExceptionWhenContextIsNull()
     {
         // Act & Assert
-        var act = () => ((ILambdaHostContext?)null)!.TryGetResponse(out TestResponse? _);
+        var act = () => ((ILambdaInvocationContext?)null)!.TryGetResponse(out TestResponse? _);
         act.Should().ThrowExactly<ArgumentNullException>();
     }
 
@@ -623,7 +623,7 @@ public class FeatureLambdaHostContextExtensionsTest
     public void GetRequiredEvent_ThrowsArgumentNullExceptionWhenContextIsNull()
     {
         // Act & Assert
-        var act = () => ((ILambdaHostContext?)null)!.GetRequiredEvent<TestEvent>();
+        var act = () => ((ILambdaInvocationContext?)null)!.GetRequiredEvent<TestEvent>();
         act.Should().ThrowExactly<ArgumentNullException>();
     }
 
@@ -631,7 +631,7 @@ public class FeatureLambdaHostContextExtensionsTest
     public void GetRequiredResponse_ThrowsArgumentNullExceptionWhenContextIsNull()
     {
         // Act & Assert
-        var act = () => ((ILambdaHostContext?)null)!.GetRequiredResponse<TestResponse>();
+        var act = () => ((ILambdaInvocationContext?)null)!.GetRequiredResponse<TestResponse>();
         act.Should().ThrowExactly<ArgumentNullException>();
     }
 

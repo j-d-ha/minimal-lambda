@@ -64,7 +64,7 @@ namespace MinimalLambda.Generated
 
             return application;
 
-            async Task InvocationDelegate(ILambdaHostContext context)
+            async Task InvocationDelegate(ILambdaInvocationContext context)
             {
                 // ParameterInfo { Type = global::CustomRequest, Name = request, Source = Event, IsNullable = False, IsOptional = False}
                 var arg0 = context.GetRequiredEvent<global::CustomRequest>();

@@ -72,7 +72,7 @@ public class MiddlewareOpenTelemetryExtensionsTest
         [Frozen] IServiceProvider serviceProvider,
         [Frozen] ILambdaInvocationBuilder builder,
         TracerProvider tracerProvider,
-        ILambdaHostContext context,
+        ILambdaInvocationContext context,
         IFeatureCollection features
     )
     {

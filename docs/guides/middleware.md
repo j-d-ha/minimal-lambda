@@ -42,9 +42,9 @@ Output:
 [Logging] After handler
 ```
 
-## `ILambdaHostContext`
+## `ILambdaInvocationContext`
 
-Every middleware receives the same `ILambdaHostContext`, which is scoped to the invocation.
+Every middleware receives the same `ILambdaInvocationContext`, which is scoped to the invocation.
 
 ```csharp title="Program.cs"
 lambda.UseMiddleware(async (context, next) =>
@@ -84,7 +84,7 @@ Treat the delegate as the orchestration glue and push heavy lifting into service
 
 ## Working with Features
 
-Features are type-keyed adapters stored inside `ILambdaHostContext.Features` (an
+Features are type-keyed adapters stored inside `ILambdaInvocationContext.Features` (an
 `IFeatureCollection`). They decouple middleware from handlers: a handler (or the framework) populates a
 feature, middleware reads or mutates it, and nobody needs to inject each other through DI. The
 collection lazily creates features by asking every registered `IFeatureProvider` to build them when
@@ -123,7 +123,7 @@ Common features:
 
 ### Type-Safe Feature Access
 
-The framework provides convenient extension methods on `ILambdaHostContext` for type-safe event and response access, simplifying the feature access pattern shown above:
+The framework provides convenient extension methods on `ILambdaInvocationContext` for type-safe event and response access, simplifying the feature access pattern shown above:
 
 ```csharp title="Program.cs"
 lambda.UseMiddleware(async (context, next) =>

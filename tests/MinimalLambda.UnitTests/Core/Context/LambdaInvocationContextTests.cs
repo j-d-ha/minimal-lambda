@@ -2,8 +2,8 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace MinimalLambda.UnitTests.Core.Context;
 
-[TestSubject(typeof(DefaultLambdaHostContext))]
-public class DefaultLambdaHostContextTests
+[TestSubject(typeof(LambdaInvocationContext))]
+public class LambdaInvocationContextTests
 {
     [Theory]
     [AutoNSubstituteData]
@@ -16,7 +16,7 @@ public class DefaultLambdaHostContextTests
     {
         // Act & Assert
         var act = () =>
-            new DefaultLambdaHostContext(
+            new LambdaInvocationContext(
                 null!,
                 serviceScopeFactory,
                 properties,
@@ -37,7 +37,7 @@ public class DefaultLambdaHostContextTests
     {
         // Act & Assert
         var act = () =>
-            new DefaultLambdaHostContext(
+            new LambdaInvocationContext(
                 lambdaContext,
                 null!,
                 properties,
@@ -58,7 +58,7 @@ public class DefaultLambdaHostContextTests
     {
         // Act & Assert
         var act = () =>
-            new DefaultLambdaHostContext(
+            new LambdaInvocationContext(
                 lambdaContext,
                 serviceScopeFactory,
                 null!,
@@ -79,7 +79,7 @@ public class DefaultLambdaHostContextTests
     {
         // Act & Assert
         var act = () =>
-            new DefaultLambdaHostContext(
+            new LambdaInvocationContext(
                 lambdaContext,
                 serviceScopeFactory,
                 properties,
@@ -100,7 +100,7 @@ public class DefaultLambdaHostContextTests
     )
     {
         // Act
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             properties,
@@ -123,7 +123,7 @@ public class DefaultLambdaHostContextTests
     {
         // Arrange
         lambdaContext.AwsRequestId.Returns(expectedValue);
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -149,7 +149,7 @@ public class DefaultLambdaHostContextTests
     {
         // Arrange
         lambdaContext.ClientContext.Returns(expectedValue);
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -175,7 +175,7 @@ public class DefaultLambdaHostContextTests
     {
         // Arrange
         lambdaContext.FunctionName.Returns(expectedValue);
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -201,7 +201,7 @@ public class DefaultLambdaHostContextTests
     {
         // Arrange
         lambdaContext.FunctionVersion.Returns(expectedValue);
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -227,7 +227,7 @@ public class DefaultLambdaHostContextTests
     {
         // Arrange
         lambdaContext.Identity.Returns(expectedValue);
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -253,7 +253,7 @@ public class DefaultLambdaHostContextTests
     {
         // Arrange
         lambdaContext.InvokedFunctionArn.Returns(expectedValue);
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -279,7 +279,7 @@ public class DefaultLambdaHostContextTests
     {
         // Arrange
         lambdaContext.Logger.Returns(expectedValue);
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -305,7 +305,7 @@ public class DefaultLambdaHostContextTests
     {
         // Arrange
         lambdaContext.LogGroupName.Returns(expectedValue);
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -331,7 +331,7 @@ public class DefaultLambdaHostContextTests
     {
         // Arrange
         lambdaContext.LogStreamName.Returns(expectedValue);
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -357,7 +357,7 @@ public class DefaultLambdaHostContextTests
     {
         // Arrange
         lambdaContext.MemoryLimitInMB.Returns(expectedValue);
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -383,7 +383,7 @@ public class DefaultLambdaHostContextTests
     {
         // Arrange
         lambdaContext.RemainingTime.Returns(expectedValue);
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -412,7 +412,7 @@ public class DefaultLambdaHostContextTests
             { "key1", "value1" },
             { "key2", 42 },
         };
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             propertiesDict,
@@ -437,7 +437,7 @@ public class DefaultLambdaHostContextTests
     )
     {
         // Arrange & Act
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -459,7 +459,7 @@ public class DefaultLambdaHostContextTests
     )
     {
         // Arrange
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -486,7 +486,7 @@ public class DefaultLambdaHostContextTests
     )
     {
         // Arrange
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -513,7 +513,7 @@ public class DefaultLambdaHostContextTests
     {
         // Arrange
         var expectedToken = new CancellationToken();
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -537,7 +537,7 @@ public class DefaultLambdaHostContextTests
     )
     {
         // Arrange
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -567,7 +567,7 @@ public class DefaultLambdaHostContextTests
         var serviceScopeFactory = Substitute.For<IServiceScopeFactory>();
         serviceScopeFactory.CreateScope().Returns(mockScope);
 
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -599,7 +599,7 @@ public class DefaultLambdaHostContextTests
         var serviceScopeFactory = Substitute.For<IServiceScopeFactory>();
         serviceScopeFactory.CreateScope().Returns(mockScope);
 
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -630,7 +630,7 @@ public class DefaultLambdaHostContextTests
         var mockScope = Substitute.For<IServiceScope>();
         serviceScopeFactory.CreateScope().Returns(mockScope);
 
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -657,7 +657,7 @@ public class DefaultLambdaHostContextTests
         var serviceScopeFactory = Substitute.For<IServiceScopeFactory>();
         serviceScopeFactory.CreateScope().Returns(asyncDisposableScope);
 
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -685,7 +685,7 @@ public class DefaultLambdaHostContextTests
         var serviceScopeFactory = Substitute.For<IServiceScopeFactory>();
         serviceScopeFactory.CreateScope().Returns(mockScope);
 
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -710,7 +710,7 @@ public class DefaultLambdaHostContextTests
     )
     {
         // Arrange
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -742,7 +742,7 @@ public class DefaultLambdaHostContextTests
         var serviceScopeFactory = Substitute.For<IServiceScopeFactory>();
         serviceScopeFactory.CreateScope().Returns(mockScope);
 
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -768,7 +768,7 @@ public class DefaultLambdaHostContextTests
     )
     {
         // Arrange
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -796,7 +796,7 @@ public class DefaultLambdaHostContextTests
     )
     {
         // Arrange & Act
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -810,14 +810,14 @@ public class DefaultLambdaHostContextTests
 
     [Theory]
     [AutoNSubstituteData]
-    internal void ContextImplementsILambdaHostContext(
+    internal void ContextImplementsILambdaInvocationContext(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
         IFeatureCollection featuresCollection
     )
     {
         // Arrange & Act
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -826,7 +826,7 @@ public class DefaultLambdaHostContextTests
         );
 
         // Assert
-        context.Should().BeAssignableTo<ILambdaHostContext>();
+        context.Should().BeAssignableTo<ILambdaInvocationContext>();
     }
 
     [Theory]
@@ -838,7 +838,7 @@ public class DefaultLambdaHostContextTests
     )
     {
         // Arrange & Act
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -860,14 +860,14 @@ public class DefaultLambdaHostContextTests
     )
     {
         // Arrange
-        var context1 = new DefaultLambdaHostContext(
+        var context1 = new LambdaInvocationContext(
             lambdaContext1,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
             CancellationToken.None
         );
-        var context2 = new DefaultLambdaHostContext(
+        var context2 = new LambdaInvocationContext(
             lambdaContext2,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -892,7 +892,7 @@ public class DefaultLambdaHostContextTests
     )
     {
         // Arrange
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
@@ -920,7 +920,7 @@ public class DefaultLambdaHostContextTests
     {
         // Arrange
         var properties = new Dictionary<string, object?> { { "persistent", "value" } };
-        var context = new DefaultLambdaHostContext(
+        var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             properties,

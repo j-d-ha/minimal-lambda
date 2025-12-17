@@ -20,7 +20,7 @@ internal class DefaultEventFeature<T> : IEventFeature<T>
         _lambdaSerializer = lambdaSerializer;
     }
 
-    public T GetEvent(ILambdaHostContext context)
+    public T GetEvent(ILambdaInvocationContext context)
     {
         if (!_isDeserialized)
         {
@@ -32,5 +32,5 @@ internal class DefaultEventFeature<T> : IEventFeature<T>
         return _data;
     }
 
-    object? IEventFeature.GetEvent(ILambdaHostContext context) => GetEvent(context);
+    object? IEventFeature.GetEvent(ILambdaInvocationContext context) => GetEvent(context);
 }

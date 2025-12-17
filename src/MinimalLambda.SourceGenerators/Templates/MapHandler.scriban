@@ -41,7 +41,7 @@ namespace MinimalLambda.Generated
 
             return application;
 
-            {{ if call.should_await ~}} async {{ end ~}}Task InvocationDelegate(ILambdaHostContext context)
+            {{ if call.should_await ~}} async {{ end ~}}Task InvocationDelegate(ILambdaInvocationContext context)
             {
                 {{~ if call.has_any_keyed_service_parameter ~}}
                 if (context.ServiceProvider.GetService<IServiceProviderIsService>() is not IServiceProviderIsKeyedService)

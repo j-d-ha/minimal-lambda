@@ -59,7 +59,7 @@ namespace MinimalLambda.Generated
 
             return application;
 
-            async Task InvocationDelegate(ILambdaHostContext context)
+            async Task InvocationDelegate(ILambdaInvocationContext context)
             {
                 var response = await castHandler.Invoke();
                 if (context.Features.Get<IResponseFeature>() is not IResponseFeature<string> responseFeature)

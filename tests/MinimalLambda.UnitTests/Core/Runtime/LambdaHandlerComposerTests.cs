@@ -39,14 +39,14 @@ public class LambdaHandlerComposerTests
             LambdaInvocationBuilderFactory = Substitute.For<ILambdaInvocationBuilderFactory>();
             CancellationFactory = Substitute.For<ILambdaCancellationFactory>();
             Options = Microsoft.Extensions.Options.Options.Create(new LambdaHostedServiceOptions());
-            LambdaHostContextFactory = Substitute.For<ILambdaHostContextFactory>();
+            LambdaInvocationContextFactory = Substitute.For<ILambdaInvocationContextFactory>();
             InvocationDataFeatureFactory = Substitute.For<IInvocationDataFeatureFactory>();
 
             InvocationBuilder = Substitute.For<ILambdaInvocationBuilder>();
             CancellationTokenSource = new CancellationTokenSource();
             LambdaContext = Substitute.For<ILambdaContext>();
             ResponseFeature = Substitute.For<IResponseFeature>();
-            LambdaHostContext = Substitute.For<ILambdaHostContext, IAsyncDisposable>();
+            LambdaInvocationContext = Substitute.For<ILambdaInvocationContext, IAsyncDisposable>();
 
             SetupDefaults();
         }
@@ -56,8 +56,8 @@ public class LambdaHandlerComposerTests
         public ILambdaInvocationBuilder InvocationBuilder { get; }
         public IInvocationDataFeatureFactory InvocationDataFeatureFactory { get; }
         public ILambdaContext LambdaContext { get; }
-        public ILambdaHostContext LambdaHostContext { get; }
-        public ILambdaHostContextFactory LambdaHostContextFactory { get; }
+        public ILambdaInvocationContext LambdaInvocationContext { get; }
+        public ILambdaInvocationContextFactory LambdaInvocationContextFactory { get; }
         public ILambdaInvocationBuilderFactory LambdaInvocationBuilderFactory { get; }
         public IOptions<LambdaHostedServiceOptions> Options { get; }
         public IResponseFeature ResponseFeature { get; }
@@ -85,7 +85,7 @@ public class LambdaHandlerComposerTests
                 .Returns(mockInvocationDataFeature);
 
             // Set up the context factory to return a mock context for any Create call
-            LambdaHostContextFactory
+            LambdaInvocationContextFactory
                 .Create(
                     Arg.Any<ILambdaContext>(),
                     Arg.Any<IDictionary<string, object?>>(),
@@ -94,11 +94,11 @@ public class LambdaHandlerComposerTests
                 .Returns(info =>
                 {
                     // Create a new mock context for each call
-                    LambdaHostContext.Features.Returns(mockFeatures);
-                    ((IAsyncDisposable)LambdaHostContext)
+                    LambdaInvocationContext.Features.Returns(mockFeatures);
+                    ((IAsyncDisposable)LambdaInvocationContext)
                         .DisposeAsync()
                         .Returns(ValueTask.CompletedTask);
-                    return LambdaHostContext;
+                    return LambdaInvocationContext;
                 });
         }
 
@@ -108,7 +108,7 @@ public class LambdaHandlerComposerTests
                 LambdaInvocationBuilderFactory,
                 CancellationFactory,
                 Options,
-                LambdaHostContextFactory,
+                LambdaInvocationContextFactory,
                 InvocationDataFeatureFactory
             );
 
@@ -133,7 +133,7 @@ public class LambdaHandlerComposerTests
     [InlineData(0)] // LambdaInvocationBuilderFactory
     [InlineData(1)] // CancellationFactory
     [InlineData(2)] // Options
-    [InlineData(3)] // LambdaHostContextFactory
+    [InlineData(3)] // LambdaInvocationContextFactory
     [InlineData(4)] // InvocationDataFeatureFactory
     public void Constructor_WithNullParameter_ThrowsArgumentNullException(int parameterIndex)
     {
@@ -142,7 +142,7 @@ public class LambdaHandlerComposerTests
             parameterIndex == 0 ? null : _fixture.LambdaInvocationBuilderFactory;
         var cancellationFactory = parameterIndex == 1 ? null : _fixture.CancellationFactory;
         var options = parameterIndex == 2 ? null : _fixture.Options;
-        var contextFactory = parameterIndex == 3 ? null : _fixture.LambdaHostContextFactory;
+        var contextFactory = parameterIndex == 3 ? null : _fixture.LambdaInvocationContextFactory;
         var invocationDataFeatureFactory =
             parameterIndex == 4 ? null : _fixture.InvocationDataFeatureFactory;
 
@@ -232,7 +232,7 @@ public class LambdaHandlerComposerTests
             _fixture.LambdaInvocationBuilderFactory,
             _fixture.CancellationFactory,
             options,
-            _fixture.LambdaHostContextFactory,
+            _fixture.LambdaInvocationContextFactory,
             _fixture.InvocationDataFeatureFactory
         );
 

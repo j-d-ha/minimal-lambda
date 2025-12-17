@@ -306,56 +306,56 @@ public class ServiceCollectionExtensionsTests
     }
 
     [Fact]
-    public void AddLambdaHostContextAccessor_WithNullServiceCollection_ThrowsArgumentNullException()
+    public void AddLambdaInvocationContextAccessor_WithNullServiceCollection_ThrowsArgumentNullException()
     {
         // Act
-        var act = () => ((IServiceCollection)null!).AddLambdaHostContextAccessor();
+        var act = () => ((IServiceCollection)null!).AddLambdaInvocationContextAccessor();
 
         // Assert
         act.Should().ThrowExactly<ArgumentNullException>();
     }
 
     [Fact]
-    public void AddLambdaHostContextAccessor_WithValidServiceCollection_ReturnsServiceCollection()
+    public void AddLambdaInvocationContextAccessor_WithValidServiceCollection_ReturnsServiceCollection()
     {
         // Arrange
         var serviceCollection = new ServiceCollection();
 
         // Act
-        var result = serviceCollection.AddLambdaHostContextAccessor();
+        var result = serviceCollection.AddLambdaInvocationContextAccessor();
 
         // Assert
         result.Should().BeSameAs(serviceCollection);
     }
 
     [Fact]
-    public void AddLambdaHostContextAccessor_RegistersILambdaHostContextAccessor()
+    public void AddLambdaInvocationContextAccessor_RegistersILambdaInvocationContextAccessor()
     {
         // Arrange
         var serviceCollection = new ServiceCollection();
 
         // Act
-        serviceCollection.AddLambdaHostContextAccessor();
+        serviceCollection.AddLambdaInvocationContextAccessor();
 
         // Assert
         var descriptor = serviceCollection.FirstOrDefault(d =>
-            d.ServiceType == typeof(ILambdaHostContextAccessor)
+            d.ServiceType == typeof(ILambdaInvocationContextAccessor)
         );
         descriptor.Should().NotBeNull();
-        descriptor!.ImplementationType.Should().Be<LambdaHostContextAccessor>();
+        descriptor!.ImplementationType.Should().Be<LambdaInvocationContextFactoryAccessor>();
         descriptor.Lifetime.Should().Be(ServiceLifetime.Singleton);
     }
 
     [Fact]
-    public void AddLambdaHostContextAccessor_EnablesMethodChaining()
+    public void AddLambdaInvocationContextAccessor_EnablesMethodChaining()
     {
         // Arrange
         var serviceCollection = new ServiceCollection();
 
         // Act
         var result = serviceCollection
-            .AddLambdaHostContextAccessor()
-            .AddLambdaHostContextAccessor();
+            .AddLambdaInvocationContextAccessor()
+            .AddLambdaInvocationContextAccessor();
 
         // Assert
         result.Should().BeSameAs(serviceCollection);
