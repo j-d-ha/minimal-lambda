@@ -310,6 +310,9 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
 
         foreach (var handlers in _builtApplication.InitHandlers)
             builder.OnInit(handlers);
+
+        foreach (var property in ((ILambdaOnInitBuilder)_builtApplication).Properties)
+            builder.Properties[property.Key] = property.Value;
     }
 
     private void ConfigureOnShutdownBuilder(ILambdaOnShutdownBuilder builder)
@@ -319,5 +322,8 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
 
         foreach (var handlers in _builtApplication.ShutdownHandlers)
             builder.OnShutdown(handlers);
+
+        foreach (var property in ((ILambdaOnShutdownBuilder)_builtApplication).Properties)
+            builder.Properties[property.Key] = property.Value;
     }
 }
