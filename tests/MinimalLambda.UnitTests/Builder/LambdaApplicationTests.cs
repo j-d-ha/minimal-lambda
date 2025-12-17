@@ -623,7 +623,7 @@ public class LambdaApplicationTests
         // Arrange
         var host = CreateHostWithServices();
         var app = new LambdaApplication(host);
-        LambdaShutdownDelegate handler = async (_, _) => await Task.CompletedTask;
+        LambdaShutdownDelegate handler = async _ => await Task.CompletedTask;
 
         // Act
         app.OnShutdown(handler);
@@ -638,7 +638,7 @@ public class LambdaApplicationTests
         // Arrange
         var host = CreateHostWithServices();
         var app = new LambdaApplication(host);
-        LambdaShutdownDelegate handler = async (_, _) => await Task.CompletedTask;
+        LambdaShutdownDelegate handler = async _ => await Task.CompletedTask;
 
         // Act
         var result = app.OnShutdown(handler);
@@ -653,7 +653,7 @@ public class LambdaApplicationTests
         // Arrange
         var host = CreateHostWithServices();
         var app = new LambdaApplication(host);
-        LambdaShutdownDelegate handler = async (_, _) => await Task.CompletedTask;
+        LambdaShutdownDelegate handler = async _ => await Task.CompletedTask;
 
         // Act
         var result = app.OnShutdown(handler).OnShutdown(handler);
@@ -669,7 +669,7 @@ public class LambdaApplicationTests
         // Arrange
         var host = CreateHostWithServices();
         var app = new LambdaApplication(host);
-        LambdaShutdownDelegate handler = async (_, _) => await Task.CompletedTask;
+        LambdaShutdownDelegate handler = async _ => await Task.CompletedTask;
         app.OnShutdown(handler);
 
         // Act
@@ -689,7 +689,7 @@ public class LambdaApplicationTests
         var app = new LambdaApplication(host);
         LambdaInvocationDelegate invocationHandler = async _ => await Task.CompletedTask;
         LambdaInitDelegate initHandler = async _ => true;
-        LambdaShutdownDelegate shutdownHandler = async (_, _) => await Task.CompletedTask;
+        LambdaShutdownDelegate shutdownHandler = async _ => await Task.CompletedTask;
 
         // Act
         app.Handle(invocationHandler);
