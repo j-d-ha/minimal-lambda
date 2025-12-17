@@ -6,5 +6,6 @@ internal readonly record struct CompilationInfo(
     EquatableArray<HigherOrderMethodInfo> MapHandlerInvocationInfos,
     EquatableArray<HigherOrderMethodInfo> OnShutdownInvocationInfos,
     EquatableArray<HigherOrderMethodInfo> OnInitInvocationInfos,
-    EquatableArray<SimpleMethodInfo> BuilderInfos
+    EquatableArray<SimpleMethodInfo> BuilderInfos,
+    EquatableArray<UseMiddlewareTInfo> UseMiddlewareTInfo
 );
