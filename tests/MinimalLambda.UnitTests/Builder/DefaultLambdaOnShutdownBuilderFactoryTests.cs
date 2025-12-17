@@ -8,16 +8,25 @@ public class DefaultLambdaOnShutdownBuilderFactoryTests
     private readonly IServiceScopeFactory _scopeFactory = Substitute.For<IServiceScopeFactory>();
     private readonly IServiceProvider _serviceProvider = Substitute.For<IServiceProvider>();
 
+    private readonly ILambdaLifecycleContextFactory _contextFactory =
+        Substitute.For<ILambdaLifecycleContextFactory>();
+
     [Theory]
     [InlineData(0)] // ServiceProvider
     [InlineData(1)] // ScopeFactory
+    [InlineData(2)] // ContextFactory
     public void CreateBuilder_WithNullParameter_ThrowsArgumentNullException(int parameterIndex)
     {
         // Arrange
         var serviceProvider = parameterIndex == 0 ? null : _serviceProvider;
         var scopeFactory = parameterIndex == 1 ? null : _scopeFactory;
+        var contextFactory = parameterIndex == 2 ? null : _contextFactory;
 
-        var factory = new DefaultLambdaOnShutdownBuilderFactory(serviceProvider!, scopeFactory!);
+        var factory = new DefaultLambdaOnShutdownBuilderFactory(
+            serviceProvider!,
+            scopeFactory!,
+            contextFactory!
+        );
 
         // Act & Assert - validation happens in LambdaOnShutdownBuilder constructor
         var act = () => factory.CreateBuilder();
@@ -28,7 +37,11 @@ public class DefaultLambdaOnShutdownBuilderFactoryTests
     public void Constructor_WithValidParameters_SuccessfullyConstructs()
     {
         // Act
-        var factory = new DefaultLambdaOnShutdownBuilderFactory(_serviceProvider, _scopeFactory);
+        var factory = new DefaultLambdaOnShutdownBuilderFactory(
+            _serviceProvider,
+            _scopeFactory,
+            _contextFactory
+        );
 
         // Assert
         factory.Should().NotBeNull();
@@ -38,7 +51,11 @@ public class DefaultLambdaOnShutdownBuilderFactoryTests
     public void CreateBuilder_ReturnsLambdaOnShutdownBuilder()
     {
         // Arrange
-        var factory = new DefaultLambdaOnShutdownBuilderFactory(_serviceProvider, _scopeFactory);
+        var factory = new DefaultLambdaOnShutdownBuilderFactory(
+            _serviceProvider,
+            _scopeFactory,
+            _contextFactory
+        );
 
         // Act
         var builder = factory.CreateBuilder();
@@ -52,7 +69,11 @@ public class DefaultLambdaOnShutdownBuilderFactoryTests
     public void CreateBuilder_PassesServiceProviderToBuilder()
     {
         // Arrange
-        var factory = new DefaultLambdaOnShutdownBuilderFactory(_serviceProvider, _scopeFactory);
+        var factory = new DefaultLambdaOnShutdownBuilderFactory(
+            _serviceProvider,
+            _scopeFactory,
+            _contextFactory
+        );
 
         // Act
         var builder = factory.CreateBuilder();
@@ -65,7 +86,11 @@ public class DefaultLambdaOnShutdownBuilderFactoryTests
     public void CreateBuilder_CreatesNewInstanceEachCall()
     {
         // Arrange
-        var factory = new DefaultLambdaOnShutdownBuilderFactory(_serviceProvider, _scopeFactory);
+        var factory = new DefaultLambdaOnShutdownBuilderFactory(
+            _serviceProvider,
+            _scopeFactory,
+            _contextFactory
+        );
 
         // Act
         var builder1 = factory.CreateBuilder();
