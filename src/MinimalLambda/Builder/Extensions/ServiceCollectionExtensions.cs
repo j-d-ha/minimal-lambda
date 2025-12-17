@@ -97,7 +97,7 @@ public static class ServiceCollectionExtensions
 
             services.AddSingleton<
                 ILambdaInvocationContextAccessor,
-                LambdaInvocationContextFactoryAccessor
+                LambdaInvocationContextAccessor
             >();
 
             return services;

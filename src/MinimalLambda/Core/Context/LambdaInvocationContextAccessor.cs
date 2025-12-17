@@ -8,7 +8,7 @@
 
 namespace MinimalLambda;
 
-internal class LambdaInvocationContextFactoryAccessor : ILambdaInvocationContextAccessor
+internal class LambdaInvocationContextAccessor : ILambdaInvocationContextAccessor
 {
     private static readonly AsyncLocal<LambdaInvocationContextFactoryHolder> ContextHolder = new();
 

@@ -342,7 +342,7 @@ public class ServiceCollectionExtensionsTests
             d.ServiceType == typeof(ILambdaInvocationContextAccessor)
         );
         descriptor.Should().NotBeNull();
-        descriptor!.ImplementationType.Should().Be<LambdaInvocationContextFactoryAccessor>();
+        descriptor!.ImplementationType.Should().Be<LambdaInvocationContextAccessor>();
         descriptor.Lifetime.Should().Be(ServiceLifetime.Singleton);
     }
 

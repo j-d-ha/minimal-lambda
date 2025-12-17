@@ -1,13 +1,13 @@
 namespace MinimalLambda.UnitTests.Core.Context;
 
-[TestSubject(typeof(LambdaInvocationContextFactoryAccessor))]
-public class LambdaInvocationContextFactoryAccessorTests
+[TestSubject(typeof(LambdaInvocationContextAccessor))]
+public class LambdaInvocationContextAccessorTests
 {
     [Fact]
     public void LambdaInvocationContext_WhenNotSet_ReturnsNull()
     {
         // Arrange
-        var accessor = new LambdaInvocationContextFactoryAccessor();
+        var accessor = new LambdaInvocationContextAccessor();
 
         // Act
         var result = accessor.LambdaInvocationContext;
@@ -21,7 +21,7 @@ public class LambdaInvocationContextFactoryAccessorTests
     internal void LambdaInvocationContext_WhenSet_ReturnsSetValue(ILambdaInvocationContext context)
     {
         // Arrange
-        var accessor = new LambdaInvocationContextFactoryAccessor();
+        var accessor = new LambdaInvocationContextAccessor();
 
         // Act
         accessor.LambdaInvocationContext = context;
@@ -39,7 +39,7 @@ public class LambdaInvocationContextFactoryAccessorTests
     )
     {
         // Arrange
-        var accessor = new LambdaInvocationContextFactoryAccessor();
+        var accessor = new LambdaInvocationContextAccessor();
         accessor.LambdaInvocationContext = context1;
 
         // Act
@@ -58,7 +58,7 @@ public class LambdaInvocationContextFactoryAccessorTests
     )
     {
         // Arrange
-        var accessor = new LambdaInvocationContextFactoryAccessor();
+        var accessor = new LambdaInvocationContextAccessor();
         accessor.LambdaInvocationContext = context;
 
         // Act
@@ -77,8 +77,8 @@ public class LambdaInvocationContextFactoryAccessorTests
     )
     {
         // Arrange
-        var accessor1 = new LambdaInvocationContextFactoryAccessor();
-        var accessor2 = new LambdaInvocationContextFactoryAccessor();
+        var accessor1 = new LambdaInvocationContextAccessor();
+        var accessor2 = new LambdaInvocationContextAccessor();
 
         // Act
         accessor1.LambdaInvocationContext = context1;
