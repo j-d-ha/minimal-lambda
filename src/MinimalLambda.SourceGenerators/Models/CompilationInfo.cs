@@ -7,5 +7,5 @@ internal readonly record struct CompilationInfo(
     EquatableArray<HigherOrderMethodInfo> OnShutdownInvocationInfos,
     EquatableArray<HigherOrderMethodInfo> OnInitInvocationInfos,
     EquatableArray<SimpleMethodInfo> BuilderInfos,
-    EquatableArray<UseMiddlewareTInfo> UseMiddlewareTInfo
+    EquatableArray<UseMiddlewareTInfo> UseMiddlewareTInfos
 );
