@@ -71,13 +71,13 @@ public class OnShutdownOpenTelemetryExtensionsTests
         LambdaShutdownDelegate? capturedShutdownAction = null;
         var mockApp = CreateMockApp(a => capturedShutdownAction = a);
 
-        var mockServiceProvider = Substitute.For<IServiceProvider>();
+        var mockContext = Substitute.For<ILambdaLifecycleContext>();
 
         // Act
         var result = mockApp.OnShutdownFlushTracer();
 
         capturedShutdownAction.Should().NotBeNull();
-        await capturedShutdownAction.Invoke(mockServiceProvider, CancellationToken.None);
+        await capturedShutdownAction.Invoke(mockContext);
 
         // Assert
         result.Should().Be(mockApp);
@@ -106,13 +106,13 @@ public class OnShutdownOpenTelemetryExtensionsTests
             options => options.TracerShouldSucceed = false
         );
 
-        var mockServiceProvider = Substitute.For<IServiceProvider>();
+        var mockContext = Substitute.For<ILambdaLifecycleContext>();
 
         // Act
         var result = mockApp.OnShutdownFlushTracer();
 
         capturedShutdownAction.Should().NotBeNull();
-        await capturedShutdownAction.Invoke(mockServiceProvider, CancellationToken.None);
+        await capturedShutdownAction.Invoke(mockContext);
 
         // Assert
         result.Should().Be(mockApp);
@@ -141,13 +141,14 @@ public class OnShutdownOpenTelemetryExtensionsTests
             options => options.TracerDelay = TimeSpan.FromMilliseconds(10)
         );
 
-        var mockServiceProvider = Substitute.For<IServiceProvider>();
+        var mockContext = Substitute.For<ILambdaLifecycleContext>();
+        mockContext.CancellationToken.Returns(new CancellationToken(true));
 
         // Act
         var result = mockApp.OnShutdownFlushTracer();
 
         capturedShutdownAction.Should().NotBeNull();
-        await capturedShutdownAction.Invoke(mockServiceProvider, new CancellationToken(true));
+        await capturedShutdownAction.Invoke(mockContext);
 
         // Assert
         result.Should().Be(mockApp);
@@ -229,13 +230,13 @@ public class OnShutdownOpenTelemetryExtensionsTests
         LambdaShutdownDelegate? capturedShutdownAction = null;
         var mockApp = CreateMockApp(a => capturedShutdownAction = a);
 
-        var mockServiceProvider = Substitute.For<IServiceProvider>();
+        var mockContext = Substitute.For<ILambdaLifecycleContext>();
 
         // Act
         var result = mockApp.OnShutdownFlushMeter();
 
         capturedShutdownAction.Should().NotBeNull();
-        await capturedShutdownAction.Invoke(mockServiceProvider, CancellationToken.None);
+        await capturedShutdownAction.Invoke(mockContext);
 
         // Assert
         result.Should().Be(mockApp);
@@ -264,13 +265,12 @@ public class OnShutdownOpenTelemetryExtensionsTests
             options => options.MeterShouldSucceed = false
         );
 
-        var mockServiceProvider = Substitute.For<IServiceProvider>();
-
+        var mockContext = Substitute.For<ILambdaLifecycleContext>();
         // Act
         var result = mockApp.OnShutdownFlushMeter();
 
         capturedShutdownAction.Should().NotBeNull();
-        await capturedShutdownAction.Invoke(mockServiceProvider, CancellationToken.None);
+        await capturedShutdownAction.Invoke(mockContext);
 
         // Assert
         result.Should().Be(mockApp);
@@ -299,13 +299,14 @@ public class OnShutdownOpenTelemetryExtensionsTests
             options => options.MeterDelay = TimeSpan.FromMilliseconds(10)
         );
 
-        var mockServiceProvider = Substitute.For<IServiceProvider>();
+        var mockContext = Substitute.For<ILambdaLifecycleContext>();
+        mockContext.CancellationToken.Returns(new CancellationToken(true));
 
         // Act
         var result = mockApp.OnShutdownFlushMeter();
 
         capturedShutdownAction.Should().NotBeNull();
-        await capturedShutdownAction.Invoke(mockServiceProvider, new CancellationToken(true));
+        await capturedShutdownAction.Invoke(mockContext);
 
         // Assert
         result.Should().Be(mockApp);
@@ -389,14 +390,14 @@ public class OnShutdownOpenTelemetryExtensionsTests
         var shutdownActions = new List<LambdaShutdownDelegate>();
         var mockApp = CreateMockApp(a => shutdownActions.Add(a));
 
-        var mockServiceProvider = Substitute.For<IServiceProvider>();
+        var mockContext = Substitute.For<ILambdaLifecycleContext>();
 
         // Act
         var result = mockApp.OnShutdownFlushOpenTelemetry();
 
         shutdownActions.Should().HaveCount(2);
-        await shutdownActions[0].Invoke(mockServiceProvider, CancellationToken.None);
-        await shutdownActions[1].Invoke(mockServiceProvider, CancellationToken.None);
+        await shutdownActions[0].Invoke(mockContext);
+        await shutdownActions[1].Invoke(mockContext);
 
         // Assert
         result.Should().Be(mockApp);
@@ -432,14 +433,14 @@ public class OnShutdownOpenTelemetryExtensionsTests
             options => options.TracerShouldSucceed = false
         );
 
-        var mockServiceProvider = Substitute.For<IServiceProvider>();
+        var mockContext = Substitute.For<ILambdaLifecycleContext>();
 
         // Act
         var result = mockApp.OnShutdownFlushOpenTelemetry();
 
         shutdownActions.Should().HaveCount(2);
-        await shutdownActions[0].Invoke(mockServiceProvider, CancellationToken.None);
-        await shutdownActions[1].Invoke(mockServiceProvider, CancellationToken.None);
+        await shutdownActions[0].Invoke(mockContext);
+        await shutdownActions[1].Invoke(mockContext);
 
         // Assert
         result.Should().Be(mockApp);
@@ -475,14 +476,14 @@ public class OnShutdownOpenTelemetryExtensionsTests
             options => options.MeterShouldSucceed = false
         );
 
-        var mockServiceProvider = Substitute.For<IServiceProvider>();
+        var mockContext = Substitute.For<ILambdaLifecycleContext>();
 
         // Act
         var result = mockApp.OnShutdownFlushOpenTelemetry();
 
         shutdownActions.Should().HaveCount(2);
-        await shutdownActions[0].Invoke(mockServiceProvider, CancellationToken.None);
-        await shutdownActions[1].Invoke(mockServiceProvider, CancellationToken.None);
+        await shutdownActions[0].Invoke(mockContext);
+        await shutdownActions[1].Invoke(mockContext);
 
         // Assert
         result.Should().Be(mockApp);
@@ -522,15 +523,15 @@ public class OnShutdownOpenTelemetryExtensionsTests
             }
         );
 
-        var mockServiceProvider = Substitute.For<IServiceProvider>();
-        var cancellationToken = new CancellationToken(true);
+        var mockContext = Substitute.For<ILambdaLifecycleContext>();
+        mockContext.CancellationToken.Returns(new CancellationToken(true));
 
         // Act
         var result = mockApp.OnShutdownFlushOpenTelemetry();
 
         shutdownActions.Should().HaveCount(2);
-        await shutdownActions[0].Invoke(mockServiceProvider, cancellationToken);
-        await shutdownActions[1].Invoke(mockServiceProvider, cancellationToken);
+        await shutdownActions[0].Invoke(mockContext);
+        await shutdownActions[1].Invoke(mockContext);
 
         // Assert
         result.Should().Be(mockApp);
