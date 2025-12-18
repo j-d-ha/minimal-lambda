@@ -23,7 +23,9 @@
             private readonly object[] _args;
 
             {{~ for parameter in call.parameters ~}}
+            {{~ if !parameter.from_services ~}}
             private int _cache{{ for.index }} = NotCached; // {{ parameter.fully_qualified_type }}
+            {{~ end ~}}
             {{~ end ~}}
             {{~ if call.any_parameters ~}}
             
@@ -60,7 +62,9 @@
             private void BuildResolutionCache()
             {
                 {{~ for parameter in call.parameters ~}}
+                {{~ if !parameter.from_services ~}}
                 _cache{{ for.index }} = FromServices;
+                {{~ end ~}}
                 {{~ end ~}}
 
                 for (var i = 0; i < _args.Length; i++)
