@@ -10,8 +10,34 @@
             where T : ILambdaMiddleware
         {
             var resolver = new {{ call.short_middleware_class_name }}Resolver{{ for.index }}(args);
-
-            builder.Use(next => context => resolver.Create(context).InvokeAsync(context, next));
+            
+            {{~ if call.is_async_disposable ~}}
+            builder.Use(next =>
+            {
+                return async context =>
+                {
+                    await using var middleware = resolver.Create(context);
+                    await middleware.InvokeAsync(context, next);
+                };
+            });
+            {{~ else if call.is_disposable  ~}}
+            builder.Use(next =>
+            {
+                return async context =>
+                {
+                    using var middleware = resolver.Create(context);
+                    await middleware.InvokeAsync(context, next);
+                };
+            });
+            {{~ else ~}}
+            builder.Use(next =>
+            {
+                return context =>
+                {
+                    return resolver.Create(context).InvokeAsync(context, next);
+                };
+            });
+            {{~ end ~}}
 
             return builder;
         }

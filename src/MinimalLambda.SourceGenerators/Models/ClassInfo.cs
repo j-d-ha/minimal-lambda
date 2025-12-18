@@ -8,12 +8,13 @@ namespace MinimalLambda.SourceGenerators.Models;
 internal readonly record struct ClassInfo(
     string GloballyQualifiedName,
     string ShortName,
-    EquatableArray<MethodInfo> ConstructorInfos
+    EquatableArray<MethodInfo> ConstructorInfos,
+    EquatableArray<string> ImplementedInterfaces
 );
 
 internal static class ClassInfoExtensions
 {
-    extension(ClassInfo)
+    extension(ClassInfo classInfo)
     {
         internal static ClassInfo Create(ITypeSymbol typeSymbol)
         {
@@ -28,7 +29,15 @@ internal static class ClassInfoExtensions
                 .InstanceConstructors.Select(MethodInfo.Create)
                 .ToEquatableArray();
 
-            return new ClassInfo(globallyQualifiedName, shortName, constructorInfo);
+            // get all interfaces
+            var interfaceNames = typeSymbol
+                .AllInterfaces.Select(i => i.GetAsGlobal())
+                .ToEquatableArray();
+
+            return new ClassInfo(globallyQualifiedName, shortName, constructorInfo, interfaceNames);
         }
+
+        internal bool IsInterfaceImplemented(string interfaceName) =>
+            classInfo.ImplementedInterfaces.Any(i => i == interfaceName);
     }
 }

@@ -16,8 +16,7 @@ internal static class UseMiddlewareTSource
             var classInfo = useMiddlewareTInfo.ClassInfo;
 
             // choose what constructor to use with the following criteria:
-            // 1. if it has an `[MiddlewareConstructor]` attribute. Multiple of these are
-            // not valid.
+            // 1. if it has a `[MiddlewareConstructor]` attribute. Multiple of these are not valid.
             // 2. default to the constructor with the most arguments
             var constructor = classInfo
                 .ConstructorInfos.Select(c => (MethodInfo?)c)
@@ -36,18 +35,21 @@ internal static class UseMiddlewareTSource
                 {
                     var fromArgs = p.AttributeNames.Any(n => n == AttributeConstants.FromArguments);
 
+                    // From services is defined as either having a `[FromServices]` attribute or a
+                    // `[FromKeyedServices]` attribute
                     var fromServices = p.AttributeNames.Any(n =>
-                        n == AttributeConstants.FromServices
+                        n is AttributeConstants.FromServices or AttributeConstants.FromKeyedService
                     );
 
                     var paramAssignment = p.BuildParameterAssignment();
 
+                    var fullyQualifiedTypeNotNull =
+                        p.TypeInfo.FullyQualifiedType.RemoveTrailingChar("?");
+
                     return new
                     {
                         p.TypeInfo.FullyQualifiedType,
-                        FullyQualifiedTypeNotNull = p.TypeInfo.FullyQualifiedType.RemoveTrailingChar(
-                            "?"
-                        ),
+                        FullyQualifiedTypeNotNull = fullyQualifiedTypeNotNull,
                         p.Name,
                         FromArguments = fromArgs,
                         FromServices = fromServices,
@@ -57,7 +59,13 @@ internal static class UseMiddlewareTSource
                 })
                 .ToArray();
 
-            // TODO: support IDisposable and IAsyncDisposable
+            var isDisposable = useMiddlewareTInfo.ClassInfo.IsInterfaceImplemented(
+                TypeConstants.IDisposable
+            );
+
+            var isAsyncDisposable = useMiddlewareTInfo.ClassInfo.IsInterfaceImplemented(
+                TypeConstants.IAsyncDisposable
+            );
 
             var allFromServices = parameters.All(p => p.FromServices);
 
@@ -69,6 +77,8 @@ internal static class UseMiddlewareTSource
                 AllFromServices = allFromServices,
                 Parameters = parameters,
                 AnyParameters = parameters.Length > 0,
+                IsDisposable = isDisposable,
+                IsAsyncDisposable = isAsyncDisposable,
             };
         });
 
