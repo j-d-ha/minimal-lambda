@@ -22,7 +22,6 @@
             private const int FromServices = -2;
             private readonly object[] _args;
 
-            // Cache fields: -1 = not cached, -2 = resolve from DI, >= 0 = args index
             {{~ for parameter in call.parameters ~}}
             private int _cache{{ for.index }} = NotCached; // {{ parameter.type_info.fully_qualified_type }}
             {{~ end ~}}
@@ -31,11 +30,9 @@
 
             internal ILambdaMiddleware Create(ILambdaInvocationContext context)
             {
-                // First call builds the resolution cache
                 if (_cache0 == NotCached)
                     BuildResolutionCache();
 
-                // Fast resolution using cached indices
                 {{~ for parameter in call.parameters ~}}
                 var arg0 =
                     _cache{{ for.index }} >= 0
@@ -48,12 +45,10 @@
 
             private void BuildResolutionCache()
             {
-                // Initialize all to "resolve from services"
                 {{~ for parameter in call.parameters ~}}
                 _cache{{ for.index }} = FromServices;
                 {{~ end ~}}
 
-                // Single pass through args - find where each type lives
                 for (var i = 0; i < _args.Length; i++)
                 {
                     var arg = _args[i];
