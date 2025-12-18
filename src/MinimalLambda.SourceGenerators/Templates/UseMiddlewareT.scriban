@@ -21,13 +21,16 @@
             private const int NotCached = -1;
             private const int FromServices = -2;
             private readonly object[] _args;
+            {{~ if call.any_parameters && !call.all_from_services ~}}
+            private bool _cacheBuilt = false;
+            {{~ end ~}}
 
             {{~ for parameter in call.parameters ~}}
             {{~ if !parameter.from_services ~}}
             private int _cache{{ for.index }} = NotCached; // {{ parameter.fully_qualified_type }}
             {{~ end ~}}
             {{~ end ~}}
-            {{~ if call.any_parameters ~}}
+            {{~ if call.any_parameters && !call.all_from_services ~}}
             
             {{~ end ~}}
             internal {{ call.short_middleware_class_name }}Resolver{{ for.index }}(object[] args) => _args = args;
@@ -35,9 +38,11 @@
             internal {{ call.full_middleware_class_name }} Create(ILambdaInvocationContext context)
             {
                 {{~ if call.any_parameters ~}}
-                if (_cache0 == NotCached)
+                {{~ if !call.all_from_services ~}}
+                if (!_cacheBuilt)
                     BuildResolutionCache();
 
+                {{~ end ~}}
                 {{~ for parameter in call.parameters ~}}
                 // {{ parameter.string }}
                 {{~ if parameter.from_services ~}}
@@ -54,10 +59,10 @@
                 {{~ end ~}}
                 
                 {{~ end ~}}
-                {{~ end ~}}  
+                {{~ end ~}}
                 return new {{ call.full_middleware_class_name }}({{ for arg in call.parameters }}arg{{ for.index }}{{ if !for.last }}, {{ end }}{{ end }});
             }
-            {{~ if call.any_parameters ~}}
+            {{~ if call.any_parameters && !call.all_from_services ~}}
             
             private void BuildResolutionCache()
             {
@@ -84,6 +89,7 @@
                         {{~ end ~}}
                     }
                 }
+                _cacheBuilt = true;
             }
             {{~ end ~}}
         }

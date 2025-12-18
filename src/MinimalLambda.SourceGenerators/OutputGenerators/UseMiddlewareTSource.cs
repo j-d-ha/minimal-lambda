@@ -57,11 +57,16 @@ internal static class UseMiddlewareTSource
                 })
                 .ToArray();
 
+            // TODO: support IDisposable and IAsyncDisposable
+
+            var allFromServices = parameters.All(p => p.FromServices);
+
             return new
             {
                 Location = useMiddlewareTInfo.InterceptableLocationInfo,
                 FullMiddlewareClassName = classInfo.GloballyQualifiedName,
                 ShortMiddlewareClassName = classInfo.ShortName,
+                AllFromServices = allFromServices,
                 Parameters = parameters,
                 AnyParameters = parameters.Length > 0,
             };
