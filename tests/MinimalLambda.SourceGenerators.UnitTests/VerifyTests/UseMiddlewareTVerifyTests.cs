@@ -17,10 +17,6 @@ public class UseMiddlewareTVerifyTests
 
             lambda.UseMiddleware<MyLambdaMiddleware>();
 
-            lambda.MapHandler(() => { });
-
-            await lambda.RunAsync();
-
             internal class MyLambdaMiddleware : ILambdaMiddleware
             {
                 public async Task InvokeAsync(ILambdaInvocationContext context, LambdaInvocationDelegate next)
@@ -45,10 +41,6 @@ public class UseMiddlewareTVerifyTests
             await using var lambda = builder.Build();
 
             lambda.UseMiddleware<MyLambdaMiddleware2>();
-
-            lambda.MapHandler(() => { });
-
-            await lambda.RunAsync();
 
             internal abstract class MyLambdaMiddleware : ILambdaMiddleware
             {
@@ -79,10 +71,6 @@ public class UseMiddlewareTVerifyTests
             await using var lambda = builder.Build();
 
             lambda.UseMiddleware<MyLambdaMiddleware>();
-
-            lambda.MapHandler(() => { });
-
-            await lambda.RunAsync();
 
             internal class MyLambdaMiddleware : ILambdaMiddleware
             {
@@ -120,10 +108,6 @@ public class UseMiddlewareTVerifyTests
             await using var lambda = builder.Build();
 
             lambda.UseMiddleware<MyLambdaMiddleware>();
-
-            lambda.MapHandler(() => { });
-
-            await lambda.RunAsync();
 
             internal class MyLambdaMiddleware : ILambdaMiddleware
             {
@@ -169,10 +153,6 @@ public class UseMiddlewareTVerifyTests
 
             lambda.UseMiddleware<MyLambdaMiddleware>();
 
-            lambda.MapHandler(() => { });
-
-            await lambda.RunAsync();
-
             internal class MyLambdaMiddleware(
                 [FromServices] IService service
             ) : ILambdaMiddleware
@@ -205,10 +185,6 @@ public class UseMiddlewareTVerifyTests
             await using var lambda = builder.Build();
 
             lambda.UseMiddleware<MyLambdaMiddleware>();
-
-            lambda.MapHandler(() => { });
-
-            await lambda.RunAsync();
 
             internal class MyLambdaMiddleware(
                 [FromKeyedServices("myKey")] IService service
@@ -243,10 +219,6 @@ public class UseMiddlewareTVerifyTests
 
             lambda.UseMiddleware<MyLambdaMiddleware>();
 
-            lambda.MapHandler(() => { });
-
-            await lambda.RunAsync();
-
             internal class MyLambdaMiddleware(
                 [FromArguments] string apiKey
             ) : ILambdaMiddleware
@@ -273,10 +245,6 @@ public class UseMiddlewareTVerifyTests
             await using var lambda = builder.Build();
 
             lambda.UseMiddleware<MyLambdaMiddleware>();
-
-            lambda.MapHandler(() => { });
-
-            await lambda.RunAsync();
 
             internal class MyLambdaMiddleware(
                 IService? service
@@ -310,10 +278,6 @@ public class UseMiddlewareTVerifyTests
 
             lambda.UseMiddleware<MyLambdaMiddleware>();
 
-            lambda.MapHandler(() => { });
-
-            await lambda.RunAsync();
-
             internal class MyLambdaMiddleware : ILambdaMiddleware
             {
                 internal MyLambdaMiddleware(string name = "default")
@@ -343,10 +307,6 @@ public class UseMiddlewareTVerifyTests
             await using var lambda = builder.Build();
 
             lambda.UseMiddleware<MyLambdaMiddleware>();
-
-            lambda.MapHandler(() => { });
-
-            await lambda.RunAsync();
 
             internal class MyLambdaMiddleware(
                 [FromServices] ILogger logger,
@@ -381,10 +341,6 @@ public class UseMiddlewareTVerifyTests
             await using var lambda = builder.Build();
 
             lambda.UseMiddleware<MyLambdaMiddleware>("myApiKey");
-
-            lambda.MapHandler(() => { });
-
-            await lambda.RunAsync();
 
             internal class MyLambdaMiddleware(
                 string apiKey,
@@ -421,10 +377,6 @@ public class UseMiddlewareTVerifyTests
 
             lambda.UseMiddleware<MyLambdaMiddleware>();
 
-            lambda.MapHandler(() => { });
-
-            await lambda.RunAsync();
-
             internal class MyLambdaMiddleware(
                 [FromArguments] string name,
                 [FromKeyedServices("primary")] ILogger logger,
@@ -460,10 +412,6 @@ public class UseMiddlewareTVerifyTests
 
             lambda.UseMiddleware<MyLambdaMiddleware>();
 
-            lambda.MapHandler(() => { });
-
-            await lambda.RunAsync();
-
             internal class MyLambdaMiddleware : ILambdaMiddleware, IDisposable
             {
                 public async Task InvokeAsync(ILambdaInvocationContext context, LambdaInvocationDelegate next)
@@ -491,10 +439,6 @@ public class UseMiddlewareTVerifyTests
             await using var lambda = builder.Build();
 
             lambda.UseMiddleware<MyLambdaMiddleware>();
-
-            lambda.MapHandler(() => { });
-
-            await lambda.RunAsync();
 
             internal class MyLambdaMiddleware : ILambdaMiddleware, IAsyncDisposable
             {
