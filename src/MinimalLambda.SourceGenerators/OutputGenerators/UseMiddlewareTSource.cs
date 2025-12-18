@@ -36,6 +36,10 @@ internal static class UseMiddlewareTSource
                 {
                     var fromArgs = p.AttributeNames.Any(n => n == AttributeConstants.FromArguments);
 
+                    var fromServices = p.AttributeNames.Any(n =>
+                        n == AttributeConstants.FromServices
+                    );
+
                     var paramAssignment = p.BuildParameterAssignment();
 
                     return new
@@ -43,6 +47,7 @@ internal static class UseMiddlewareTSource
                         p.TypeInfo.FullyQualifiedType,
                         p.Name,
                         FromArguments = fromArgs,
+                        FromServices = fromServices,
                         paramAssignment.Assignment,
                         paramAssignment.String,
                     };

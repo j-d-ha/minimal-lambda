@@ -42,6 +42,8 @@ internal static class AttributeConstants
     internal const string MiddlewareConstructor = "MinimalLambda.MiddlewareConstructorAttribute";
 
     internal const string FromArguments = "MinimalLambda.FromArgumentsAttribute";
+
+    internal const string FromServices = "MinimalLambda.FromServicesAttribute";
 }
 
 internal static class GeneratorConstants

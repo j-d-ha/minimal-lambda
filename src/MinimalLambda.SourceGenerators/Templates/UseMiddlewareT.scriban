@@ -30,24 +30,28 @@
             {{~ end ~}}
             internal {{ call.short_middleware_class_name }}Resolver{{ for.index }}(object[] args) => _args = args;
 
-            internal ILambdaMiddleware Create(ILambdaInvocationContext context)
+            internal {{ call.full_middleware_class_name }} Create(ILambdaInvocationContext context)
             {
                 {{~ if call.any_parameters ~}}
                 if (_cache0 == NotCached)
                     BuildResolutionCache();
 
                 {{~ for parameter in call.parameters ~}}
-                var arg0 =
+                // {{ parameter.string }}
+                {{~ if parameter.from_services ~}}
+                var arg{{ for.index }} = {{ parameter.assignment }};
+                {{~ else ~}}
+                var arg{{ for.index }} =
                     _cache{{ for.index }} >= 0
                         ? ({{ parameter.fully_qualified_type }})_args[_cache{{ for.index }}]
                         {{~ if parameter.from_arguments ~}}
                         : throw new InvalidOperationException("Parameter '{{ parameter.name }}' of type '{{ parameter.fully_qualified_type }}' must be provided in args");
                         {{~ else ~}}
-                        // {{ parameter.string }}
                         : {{ parameter.assignment }};
                         {{~ end ~}}
                 {{~ end ~}}
                 
+                {{~ end ~}}
                 {{~ end ~}}  
                 return new {{ call.full_middleware_class_name }}({{ for arg in call.parameters }}arg{{ for.index }}{{ if !for.last }}, {{ end }}{{ end }});
             }
@@ -68,9 +72,11 @@
                     switch (arg)
                     {
                         {{~ for parameter in call.parameters ~}}
+                        {{~ if !parameter.from_services ~}}
                         case {{ parameter.fully_qualified_type }} when _cache{{ for.index }} == FromServices:
                             _cache{{ for.index }} = i;
                             break;
+                        {{~ end ~}}
                         {{~ end ~}}
                     }
                 }
