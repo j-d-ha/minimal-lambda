@@ -78,6 +78,5 @@ nunit-*.xml
 /benchmarks/MinimalLambda.Benchmarks/BenchmarkDotNet.Artifacts/
 /nupkg/
 /temp.md
-/.claude/
 /site/
 /.cache/
