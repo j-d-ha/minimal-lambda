@@ -1,5 +1,5 @@
 using System.Linq;
-using MinimalLambda.SourceGenerators.Types;
+using LayeredCraft.SourceGeneratorTools.Types;
 
 namespace MinimalLambda.SourceGenerators.Models;
 

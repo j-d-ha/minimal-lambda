@@ -1,7 +1,7 @@
 using System.Linq;
+using LayeredCraft.SourceGeneratorTools.Types;
 using MinimalLambda.SourceGenerators.Extensions;
 using MinimalLambda.SourceGenerators.Models;
-using MinimalLambda.SourceGenerators.Types;
 
 namespace MinimalLambda.SourceGenerators;
 

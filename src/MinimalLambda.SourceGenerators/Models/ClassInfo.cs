@@ -1,7 +1,8 @@
+using System.Collections.Generic;
 using System.Linq;
+using LayeredCraft.SourceGeneratorTools.Types;
 using Microsoft.CodeAnalysis;
 using MinimalLambda.SourceGenerators.Extensions;
-using MinimalLambda.SourceGenerators.Types;
 
 namespace MinimalLambda.SourceGenerators.Models;
 

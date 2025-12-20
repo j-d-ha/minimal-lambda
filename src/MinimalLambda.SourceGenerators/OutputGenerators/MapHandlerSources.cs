@@ -1,7 +1,7 @@
 using System.Linq;
+using LayeredCraft.SourceGeneratorTools.Types;
 using MinimalLambda.SourceGenerators.Extensions;
 using MinimalLambda.SourceGenerators.Models;
-using MinimalLambda.SourceGenerators.Types;
 
 namespace MinimalLambda.SourceGenerators;
 
@@ -90,7 +90,8 @@ internal static class MapHandlerSources
                     ParameterSource.Event =>
                         $"context.GetRequiredEvent<{param.TypeInfo.FullyQualifiedType}>()",
 
-                    // ILambdaContext OR ILambdaInvocationContext -> use context directly
+                    // ILambdaContext OR ILambdaInvocationContext -> use context
+                    // directly
                     ParameterSource.HostContext => "context",
 
                     // CancellationToken -> get from context

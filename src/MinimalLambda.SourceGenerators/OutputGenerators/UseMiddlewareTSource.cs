@@ -1,6 +1,6 @@
 using System.Linq;
+using LayeredCraft.SourceGeneratorTools.Types;
 using MinimalLambda.SourceGenerators.Models;
-using MinimalLambda.SourceGenerators.Types;
 
 namespace MinimalLambda.SourceGenerators;
 
@@ -16,7 +16,8 @@ internal static class UseMiddlewareTSource
             var classInfo = useMiddlewareTInfo.ClassInfo;
 
             // choose what constructor to use with the following criteria:
-            // 1. if it has a `[MiddlewareConstructor]` attribute. Multiple of these are not valid.
+            // 1. if it has a `[MiddlewareConstructor]` attribute. Multiple of these are not
+            // valid.
             // 2. default to the constructor with the most arguments
             var constructor = classInfo
                 .ConstructorInfos.Select(c => (MethodInfo?)c)
@@ -35,7 +36,8 @@ internal static class UseMiddlewareTSource
                 {
                     var fromArgs = p.AttributeNames.Any(n => n == AttributeConstants.FromArguments);
 
-                    // From services is defined as either having a `[FromServices]` attribute or a
+                    // From services is defined as either having a `[FromServices]`
+                    // attribute or a
                     // `[FromKeyedServices]` attribute
                     var fromServices = p.AttributeNames.Any(n =>
                         n is AttributeConstants.FromServices or AttributeConstants.FromKeyedService

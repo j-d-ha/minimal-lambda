@@ -1,8 +1,8 @@
+using System.Collections.Generic;
 using System.Reflection;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using MinimalLambda.SourceGenerators.Models;
-using MinimalLambda.SourceGenerators.Types;
 
 namespace MinimalLambda.SourceGenerators;
 

@@ -9,7 +9,6 @@ using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Operations;
 using MinimalLambda.SourceGenerators.Extensions;
 using MinimalLambda.SourceGenerators.Models;
-using MinimalLambda.SourceGenerators.Types;
 using TypeInfo = MinimalLambda.SourceGenerators.Models.TypeInfo;
 
 namespace MinimalLambda.SourceGenerators;
