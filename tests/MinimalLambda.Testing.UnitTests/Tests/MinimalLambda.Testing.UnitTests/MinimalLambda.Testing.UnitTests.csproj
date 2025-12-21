@@ -5,6 +5,7 @@
     <Nullable>enable</Nullable>
     <IsPackable>false</IsPackable>
     <IsTestProject>true</IsTestProject>
+    <NoWarn>$(NoWarn);IL2026;IL2087;IL2091;IL3050;IL3051;IL2075:</NoWarn>
   </PropertyGroup>
 
   <ItemGroup>

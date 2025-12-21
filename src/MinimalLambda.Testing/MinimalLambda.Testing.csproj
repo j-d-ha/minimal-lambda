@@ -11,6 +11,8 @@
     <PackageId>MinimalLambda.Testing</PackageId>
     <Description>In-memory testing harness for MinimalLambda</Description>
     <PackageReadmeFile>README.md</PackageReadmeFile>
+    <IsAotCompatible>false</IsAotCompatible>
+    <NoWarn>$(NoWarn);IL2026;IL2087;IL2091;IL3050;IL3051;IL2075</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="MinimalLambda.Testing.UnitTests" />
@@ -27,7 +29,4 @@
     <PackageReference Include="Microsoft.AspNetCore.Routing" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" />
   </ItemGroup>
-  <PropertyGroup>
-    <IsAotCompatible>false</IsAotCompatible>
-  </PropertyGroup>
 </Project>
