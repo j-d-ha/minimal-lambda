@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text;
 using System.Text.Json;
 using MinimalLambda.Options;
@@ -14,6 +15,16 @@ public sealed class KinesisEnvelope<T> : KinesisEnvelopeBase<T>
 {
     /// <inheritdoc cref="IRequestEnvelope" />
     /// <remarks>This implementation deserializes each base64-encoded data stream from JSON.</remarks>
+    [UnconditionalSuppressMessage(
+        "Aot",
+        "IL3050:RequiresDynamicCode",
+        Justification = "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T"
+    )]
+    [UnconditionalSuppressMessage(
+        "Aot",
+        "IL2026:RequiresUnreferencedCode",
+        Justification = "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T"
+    )]
     public override void ExtractPayload(EnvelopeOptions options)
     {
         foreach (var record in Records)

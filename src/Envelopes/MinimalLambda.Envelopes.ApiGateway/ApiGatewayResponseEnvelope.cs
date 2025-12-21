@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using MinimalLambda.Options;
 
@@ -13,6 +14,16 @@ public sealed class ApiGatewayResponseEnvelope<T> : ApiGatewayResponseEnvelopeBa
 {
     /// <inheritdoc cref="IResponseEnvelope" />
     /// <remarks>This implementation serializes the response body to JSON.</remarks>
+    [UnconditionalSuppressMessage(
+        "Aot",
+        "IL3050:RequiresDynamicCode",
+        Justification = "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T"
+    )]
+    [UnconditionalSuppressMessage(
+        "Aot",
+        "IL2026:RequiresUnreferencedCode",
+        Justification = "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T"
+    )]
     public override void PackPayload(EnvelopeOptions options) =>
         Body = JsonSerializer.Serialize(BodyContent, options.JsonOptions);
 }

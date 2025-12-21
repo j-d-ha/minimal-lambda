@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using MinimalLambda.Options;
 
@@ -26,6 +27,16 @@ public sealed class CloudWatchLogsEnvelope<T> : CloudWatchLogsEnvelopeBase<T>
     ///     This implementation deserializes the base64-decoded and decompressed CloudWatch Logs data
     ///     from JSON.
     /// </remarks>
+    [UnconditionalSuppressMessage(
+        "Aot",
+        "IL3050:RequiresDynamicCode",
+        Justification = "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T"
+    )]
+    [UnconditionalSuppressMessage(
+        "Aot",
+        "IL2026:RequiresUnreferencedCode",
+        Justification = "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T"
+    )]
     public override void ExtractPayload(EnvelopeOptions options)
     {
         base.ExtractPayload(options);

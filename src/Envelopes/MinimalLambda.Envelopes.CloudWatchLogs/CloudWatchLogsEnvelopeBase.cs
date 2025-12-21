@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Amazon.Lambda.CloudWatchLogsEvents;
@@ -19,6 +20,16 @@ public abstract class CloudWatchLogsEnvelopeBase<T> : CloudWatchLogsEvent, IRequ
     public AwsLogsEnvelope? AwslogsContent { get; set; }
 
     /// <inheritdoc />
+    [UnconditionalSuppressMessage(
+        "Aot",
+        "IL3050:RequiresDynamicCode",
+        Justification = "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T"
+    )]
+    [UnconditionalSuppressMessage(
+        "Aot",
+        "IL2026:RequiresUnreferencedCode",
+        Justification = "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T"
+    )]
     public virtual void ExtractPayload(EnvelopeOptions options)
     {
         var decodedData = Awslogs.DecodeData();

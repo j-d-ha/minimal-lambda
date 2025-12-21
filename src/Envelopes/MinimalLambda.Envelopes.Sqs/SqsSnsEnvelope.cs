@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.Json;
 using MinimalLambda.Envelopes.Sns;
 using MinimalLambda.Options;
@@ -33,6 +34,16 @@ public sealed class SqsSnsEnvelope<T> : SqsEnvelopeBase<SnsEnvelopeBase<T>.SnsMe
     ///     deserialized into type <typeparamref name="T" /> using
     ///     <see cref="EnvelopeOptions.JsonOptions" />.
     /// </remarks>
+    [UnconditionalSuppressMessage(
+        "Aot",
+        "IL3050:RequiresDynamicCode",
+        Justification = "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T"
+    )]
+    [UnconditionalSuppressMessage(
+        "Aot",
+        "IL2026:RequiresUnreferencedCode",
+        Justification = "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T"
+    )]
     public override void ExtractPayload(EnvelopeOptions options)
     {
         foreach (var record in Records)
