@@ -1,7 +1,7 @@
 # Open PR for current branch
 - $ARGUMENTS
 - PR title must follow the format: `<type>(<scope>): <description>`
-  - Valid `<type>`:
+  - Valid values for `<type>` are:
     - feat
     - fix
     - docs
@@ -9,7 +9,7 @@
     - test
     - chore
     - ci
-  - Valid `<scope>`:
+  - `<scope>` is optional. Valid values for `<scope>` are:
     - host
     - envelopes
     - abstractions

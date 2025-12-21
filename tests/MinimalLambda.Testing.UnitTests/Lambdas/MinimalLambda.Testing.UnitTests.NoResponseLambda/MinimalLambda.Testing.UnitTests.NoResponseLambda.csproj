@@ -13,6 +13,9 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
+    <InternalsVisibleTo Include="MinimalLambda.Testing.UnitTests" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference
       Include="..\..\..\..\src\MinimalLambda.SourceGenerators\MinimalLambda.SourceGenerators.csproj"
       ReferenceOutputAssembly="false"
