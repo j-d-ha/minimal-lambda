@@ -9,7 +9,7 @@
     - test
     - chore
     - ci
-  - Valid values for `<scope>` are:
+  - `<scope>` is optional. Valid values for `<scope>` are:
     - host
     - envelopes
     - abstractions
