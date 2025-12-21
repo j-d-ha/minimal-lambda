@@ -8,23 +8,37 @@ internal readonly record struct LocationInfo(
     string FilePath,
     TextSpan TextSpan,
     LinePositionSpan LineSpan
-)
+);
+
+internal static class LocationInfoExtensions
 {
-    internal Location ToLocation() => Location.Create(FilePath, TextSpan, LineSpan);
+    extension(LocationInfo locationInfo)
+    {
+        internal Location ToLocation() =>
+            Location.Create(locationInfo.FilePath, locationInfo.TextSpan, locationInfo.LineSpan);
+    }
 
-    internal static LocationInfo? CreateFrom(SyntaxNode node) => CreateFrom(node.GetLocation());
+    extension(Location location)
+    {
+        internal LocationInfo? CreateLocationInfo() =>
+            location.SourceTree is null
+                ? null
+                : new LocationInfo(
+                    location.SourceTree.FilePath,
+                    location.SourceSpan,
+                    location.GetLineSpan().Span
+                );
+    }
 
-    internal static LocationInfo? CreateFrom(ISymbol symbol) =>
-        symbol.Locations.FirstOrDefault() is not null and var location
-            ? CreateFrom(location)
-            : null;
+    extension(ISymbol symbol)
+    {
+        internal LocationInfo? CreateLocationInfo() =>
+            symbol.Locations.FirstOrDefault()?.CreateLocationInfo();
+    }
 
-    internal static LocationInfo? CreateFrom(Location location) =>
-        location.SourceTree is null
-            ? null
-            : new LocationInfo(
-                location.SourceTree.FilePath,
-                location.SourceSpan,
-                location.GetLineSpan().Span
-            );
+    extension(SyntaxNode syntaxNode)
+    {
+        internal LocationInfo? CreateLocationInfo() =>
+            syntaxNode.GetLocation().CreateLocationInfo();
+    }
 }

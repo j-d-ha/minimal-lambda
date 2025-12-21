@@ -43,6 +43,42 @@ internal static class DiagnosticGenerator
             compilationInfo.OnShutdownInvocationInfos.GenerateKeyedServiceKeyDiagnostics()
         );
 
+        foreach (var useMiddlewareTInfo in compilationInfo.UseMiddlewareTInfos)
+        {
+            // ensure middleware class is concrete
+            if (useMiddlewareTInfo.ClassInfo.TypeKind is "interface" or "abstract class")
+            {
+                diagnostics.Add(
+                    Diagnostic.Create(
+                        Diagnostics.MustBeConcreteType,
+                        useMiddlewareTInfo.GenericTypeArgumentLocation?.ToLocation(),
+                        useMiddlewareTInfo.ClassInfo.ShortName
+                    )
+                );
+            }
+
+            // validate that middleware class constructors only use `[MiddlewareConstructor]` once
+            diagnostics.AddRange(
+                useMiddlewareTInfo
+                    .ClassInfo.ConstructorInfos.Where(c =>
+                        c.AttributeInfos.Any(a =>
+                            a.FullName == AttributeConstants.MiddlewareConstructor
+                        )
+                    )
+                    .Skip(1)
+                    .Select(c =>
+                        Diagnostic.Create(
+                            Diagnostics.MultipleConstructorsWithAttribute,
+                            c.AttributeInfos.First(a =>
+                                    a.FullName == AttributeConstants.MiddlewareConstructor
+                                )
+                                .LocationInfo?.ToLocation(),
+                            AttributeConstants.MiddlewareConstructor
+                        )
+                    )
+            );
+        }
+
         return diagnostics;
     }
 

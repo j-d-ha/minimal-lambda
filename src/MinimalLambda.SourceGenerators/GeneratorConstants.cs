@@ -10,6 +10,10 @@ internal static class TypeConstants
 
     internal const string ILambdaLifecycleContext = "global::MinimalLambda.ILambdaLifecycleContext";
 
+    internal const string IDisposable = "global::System.IDisposable";
+
+    internal const string IAsyncDisposable = "global::System.IAsyncDisposable";
+
     internal const string CancellationToken = "global::System.Threading.CancellationToken";
 
     internal const string Task = "global::System.Threading.Tasks.Task";
@@ -38,6 +42,13 @@ internal static class AttributeConstants
 
     internal const string FromKeyedService =
         "Microsoft.Extensions.DependencyInjection.FromKeyedServicesAttribute";
+
+    internal const string MiddlewareConstructor =
+        "MinimalLambda.Builder.MiddlewareConstructorAttribute";
+
+    internal const string FromArguments = "MinimalLambda.Builder.FromArgumentsAttribute";
+
+    internal const string FromServices = "MinimalLambda.Builder.FromServicesAttribute";
 }
 
 internal static class GeneratorConstants
@@ -55,6 +66,8 @@ internal static class GeneratorConstants
 
     internal const string LambdaHostMapHandlerExtensionsTemplateFile =
         "Templates/MapHandler.scriban";
+
+    internal const string UseMiddlewareTTemplateFile = "Templates/UseMiddlewareT.scriban";
 
     internal const string GenericHandlerTemplateFile = "Templates/GenericHandler.scriban";
 

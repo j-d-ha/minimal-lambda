@@ -44,7 +44,7 @@ internal static class LambdaApplicationBuilderBuildSyntaxProvider
 
             return new SimpleMethodInfo(
                 targetOperation.TargetMethod.Name,
-                LocationInfo.CreateFrom(context.Node),
+                context.Node.CreateLocationInfo(),
                 InterceptableLocationInfo.CreateFrom(interceptableLocation)
             );
         }

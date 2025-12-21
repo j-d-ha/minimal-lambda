@@ -57,6 +57,15 @@ internal static class LambdaHostOutputGenerator
                 )
             );
 
+        // add UseMiddleware<T> interceptors
+        if (compilationInfo.UseMiddlewareTInfos.Count >= 1)
+            outputs.Add(
+                UseMiddlewareTSource.Generate(
+                    compilationInfo.UseMiddlewareTInfos,
+                    generatedCodeAttribute
+                )
+            );
+
         // add OnInit interceptors
         if (compilationInfo.OnInitInvocationInfos.Count >= 1)
             outputs.Add(

@@ -150,6 +150,84 @@ public class MapHandlerIncrementalGeneratorDiagnosticTests
         }
     }
 
+    [Fact]
+    public void Test_MiddlewareClassHasMoreThanOneMiddlewareConstructorAttribute()
+    {
+        var diagnostics = GenerateDiagnostics(
+            """
+            using System.Threading.Tasks;
+            using Microsoft.Extensions.Hosting;
+            using MinimalLambda;
+            using MinimalLambda.Builder;
+
+            var builder = LambdaApplication.CreateBuilder();
+
+            await using var lambda = builder.Build();
+
+            lambda.UseMiddleware<MyLambdaMiddleware>();
+
+            lambda.MapHandler(() => { });
+
+            await lambda.RunAsync();
+
+            internal class MyLambdaMiddleware : ILambdaMiddleware
+            {
+                [MiddlewareConstructor]
+                public MyLambdaMiddleware() { }
+
+                [MiddlewareConstructor]
+                public MyLambdaMiddleware(string input) { }
+
+                public async Task InvokeAsync(ILambdaInvocationContext context, LambdaInvocationDelegate next)
+                {
+                    await next(context);
+                }
+            }
+            """
+        );
+
+        diagnostics.Length.Should().Be(1);
+        foreach (var diagnostic in diagnostics)
+        {
+            diagnostic.Id.Should().Be("LH0005");
+            diagnostic.Severity.Should().Be(DiagnosticSeverity.Error);
+        }
+    }
+
+    [Fact]
+    public void Test_MiddlewareClassMustNotBeAbstractOrAnInterface()
+    {
+        var diagnostics = GenerateDiagnostics(
+            """
+            using System.Threading.Tasks;
+            using MinimalLambda;
+            using MinimalLambda.Builder;
+
+            var builder = LambdaApplication.CreateBuilder();
+
+            await using var lambda = builder.Build();
+
+            lambda.UseMiddleware<IMiddleware>();
+            lambda.UseMiddleware<Middleware2>();
+
+            interface IMiddleware : ILambdaMiddleware { }
+
+            abstract class Middleware2 : ILambdaMiddleware
+            {
+                public Task InvokeAsync(ILambdaInvocationContext context, LambdaInvocationDelegate next) =>
+                    next(context);
+            }
+            """
+        );
+
+        diagnostics.Length.Should().Be(2);
+        foreach (var diagnostic in diagnostics)
+        {
+            diagnostic.Id.Should().Be("LH0006");
+            diagnostic.Severity.Should().Be(DiagnosticSeverity.Error);
+        }
+    }
+
     private static ImmutableArray<Diagnostic> GenerateDiagnostics(
         string source,
         LanguageVersion languageVersion = LanguageVersion.CSharp11

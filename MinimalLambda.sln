@@ -91,6 +91,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Lambdas", "Lambdas", "{D910
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.Envelopes", "src\Envelopes\MinimalLambda.Envelopes\MinimalLambda.Envelopes.csproj", "{190CC9C7-007F-48C5-867D-03B911D53397}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.Example.ClassMiddleware", "examples\MinimalLambda.Example.ClassMiddleware\MinimalLambda.Example.ClassMiddleware.csproj", "{69785FC6-B746-4104-8157-1618B80B0A4C}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -449,6 +451,18 @@ Global
 		{190CC9C7-007F-48C5-867D-03B911D53397}.Release|x64.Build.0 = Release|Any CPU
 		{190CC9C7-007F-48C5-867D-03B911D53397}.Release|x86.ActiveCfg = Release|Any CPU
 		{190CC9C7-007F-48C5-867D-03B911D53397}.Release|x86.Build.0 = Release|Any CPU
+		{69785FC6-B746-4104-8157-1618B80B0A4C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69785FC6-B746-4104-8157-1618B80B0A4C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69785FC6-B746-4104-8157-1618B80B0A4C}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{69785FC6-B746-4104-8157-1618B80B0A4C}.Debug|x64.Build.0 = Debug|Any CPU
+		{69785FC6-B746-4104-8157-1618B80B0A4C}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{69785FC6-B746-4104-8157-1618B80B0A4C}.Debug|x86.Build.0 = Debug|Any CPU
+		{69785FC6-B746-4104-8157-1618B80B0A4C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69785FC6-B746-4104-8157-1618B80B0A4C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69785FC6-B746-4104-8157-1618B80B0A4C}.Release|x64.ActiveCfg = Release|Any CPU
+		{69785FC6-B746-4104-8157-1618B80B0A4C}.Release|x64.Build.0 = Release|Any CPU
+		{69785FC6-B746-4104-8157-1618B80B0A4C}.Release|x86.ActiveCfg = Release|Any CPU
+		{69785FC6-B746-4104-8157-1618B80B0A4C}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -486,5 +500,6 @@ Global
 		{381F49C0-297F-4B61-8A82-E9E502E523AD} = {D9109C8A-AFA8-49C8-A19C-381500902B4D}
 		{7E7B3004-C6C4-4A8C-8610-2A1CB61F834A} = {D9109C8A-AFA8-49C8-A19C-381500902B4D}
 		{190CC9C7-007F-48C5-867D-03B911D53397} = {1C3C52D9-2936-4A0C-A9C8-F330F22B8359}
+		{69785FC6-B746-4104-8157-1618B80B0A4C} = {B36A84DF-456D-A817-6EDD-3EC3E7F6E11F}
 	EndGlobalSection
 EndGlobal

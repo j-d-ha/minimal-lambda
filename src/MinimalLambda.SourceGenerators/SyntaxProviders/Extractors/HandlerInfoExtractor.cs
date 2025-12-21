@@ -78,7 +78,7 @@ internal static class HandlerInfoExtractor
 
         return new HigherOrderMethodInfo(
             targetOperation.TargetMethod.Name,
-            LocationInfo: LocationInfo.CreateFrom(context.Node),
+            LocationInfo: context.Node.CreateLocationInfo(),
             DelegateInfo: delegateInfo.Value,
             InterceptableLocationInfo: InterceptableLocationInfo.CreateFrom(interceptableLocation),
             ArgumentsInfos: argumentInfos
@@ -210,7 +210,7 @@ internal static class HandlerInfoExtractor
                         originalParam with
                         {
                             TypeInfo = TypeInfo.Create(castParam.Type),
-                            LocationInfo = LocationInfo.CreateFrom(castParam),
+                            LocationInfo = castParam.CreateLocationInfo(),
                         }
                 )
                 .ToEquatableArray();
