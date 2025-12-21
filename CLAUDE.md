@@ -154,8 +154,8 @@ When Claude makes commits, ALWAYS follow conventional commits format:
 
 **Types:** `feat`, `fix`, `docs`, `refactor`, `test`, `chore`, `ci`
 
-**Scope (optional but recommended):** Must be one of: `host`, `abstractions`, `opentelemetry`,
-`deps`, `build`, `ci`, `github`
+**Scope (optional but recommended):** See `./.claude/commands/pr.md` for the complete list of valid
+scopes.
 
 - Omit scope for general changes
 

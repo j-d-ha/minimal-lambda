@@ -262,6 +262,35 @@ internal sealed class ValidationMiddleware : ILambdaMiddleware
 
 For more on service lifetimes and DI patterns, see [Dependency Injection](dependency-injection.md).
 
+#### Factory-Based Middleware
+
+When middleware construction needs to be customized or deferred, register a factory that implements
+`ILambdaMiddlewareFactory` and use `UseMiddleware<TFactory>()`. The factory is resolved from the
+invocation's `ServiceProvider` and executed per invocation. If the created middleware implements
+`IDisposable` or `IAsyncDisposable`, it is disposed after the invocation completes.
+
+```csharp title="CachingMiddlewareFactory.cs" linenums="1"
+using MinimalLambda;
+
+internal sealed class CachingMiddlewareFactory(ICache cache, ILogger<CachingMiddleware> logger)
+    : ILambdaMiddlewareFactory
+{
+    public ILambdaMiddleware Create() => new CachingMiddleware(cache, logger);
+}
+```
+
+```csharp title="Program.cs"
+var builder = LambdaApplication.CreateBuilder();
+builder.Services.AddSingleton<ICache, RedisCache>();
+builder.Services.AddSingleton<ILambdaMiddlewareFactory, CachingMiddlewareFactory>();
+
+var lambda = builder.Build();
+lambda.UseMiddleware<CachingMiddlewareFactory>();
+
+lambda.MapHandler(([FromEvent] OrderRequest req) => ProcessOrder(req));
+await lambda.RunAsync();
+```
+
 #### Parameter Sources
 
 Control how constructor parameters are resolved using attributes:

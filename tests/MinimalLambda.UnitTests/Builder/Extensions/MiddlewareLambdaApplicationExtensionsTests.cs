@@ -1,3 +1,4 @@
+using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
 namespace MinimalLambda.UnitTests.Application.Extensions;
@@ -107,5 +108,189 @@ public class MiddlewareLambdaApplicationExtensionsTests
         middlewareWasCalled.Should().BeTrue();
         capturedContext.Should().Be(mockContext);
         capturedNext.Should().NotBeNull();
+    }
+
+    [Fact]
+    public void UseMiddlewareFactory_WithNullApplication_ThrowsArgumentNullException()
+    {
+        // Arrange
+        ILambdaInvocationBuilder? application = null;
+
+        // Act
+        var act = () => application!.UseMiddleware<TestMiddlewareFactory>();
+
+        // Assert
+        act.Should().ThrowExactly<ArgumentNullException>();
+    }
+
+    [Fact]
+    public void UseMiddlewareFactory_WithValidFactory_AddsMiddlewareToApplication()
+    {
+        // Arrange
+        var builder = new LambdaApplicationBuilder(new LambdaApplicationOptions());
+        builder.Services.AddSingleton<MiddlewareTracker>();
+        builder.Services.AddTransient<TestMiddlewareFactory>();
+        var host = builder.Build();
+        var app = new LambdaApplication(host);
+
+        // Act
+        app.UseMiddleware<TestMiddlewareFactory>();
+
+        // Assert
+        app.Middlewares.Should().HaveCount(1);
+    }
+
+    [Fact]
+    public async Task UseMiddlewareFactory_ResolvesFactoryAndInvokesMiddleware()
+    {
+        // Arrange
+        var builder = new LambdaApplicationBuilder(new LambdaApplicationOptions());
+        var tracker = new MiddlewareTracker();
+        builder.Services.AddSingleton(tracker);
+        builder.Services.AddTransient<TestMiddlewareFactory>();
+        var host = builder.Build();
+        var app = new LambdaApplication(host);
+        app.UseMiddleware<TestMiddlewareFactory>();
+        app.Handle(_ => Task.CompletedTask);
+        var pipeline = app.Build();
+        var context = Substitute.For<ILambdaInvocationContext>();
+        context.ServiceProvider.Returns(host.Services);
+
+        // Act
+        await pipeline(context);
+
+        // Assert
+        tracker.CreateCount.Should().Be(1);
+        tracker.InvokeCount.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task UseMiddlewareFactory_DisposesDisposableMiddleware()
+    {
+        // Arrange
+        var builder = new LambdaApplicationBuilder(new LambdaApplicationOptions());
+        var tracker = new MiddlewareTracker();
+        builder.Services.AddSingleton(tracker);
+        builder.Services.AddTransient<DisposableMiddlewareFactory>();
+        var host = builder.Build();
+        var app = new LambdaApplication(host);
+        app.UseMiddleware<DisposableMiddlewareFactory>();
+        app.Handle(_ => Task.CompletedTask);
+        var pipeline = app.Build();
+        var context = Substitute.For<ILambdaInvocationContext>();
+        context.ServiceProvider.Returns(host.Services);
+
+        // Act
+        await pipeline(context);
+
+        // Assert
+        tracker.DisposeCount.Should().Be(1);
+    }
+
+    [Fact]
+    public async Task UseMiddlewareFactory_DisposesAsyncDisposableMiddleware()
+    {
+        // Arrange
+        var builder = new LambdaApplicationBuilder(new LambdaApplicationOptions());
+        var tracker = new MiddlewareTracker();
+        builder.Services.AddSingleton(tracker);
+        builder.Services.AddTransient<AsyncDisposableMiddlewareFactory>();
+        var host = builder.Build();
+        var app = new LambdaApplication(host);
+        app.UseMiddleware<AsyncDisposableMiddlewareFactory>();
+        app.Handle(_ => Task.CompletedTask);
+        var pipeline = app.Build();
+        var context = Substitute.For<ILambdaInvocationContext>();
+        context.ServiceProvider.Returns(host.Services);
+
+        // Act
+        await pipeline(context);
+
+        // Assert
+        tracker.AsyncDisposeCount.Should().Be(1);
+    }
+
+    private sealed class MiddlewareTracker
+    {
+        public int CreateCount { get; private set; }
+        public int InvokeCount { get; private set; }
+        public int DisposeCount { get; private set; }
+        public int AsyncDisposeCount { get; private set; }
+
+        public void RecordCreate() => CreateCount++;
+
+        public void RecordInvoke() => InvokeCount++;
+
+        public void RecordDispose() => DisposeCount++;
+
+        public void RecordAsyncDispose() => AsyncDisposeCount++;
+    }
+
+    private sealed class TestMiddlewareFactory(MiddlewareTracker tracker) : ILambdaMiddlewareFactory
+    {
+        public ILambdaMiddleware Create()
+        {
+            tracker.RecordCreate();
+            return new TestMiddleware(tracker);
+        }
+    }
+
+    private sealed class DisposableMiddlewareFactory(MiddlewareTracker tracker)
+        : ILambdaMiddlewareFactory
+    {
+        public ILambdaMiddleware Create()
+        {
+            tracker.RecordCreate();
+            return new DisposableMiddleware(tracker);
+        }
+    }
+
+    private sealed class AsyncDisposableMiddlewareFactory(MiddlewareTracker tracker)
+        : ILambdaMiddlewareFactory
+    {
+        public ILambdaMiddleware Create()
+        {
+            tracker.RecordCreate();
+            return new AsyncDisposableMiddleware(tracker);
+        }
+    }
+
+    private sealed class TestMiddleware(MiddlewareTracker tracker) : ILambdaMiddleware
+    {
+        public Task InvokeAsync(ILambdaInvocationContext context, LambdaInvocationDelegate next)
+        {
+            tracker.RecordInvoke();
+            return next(context);
+        }
+    }
+
+    private sealed class DisposableMiddleware(MiddlewareTracker tracker)
+        : ILambdaMiddleware,
+            IDisposable
+    {
+        public Task InvokeAsync(ILambdaInvocationContext context, LambdaInvocationDelegate next)
+        {
+            tracker.RecordInvoke();
+            return next(context);
+        }
+
+        public void Dispose() => tracker.RecordDispose();
+    }
+
+    private sealed class AsyncDisposableMiddleware(MiddlewareTracker tracker)
+        : ILambdaMiddleware,
+            IAsyncDisposable
+    {
+        public Task InvokeAsync(ILambdaInvocationContext context, LambdaInvocationDelegate next)
+        {
+            tracker.RecordInvoke();
+            return next(context);
+        }
+
+        public ValueTask DisposeAsync()
+        {
+            tracker.RecordAsyncDispose();
+            return ValueTask.CompletedTask;
+        }
     }
 }
