@@ -14,6 +14,16 @@
     <IsAotCompatible>false</IsAotCompatible>
     <NoWarn>$(NoWarn);IL2026;IL2087;IL2091;IL3050;IL3051;IL2075</NoWarn>
   </PropertyGroup>
+  <!-- 
+  Needed to unblock this error for dontet 9: 
+  CSC : error AD0001: Analyzer 'ILLink.RoslynAnalyzer.DynamicallyAccessedMembersAnalyzer' threw an 
+  exception of type 'System.InvalidCastException' with message 'Unable to cast object of type 
+  'Microsoft.CodeAnalysis.CSharp.Symbols.PublicModel.NonErrorNamedTypeSymbol' to type 
+  Microsoft.CodeAnalysis.IMethodSymbol'.'.
+  -->
+  <PropertyGroup Condition="'$(TargetFramework)' == 'net9.0'">
+    <NoWarn>$(NoWarn);AD0001</NoWarn>
+  </PropertyGroup>
   <ItemGroup>
     <InternalsVisibleTo Include="MinimalLambda.Testing.UnitTests" />
   </ItemGroup>
