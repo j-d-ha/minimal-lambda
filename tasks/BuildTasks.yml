@@ -53,3 +53,9 @@ tasks:
       - echo "🚀 Publishing"
       - dotnet nuget push ./nupkg/*.nupkg --source https://api.nuget.org/v3/index.json --api-key $NUGET_API_KEY --skip-duplicate
       - echo "✨ Published"
+
+  aot-check:
+    desc: Validates the AOT compatibility of the libraries
+    silent: true
+    cmds:
+      - dotnet publish src/AotCompatibility.TestApp/AotCompatibility.TestApp.csproj /p:TreatWarningsAsErrors=true

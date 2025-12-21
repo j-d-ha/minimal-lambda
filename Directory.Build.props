@@ -24,6 +24,21 @@
     </PackageReference>
   </ItemGroup>
   <PropertyGroup>
-    <IsAotCompatible>true</IsAotCompatible>
+    <IsAotCompatible
+      Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))"
+      >true
+    </IsAotCompatible
+    >
+    <EnableAotAnalyzer
+      Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))"
+      >true
+    </EnableAotAnalyzer
+    >
+    <EnableTrimAnalyzer
+      Condition="$([MSBuild]::IsTargetFrameworkCompatible('$(TargetFramework)', 'net8.0'))"
+      >true
+    </EnableTrimAnalyzer
+    >
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
 </Project>
