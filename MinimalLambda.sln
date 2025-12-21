@@ -93,6 +93,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.Envelopes", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MinimalLambda.Example.ClassMiddleware", "examples\MinimalLambda.Example.ClassMiddleware\MinimalLambda.Example.ClassMiddleware.csproj", "{69785FC6-B746-4104-8157-1618B80B0A4C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AotCompatibility.TestApp", "src\AotCompatibility.TestApp\AotCompatibility.TestApp.csproj", "{A8B77486-5A06-4A02-B1F0-EB8E2669394F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -463,6 +465,18 @@ Global
 		{69785FC6-B746-4104-8157-1618B80B0A4C}.Release|x64.Build.0 = Release|Any CPU
 		{69785FC6-B746-4104-8157-1618B80B0A4C}.Release|x86.ActiveCfg = Release|Any CPU
 		{69785FC6-B746-4104-8157-1618B80B0A4C}.Release|x86.Build.0 = Release|Any CPU
+		{A8B77486-5A06-4A02-B1F0-EB8E2669394F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A8B77486-5A06-4A02-B1F0-EB8E2669394F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A8B77486-5A06-4A02-B1F0-EB8E2669394F}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{A8B77486-5A06-4A02-B1F0-EB8E2669394F}.Debug|x64.Build.0 = Debug|Any CPU
+		{A8B77486-5A06-4A02-B1F0-EB8E2669394F}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{A8B77486-5A06-4A02-B1F0-EB8E2669394F}.Debug|x86.Build.0 = Debug|Any CPU
+		{A8B77486-5A06-4A02-B1F0-EB8E2669394F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A8B77486-5A06-4A02-B1F0-EB8E2669394F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A8B77486-5A06-4A02-B1F0-EB8E2669394F}.Release|x64.ActiveCfg = Release|Any CPU
+		{A8B77486-5A06-4A02-B1F0-EB8E2669394F}.Release|x64.Build.0 = Release|Any CPU
+		{A8B77486-5A06-4A02-B1F0-EB8E2669394F}.Release|x86.ActiveCfg = Release|Any CPU
+		{A8B77486-5A06-4A02-B1F0-EB8E2669394F}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -501,5 +515,6 @@ Global
 		{7E7B3004-C6C4-4A8C-8610-2A1CB61F834A} = {D9109C8A-AFA8-49C8-A19C-381500902B4D}
 		{190CC9C7-007F-48C5-867D-03B911D53397} = {1C3C52D9-2936-4A0C-A9C8-F330F22B8359}
 		{69785FC6-B746-4104-8157-1618B80B0A4C} = {B36A84DF-456D-A817-6EDD-3EC3E7F6E11F}
+		{A8B77486-5A06-4A02-B1F0-EB8E2669394F} = {827E0CD3-B72D-47B6-A68D-7590B98EB39B}
 	EndGlobalSection
 EndGlobal

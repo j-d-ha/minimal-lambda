@@ -27,4 +27,7 @@
     <PackageReference Include="Microsoft.AspNetCore.Routing" />
     <PackageReference Include="Microsoft.Extensions.DependencyModel" />
   </ItemGroup>
+  <PropertyGroup>
+    <IsAotCompatible>false</IsAotCompatible>
+  </PropertyGroup>
 </Project>
