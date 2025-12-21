@@ -3,7 +3,52 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [Unreleased](https://github.com/j-d-ha/minimal-lambda/compare/v1.3.1...HEAD)
+## [Unreleased](https://github.com/j-d-ha/minimal-lambda/compare/v2.0.0...HEAD)
+
+## [v2.0.0](https://github.com/j-d-ha/minimal-lambda/compare/v1.3.1...v2.0.0) - 2025-12-18
+
+### 🚀 Features
+
+* feat(host): add ILambdaLifecycleContext for lifecycle handlers (#252) @j-d-ha
+* feat(testing): add customizable JSON serializer options to LambdaTestServer (#251) @j-d-ha
+* feat(envelopes): support multiple response types with shared extension methods (#213) @j-d-ha
+* feat(testing): add MinimalLambda.Testing package (#233) @j-d-ha
+* feat(docs): refine messaging to emphasize Lambda-first design (#228) @j-d-ha
+
+### 🐛 Bug Fixes
+
+* fix(testing): prevent DI container disposal during test execution (#234) @j-d-ha
+* fix(build): add build targets for packaging (#231) @j-d-ha
+* fix(core): adjust default timeout values and update documentation (#226) @j-d-ha
+
+### 📚 Documentation
+
+* docs: document MinimalLambda.Testing package and enhance testing guide (#235) @j-d-ha
+
+### 🔄 Refactoring
+
+* refactor(source-generators): improve type casting and output generation (#254) @j-d-ha
+* refactor(abstractions): rename ILambdaHostContext to ILambdaInvocationContext (#253) @j-d-ha
+* refactor(core): replace [Event] attribute with [FromEvent] (#250) @j-d-ha
+* refactor: rename framework from AwsLambda.Host to MinimalLambda (#227) @j-d-ha
+
+### 🔧 Maintenance
+
+* chore(deps): bump dotnet-sdk from 10.0.100 to 10.0.101 (#239) @dependabot
+* chore(deps): bump actions/checkout from 4 to 6 (#241) @dependabot
+* chore(deps): bump the minor-and-patch group with 2 updates (#242) @dependabot
+* chore(deps): bump actions/setup-python from 5 to 6 (#245) @dependabot
+* chore(deps): bump actions/upload-pages-artifact from 3 to 4 (#246) @dependabot
+* chore(github): add pip ecosystem and ignore release-drafter (#248) @j-d-ha
+* chore(deps): Bump the minor-and-patch group with 12 updates (#247) @dependabot
+* chore(deps): update Microsoft.Extensions.Hosting from RC to stable (#232) @j-d-ha
+* chore: remove obsolete code and deprecated features (#229) @j-d-ha
+
+### ⚠️ Breaking Changes
+
+* refactor(abstractions): rename ILambdaHostContext to ILambdaInvocationContext (#253) @j-d-ha
+* feat(host): add ILambdaLifecycleContext for lifecycle handlers (#252) @j-d-ha
+* refactor: rename framework from AwsLambda.Host to MinimalLambda (#227) @j-d-ha
 
 ## [v1.3.1](https://github.com/j-d-ha/minimal-lambda/compare/v1.3.0...v1.3.1) - 2025-12-10
 
