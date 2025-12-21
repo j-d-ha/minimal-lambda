@@ -40,4 +40,7 @@
     <!-- Disable PolySharp's ModuleInitializerAttribute shim -->
     <PolySharpExcludeGeneratedTypes>System.Runtime.CompilerServices.ModuleInitializerAttribute</PolySharpExcludeGeneratedTypes>
   </PropertyGroup>
+  <PropertyGroup>
+    <IsAotCompatible>false</IsAotCompatible>
+  </PropertyGroup>
 </Project>
