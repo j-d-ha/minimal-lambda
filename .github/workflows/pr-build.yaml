@@ -114,6 +114,9 @@ jobs:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
         run: ~/.sonar/scanner/dotnet-sonarscanner end /d:sonar.token="$SONAR_TOKEN"
 
+      - name: Validate AOT Compatability
+        run: task build:aot-check
+      
       - name: Upload coverage reports
         uses: codecov/codecov-action@v5
         with:
