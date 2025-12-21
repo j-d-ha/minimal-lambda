@@ -1,5 +1,27 @@
 # Open PR for current branch
 - $ARGUMENTS
+- PR title must follow the format: `<type>(<scope>): <description>`
+  - Valid `<type>`:
+    - feat
+    - fix
+    - docs
+    - refactor
+    - test
+    - chore
+    - ci
+  - Valid `<scope>`:
+    - host
+    - envelopes
+    - abstractions
+    - opentelemetry
+    - source-generators
+    - deps
+    - build
+    - ci
+    - github
+    - core
+    - docs
+    - testing
 - Use this template for the PR:
 
 ---
