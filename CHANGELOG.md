@@ -3,7 +3,27 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [Unreleased](https://github.com/j-d-ha/minimal-lambda/compare/v2.0.0...HEAD)
+## [Unreleased](https://github.com/j-d-ha/minimal-lambda/compare/v2.1.1...HEAD)
+
+## [v2.1.1](https://github.com/j-d-ha/minimal-lambda/compare/v2.0.0...v2.1.1) - 2025-12-22
+
+### 🚀 Features
+
+* feat(build): add comprehensive AOT compatibility support (#267) @j-d-ha
+* feat(host): add factory-based middleware creation support (#266) @j-d-ha
+* feat(source-generators): add class-based middleware support with UseMiddleware<T>() (#257) @j-d-ha
+
+### 🐛 Bug Fixes
+
+* fix: prevent validation project from being packaged (#270) @j-d-ha
+* fix(ci): add Task installation step to main-build pipeline (#268) @j-d-ha
+
+### 🔧 Maintenance
+
+* fix(ci): add Task installation step to main-build pipeline (#268) @j-d-ha
+* chore: migrate InternalsVisibleTo declarations to project files (#265) @j-d-ha
+* chore(deps): migrate to LayeredCraft.SourceGeneratorTools.Generator v0.1.0-beta.10 (#264) @j-d-ha
+* chore: update changelog for v2.0.0 (#256) @github-actions
 
 ## [v2.0.0](https://github.com/j-d-ha/minimal-lambda/compare/v1.3.1...v2.0.0) - 2025-12-18
 
