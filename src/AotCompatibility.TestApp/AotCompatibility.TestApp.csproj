@@ -9,6 +9,7 @@
     <TrimmerSingleWarn>false</TrimmerSingleWarn>
     <SelfContained>true</SelfContained>
     <WarningsAsErrors>IL2026;IL2087;IL2091;IL3050;IL3051</WarningsAsErrors>
+    <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
     <EnvelopeRootAssembly Include="MinimalLambda.Envelopes.Alb" />
