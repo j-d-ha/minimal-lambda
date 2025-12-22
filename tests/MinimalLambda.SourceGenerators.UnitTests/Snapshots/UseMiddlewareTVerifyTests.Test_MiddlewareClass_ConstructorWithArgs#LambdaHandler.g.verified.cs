@@ -40,7 +40,7 @@ namespace MinimalLambda.Generated
     [GeneratedCode("MinimalLambda.SourceGenerators", "REPLACED")]
     file static class UseMiddlewareExtensions
     {
-        [InterceptsLocation(1, "POU0h/pUESMeSE5RxaKDvtkAAABJbnB1dEZpbGUuY3M=")]
+        [InterceptsLocation(1, "REPLACED")]
         internal static ILambdaInvocationBuilder UseMiddleware0<T>(
             this ILambdaInvocationBuilder builder,
             params object[] args

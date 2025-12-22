@@ -65,6 +65,10 @@ internal static class GeneratorTestHelpers
                 if (line.Contains("GeneratedCode", StringComparison.Ordinal))
                     return RegexHelper.GeneratedCodeAttributeRegex().Replace(line, "REPLACED");
 
+                // replace [InterceptsLocation(1, "")]
+                if (line.Contains("InterceptsLocation", StringComparison.Ordinal))
+                    return RegexHelper.InterceptsLocationRegex().Replace(line, "REPLACED");
+
                 return line;
             });
     }
@@ -138,4 +142,11 @@ internal partial class RegexHelper
         "en-US"
     )]
     internal static partial Regex GeneratedCodeAttributeRegex();
+
+    [GeneratedRegex(
+        """(?<=\[InterceptsLocation\(\d+, ")([A-Za-z0-9+/=]{2,})(?="\)\])""",
+        RegexOptions.None,
+        "en-US"
+    )]
+    internal static partial Regex InterceptsLocationRegex();
 }

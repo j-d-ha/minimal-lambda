@@ -40,7 +40,7 @@ namespace MinimalLambda.Generated
     [GeneratedCode("MinimalLambda.SourceGenerators", "REPLACED")]
     file static class GeneratedLambdaOnShutdownBuilderExtensions
     {
-        [InterceptsLocation(1, "W852isYQO43ObWn6kxnU5s0AAABJbnB1dEZpbGUuY3M=")]
+        [InterceptsLocation(1, "REPLACED")]
         internal static ILambdaOnShutdownBuilder OnShutdownInterceptor0(
             this ILambdaOnShutdownBuilder application,
             Delegate handler
@@ -57,7 +57,7 @@ namespace MinimalLambda.Generated
             }
         }
         
-        [InterceptsLocation(1, "W852isYQO43ObWn6kxnU5hABAABJbnB1dEZpbGUuY3M=")]
+        [InterceptsLocation(1, "REPLACED")]
         internal static ILambdaOnShutdownBuilder OnShutdownInterceptor1(
             this ILambdaOnShutdownBuilder application,
             Delegate handler
@@ -78,7 +78,7 @@ namespace MinimalLambda.Generated
             }
         }
         
-        [InterceptsLocation(1, "W852isYQO43ObWn6kxnU5nsBAABJbnB1dEZpbGUuY3M=")]
+        [InterceptsLocation(1, "REPLACED")]
         internal static ILambdaOnShutdownBuilder OnShutdownInterceptor2(
             this ILambdaOnShutdownBuilder application,
             Delegate handler
