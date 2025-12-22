@@ -46,6 +46,7 @@ jobs:
             core
             docs
             testing
+            tests
           requireScope: false
           subjectPattern: ^[a-z].*
           subjectPatternError: Subject must start with lowercase letter

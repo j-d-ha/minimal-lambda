@@ -22,6 +22,7 @@
     - core
     - docs
     - testing
+    - tests
 - Use this template for the PR:
 
 ---
