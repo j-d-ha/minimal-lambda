@@ -65,7 +65,7 @@ internal static class GeneratorTestHelpers
                 if (line.Contains("GeneratedCode", StringComparison.Ordinal))
                     return RegexHelper
                         .GeneratedCodeAttributeRegex()
-                        .Replace(line, @"[GeneratedCode(""REPLACED"", ""REPLACED"")]");
+                        .Replace(line, """[GeneratedCode("REPLACED", "REPLACED")]""");
 
                 // replace [InterceptsLocation(1, "")]
                 if (line.Contains("InterceptsLocation", StringComparison.Ordinal))
@@ -133,7 +133,7 @@ internal static class GeneratorTestHelpers
     }
 }
 
-internal partial class RegexHelper
+internal static partial class RegexHelper
 {
     [GeneratedRegex("""\[GeneratedCode\("([^"]+)",\s*"([^"]+)"\)\]""", RegexOptions.None, "en-US")]
     internal static partial Regex GeneratedCodeAttributeRegex();
