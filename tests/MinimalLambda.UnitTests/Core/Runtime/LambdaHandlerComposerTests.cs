@@ -14,7 +14,7 @@ public class LambdaHandlerComposerTests
     {
         // Arrange
         var expectedException = new InvalidOperationException("Test exception");
-        LambdaInvocationDelegate handler = async context =>
+        LambdaInvocationDelegate handler = async _ =>
         {
             await Task.CompletedTask;
             throw expectedException;
@@ -65,7 +65,7 @@ public class LambdaHandlerComposerTests
         /// <summary>Sets up default mock behaviors.</summary>
         private void SetupDefaults()
         {
-            InvocationBuilder.Build().Returns(async context => { });
+            InvocationBuilder.Build().Returns(_ => Task.CompletedTask);
             InvocationBuilder.Properties.Returns(new Dictionary<string, object?>());
             LambdaInvocationBuilderFactory.CreateBuilder().Returns(InvocationBuilder);
 
@@ -91,7 +91,7 @@ public class LambdaHandlerComposerTests
                     Arg.Any<IDictionary<string, object?>>(),
                     Arg.Any<CancellationToken>()
                 )
-                .Returns(info =>
+                .Returns(_ =>
                 {
                     // Create a new mock context for each call
                     LambdaInvocationContext.Features.Returns(mockFeatures);
@@ -217,7 +217,7 @@ public class LambdaHandlerComposerTests
     {
         // Arrange
         var configureHandlerBuilderInvoked = false;
-        Action<ILambdaInvocationBuilder> configureAction = builder =>
+        Action<ILambdaInvocationBuilder> configureAction = _ =>
         {
             configureHandlerBuilderInvoked = true;
         };
@@ -279,7 +279,7 @@ public class LambdaHandlerComposerTests
     {
         // Arrange
         var handlerInvoked = false;
-        LambdaInvocationDelegate handler = async context =>
+        LambdaInvocationDelegate handler = async _ =>
         {
             handlerInvoked = true;
             await Task.CompletedTask;

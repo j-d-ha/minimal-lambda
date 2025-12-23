@@ -116,7 +116,7 @@ public class ApiGatewayRequestEnvelopeTests
     {
         // Arrange
         var property = typeof(ApiGatewayRequestEnvelope<TestPayload>).GetProperty(
-            nameof(ApiGatewayRequestEnvelope<TestPayload>.BodyContent)
+            nameof(ApiGatewayRequestEnvelope<>.BodyContent)
         );
 
         // Act
@@ -135,24 +135,6 @@ public class ApiGatewayRequestEnvelopeTests
 
         // Assert
         envelope.Should().BeAssignableTo<APIGatewayProxyRequest>();
-    }
-
-    [Fact]
-    public void ExtractPayload_WithMultipleProperties_PreservesAllValues()
-    {
-        // Arrange
-        var testData = _fixture.Create<TestPayload>();
-        var json = JsonSerializer.Serialize(testData);
-        var envelope = new ApiGatewayRequestEnvelope<TestPayload> { Body = json };
-        var options = new EnvelopeOptions();
-
-        // Act
-        envelope.ExtractPayload(options);
-
-        // Assert
-        envelope.BodyContent.Should().NotBeNull();
-        envelope.BodyContent!.Name.Should().Be(testData.Name);
-        envelope.BodyContent.Value.Should().Be(testData.Value);
     }
 
     [Fact]

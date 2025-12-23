@@ -30,7 +30,7 @@ lambda.MapHandler(
     (
         [FromEvent] ApiGatewayRequestEnvelope<Request> request,
         ILogger<Program> logger,
-        ILambdaInvocationContext context
+        ILambdaInvocationContext _
     ) =>
     {
         logger.LogInformation("In Handler. Payload: {Payload}", request.Body);

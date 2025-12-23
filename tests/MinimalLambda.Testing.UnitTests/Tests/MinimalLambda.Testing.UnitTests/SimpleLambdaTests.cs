@@ -152,6 +152,7 @@ public class SimpleLambdaTests
             });
 
         var act = async () =>
+            // ReSharper disable once AccessToDisposedClosure
             await factory.TestServer.StartAsync(TestContext.Current.CancellationToken);
 
         await act.Should()
@@ -173,7 +174,9 @@ public class SimpleLambdaTests
         using var cts = new CancellationTokenSource();
         await cts.CancelAsync();
 
+        // ReSharper disable AccessToDisposedClosure
         var act = () => factory.TestServer.InvokeAsync<string, string>("Jonas", cts.Token);
+        // ReSharper restore AccessToDisposedClosure
 
         await act.Should().ThrowAsync<TaskCanceledException>();
     }

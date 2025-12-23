@@ -127,6 +127,8 @@ public class LambdaInvocationContextFactoryTests
         _ = factory.Create(lambdaContext, properties, CancellationToken.None);
 
         // Assert
+
+        // ReSharper disable PossibleMultipleEnumeration
         featureCollectionFactory
             .Received(1)
             .Create(
@@ -136,5 +138,6 @@ public class LambdaInvocationContextFactoryTests
                     && providers.Contains(responseFeatureProvider)
                 )
             );
+        // ReSharper restore PossibleMultipleEnumeration
     }
 }

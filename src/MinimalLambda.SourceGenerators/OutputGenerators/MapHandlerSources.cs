@@ -115,5 +115,6 @@ internal static class MapHandlerSources
             })
             .ToArray();
 
+    // ReSharper disable NotAccessedPositionalProperty.Local
     private readonly record struct HandlerArg(string String, string Assignment);
 }

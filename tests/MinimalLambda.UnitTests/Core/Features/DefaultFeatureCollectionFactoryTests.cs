@@ -25,8 +25,9 @@ public class DefaultFeatureCollectionFactoryTest
         var factory = new DefaultFeatureCollectionFactory([]);
 
         // Act
-        var collection1 = factory.Create(featureProviders);
-        var collection2 = factory.Create(featureProviders);
+        var enumerable = featureProviders as IFeatureProvider[] ?? featureProviders.ToArray();
+        var collection1 = factory.Create(enumerable);
+        var collection2 = factory.Create(enumerable);
 
         // Assert
         collection1.Should().NotBeSameAs(collection2);

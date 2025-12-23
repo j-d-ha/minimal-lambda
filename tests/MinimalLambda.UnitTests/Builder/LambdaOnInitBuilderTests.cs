@@ -206,7 +206,7 @@ public class LambdaOnInitBuilderTests
 
     [Theory]
     [AutoNSubstituteData]
-    internal async Task Build_WithoutHandlers_ReturnsNull(
+    internal void Build_WithoutHandlers_ReturnsNull(
         IServiceProvider serviceProvider,
         IServiceScopeFactory scopeFactory,
         IOptions<LambdaHostOptions> options,

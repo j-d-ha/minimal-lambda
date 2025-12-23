@@ -63,26 +63,26 @@ internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory
 
             // Create a new lambda host context. This will also create a new service scope
             // the first time that the service container is accessed.
-            var LambdaInvocationContext = _contextFactory.Create(
+            var lambdaInvocationContext = _contextFactory.Create(
                 lambdaContext,
                 builder.Properties,
                 linkedTokenSource.Token
             );
 
-            await using (LambdaInvocationContext as IAsyncDisposable)
+            await using (lambdaInvocationContext as IAsyncDisposable)
             {
                 using var invocationDataFeature = _invocationDataFeatureFactory.Create(inputStream);
-                LambdaInvocationContext.Features.Set(invocationDataFeature);
+                lambdaInvocationContext.Features.Set(invocationDataFeature);
 
                 // Invoke the handler wrapped in the middleware pipeline.
-                await handler.Invoke(LambdaInvocationContext).ConfigureAwait(false);
+                await handler.Invoke(lambdaInvocationContext).ConfigureAwait(false);
 
                 if (
-                    LambdaInvocationContext.Features.TryGet<IResponseFeature>(
+                    lambdaInvocationContext.Features.TryGet<IResponseFeature>(
                         out var responseFeature
                     )
                 )
-                    responseFeature.SerializeToStream(LambdaInvocationContext);
+                    responseFeature.SerializeToStream(lambdaInvocationContext);
 
                 // If no serializer is provided, return an empty stream.
                 return invocationDataFeature.ResponseStream;

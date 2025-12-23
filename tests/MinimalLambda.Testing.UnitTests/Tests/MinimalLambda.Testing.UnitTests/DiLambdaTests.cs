@@ -116,6 +116,7 @@ public class DiLambdaTests
         initResult.InitStatus.Should().Be(InitStatus.InitCompleted);
 
         var act = async () =>
+            // ReSharper disable once AccessToDisposedClosure
             await factory.TestServer.StopAsync(TestContext.Current.CancellationToken);
 
         (await act.Should().ThrowAsync<AggregateException>())

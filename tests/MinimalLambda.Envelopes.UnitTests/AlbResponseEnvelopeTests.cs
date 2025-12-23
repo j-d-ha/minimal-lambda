@@ -33,7 +33,7 @@ public class AlbResponseEnvelopeTests
             options.JsonOptions
         );
         deserializedData.Should().NotBeNull();
-        deserializedData!.Message.Should().Be(responseData.Message);
+        deserializedData.Message.Should().Be(responseData.Message);
         deserializedData.Code.Should().Be(responseData.Code);
     }
 
@@ -82,7 +82,7 @@ public class AlbResponseEnvelopeTests
     {
         // Arrange
         var property = typeof(AlbResponseEnvelope<ResponsePayload>).GetProperty(
-            nameof(AlbResponseEnvelope<ResponsePayload>.BodyContent)
+            nameof(AlbResponseEnvelope<>.BodyContent)
         );
 
         // Act
@@ -118,7 +118,7 @@ public class AlbResponseEnvelopeTests
         envelope.Body.Should().NotBeNull();
         var deserializedData = JsonSerializer.Deserialize<ResponsePayload>(envelope.Body);
         deserializedData.Should().NotBeNull();
-        deserializedData!.Message.Should().Be(responseData.Message);
+        deserializedData.Message.Should().Be(responseData.Message);
         deserializedData.Code.Should().Be(responseData.Code);
     }
 

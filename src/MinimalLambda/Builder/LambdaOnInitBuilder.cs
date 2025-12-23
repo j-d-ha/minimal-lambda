@@ -51,6 +51,7 @@ internal class LambdaOnInitBuilder : ILambdaOnInitBuilder
                 using var cts = CancellationTokenSource.CreateLinkedTokenSource(stoppingToken);
                 cts.CancelAfter(_options.InitTimeout);
 
+                // ReSharper disable once AccessToDisposedClosure
                 var tasks = _handlers.Select(h => RunInitHandler(h, cts.Token));
 
                 (Exception? Error, bool ShouldContinue)[] results;

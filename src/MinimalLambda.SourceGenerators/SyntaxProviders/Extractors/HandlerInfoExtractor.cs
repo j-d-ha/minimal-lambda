@@ -133,7 +133,7 @@ internal static class HandlerInfoExtractor
 
     private static ExpressionSyntax? GetDelegateFromCast(
         CastExpressionSyntax castExpression,
-        CancellationToken cancellationToken
+        CancellationToken _
     )
     {
         // must have at least 2 children -> expression at index 1, cast at index 0

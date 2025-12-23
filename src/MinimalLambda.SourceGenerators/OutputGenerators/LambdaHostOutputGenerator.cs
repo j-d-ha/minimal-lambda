@@ -15,10 +15,11 @@ internal static class LambdaHostOutputGenerator
             if (field is null)
             {
                 var assembly = Assembly.GetExecutingAssembly();
-                var generatorName = assembly.GetName().FullName;
+                var generatorName = assembly.GetName().Name;
                 var generatorVersion = assembly.GetName().Version.ToString();
 
-                field = $"[GeneratedCode(\"{generatorName}\", \"{generatorVersion}\")]";
+                field =
+                    $"""[global::System.CodeDom.Compiler.GeneratedCode("{generatorName}", "{generatorVersion}")]""";
             }
 
             return field;
@@ -45,7 +46,6 @@ internal static class LambdaHostOutputGenerator
                 namespace MinimalLambda.Generated
                 {
                     using System;
-                    using System.CodeDom.Compiler;
                     using System.Runtime.CompilerServices;
                     using System.Threading;
                     using System.Threading.Tasks;

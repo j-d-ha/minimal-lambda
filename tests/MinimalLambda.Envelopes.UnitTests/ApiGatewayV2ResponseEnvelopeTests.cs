@@ -36,7 +36,7 @@ public class ApiGatewayV2ResponseEnvelopeTests
             options.JsonOptions
         );
         deserializedData.Should().NotBeNull();
-        deserializedData!.Message.Should().Be(responseData.Message);
+        deserializedData.Message.Should().Be(responseData.Message);
         deserializedData.Code.Should().Be(responseData.Code);
     }
 
@@ -101,7 +101,7 @@ public class ApiGatewayV2ResponseEnvelopeTests
         envelope.Body.Should().NotBeNull();
         var deserializedData = JsonSerializer.Deserialize<ResponsePayload>(envelope.Body);
         deserializedData.Should().NotBeNull();
-        deserializedData!.Message.Should().Be(responseData.Message);
+        deserializedData.Message.Should().Be(responseData.Message);
         deserializedData.Code.Should().Be(responseData.Code);
     }
 
@@ -110,7 +110,7 @@ public class ApiGatewayV2ResponseEnvelopeTests
     {
         // Arrange
         var property = typeof(ApiGatewayV2ResponseEnvelope<ResponsePayload>).GetProperty(
-            nameof(ApiGatewayV2ResponseEnvelope<ResponsePayload>.BodyContent)
+            nameof(ApiGatewayV2ResponseEnvelope<>.BodyContent)
         );
 
         // Act
@@ -205,7 +205,7 @@ public class ApiGatewayV2ResponseEnvelopeTests
             options.JsonOptions
         );
         deserializedData.Should().NotBeNull();
-        deserializedData!.Message.Should().Be(responseData.Message);
+        deserializedData.Message.Should().Be(responseData.Message);
     }
 
     private record ResponsePayload(string Message, int Code);
