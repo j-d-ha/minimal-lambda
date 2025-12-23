@@ -61,11 +61,16 @@ internal static class GeneratorTestHelpers
             .DisableDiff()
             .ScrubLinesWithReplace(line =>
             {
-                // replace [GeneratedCode("MinimalLambda.SourceGenerators", "0.0.0")]
-                if (line.Contains("GeneratedCode", StringComparison.Ordinal))
-                    return RegexHelper
-                        .GeneratedCodeAttributeRegex()
-                        .Replace(line, """[GeneratedCode("REPLACED", "REPLACED")]""");
+                // replace
+                // [global::System.CodeDom.Compiler.GeneratedCode("MinimalLambda.SourceGenerators",
+                // "0.0.0")]
+                if (
+                    line.Contains(
+                        "global::System.CodeDom.Compiler.GeneratedCode",
+                        StringComparison.Ordinal
+                    )
+                )
+                    return RegexHelper.GeneratedCodeAttributeRegex().Replace(line, "REPLACED");
 
                 // replace [InterceptsLocation(1, "")]
                 if (line.Contains("InterceptsLocation", StringComparison.Ordinal))
@@ -135,7 +140,7 @@ internal static class GeneratorTestHelpers
 
 internal static partial class RegexHelper
 {
-    [GeneratedRegex("""\[GeneratedCode\("([^"]+)",\s*"([^"]+)"\)\]""", RegexOptions.None, "en-US")]
+    [GeneratedRegex("""(\d+\.\d+\.\d+\.\d+)""", RegexOptions.None, "en-US")]
     internal static partial Regex GeneratedCodeAttributeRegex();
 
     [GeneratedRegex(

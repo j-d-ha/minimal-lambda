@@ -1,6 +1,6 @@
 using System.Collections;
 
-// ReSharper disable UnusedAutoPropertyAccessor.Local
+// ReSharper disable UnusedAutoPropertyAccessor.Local UnusedVariable
 
 namespace MinimalLambda.UnitTests.Core.Features;
 
@@ -229,7 +229,7 @@ public class DefaultFeatureCollectionTest
         var testFeature = new TestFeature { Value = "from-provider" };
 
         provider
-            .TryCreate(typeof(TestFeature), out _)
+            .TryCreate(typeof(TestFeature), out var feature)
             .Returns(x =>
             {
                 x[1] = testFeature;
@@ -275,7 +275,7 @@ public class DefaultFeatureCollectionTest
 
         provider1.TryCreate(Arg.Any<Type>(), out _).Returns(false);
         provider2
-            .TryCreate(typeof(TestFeature), out _)
+            .TryCreate(typeof(TestFeature), out var feature)
             .Returns(x =>
             {
                 x[1] = testFeature;
@@ -303,7 +303,7 @@ public class DefaultFeatureCollectionTest
         var testFeature = new TestFeature { Value = "from-first-provider" };
 
         provider1
-            .TryCreate(typeof(TestFeature), out _)
+            .TryCreate(typeof(TestFeature), out var feature)
             .Returns(x =>
             {
                 x[1] = testFeature;
