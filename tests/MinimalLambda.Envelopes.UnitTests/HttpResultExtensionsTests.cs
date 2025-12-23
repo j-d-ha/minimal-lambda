@@ -356,5 +356,6 @@ public class HttpResultExtensionsTests
         result.Body.Should().Contain(payload.Name);
     }
 
+    // ReSharper disable once NotAccessedPositionalProperty.Local
     private record TestPayload(string Name, int Value);
 }

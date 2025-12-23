@@ -52,9 +52,7 @@ public sealed class LambdaApplication
     /// <summary>Gets the application's logger.</summary>
     public ILogger Logger =>
         field ??=
-            _host
-                .Services.GetService<ILoggerFactory>()
-                ?.CreateLogger(Environment.ApplicationName ?? nameof(LambdaApplication))
+            _host.Services.GetService<ILoggerFactory>()?.CreateLogger(Environment.ApplicationName)
             ?? NullLogger.Instance;
 
     /// <inheritdoc />

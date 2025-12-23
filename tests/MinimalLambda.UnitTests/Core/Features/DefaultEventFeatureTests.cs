@@ -38,7 +38,7 @@ public class DefaultEventFeatureTests
     internal void Constructor_WithNullSerializer_ThrowsArgumentNullException()
     {
         // Act & Assert
-        var act = () => new DefaultEventFeature<string>(null!);
+        var act = () => new DefaultEventFeature<string>();
         act.Should().ThrowExactly<ArgumentNullException>();
     }
 

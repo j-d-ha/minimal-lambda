@@ -1,5 +1,7 @@
 using System.Collections;
 
+// ReSharper disable UnusedAutoPropertyAccessor.Local
+
 namespace MinimalLambda.UnitTests.Core.Features;
 
 [TestSubject(typeof(DefaultFeatureCollection))]
@@ -204,7 +206,7 @@ public class DefaultFeatureCollectionTest
         var testFeature = new TestFeature { Value = "from-provider" };
 
         provider
-            .TryCreate(typeof(TestFeature), out var feature)
+            .TryCreate(typeof(TestFeature), out _)
             .Returns(x =>
             {
                 x[1] = testFeature;
@@ -227,7 +229,7 @@ public class DefaultFeatureCollectionTest
         var testFeature = new TestFeature { Value = "from-provider" };
 
         provider
-            .TryCreate(typeof(TestFeature), out var feature)
+            .TryCreate(typeof(TestFeature), out _)
             .Returns(x =>
             {
                 x[1] = testFeature;
@@ -273,7 +275,7 @@ public class DefaultFeatureCollectionTest
 
         provider1.TryCreate(Arg.Any<Type>(), out _).Returns(false);
         provider2
-            .TryCreate(typeof(TestFeature), out var feature)
+            .TryCreate(typeof(TestFeature), out _)
             .Returns(x =>
             {
                 x[1] = testFeature;
@@ -301,7 +303,7 @@ public class DefaultFeatureCollectionTest
         var testFeature = new TestFeature { Value = "from-first-provider" };
 
         provider1
-            .TryCreate(typeof(TestFeature), out var feature)
+            .TryCreate(typeof(TestFeature), out _)
             .Returns(x =>
             {
                 x[1] = testFeature;
@@ -363,7 +365,7 @@ public class DefaultFeatureCollectionTest
 
         // Act
         var items = new List<KeyValuePair<Type, object>>();
-        var enumerator = collection.GetEnumerator();
+        using var enumerator = collection.GetEnumerator();
         while (enumerator.MoveNext())
             items.Add(enumerator.Current);
 
@@ -425,9 +427,10 @@ public class DefaultFeatureCollectionTest
 
         // Act
         var enumerator = ((IEnumerable)collection).GetEnumerator();
+        using var _ = enumerator as IDisposable;
         var items = new List<object>();
         while (enumerator.MoveNext())
-            items.Add(enumerator.Current);
+            items.Add(enumerator.Current!);
 
         // Assert
         items.Should().HaveCount(2);
@@ -442,7 +445,7 @@ public class DefaultFeatureCollectionTest
         var testFeature = new TestFeature { Value = "from-provider" };
 
         provider
-            .TryCreate(typeof(TestFeature), out var feature)
+            .TryCreate(typeof(TestFeature), out _)
             .Returns(x =>
             {
                 x[1] = testFeature;

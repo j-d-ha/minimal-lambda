@@ -123,7 +123,7 @@ public class LambdaHostedServiceTests
     {
         // Arrange
         var configureInvoked = false;
-        Action<ILambdaOnInitBuilder>? configureAction = builder =>
+        Action<ILambdaOnInitBuilder> configureAction = _ =>
         {
             configureInvoked = true;
         };
@@ -176,7 +176,7 @@ public class LambdaHostedServiceTests
     {
         // Arrange
         var configureInvoked = false;
-        Action<ILambdaOnShutdownBuilder>? configureAction = builder =>
+        Action<ILambdaOnShutdownBuilder> configureAction = _ =>
         {
             configureInvoked = true;
         };
@@ -305,6 +305,7 @@ public class LambdaHostedServiceTests
         using var timeoutCts = new CancellationTokenSource(TimeSpan.FromMilliseconds(10));
 
         // Act & Assert
+        // ReSharper disable once AccessToDisposedClosure
         var act = () => service.StopAsync(timeoutCts.Token);
         await act.Should()
             .ThrowExactlyAsync<AggregateException>()
@@ -336,7 +337,7 @@ public class LambdaHostedServiceTests
         var shutdownHandlerInvoked = false;
         onShutdownBuilder
             .Build()
-            .Returns(async ct =>
+            .Returns(async _ =>
             {
                 shutdownHandlerInvoked = true;
                 await Task.CompletedTask;
@@ -374,7 +375,7 @@ public class LambdaHostedServiceTests
 
         onShutdownBuilder
             .Build()
-            .Returns(async ct =>
+            .Returns(async _ =>
             {
                 await Task.CompletedTask;
                 throw shutdownException;
@@ -452,23 +453,7 @@ public class LambdaHostedServiceTests
 
     [Theory]
     [AutoNSubstituteData]
-    internal async Task Dispose_Idempotent_WhenNotStarted(LambdaHostedService service)
-    {
-        // Act
-        var act = () =>
-        {
-            service.Dispose();
-            service.Dispose();
-            service.Dispose();
-        };
-
-        // Assert
-        act.Should().NotThrow();
-    }
-
-    [Theory]
-    [AutoNSubstituteData]
-    internal void Dispose_IsIdempotent(LambdaHostedService service)
+    internal void Dispose_Idempotent_WhenNotStarted(LambdaHostedService service)
     {
         // Act
         var act = () =>

@@ -12,6 +12,8 @@
 using System.Diagnostics;
 using System.Reflection;
 
+// ReSharper disable All
+
 namespace Microsoft.Extensions.Hosting;
 
 internal sealed class HostFactoryResolver

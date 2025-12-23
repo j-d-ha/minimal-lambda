@@ -58,7 +58,7 @@ lambda.MapHandler(() =>
 });
 
 lambda.OnShutdown(
-    (CancellationToken token) =>
+    (CancellationToken _) =>
     {
         Console.WriteLine("Shutting down...");
         return Task.CompletedTask;
@@ -68,7 +68,7 @@ lambda.OnShutdown(
 lambda.OnShutdown(
     Task (IService service) =>
     {
-        Console.WriteLine(service?.GetMessage());
+        Console.WriteLine(service.GetMessage());
         return Task.CompletedTask;
     }
 );

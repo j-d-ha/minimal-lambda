@@ -12,21 +12,6 @@ internal static class GenericHandlerSources
     ///     handler. The return type of the wrapper is a <c>Task</c> or <c>Task&lt;T&gt;</c> depending on
     ///     the return type of the actual handler.
     /// </summary>
-    /// <param name="higherOrderMethodInfos">The method info from which the handler is generated</param>
-    /// <param name="methodName">
-    ///     The name of the method that the handler is coming from and for which the
-    ///     code is intercepting
-    /// </param>
-    /// <param name="wrapperReturnType">
-    ///     The return type of the wrapper function, without Task. Ex.,
-    ///     <c>bool</c> not <c>Task&lt;bool&gt;</c>. A <c>null</c> signifies no return value.
-    /// </param>
-    /// <param name="defaultWrapperReturnValue">
-    ///     The default value the wrapped handler will return if the
-    ///     handler does not return a value of the same type as wrapperReturnType. This is without Task.
-    ///     Ex., <c>bool</c> not <c>Task&lt;bool&gt;</c>. A <c>null</c> signifies no default return value.
-    /// </param>
-    /// <returns></returns>
     internal static string Generate(
         EquatableArray<HigherOrderMethodInfo> higherOrderMethodInfos,
         string methodName,
@@ -155,5 +140,6 @@ internal static class GenericHandlerSources
         return handlerArgs;
     }
 
+    // ReSharper disable NotAccessedPositionalProperty.Local
     private readonly record struct HandlerArg(string String, string Assignment);
 }

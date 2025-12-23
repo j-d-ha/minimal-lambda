@@ -44,7 +44,7 @@ public class KinesisFirehoseResponseEnvelopeTests
             options.JsonOptions
         );
         deserializedData.Should().NotBeNull();
-        deserializedData!.Name.Should().Be(payload.Name);
+        deserializedData.Name.Should().Be(payload.Name);
         deserializedData.Value.Should().Be(payload.Value);
     }
 

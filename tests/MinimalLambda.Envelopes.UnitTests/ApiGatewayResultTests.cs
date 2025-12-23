@@ -50,7 +50,7 @@ public class ApiGatewayResultTests
         result.Body.Should().NotBeNull();
         var deserialized = JsonSerializer.Deserialize<TestPayload>(result.Body);
         deserialized.Should().NotBeNull();
-        deserialized!.Name.Should().Be(payload.Name);
+        deserialized.Name.Should().Be(payload.Name);
         deserialized.Value.Should().Be(payload.Value);
     }
 

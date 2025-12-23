@@ -214,6 +214,7 @@ public class FeatureCollectionExtensionsTest
 
     private class TestFeature
     {
+        // ReSharper disable once UnusedAutoPropertyAccessor.Local
         public string? Value { get; set; }
     }
 

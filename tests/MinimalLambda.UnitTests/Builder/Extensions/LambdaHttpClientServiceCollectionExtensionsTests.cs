@@ -81,7 +81,7 @@ public class LambdaHttpClientServiceCollectionExtensionsTests
         var serviceCollection = new ServiceCollection();
 
         // Act
-        var result = serviceCollection.AddLambdaBootstrapHttpClient((sp, key) => new HttpClient());
+        var result = serviceCollection.AddLambdaBootstrapHttpClient((_, _) => new HttpClient());
 
         // Assert
         result.Should().BeSameAs(serviceCollection);
@@ -95,7 +95,7 @@ public class LambdaHttpClientServiceCollectionExtensionsTests
         var httpClient = new HttpClient();
 
         // Act
-        serviceCollection.AddLambdaBootstrapHttpClient((sp, key) => httpClient);
+        serviceCollection.AddLambdaBootstrapHttpClient((_, _) => httpClient);
         var provider = serviceCollection.BuildServiceProvider();
 
         // Assert
@@ -188,7 +188,7 @@ public class LambdaHttpClientServiceCollectionExtensionsTests
         var httpClient = new HttpClient();
 
         // Act
-        serviceCollection.TryAddLambdaBootstrapHttpClient((sp, key) => httpClient);
+        serviceCollection.TryAddLambdaBootstrapHttpClient((_, _) => httpClient);
         var provider = serviceCollection.BuildServiceProvider();
 
         // Assert
@@ -207,8 +207,8 @@ public class LambdaHttpClientServiceCollectionExtensionsTests
         var secondClient = new HttpClient();
 
         // Act
-        serviceCollection.TryAddLambdaBootstrapHttpClient((sp, key) => firstClient);
-        serviceCollection.TryAddLambdaBootstrapHttpClient((sp, key) => secondClient);
+        serviceCollection.TryAddLambdaBootstrapHttpClient((_, _) => firstClient);
+        serviceCollection.TryAddLambdaBootstrapHttpClient((_, _) => secondClient);
         var provider = serviceCollection.BuildServiceProvider();
 
         // Assert
@@ -229,7 +229,7 @@ public class LambdaHttpClientServiceCollectionExtensionsTests
         // Act
         var result = serviceCollection
             .AddLambdaBootstrapHttpClient(firstClient)
-            .AddLambdaBootstrapHttpClient((sp, key) => secondClient);
+            .AddLambdaBootstrapHttpClient((_, _) => secondClient);
 
         // Assert
         result.Should().BeSameAs(serviceCollection);

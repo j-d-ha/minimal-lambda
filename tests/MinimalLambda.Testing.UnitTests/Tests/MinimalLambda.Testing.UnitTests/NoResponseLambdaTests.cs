@@ -1,6 +1,8 @@
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
+// ReSharper disable AccessToDisposedClosure
+
 namespace MinimalLambda.Testing.UnitTests;
 
 public class NoResponseLambdaTests

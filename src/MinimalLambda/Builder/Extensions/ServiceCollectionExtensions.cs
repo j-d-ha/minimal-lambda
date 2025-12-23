@@ -81,7 +81,9 @@ public static class ServiceCollectionExtensions
             // We will only attempt to add ILambdaSerializer if we are not using AOT.
             // This is needed for code AOT analysis.
             if (RuntimeFeature.IsDynamicCodeSupported)
+#pragma warning disable IL2026
                 services.TryAddSingleton<ILambdaSerializer, DefaultLambdaJsonSerializer>();
+#pragma warning restore IL2026
 
             services.TryAddSingleton<
                 ILambdaCancellationFactory,
