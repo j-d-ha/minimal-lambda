@@ -1,5 +1,5 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
-using Amazon.Lambda.APIGatewayEvents;
 using Amazon.Lambda.Core;
 using Amazon.Lambda.RuntimeSupport;
 using Amazon.Lambda.Serialization.SystemTextJson;
@@ -80,6 +80,7 @@ internal static class GeneratorTestHelpers
             });
     }
 
+    [RequiresAssemblyFiles("Calls System.Reflection.Assembly.Location")]
     internal static (GeneratorDriver driver, Compilation compilation) GenerateFromSource(
         string source,
         Dictionary<string, ReportDiagnostic>? diagnosticsToSuppress = null,
@@ -99,7 +100,13 @@ internal static class GeneratorTestHelpers
 
         List<MetadataReference> references =
         [
+#if NET10_0_OR_GREATER
+            .. Net100.References.All.ToList(),
+#elif NET9_0
             .. Net90.References.All.ToList(),
+#else
+            .. Net80.References.All.ToList(),
+#endif
             MetadataReference.CreateFromFile(typeof(LambdaApplication).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(FromKeyedServicesAttribute).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(ILambdaContext).Assembly.Location),
@@ -109,7 +116,6 @@ internal static class GeneratorTestHelpers
             MetadataReference.CreateFromFile(typeof(LambdaBootstrapBuilder).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(IOptions<>).Assembly.Location),
             MetadataReference.CreateFromFile(typeof(ILambdaInvocationContext).Assembly.Location),
-            MetadataReference.CreateFromFile(typeof(APIGatewayProxyResponse).Assembly.Location),
         ];
 
         var compilationOptions = new CSharpCompilationOptions(
