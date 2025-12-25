@@ -435,4 +435,26 @@ public class ExpressionLambdaVerifyTests
             await lambda.RunAsync();
             """
         );
+
+    [Fact]
+    public async Task Test_ExpressionLambda_OptionalInjectedParam() =>
+        await GeneratorTestHelpers.Verify(
+            """
+            using MinimalLambda;
+            using MinimalLambda.Builder;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
+            var lambda = builder.Build();
+
+            lambda.MapHandler(string? (IService? service = default) => service.GetMessage());
+
+            await lambda.RunAsync();
+
+            public interface IService
+            {
+                string? GetMessage();
+            }
+            """
+        );
 }

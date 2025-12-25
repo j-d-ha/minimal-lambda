@@ -62,7 +62,7 @@ internal static class HandlerInfoExtractor
         var argumentInfos = targetOperation
             .Arguments.Select(argument =>
             {
-                var typeAsGlobal = argument.Value.Type?.GetAsGlobal();
+                var typeAsGlobal = argument.Value.Type?.ToGloballyQualifiedName();
                 var parameterName = argument.Parameter?.Name;
 
                 return new ArgumentInfo(typeAsGlobal, parameterName);
@@ -215,7 +215,7 @@ internal static class HandlerInfoExtractor
                 .ToEquatableArray();
 
             // get the fully qualified type that may be wrapped in Task or ValueTask.
-            var fullResponseType = invokeMethod.ReturnType.GetAsGlobal();
+            var fullResponseType = invokeMethod.ReturnType.ToGloballyQualifiedName();
 
             // determine if the delegate is returning awaitable value
             var isAwaitable =
@@ -257,7 +257,7 @@ internal static class HandlerInfoExtractor
             .ToEquatableArray();
 
         // get the fully qualified type that may be wrapped in Task or ValueTask.
-        var fullResponseType = methodSymbol.ReturnType.GetAsGlobal();
+        var fullResponseType = methodSymbol.ReturnType.ToGloballyQualifiedName();
 
         // determine if the delegate is returning awaitable value
         var isAwaitable =

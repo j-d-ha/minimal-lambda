@@ -45,8 +45,8 @@ internal readonly record struct KeyedServiceKeyInfo(
         TypedConstant argument
     )
     {
-        var keyBaseType = argument.Type?.BaseType?.GetAsGlobal();
-        var keyType = argument.Type?.GetAsGlobal();
+        var keyBaseType = argument.Type?.BaseType?.ToGloballyQualifiedName();
+        var keyType = argument.Type?.ToGloballyQualifiedName();
 
         if (argument.IsNull)
             return ("null", keyType, keyBaseType);
@@ -77,10 +77,10 @@ internal readonly record struct KeyedServiceKeyInfo(
                 : "false",
 
             TypedConstantKind.Primitive or TypedConstantKind.Enum =>
-                $"({argument.Type?.GetAsGlobal()}){value}",
+                $"({argument.Type?.ToGloballyQualifiedName()}){value}",
 
             TypedConstantKind.Type when value is ITypeSymbol typeValue =>
-                $"typeof({typeValue.GetAsGlobal()})",
+                $"typeof({typeValue.ToGloballyQualifiedName()})",
 
             _ => value.ToString(),
         };

@@ -20,11 +20,11 @@ internal static class TypeInfoExtensions
     {
         internal static TypeInfo Create(ITypeSymbol typeSymbol, TypeSyntax? syntax = null)
         {
-            var fullyQualifiedType = typeSymbol.GetAsGlobal(syntax);
+            var fullyQualifiedType = typeSymbol.ToGloballyQualifiedName(syntax);
             var unwrappedFullyQualifiedType = typeSymbol.GetUnwrappedFullyQualifiedType(syntax);
             var isGeneric = typeSymbol is INamedTypeSymbol { IsGenericType: true };
             var implementedInterfaces = typeSymbol
-                .AllInterfaces.Select(i => i.GetAsGlobal())
+                .AllInterfaces.Select(i => i.ToGloballyQualifiedName())
                 .ToImmutableArray();
 
             return new TypeInfo(
@@ -48,13 +48,13 @@ internal static class TypeInfoExtensions
                 typeSymbol is not INamedTypeSymbol namedTypeSymbol
                 || (!namedTypeSymbol.IsTask() && !namedTypeSymbol.IsValueTask())
             )
-                return typeSymbol.GetAsGlobal(syntax);
+                return typeSymbol.ToGloballyQualifiedName(syntax);
 
             // if not generic Task or ValueTask, return null as no wrapped return value
             if (!namedTypeSymbol.IsGenericType || namedTypeSymbol.TypeArguments.Length == 0)
                 return null;
 
-            return namedTypeSymbol.TypeArguments.First().GetAsGlobal(syntax);
+            return namedTypeSymbol.TypeArguments.First().ToGloballyQualifiedName(syntax);
         }
     }
 }

@@ -23,7 +23,7 @@ internal static class ClassInfoExtensions
             var typeKind = typeSymbol.GetTypeKind();
 
             // get the globally qualified name of the class
-            var globallyQualifiedName = typeSymbol.GetAsGlobal();
+            var globallyQualifiedName = typeSymbol.ToGloballyQualifiedName();
 
             // get short name
             var shortName = typeSymbol.Name;
@@ -35,7 +35,7 @@ internal static class ClassInfoExtensions
 
             // get all interfaces
             var interfaceNames = typeSymbol
-                .AllInterfaces.Select(i => i.GetAsGlobal())
+                .AllInterfaces.Select(i => i.ToGloballyQualifiedName())
                 .ToEquatableArray();
 
             return new ClassInfo(

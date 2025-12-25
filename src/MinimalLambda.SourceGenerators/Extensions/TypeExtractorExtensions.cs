@@ -10,7 +10,10 @@ internal static class TypeExtractorExtensions
             SymbolDisplayMiscellaneousOptions.IncludeNullableReferenceTypeModifier
         );
 
-    internal static string GetAsGlobal(this ITypeSymbol typeSymbol, TypeSyntax? typeSyntax = null)
+    internal static string ToGloballyQualifiedName(
+        this ITypeSymbol typeSymbol,
+        TypeSyntax? typeSyntax = null
+    )
     {
         var baseTypeName = typeSymbol.ToDisplayString(Format);
 
