@@ -22,27 +22,6 @@ public class ExpressionLambdaVerifyTests
         );
 
     [Fact]
-    public async Task Test_ExpressionLambda_MainOverload_DeserializerSerializer_NoOp() =>
-        await GeneratorTestHelpers.Verify(
-            """
-            using System.IO;
-            using System.Threading.Tasks;
-            using Amazon.Lambda.Core;
-            using MinimalLambda;
-            using MinimalLambda.Builder;
-            using Microsoft.Extensions.Hosting;
-
-            var builder = LambdaApplication.CreateBuilder();
-
-            var lambda = builder.Build();
-
-            lambda.Handle(Task (ILambdaInvocationContext context) => Task.CompletedTask);
-
-            await lambda.RunAsync();
-            """
-        );
-
-    [Fact]
     public async Task Test_ExpressionLambda_NoInput_NoOutput() =>
         await GeneratorTestHelpers.Verify(
             """

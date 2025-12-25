@@ -58,12 +58,7 @@ internal static class MinimalLambdaEmitter
 
         // if MapHandler calls found, generate the source code.
         if (compilationInfo.MapHandlerInvocationInfos.Count >= 1)
-            outputs.Add(
-                MapHandlerSources.Generate(
-                    compilationInfo.MapHandlerInvocationInfos,
-                    compilationInfo.BuilderInfos
-                )
-            );
+            outputs.Add(MapHandlerSources.Generate(compilationInfo.MapHandlerInvocationInfos));
 
         // add UseMiddleware<T> interceptors
         if (compilationInfo.UseMiddlewareTInfos.Count >= 1)

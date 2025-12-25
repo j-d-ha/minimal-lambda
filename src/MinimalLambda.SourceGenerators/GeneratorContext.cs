@@ -8,14 +8,14 @@ internal class GeneratorContext
     internal WellKnownTypes.WellKnownTypes WellKnownTypes { get; }
     internal CancellationToken CancellationToken { get; }
     internal SemanticModel SemanticModel { get; }
-    internal GeneratorAttributeSyntaxContext GeneratorAttributeSyntaxContext { get; }
+    internal GeneratorSyntaxContext GeneratorAttributeSyntaxContext { get; }
 
-    internal GeneratorContext(
-        GeneratorAttributeSyntaxContext context,
-        CancellationToken cancellationToken
-    )
+    internal SyntaxNode Node { get; }
+
+    internal GeneratorContext(GeneratorSyntaxContext context, CancellationToken cancellationToken)
     {
         GeneratorAttributeSyntaxContext = context;
+        Node = context.Node;
         SemanticModel = GeneratorAttributeSyntaxContext.SemanticModel;
         CancellationToken = cancellationToken;
         WellKnownTypes = SourceGenerators.WellKnownTypes.WellKnownTypes.GetOrCreate(
