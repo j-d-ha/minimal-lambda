@@ -66,7 +66,6 @@ namespace MinimalLambda.Generated
 
             Task InvocationDelegate(ILambdaInvocationContext context)
             {
-                // ParameterInfo { Type = string, Name = input, Source = Event, IsNullable = False, IsOptional = False}
                 var arg0 = context.GetRequiredEvent<string>();
                 var response = castHandler.Invoke(arg0);
                 if (context.Features.Get<IResponseFeature>() is not IResponseFeature<global::IService> responseFeature)

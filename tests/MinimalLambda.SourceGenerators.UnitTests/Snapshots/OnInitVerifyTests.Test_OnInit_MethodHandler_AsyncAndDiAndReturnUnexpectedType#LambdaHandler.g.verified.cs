@@ -51,7 +51,6 @@ namespace MinimalLambda.Generated
 
             async Task<bool> OnInit(ILambdaLifecycleContext context)
             {
-                // ParameterInfo { Type = global::IService, Name = service, Source = Service, IsNullable = False, IsOptional = False}
                 var arg0 = context.ServiceProvider.GetRequiredService<global::IService>();
                 await castHandler.Invoke(arg0);
                 return true;

@@ -56,7 +56,6 @@ namespace MinimalLambda.Generated
 
             Task InvocationDelegate(ILambdaInvocationContext context)
             {
-                // ParameterInfo { Type = global::System.IO.Stream, Name = input, Source = Event, IsNullable = False, IsOptional = False}
                 var arg0 = context.Features.GetRequired<IInvocationDataFeature>().EventStream;
                 castHandler.Invoke(arg0);
                 return Task.CompletedTask;

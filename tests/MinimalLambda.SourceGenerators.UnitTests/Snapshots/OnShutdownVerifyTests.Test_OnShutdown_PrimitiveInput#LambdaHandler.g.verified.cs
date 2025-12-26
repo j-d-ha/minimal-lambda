@@ -51,9 +51,7 @@ namespace MinimalLambda.Generated
 
             Task OnShutdown(ILambdaLifecycleContext context)
             {
-                // ParameterInfo { Type = string, Name = x, Source = Service, IsNullable = False, IsOptional = False}
                 var arg0 = context.ServiceProvider.GetRequiredService<string>();
-                // ParameterInfo { Type = int, Name = y, Source = Service, IsNullable = False, IsOptional = False}
                 var arg1 = context.ServiceProvider.GetRequiredService<int>();
                 var response = castHandler.Invoke(arg0, arg1);
                 return response;

@@ -66,11 +66,8 @@ namespace MinimalLambda.Generated
 
             async Task InvocationDelegate(ILambdaInvocationContext context)
             {
-                // ParameterInfo { Type = global::CustomRequest, Name = request, Source = Event, IsNullable = False, IsOptional = False}
                 var arg0 = context.GetRequiredEvent<global::CustomRequest>();
-                // ParameterInfo { Type = global::IService, Name = service, Source = Service, IsNullable = False, IsOptional = False}
                 var arg1 = context.ServiceProvider.GetRequiredService<global::IService>();
-                // ParameterInfo { Type = global::Amazon.Lambda.Core.ILambdaContext, Name = context, Source = HostContext, IsNullable = False, IsOptional = False}
                 var arg2 = context;
                 var response = await castHandler.Invoke(arg0, arg1, arg2);
                 if (context.Features.Get<IResponseFeature>() is not IResponseFeature<global::CustomResponse> responseFeature)

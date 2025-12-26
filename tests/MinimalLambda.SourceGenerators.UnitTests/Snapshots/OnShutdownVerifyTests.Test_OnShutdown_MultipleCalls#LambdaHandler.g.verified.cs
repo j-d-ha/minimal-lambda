@@ -55,7 +55,7 @@ namespace MinimalLambda.Generated
                 return response;
             }
         }
-        
+
         [InterceptsLocation(1, "REPLACED")]
         internal static ILambdaOnShutdownBuilder OnShutdownInterceptor1(
             this ILambdaOnShutdownBuilder application,
@@ -68,15 +68,13 @@ namespace MinimalLambda.Generated
 
             Task OnShutdown(ILambdaLifecycleContext context)
             {
-                // ParameterInfo { Type = string?, Name = x, Source = Service, IsNullable = True, IsOptional = False}
                 var arg0 = context.ServiceProvider.GetService<string?>();
-                // ParameterInfo { Type = global::IService?, Name = y, Source = Service, IsNullable = True, IsOptional = False}
                 var arg1 = context.ServiceProvider.GetService<global::IService?>();
                 var response = castHandler.Invoke(arg0, arg1);
                 return response;
             }
         }
-        
+
         [InterceptsLocation(1, "REPLACED")]
         internal static ILambdaOnShutdownBuilder OnShutdownInterceptor2(
             this ILambdaOnShutdownBuilder application,
@@ -89,9 +87,7 @@ namespace MinimalLambda.Generated
 
             Task OnShutdown(ILambdaLifecycleContext context)
             {
-                // ParameterInfo { Type = string, Name = x, Source = Service, IsNullable = False, IsOptional = False}
                 var arg0 = context.ServiceProvider.GetRequiredService<string>();
-                // ParameterInfo { Type = int, Name = y, Source = Service, IsNullable = False, IsOptional = False}
                 var arg1 = context.ServiceProvider.GetRequiredService<int>();
                 var response = castHandler.Invoke(arg0, arg1);
                 return response;

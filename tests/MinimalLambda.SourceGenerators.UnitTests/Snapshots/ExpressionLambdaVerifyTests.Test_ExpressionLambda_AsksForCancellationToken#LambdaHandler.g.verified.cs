@@ -61,7 +61,6 @@ namespace MinimalLambda.Generated
 
             Task InvocationDelegate(ILambdaInvocationContext context)
             {
-                // ParameterInfo { Type = global::System.Threading.CancellationToken, Name = cancellationToken, Source = CancellationToken, IsNullable = False, IsOptional = False}
                 var arg0 = context.CancellationToken;
                 var response = castHandler.Invoke(arg0);
                 if (context.Features.Get<IResponseFeature>() is not IResponseFeature<string> responseFeature)

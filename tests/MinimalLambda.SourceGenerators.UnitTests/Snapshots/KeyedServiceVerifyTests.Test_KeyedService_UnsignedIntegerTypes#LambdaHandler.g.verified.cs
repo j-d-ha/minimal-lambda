@@ -60,11 +60,8 @@ namespace MinimalLambda.Generated
                 {
                     throw new InvalidOperationException($"Unable to resolve service referenced by {nameof(FromKeyedServicesAttribute)}. The service provider doesn't support keyed services.");
                 }
-                // ParameterInfo { Type = global::IService, Name = serviceA, Source = KeyedService, IsNullable = False, IsOptional = False, KeyedServiceKeyInfo { DisplayValue = (uint)42, Type = uint, BaseType = global::System.ValueType } }
                 var arg0 = context.ServiceProvider.GetRequiredKeyedService<global::IService>((uint)42);
-                // ParameterInfo { Type = global::IService, Name = serviceB, Source = KeyedService, IsNullable = False, IsOptional = False, KeyedServiceKeyInfo { DisplayValue = (ulong)42, Type = ulong, BaseType = global::System.ValueType } }
                 var arg1 = context.ServiceProvider.GetRequiredKeyedService<global::IService>((ulong)42);
-                // ParameterInfo { Type = global::IService, Name = serviceC, Source = KeyedService, IsNullable = False, IsOptional = False, KeyedServiceKeyInfo { DisplayValue = (ushort)42, Type = ushort, BaseType = global::System.ValueType } }
                 var arg2 = context.ServiceProvider.GetRequiredKeyedService<global::IService>((ushort)42);
                 castHandler.Invoke(arg0, arg1, arg2);
                 return Task.CompletedTask;

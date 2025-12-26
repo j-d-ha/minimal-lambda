@@ -70,11 +70,8 @@ namespace MinimalLambda.Generated
                 {
                     throw new InvalidOperationException($"Unable to resolve service referenced by {nameof(FromKeyedServicesAttribute)}. The service provider doesn't support keyed services.");
                 }
-                // ParameterInfo { Type = string, Name = input, Source = Event, IsNullable = False, IsOptional = False}
                 var arg0 = context.GetRequiredEvent<string>();
-                // ParameterInfo { Type = global::Amazon.Lambda.Core.ILambdaContext, Name = context, Source = HostContext, IsNullable = False, IsOptional = False}
                 var arg1 = context;
-                // ParameterInfo { Type = global::IService, Name = service, Source = KeyedService, IsNullable = False, IsOptional = False, KeyedServiceKeyInfo { DisplayValue = "key", Type = string, BaseType = object } }
                 var arg2 = context.ServiceProvider.GetRequiredKeyedService<global::IService>("key");
                 var response = castHandler.Invoke(arg0, arg1, arg2);
                 if (context.Features.Get<IResponseFeature>() is not IResponseFeature<string> responseFeature)
