@@ -26,88 +26,73 @@ internal static class MapHandlerExtractors
             WellKnownType.System_Threading_CancellationToken
         );
 
-        foreach (var parameter in methodSymbol.Parameters)
-        {
-            var paramType = parameter.Type.ToGloballyQualifiedName();
-
-            var (isEvent, isKeyedServices) = parameter.IsFromEventOrFromKeyedService(
-                context,
-                out var keyResult
-            );
-
-            // event
-            if (isEvent)
+        return methodSymbol.Parameters.Select(
+            (string?, DiagnosticInfo?) (parameter) =>
             {
-                // stream event
-                if (SymbolEqualityComparer.Default.Equals(parameter.Type, stream))
-                {
-                    yield return (
-                        "context.Features.GetRequired<IInvocationDataFeature>().EventStream",
-                        null
-                    );
-                    continue;
-                }
+                var paramType = parameter.Type.ToGloballyQualifiedName();
 
-                // non stream event
-                yield return ($"context.GetRequiredEvent<{paramType}>()", null);
-                continue;
-            }
-
-            // context
-            if (
-                SymbolEqualityComparer.Default.Equals(parameter.Type, lambdaContext)
-                || SymbolEqualityComparer.Default.Equals(parameter.Type, lambdaInvocationContext)
-            )
-            {
-                yield return ("context", null);
-                continue;
-            }
-
-            // cancellation token
-            if (SymbolEqualityComparer.Default.Equals(parameter.Type, cancellationToken))
-            {
-                yield return ("context.CancellationToken", null);
-                continue;
-            }
-
-            // keyed services
-            if (isKeyedServices)
-            {
-                // get key for keyed service
-                if (keyResult?.IsSuccess == false)
-                {
-                    yield return (null, keyResult.Error!.Value);
-                    continue;
-                }
-
-                // KeyedService - optional
-                if (parameter.IsOptional)
-                {
-                    yield return (
-                        $"context.ServiceProvider.GetKeyedService<{paramType}>({keyResult?.Value})",
-                        null
-                    );
-                    continue;
-                }
-
-                // KeyedService
-                yield return (
-                    $"context.ServiceProvider.GetRequiredKeyedService<{paramType}>({keyResult?.Value})",
-                    null
+                var (isEvent, isKeyedServices) = parameter.IsFromEventOrFromKeyedService(
+                    context,
+                    out var keyResult
                 );
-                continue;
-            }
 
-            // default - inject required from DI
-            if (parameter.IsOptional)
-            {
-                yield return ($"context.ServiceProvider.GetService<{paramType}>()", null);
-                continue;
-            }
+                // event
+                if (isEvent)
+                {
+                    // stream event
+                    if (SymbolEqualityComparer.Default.Equals(parameter.Type, stream))
+                        return (
+                            "context.Features.GetRequired<IInvocationDataFeature>().EventStream",
+                            null
+                        );
 
-            // default - inject required from DI - optional
-            yield return ($"context.ServiceProvider.GetRequiredService<{paramType}>()", null);
-        }
+                    // non stream event
+                    return ($"context.GetRequiredEvent<{paramType}>()", null);
+                }
+
+                // context
+                if (
+                    SymbolEqualityComparer.Default.Equals(parameter.Type, lambdaContext)
+                    || SymbolEqualityComparer.Default.Equals(
+                        parameter.Type,
+                        lambdaInvocationContext
+                    )
+                )
+                    return ("context", null);
+
+                // cancellation token
+                if (SymbolEqualityComparer.Default.Equals(parameter.Type, cancellationToken))
+                    return ("context.CancellationToken", null);
+
+                // keyed services
+                if (isKeyedServices)
+                {
+                    // get key for keyed service
+                    if (keyResult?.IsSuccess == false)
+                        return (null, keyResult.Error!.Value);
+
+                    // KeyedService - optional
+                    if (parameter.IsOptional)
+                        return (
+                            $"context.ServiceProvider.GetKeyedService<{paramType}>({keyResult?.Value})",
+                            null
+                        );
+
+                    // KeyedService
+                    return (
+                        $"context.ServiceProvider.GetRequiredKeyedService<{paramType}>({keyResult?.Value})",
+                        null
+                    );
+                }
+
+                // default - inject from DI - optional
+                if (parameter.IsOptional)
+                    return ($"context.ServiceProvider.GetService<{paramType}>()", null);
+
+                // default - inject required from DI
+                return ($"context.ServiceProvider.GetRequiredService<{paramType}>()", null);
+            }
+        );
     }
 
     extension(IParameterSymbol parameterSymbol)
