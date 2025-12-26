@@ -81,12 +81,13 @@ internal static class ParameterInfo2Extensions
                         )
                 );
 
-            // default - inject from DI - optional
-            if (parameter.IsOptional)
-                return success($"context.ServiceProvider.GetService<{paramType}>()");
-
-            // default - inject required from DI
-            return success($"context.ServiceProvider.GetRequiredService<{paramType}>()");
+            return success(
+                parameter.IsOptional
+                    // default - inject from DI - optional
+                    ? $"context.ServiceProvider.GetService<{paramType}>()"
+                    // default - inject required from DI
+                    : $"context.ServiceProvider.GetRequiredService<{paramType}>()"
+            );
         }
 
         internal static ParameterInfo2 CreateForLifecycleHandler() => new();
