@@ -1,0 +1,219 @@
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
+using MinimalLambda.SourceGenerators.Extensions;
+using WellKnownType = MinimalLambda.SourceGenerators.WellKnownTypes.WellKnownTypeData.WellKnownType;
+
+namespace MinimalLambda.SourceGenerators.Models;
+
+internal static class MapHandlerExtractors
+{
+    internal static IEnumerable<(string?, DiagnosticInfo?)> GetParameterAssignments(
+        IMethodSymbol methodSymbol,
+        GeneratorContext context
+    )
+    {
+        var stream = context.WellKnownTypes.Get(WellKnownType.System_IO_Stream);
+        var lambdaContext = context.WellKnownTypes.Get(
+            WellKnownType.Amazon_Lambda_Core_ILambdaContext
+        );
+        var lambdaInvocationContext = context.WellKnownTypes.Get(
+            WellKnownType.MinimalLambda_ILambdaInvocationContext
+        );
+        var cancellationToken = context.WellKnownTypes.Get(
+            WellKnownType.System_Threading_CancellationToken
+        );
+
+        foreach (var parameter in methodSymbol.Parameters)
+        {
+            var paramType = parameter.Type.ToGloballyQualifiedName();
+
+            var (isEvent, isKeyedServices) = parameter.IsFromEventOrFromKeyedService(
+                context,
+                out var keyResult
+            );
+
+            // event
+            if (isEvent)
+            {
+                // stream event
+                if (SymbolEqualityComparer.Default.Equals(parameter.Type, stream))
+                {
+                    yield return (
+                        "context.Features.GetRequired<IInvocationDataFeature>().EventStream",
+                        null
+                    );
+                    continue;
+                }
+
+                // non stream event
+                yield return ($"context.GetRequiredEvent<{paramType}>()", null);
+                continue;
+            }
+
+            // context
+            if (
+                SymbolEqualityComparer.Default.Equals(parameter.Type, lambdaContext)
+                || SymbolEqualityComparer.Default.Equals(parameter.Type, lambdaInvocationContext)
+            )
+            {
+                yield return ("context", null);
+                continue;
+            }
+
+            // cancellation token
+            if (SymbolEqualityComparer.Default.Equals(parameter.Type, cancellationToken))
+            {
+                yield return ("context.CancellationToken", null);
+                continue;
+            }
+
+            // keyed services
+            if (isKeyedServices)
+            {
+                // get key for keyed service
+                if (keyResult?.IsSuccess == false)
+                {
+                    yield return (null, keyResult.Error!.Value);
+                    continue;
+                }
+
+                // KeyedService - optional
+                if (parameter.IsOptional)
+                {
+                    yield return (
+                        $"context.ServiceProvider.GetKeyedService<{paramType}>({keyResult?.Value})",
+                        null
+                    );
+                    continue;
+                }
+
+                // KeyedService
+                yield return (
+                    $"context.ServiceProvider.GetRequiredKeyedService<{paramType}>({keyResult?.Value})",
+                    null
+                );
+                continue;
+            }
+
+            // default - inject required from DI
+            if (parameter.IsOptional)
+            {
+                yield return ($"context.ServiceProvider.GetService<{paramType}>()", null);
+                continue;
+            }
+
+            // default - inject required from DI - optional
+            yield return ($"context.ServiceProvider.GetRequiredService<{paramType}>()", null);
+        }
+    }
+
+    extension(IParameterSymbol parameterSymbol)
+    {
+        internal (bool IsFromEvent, bool IsFromKeyedService) IsFromEventOrFromKeyedService(
+            GeneratorContext context,
+            out DiagnosticResult<string>? keyResult
+        )
+        {
+            keyResult = null;
+
+            var eventAttr = context.WellKnownTypes.Get(
+                WellKnownType.MinimalLambda_Builder_EventAttribute
+            );
+            var fromEventAttr = context.WellKnownTypes.Get(
+                WellKnownType.MinimalLambda_Builder_FromEventAttribute
+            );
+            var fromKeyedServicesAttr = context.WellKnownTypes.Get(
+                WellKnownType.Microsoft_Extensions_DependencyInjection_FromKeyedServicesAttribute
+            );
+
+            foreach (var attribute in parameterSymbol.GetAttributes())
+            {
+                if (attribute is null)
+                    continue;
+
+                var attrClass = attribute.AttributeClass;
+
+                // check event
+                if (SymbolEqualityComparer.Default.Equals(attrClass, eventAttr))
+                    return (true, false);
+
+                // check from event
+                if (SymbolEqualityComparer.Default.Equals(attrClass, fromEventAttr))
+                    return (true, false);
+
+                // check keyed service
+                if (SymbolEqualityComparer.Default.Equals(attrClass, fromKeyedServicesAttr))
+                {
+                    keyResult = attribute.ExtractKeyedServiceKey();
+                    return (false, true);
+                }
+            }
+
+            return (false, false);
+        }
+    }
+
+    extension(AttributeData attributeData)
+    {
+        private DiagnosticResult<string> ExtractKeyedServiceKey()
+        {
+            var argument = attributeData.ConstructorArguments[0];
+            var keyBaseType = argument.Type?.BaseType?.ToGloballyQualifiedName();
+            var keyType = argument.Type?.ToGloballyQualifiedName();
+
+            if (argument.IsNull)
+                return DiagnosticResult<string>.Success("null");
+
+            object? value = null;
+            try
+            {
+                value = argument.Value;
+            }
+            catch
+            {
+                // ignore
+            }
+
+            if (value is null)
+                return DiagnosticResult<string>.Failure(
+                    Diagnostics.InvalidAttributeArgument,
+                    attributeData.GetAttributeArgumentLocation(0),
+                    argument.Type?.ToGloballyQualifiedName()
+                );
+
+            return DiagnosticResult<string>.Success(
+                argument.Kind switch
+                {
+                    TypedConstantKind.Primitive when value is string strValue =>
+                        SymbolDisplay.FormatLiteral(strValue, true),
+
+                    TypedConstantKind.Primitive when value is char charValue => $"'{charValue}'",
+
+                    TypedConstantKind.Primitive when value is bool boolValue => boolValue
+                        ? "true"
+                        : "false",
+
+                    TypedConstantKind.Primitive or TypedConstantKind.Enum =>
+                        $"({argument.Type?.ToGloballyQualifiedName()}){value}",
+
+                    TypedConstantKind.Type when value is ITypeSymbol typeValue =>
+                        $"typeof({typeValue.ToGloballyQualifiedName()})",
+
+                    _ => value.ToString(),
+                }
+            );
+        }
+
+        private LocationInfo? GetAttributeArgumentLocation(int index) =>
+            attributeData.ApplicationSyntaxReference?.GetSyntax()
+                is AttributeSyntax { ArgumentList: { } argumentList }
+                ? argumentList
+                    .Arguments.ElementAtOrDefault(index)
+                    ?.Expression.GetLocation()
+                    .CreateLocationInfo()
+                : null;
+    }
+}

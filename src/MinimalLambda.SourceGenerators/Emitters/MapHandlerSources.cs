@@ -46,7 +46,7 @@ internal static class MapHandlerSources
 
             return new
             {
-                Location = mapHandlerInvocationInfo.InterceptableLocationInfo,
+                LocatioOpn = mapHandlerInvocationInfo.InterceptableLocationInfo,
                 HandlerSignature = handlerSignature,
                 IsEventFeatureRequired = isEventFeatureRequired,
                 IsResponseFeatureRequired = isResponseFeatureRequired,

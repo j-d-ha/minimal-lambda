@@ -1,5 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Linq;
+using LayeredCraft.SourceGeneratorTools.Types;
 using Microsoft.CodeAnalysis;
 using MinimalLambda.SourceGenerators.Extensions;
 
@@ -12,7 +15,9 @@ internal readonly record struct HigherOrderMethodInfo(
     InterceptableLocationInfo InterceptableLocationInfo,
     ImmutableArray<ArgumentInfo> ArgumentsInfos,
     // ── New ──────────────────────────────────────────────────────────────────────────
-    string DelegateCastType = ""
+    string DelegateCastType = "",
+    EquatableArray<string> ParameterAssignments = default,
+    EquatableArray<DiagnosticInfo> DiagnosticInfos = default
 );
 
 internal static class HigherOrderMethodInfoExtensions
@@ -22,10 +27,35 @@ internal static class HigherOrderMethodInfoExtensions
         internal static HigherOrderMethodInfo? Create(
             IMethodSymbol methodSymbol,
             string name,
+            Func<
+                IMethodSymbol,
+                GeneratorContext,
+                IEnumerable<(string?, DiagnosticInfo?)>
+            > getParameterAssignments,
             GeneratorContext context
         )
         {
             var handlerCastType = GetMethodSignature(methodSymbol);
+            var location = context.Node.CreateLocationInfo();
+
+            if (!InterceptableLocationInfo.TryGet(context, out var interceptableLocation))
+                throw new InvalidOperationException("Unable to get interceptable location");
+
+            var (assignments, diagnostics) = getParameterAssignments(methodSymbol, context)
+                .Aggregate(
+                    (Successes: new List<string>(), Diagnostics: new List<DiagnosticInfo>()),
+                    static (acc, result) =>
+                    {
+                        if (result.Item1 is not null)
+                            acc.Successes.Add(result.Item1);
+
+                        if (result.Item2 is not null)
+                            acc.Diagnostics.Add(result.Item2.Value);
+
+                        return acc;
+                    },
+                    static acc => (acc.Successes.ToEquatableArray(), acc.Diagnostics.ToArray())
+                );
 
             return null;
         }
