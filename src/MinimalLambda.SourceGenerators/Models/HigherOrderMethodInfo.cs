@@ -30,13 +30,12 @@ internal static class HigherOrderMethodInfoExtensions
             Func<
                 IMethodSymbol,
                 GeneratorContext,
-                IEnumerable<(string?, DiagnosticInfo?)>
+                IEnumerable<(string? Assignment, DiagnosticInfo? Diagnostic)>
             > getParameterAssignments,
             GeneratorContext context
         )
         {
             var handlerCastType = GetMethodSignature(methodSymbol);
-            var location = context.Node.CreateLocationInfo();
 
             if (!InterceptableLocationInfo.TryGet(context, out var interceptableLocation))
                 throw new InvalidOperationException("Unable to get interceptable location");
@@ -46,18 +45,29 @@ internal static class HigherOrderMethodInfoExtensions
                     (Successes: new List<string>(), Diagnostics: new List<DiagnosticInfo>()),
                     static (acc, result) =>
                     {
-                        if (result.Item1 is not null)
-                            acc.Successes.Add(result.Item1);
+                        if (result.Assignment is not null)
+                            acc.Successes.Add(result.Assignment);
 
-                        if (result.Item2 is not null)
-                            acc.Diagnostics.Add(result.Item2.Value);
+                        if (result.Diagnostic is not null)
+                            acc.Diagnostics.Add(result.Diagnostic.Value);
 
                         return acc;
                     },
-                    static acc => (acc.Successes.ToEquatableArray(), acc.Diagnostics.ToArray())
+                    static acc =>
+                        (acc.Successes.ToEquatableArray(), acc.Diagnostics.ToEquatableArray())
                 );
 
-            return null;
+            return new HigherOrderMethodInfo
+            {
+                Name = name,
+                DelegateInfo = default,
+                LocationInfo = null,
+                InterceptableLocationInfo = interceptableLocation.Value,
+                ArgumentsInfos = default,
+                DelegateCastType = handlerCastType,
+                ParameterAssignments = assignments,
+                DiagnosticInfos = diagnostics,
+            };
         }
     }
 
