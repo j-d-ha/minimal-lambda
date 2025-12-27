@@ -24,7 +24,7 @@ internal static class DiagnosticGenerator
         // //             invocationInfo
         // //                 .DelegateInfo.Parameters.Where(p => p.Source == ParameterSource.Event)
         // //                 .Select(p =>
-        // //                     Diagnostic.Create(
+        // //                     Diagnostic.CreateLocationInfo(
         // //                         Diagnostics.MultipleParametersUseAttribute,
         // //                         p.LocationInfo?.ToLocation(),
         // //                         AttributeConstants.FromEventAttribute
@@ -48,7 +48,7 @@ internal static class DiagnosticGenerator
         //     if (useMiddlewareTInfo.ClassInfo.TypeKind is "interface" or "abstract class")
         //     {
         //         diagnostics.Add(
-        //             Diagnostic.Create(
+        //             Diagnostic.CreateLocationInfo(
         //                 Diagnostics.MustBeConcreteType,
         //                 useMiddlewareTInfo.GenericTypeArgumentLocation?.ToLocation(),
         //                 useMiddlewareTInfo.ClassInfo.ShortName
@@ -67,7 +67,7 @@ internal static class DiagnosticGenerator
         //             )
         //             .Skip(1)
         //             .Select(c =>
-        //                 Diagnostic.Create(
+        //                 Diagnostic.CreateLocationInfo(
         //                     Diagnostics.MultipleConstructorsWithAttribute,
         //                     c.AttributeInfos.First(a =>
         //                             a.FullName == AttributeConstants.MiddlewareConstructor
@@ -91,7 +91,7 @@ internal static class DiagnosticGenerator
     //         )
     //         .Where(parameterInfo => parameterInfo.KeyedServiceKey is { DisplayValue: null })
     //         .Select(parameterInfo =>
-    //             Diagnostic.Create(
+    //             Diagnostic.CreateLocationInfo(
     //                 Diagnostics.InvalidAttributeArgument,
     //                 parameterInfo.KeyedServiceKey!.Value.LocationInfo?.ToLocation(),
     //                 parameterInfo.KeyedServiceKey.Value.Type
