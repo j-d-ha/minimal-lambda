@@ -71,7 +71,10 @@ internal static class MapHandlerMethodInfoExtensions
 
             var isAwaitable = methodSymbol.IsAwaitable(context);
 
-            var hasResponse = methodSymbol.HasMeaningfulReturnType(context);
+            var hasResponse = methodSymbol.HasMeaningfulReturnType(
+                context,
+                out var unwrappedReturnType
+            );
 
             var isReturnTypeStream =
                 hasResponse
@@ -91,10 +94,6 @@ internal static class MapHandlerMethodInfoExtensions
 
             var hasAnyKeyedServices = assignments.Any(a => a is { IsFromKeyedService: true });
 
-            var unwrappedReturnType = methodSymbol
-                .UnwrapReturnType(context)
-                .ToGloballyQualifiedName();
-
             return new MapHandlerMethodInfo(
                 MethodType: MethodType.MapHandler,
                 InterceptableLocationAttribute: interceptableLocation.Value.ToInterceptsLocationAttribute(),
@@ -106,7 +105,7 @@ internal static class MapHandlerMethodInfoExtensions
                 IsEventTypeStream: isEventTypeStream,
                 HasEvent: hasEvent,
                 EventType: eventType,
-                UnwrappedResponseType: unwrappedReturnType,
+                UnwrappedResponseType: unwrappedReturnType.ToGloballyQualifiedName(),
                 HasAnyFromKeyedServices: hasAnyKeyedServices,
                 DiagnosticInfos: diagnostics.ToEquatableArray()
             );

@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using LayeredCraft.SourceGeneratorTools.Types;
 using Microsoft.CodeAnalysis;
-using MinimalLambda.SourceGenerators.Extensions;
-using MinimalLambda.SourceGenerators.WellKnownTypes;
 
 namespace MinimalLambda.SourceGenerators.Models;
 
@@ -12,16 +10,17 @@ internal record LifecycleMethodInfo(
     string InterceptableLocationAttribute,
     string DelegateCastType,
     EquatableArray<DiagnosticInfo> DiagnosticInfos,
-    MethodType MethodType
+    MethodType MethodType,
+    string HandleResponseAssignment,
+    string HandleReturningFromMethod
 ) : IMethodInfo;
 
 internal static class LifecycleMethodInfoExtensions
 {
     extension(LifecycleMethodInfo)
     {
-        internal static LifecycleMethodInfo Create(
+        internal static LifecycleMethodInfo CreateForInit(
             IMethodSymbol methodSymbol,
-            MethodType methodType,
             GeneratorContext context
         )
         {
@@ -31,50 +30,35 @@ internal static class LifecycleMethodInfoExtensions
                 throw new InvalidOperationException("Unable to get interceptable location");
 
             var (assignments, diagnostics) = methodSymbol.Parameters.CollectDiagnosticResults(
-                parameter => MapHandlerParameterInfo.Create(parameter, context)
+                parameter => LifecycleHandlerParameterInfo.Create(parameter, context)
             );
 
             var isAwaitable = methodSymbol.IsAwaitable(context);
 
-            var hasResponse = methodSymbol.HasMeaningfulReturnType(context);
-
-            var isReturnTypeStream =
-                hasResponse
-                && context.WellKnownTypes.IsTypeMatch(
-                    methodSymbol.ReturnType,
-                    WellKnownTypeData.WellKnownType.System_IO_Stream
-                );
-
-            var hasEvent = assignments.Any(a => a.IsEvent);
-
-            var eventType = hasEvent
-                ? assignments.Where(a => a.IsEvent).Select(a => a.GloballyQualifiedType).First()
-                : null;
-
-            var isEventTypeStream =
-                hasEvent && assignments.Any(a => a is { IsEvent: true, IsStream: true });
+            var hasResponse = methodSymbol.HasMeaningfulReturnType(
+                context,
+                out var unwrappedReturnType
+            );
 
             var hasAnyKeyedServices = assignments.Any(a => a is { IsFromKeyedService: true });
 
-            var unwrappedReturnType = methodSymbol
-                .UnwrapReturnType(context)
-                .ToGloballyQualifiedName();
+            // var unwrappedReturnType = methodSymbol
+            //     .UnwrapReturnType(context)
+            //     .ToGloballyQualifiedName();
 
             return new LifecycleMethodInfo(
-                MethodType: methodType,
+                MethodType: MethodType.OnInit,
                 InterceptableLocationAttribute: interceptableLocation.Value.ToInterceptsLocationAttribute(),
                 DelegateCastType: handlerCastType,
-                // ParameterAssignments: assignments.ToEquatableArray(),
-                // IsAwaitable: isAwaitable,
-                // HasResponse: hasResponse,
-                // IsResponseTypeStream: isReturnTypeStream,
-                // IsEventTypeStream: isEventTypeStream,
-                // HasEvent: hasEvent,
-                // EventType: eventType,
-                // UnwrappedResponseType: unwrappedReturnType,
-                // HasAnyFromKeyedServices: hasAnyKeyedServices,
-                DiagnosticInfos: diagnostics.ToEquatableArray()
+                DiagnosticInfos: diagnostics.ToEquatableArray(),
+                HandleResponseAssignment: "",
+                HandleReturningFromMethod: ""
             );
         }
+
+        internal static LifecycleMethodInfo CreateForShutdown(
+            IMethodSymbol methodSymbol,
+            GeneratorContext context
+        ) => throw new NotImplementedException();
     }
 }

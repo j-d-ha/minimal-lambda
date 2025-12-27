@@ -6,6 +6,17 @@ namespace MinimalLambda.SourceGenerators.WellKnownTypes;
 
 internal static class WellKnownTypesExtensions
 {
+    // Open issue w/ extension blocks: https://github.com/dotnet/roslyn/issues/80024
+    // ReSharper disable once MoveToExtensionBlock
+    internal static bool IsAnyTypeMatch(
+        this WellKnownTypes wellKnownTypes,
+        ITypeSymbol type,
+        params WellKnownType[] types
+    ) =>
+        types
+            .Select(wellKnownTypes.Get)
+            .Any(foundType => type.Equals(foundType, SymbolEqualityComparer.Default));
+
     extension(WellKnownTypes wellKnownTypes)
     {
         internal bool IsTypeMatch(ITypeSymbol type, WellKnownType wellKnownType)
@@ -13,10 +24,5 @@ internal static class WellKnownTypesExtensions
             var foundType = wellKnownTypes.Get(wellKnownType);
             return type.Equals(foundType, SymbolEqualityComparer.Default);
         }
-
-        internal bool IsAnyTypeMatch(ITypeSymbol type, WellKnownType[] types) =>
-            types
-                .Select(wellKnownTypes.Get)
-                .Any(foundType => type.Equals(foundType, SymbolEqualityComparer.Default));
     }
 }
