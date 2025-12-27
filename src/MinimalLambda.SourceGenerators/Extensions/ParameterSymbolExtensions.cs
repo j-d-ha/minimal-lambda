@@ -65,28 +65,40 @@ internal static class ParameterSymbolExtensions
             return false;
         }
 
-        internal DiagnosticResult<string> GetDiParameterAssignment(GeneratorContext context)
+        internal DiagnosticResult<(string Assignment, bool IsKeyed)> GetDiParameterAssignment(
+            GeneratorContext context
+        )
         {
             var paramType = parameterSymbol.Type.ToGloballyQualifiedName();
 
             var isKeyedServices = parameterSymbol.IsFromKeyedService(context, out var keyResult);
 
+            var isRequired =
+                parameterSymbol.IsOptional
+                || parameterSymbol.NullableAnnotation == NullableAnnotation.Annotated;
+
             // keyed services
             if (isKeyedServices)
                 return keyResult!.Bind(key =>
-                    DiagnosticResult<string>.Success(
-                        parameterSymbol.IsOptional
-                            ? $"context.ServiceProvider.GetKeyedService<{paramType}>({key})"
-                            : $"context.ServiceProvider.GetRequiredKeyedService<{paramType}>({key})"
+                    DiagnosticResult<(string, bool)>.Success(
+                        (
+                            isRequired
+                                ? $"context.ServiceProvider.GetKeyedService<{paramType}>({key})"
+                                : $"context.ServiceProvider.GetRequiredKeyedService<{paramType}>({key})",
+                            true
+                        )
                     )
                 );
 
-            return DiagnosticResult<string>.Success(
-                parameterSymbol.IsOptional
-                    // default - inject from DI - optional
-                    ? $"context.ServiceProvider.GetService<{paramType}>()"
-                    // default - inject required from DI
-                    : $"context.ServiceProvider.GetRequiredService<{paramType}>()"
+            return DiagnosticResult<(string, bool)>.Success(
+                (
+                    isRequired
+                        // default - inject from DI - optional
+                        ? $"context.ServiceProvider.GetService<{paramType}>()"
+                        // default - inject required from DI
+                        : $"context.ServiceProvider.GetRequiredService<{paramType}>()",
+                    false
+                )
             );
         }
     }

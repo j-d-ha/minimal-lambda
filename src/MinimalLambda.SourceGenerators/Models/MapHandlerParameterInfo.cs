@@ -83,12 +83,12 @@ internal static class MapHandlerParameterInfoExtensions
             // default assignment from Di
             return parameter
                 .GetDiParameterAssignment(context)
-                .Bind(assignment =>
+                .Bind(diInfo =>
                     DiagnosticResult<MapHandlerParameterInfo>.Success(
                         parameterInfo with
                         {
-                            Assignment = assignment,
-                            IsFromKeyedService = true,
+                            Assignment = diInfo.Assignment,
+                            IsFromKeyedService = diInfo.IsKeyed,
                         }
                     )
                 );

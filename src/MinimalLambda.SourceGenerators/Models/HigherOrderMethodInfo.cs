@@ -40,7 +40,7 @@ internal readonly record struct HigherOrderMethodInfo(
     bool IsEventTypeStream,
     bool HasEvent,
     string? EventType,
-    string? ResponseType,
+    string? UnwrappedResponseType,
     bool HasAnyFromKeyedServices,
     EquatableArray<DiagnosticInfo> DiagnosticInfos,
     MethodType MethodType = MethodType.MapHandler
@@ -84,13 +84,16 @@ internal static class HigherOrderMethodInfoExtensions
                 );
 
             var isAwaitable = methodSymbol.IsAwaitable(context);
+
             var hasResponse = methodSymbol.HasMeaningfulReturnType(context);
+
             var isReturnTypeStream =
                 hasResponse
                 && context.WellKnownTypes.IsTypeMatch(
                     methodSymbol.ReturnType,
                     WellKnownType.System_IO_Stream
                 );
+
             var isReturnTypeBool =
                 hasResponse
                 && !isReturnTypeStream
@@ -98,16 +101,21 @@ internal static class HigherOrderMethodInfoExtensions
                     methodSymbol.ReturnType,
                     WellKnownType.System_Boolean
                 );
+
             var hasEvent = assignments.Any(a => a.IsEvent);
+
             var eventType = hasEvent
                 ? assignments.Where(a => a.IsEvent).Select(a => a.GloballyQualifiedType).First()
                 : null;
-            var responseType = hasResponse
-                ? methodSymbol.ReturnType.ToGloballyQualifiedName()
-                : null;
+
             var isEventTypeStream =
                 hasEvent && assignments.Any(a => a is { IsEvent: true, IsStream: true });
+
             var hasAnyKeyedServices = assignments.Any(a => a is { IsFromKeyedService: true });
+
+            var unwrappedReturnType = methodSymbol
+                .UnwrapReturnType(context)
+                .ToGloballyQualifiedName();
 
             return new HigherOrderMethodInfo
             {
@@ -123,7 +131,7 @@ internal static class HigherOrderMethodInfoExtensions
                 IsEventTypeStream = isEventTypeStream,
                 HasEvent = hasEvent,
                 EventType = eventType,
-                ResponseType = responseType,
+                UnwrappedResponseType = unwrappedReturnType,
                 HasAnyFromKeyedServices = hasAnyKeyedServices,
                 DiagnosticInfos = diagnostics,
                 MethodType = MethodType.MapHandler,

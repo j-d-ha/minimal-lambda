@@ -18,7 +18,8 @@ public class ExpressionLambdaVerifyTests
             lambda.Handle(Task (ILambdaInvocationContext context) => Task.CompletedTask);
 
             await lambda.RunAsync();
-            """
+            """,
+            0
         );
 
     [Fact]
@@ -257,6 +258,30 @@ public class ExpressionLambdaVerifyTests
             public interface IService
             {
                 string? GetMessage();
+            }
+            """
+        );
+
+    [Fact]
+    public async Task Test_ExpressionLambda_NullableInput_ReturnNullableValueType() =>
+        await GeneratorTestHelpers.Verify(
+            """
+            using MinimalLambda;
+            using MinimalLambda.Builder;
+            using Microsoft.Extensions.Hosting;
+
+            var builder = LambdaApplication.CreateBuilder();
+            var lambda = builder.Build();
+
+            lambda.MapHandler(([FromEvent] int? input, IService service) => service.GetMessage());
+
+            await lambda.RunAsync();
+
+            public struct MyStruct { }
+
+            public interface IService
+            {
+                MyStruct? GetMessage();
             }
             """
         );

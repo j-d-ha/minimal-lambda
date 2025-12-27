@@ -86,5 +86,31 @@ internal static class MethodSymbolExtensions
 
             return true;
         }
+
+        internal ITypeSymbol UnwrapReturnType(GeneratorContext context)
+        {
+            if (methodSymbol.ReturnType is not INamedTypeSymbol namedReturnType)
+                return (INamedTypeSymbol)methodSymbol.ReturnType;
+
+            var taskOfT = context.WellKnownTypes.Get(
+                WellKnownTypeData.WellKnownType.System_Threading_Tasks_Task_T
+            );
+            var valueTaskOfT = context.WellKnownTypes.Get(
+                WellKnownTypeData.WellKnownType.System_Threading_Tasks_ValueTask_T
+            );
+
+            var originalDef = namedReturnType.OriginalDefinition;
+
+            if (
+                (
+                    originalDef.Equals(taskOfT, SymbolEqualityComparer.Default)
+                    || originalDef.Equals(valueTaskOfT, SymbolEqualityComparer.Default)
+                )
+                && namedReturnType.TypeArguments.Length > 0
+            )
+                return namedReturnType.TypeArguments[0];
+
+            return namedReturnType;
+        }
     }
 }

@@ -26,7 +26,7 @@
             if (!application.Properties.ContainsKey(ResponseFeatureProviderKey))
                 application.Properties[ResponseFeatureProviderKey] = application.
                     Services.GetRequiredService<IResponseFeatureProviderFactory>()
-                    .Create<{{ call.response_type }}>();
+                    .Create<{{ call.unwrapped_response_type }}>();
             {{~ end ~}}
 
             return application;
@@ -47,9 +47,9 @@
                 {{~ if call.is_response_type_stream ~}}
                 context.Features.GetRequired<IInvocationDataFeature>().ResponseStream = response;
                 {{~ else ~}}
-                if (context.Features.Get<IResponseFeature>() is not IResponseFeature<{{ call.response_type }}> responseFeature)
+                if (context.Features.Get<IResponseFeature>() is not IResponseFeature<{{ call.unwrapped_response_type }}> responseFeature)
                 {
-                    throw new InvalidOperationException($"Response feature for type '{{ call.response_type }}' is not available in the collection.");
+                    throw new InvalidOperationException($"Response feature for type '{{ call.unwrapped_response_type }}' is not available in the collection.");
                 }
                 responseFeature.SetResponse(response);
                 {{~ end ~}}
