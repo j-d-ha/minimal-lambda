@@ -28,6 +28,12 @@ internal static class DiagnosticInfoExtensions
 {
     extension(DiagnosticInfo diagnosticInfo)
     {
+        internal static DiagnosticInfo Create(
+            DiagnosticDescriptor diagnosticDescriptor,
+            LocationInfo? locationInfo,
+            object?[] messageArgs
+        ) => new(diagnosticDescriptor, locationInfo, messageArgs);
+
         internal Diagnostic ToDiagnostic() =>
             Diagnostic.Create(
                 diagnosticInfo.DiagnosticDescriptor,

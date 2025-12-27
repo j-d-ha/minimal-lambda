@@ -72,7 +72,7 @@ public class MapHandlerIncrementalGeneratorDiagnosticTests
             """
         );
 
-        diagnostics.Length.Should().Be(2);
+        diagnostics.Length.Should().Be(1);
 
         foreach (var diagnostic in diagnostics)
         {

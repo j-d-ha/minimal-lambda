@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using LayeredCraft.SourceGeneratorTools.Types;
 using Microsoft.CodeAnalysis;
@@ -19,13 +18,13 @@ internal enum MethodType
 
 internal interface IMethodInfo
 {
-    MethodType MethodType { get; }
-    InterceptableLocationInfo InterceptableLocationInfo { get; }
     string DelegateCastType { get; }
-    bool IsAwaitable { get; }
-    bool HasResponse { get; }
-    bool HasAnyFromKeyedServices { get; }
     EquatableArray<DiagnosticInfo> DiagnosticInfos { get; }
+    bool HasAnyFromKeyedServices { get; }
+    bool HasResponse { get; }
+    InterceptableLocationInfo InterceptableLocationInfo { get; }
+    bool IsAwaitable { get; }
+    MethodType MethodType { get; }
 }
 
 internal readonly record struct HigherOrderMethodInfo(
@@ -47,6 +46,30 @@ internal readonly record struct HigherOrderMethodInfo(
 
 internal static class HigherOrderMethodInfoExtensions
 {
+    internal static IEnumerable<DiagnosticInfo> ReportMultipleEvents(
+        IEnumerable<MapHandlerParameterInfo> assignments,
+        GeneratorContext context
+    )
+    {
+        string? eventAttribute = null;
+
+        return assignments
+            .Where(a => a.IsEvent)
+            .Skip(1)
+            .Select(a =>
+            {
+                eventAttribute ??= context
+                    .WellKnownTypes.Get(WellKnownType.MinimalLambda_Builder_FromEventAttribute)
+                    .ToGloballyQualifiedName();
+
+                return DiagnosticInfo.Create(
+                    Diagnostics.MultipleParametersUseAttribute,
+                    a.LocationInfo,
+                    [eventAttribute]
+                );
+            });
+    }
+
     extension(HigherOrderMethodInfo)
     {
         internal static HigherOrderMethodInfo Create(
@@ -54,9 +77,6 @@ internal static class HigherOrderMethodInfoExtensions
             GeneratorContext context
         )
         {
-            var gotName = context.Node.TryGetMethodName(out var methodName);
-            Debug.Assert(gotName, "Could not get method name. This should be unreachable");
-
             var handlerCastType = methodSymbol.GetCastableSignature();
 
             if (!InterceptableLocationInfo.TryGet(context, out var interceptableLocation))
@@ -78,9 +98,11 @@ internal static class HigherOrderMethodInfoExtensions
 
                         return acc;
                     },
-                    static acc =>
-                        (acc.Successes.ToEquatableArray(), acc.Diagnostics.ToEquatableArray())
+                    static acc => (acc.Successes.ToEquatableArray(), acc.Diagnostics)
                 );
+
+            // add parameter diagnostics
+            diagnostics.AddRange(ReportMultipleEvents(assignments, context));
 
             var isAwaitable = methodSymbol.IsAwaitable(context);
 
@@ -108,24 +130,22 @@ internal static class HigherOrderMethodInfoExtensions
                 .UnwrapReturnType(context)
                 .ToGloballyQualifiedName();
 
-            return new HigherOrderMethodInfo
-            {
-                InterceptableLocationInfo = interceptableLocation.Value,
-                InterceptableLocationAttribute =
-                    interceptableLocation.Value.ToInterceptsLocationAttribute(),
-                DelegateCastType = handlerCastType,
-                ParameterAssignments = assignments,
-                IsAwaitable = isAwaitable,
-                HasResponse = hasResponse,
-                IsResponseTypeStream = isReturnTypeStream,
-                IsEventTypeStream = isEventTypeStream,
-                HasEvent = hasEvent,
-                EventType = eventType,
-                UnwrappedResponseType = unwrappedReturnType,
-                HasAnyFromKeyedServices = hasAnyKeyedServices,
-                DiagnosticInfos = diagnostics,
-                MethodType = MethodType.MapHandler,
-            };
+            return new HigherOrderMethodInfo(
+                MethodType: MethodType.MapHandler,
+                InterceptableLocationInfo: interceptableLocation.Value,
+                InterceptableLocationAttribute: interceptableLocation.Value.ToInterceptsLocationAttribute(),
+                DelegateCastType: handlerCastType,
+                ParameterAssignments: assignments,
+                IsAwaitable: isAwaitable,
+                HasResponse: hasResponse,
+                IsResponseTypeStream: isReturnTypeStream,
+                IsEventTypeStream: isEventTypeStream,
+                HasEvent: hasEvent,
+                EventType: eventType,
+                UnwrappedResponseType: unwrappedReturnType,
+                HasAnyFromKeyedServices: hasAnyKeyedServices,
+                DiagnosticInfos: diagnostics.ToEquatableArray()
+            );
         }
     }
 }

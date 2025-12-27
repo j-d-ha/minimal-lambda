@@ -5,6 +5,15 @@ using WellKnownType = MinimalLambda.SourceGenerators.WellKnownTypes.WellKnownTyp
 
 namespace MinimalLambda.SourceGenerators.Models;
 
+internal enum MapHandlerParameterSource
+{
+    Event,
+    Context,
+    CancellationToken,
+    KeyedServices,
+    Services,
+}
+
 internal readonly record struct MapHandlerParameterInfo(
     string GloballyQualifiedType,
     bool IsStream,
@@ -12,7 +21,9 @@ internal readonly record struct MapHandlerParameterInfo(
     string InfoComment,
     bool IsEvent,
     bool IsFromKeyedService,
-    LocationInfo? LocationInfo
+    LocationInfo? LocationInfo,
+    MapHandlerParameterSource Source,
+    string? KeyedServicesKey
 );
 
 internal static class MapHandlerParameterInfoExtensions
@@ -49,6 +60,7 @@ internal static class MapHandlerParameterInfoExtensions
                             // non stream event
                             : $"context.GetRequiredEvent<{paramType}>()",
                         IsEvent = true,
+                        Source = MapHandlerParameterSource.Event,
                     }
                 );
 
@@ -56,14 +68,17 @@ internal static class MapHandlerParameterInfoExtensions
             if (
                 context.WellKnownTypes.IsAnyTypeMatch(
                     parameter.Type,
-                    WellKnownType.Amazon_Lambda_Core_ILambdaContext,
-                    WellKnownType.MinimalLambda_ILambdaInvocationContext
+                    [
+                        WellKnownType.Amazon_Lambda_Core_ILambdaContext,
+                        WellKnownType.MinimalLambda_ILambdaInvocationContext,
+                    ]
                 )
             )
                 return DiagnosticResult<MapHandlerParameterInfo>.Success(
                     parameterInfo with
                     {
                         Assignment = "context",
+                        Source = MapHandlerParameterSource.Context,
                     }
                 );
 
@@ -78,6 +93,7 @@ internal static class MapHandlerParameterInfoExtensions
                     parameterInfo with
                     {
                         Assignment = "context.CancellationToken",
+                        Source = MapHandlerParameterSource.CancellationToken,
                     }
                 );
 
@@ -89,7 +105,11 @@ internal static class MapHandlerParameterInfoExtensions
                         parameterInfo with
                         {
                             Assignment = diInfo.Assignment,
-                            IsFromKeyedService = diInfo.IsKeyed,
+                            IsFromKeyedService = diInfo.Key is not null,
+                            Source = diInfo.Key is not null
+                                ? MapHandlerParameterSource.KeyedServices
+                                : MapHandlerParameterSource.Services,
+                            KeyedServicesKey = diInfo.Key,
                         }
                     )
                 );

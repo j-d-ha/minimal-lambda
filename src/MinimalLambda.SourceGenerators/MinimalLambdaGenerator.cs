@@ -82,8 +82,7 @@ public class MinimalLambdaGenerator : IIncrementalGenerator
                 UseMiddlewareTSyntaxProvider.Predicate,
                 UseMiddlewareTSyntaxProvider.Transformer
             )
-            .Where(static m => m is not null)
-            .Select(static (m, _) => m!.Value);
+            .WhereNotNull();
 
         // collect call
         // var mapHandlerCallsCollected = mapHandlerCalls.Collect();

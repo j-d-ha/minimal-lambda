@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using MinimalLambda.SourceGenerators.Models;
 
@@ -9,6 +10,12 @@ internal static class DiagnosticGenerator
     internal static List<Diagnostic> GenerateDiagnostics(CompilationInfo compilationInfo)
     {
         var diagnostics = new List<Diagnostic>();
+
+        diagnostics.AddRange(
+            compilationInfo
+                .MapHandlerInvocationInfos.SelectMany(m => m.DiagnosticInfos)
+                .Select(d => d.ToDiagnostic())
+        );
 
         // var delegateInfos = compilationInfo.MapHandlerInvocationInfos;
         //

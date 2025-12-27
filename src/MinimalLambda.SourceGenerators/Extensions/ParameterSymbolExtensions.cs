@@ -65,7 +65,7 @@ internal static class ParameterSymbolExtensions
             return false;
         }
 
-        internal DiagnosticResult<(string Assignment, bool IsKeyed)> GetDiParameterAssignment(
+        internal DiagnosticResult<(string Assignment, string? Key)> GetDiParameterAssignment(
             GeneratorContext context
         )
         {
@@ -80,24 +80,24 @@ internal static class ParameterSymbolExtensions
             // keyed services
             if (isKeyedServices)
                 return keyResult!.Bind(key =>
-                    DiagnosticResult<(string, bool)>.Success(
+                    DiagnosticResult<(string, string?)>.Success(
                         (
                             isRequired
                                 ? $"context.ServiceProvider.GetKeyedService<{paramType}>({key})"
                                 : $"context.ServiceProvider.GetRequiredKeyedService<{paramType}>({key})",
-                            true
+                            key
                         )
                     )
                 );
 
-            return DiagnosticResult<(string, bool)>.Success(
+            return DiagnosticResult<(string, string?)>.Success(
                 (
                     isRequired
                         // default - inject from DI - optional
                         ? $"context.ServiceProvider.GetService<{paramType}>()"
                         // default - inject required from DI
                         : $"context.ServiceProvider.GetRequiredService<{paramType}>()",
-                    false
+                    null
                 )
             );
         }
