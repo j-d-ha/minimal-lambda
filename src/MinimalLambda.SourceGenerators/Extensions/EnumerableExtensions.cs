@@ -1,4 +1,5 @@
 using System.Linq;
+using MinimalLambda.SourceGenerators.Models;
 
 namespace System.Collections.Generic;
 
@@ -33,6 +34,33 @@ internal static class EnumerableExtensions
         {
             list.Add(item);
             return list;
+        }
+    }
+
+    extension<TIn>(IEnumerable<TIn> enumerable)
+    {
+        internal (List<TOut>, List<DiagnosticInfo>) CollectDiagnosticResults<TOut>(
+            Func<TIn, DiagnosticResult<TOut>> extractor
+        )
+        {
+            var count = 0;
+            if (enumerable is ICollection<TIn> collection)
+                count = collection.Count;
+
+            return enumerable
+                .Select(extractor)
+                .Aggregate(
+                    (Successes: new List<TOut>(count), Diagnostics: new List<DiagnosticInfo>()),
+                    static (acc, result) =>
+                    {
+                        result.Do(
+                            info => acc.Successes.Add(info),
+                            diagnostic => acc.Diagnostics.Add(diagnostic)
+                        );
+
+                        return acc;
+                    }
+                );
         }
     }
 }

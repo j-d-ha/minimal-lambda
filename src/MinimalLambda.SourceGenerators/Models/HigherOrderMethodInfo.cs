@@ -76,24 +76,9 @@ internal static class HigherOrderMethodInfoExtensions
             if (!InterceptableLocationInfo.TryGet(context, out var interceptableLocation))
                 throw new InvalidOperationException("Unable to get interceptable location");
 
-            var (assignments, diagnostics) = methodSymbol
-                .Parameters.Select(parameter => MapHandlerParameterInfo.Create(parameter, context))
-                .Aggregate(
-                    (
-                        Successes: new List<MapHandlerParameterInfo>(),
-                        Diagnostics: new List<DiagnosticInfo>()
-                    ),
-                    static (acc, result) =>
-                    {
-                        result.Do(
-                            info => acc.Successes.Add(info),
-                            diagnostic => acc.Diagnostics.Add(diagnostic)
-                        );
-
-                        return acc;
-                    },
-                    static acc => (acc.Successes.ToEquatableArray(), acc.Diagnostics)
-                );
+            var (assignments, diagnostics) = methodSymbol.Parameters.CollectDiagnosticResults(
+                parameter => MapHandlerParameterInfo.Create(parameter, context)
+            );
 
             // add parameter diagnostics
             diagnostics.AddRange(ReportMultipleEvents(assignments, context));
@@ -129,7 +114,7 @@ internal static class HigherOrderMethodInfoExtensions
                 InterceptableLocationInfo: interceptableLocation.Value,
                 InterceptableLocationAttribute: interceptableLocation.Value.ToInterceptsLocationAttribute(),
                 DelegateCastType: handlerCastType,
-                ParameterAssignments: assignments,
+                ParameterAssignments: assignments.ToEquatableArray(),
                 IsAwaitable: isAwaitable,
                 HasResponse: hasResponse,
                 IsResponseTypeStream: isReturnTypeStream,
