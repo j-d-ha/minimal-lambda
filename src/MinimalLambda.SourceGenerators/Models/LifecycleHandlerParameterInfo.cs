@@ -6,7 +6,6 @@ using WellKnownType = MinimalLambda.SourceGenerators.WellKnownTypes.WellKnownTyp
 namespace MinimalLambda.SourceGenerators.Models;
 
 internal record LifecycleHandlerParameterInfo(
-    string GloballyQualifiedType,
     string Assignment,
     string InfoComment,
     bool IsFromKeyedService,
@@ -25,7 +24,6 @@ internal static class LifecycleHandlerParameterInfoExtensions
         )
         {
             var parameterInfo = new LifecycleHandlerParameterInfo(
-                parameter.Type.ToGloballyQualifiedName(),
                 IsFromKeyedService: false,
                 LocationInfo: LocationInfo.Create(parameter),
                 Assignment: string.Empty,
