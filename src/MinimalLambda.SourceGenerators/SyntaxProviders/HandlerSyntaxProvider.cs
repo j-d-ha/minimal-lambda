@@ -6,6 +6,7 @@
 // See THIRD-PARTY-LICENSES.txt file in the project root or visit
 // https://github.com/dotnet/aspnetcore/blob/v10.0.0/LICENSE.txt
 
+using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
@@ -26,7 +27,7 @@ internal static class HandlerSyntaxProvider
         && node.TryGetMethodName(out var name)
         && TargetMethodNames.Contains(name);
 
-    internal static HigherOrderMethodInfo? Transformer(
+    internal static IMethodInfo? Transformer(
         GeneratorSyntaxContext syntaxContext,
         CancellationToken cancellationToken
     )
@@ -36,10 +37,16 @@ internal static class HandlerSyntaxProvider
         if (!TryGetInvocationOperation(context, out var targetOperation))
             return null;
 
-        if (!targetOperation.TryGetHandlerMethod(context.SemanticModel, out var methodSymbol))
+        if (!targetOperation.TryGetHandlerMethod(context.SemanticModel, out var method))
             return null;
 
-        return HigherOrderMethodInfo.Create(methodSymbol, context);
+        return targetOperation.TargetMethod.Name switch
+        {
+            "MapHandler" => InvocationMethodInfo.Create(method, context),
+            "OnInit" => LifecycleMethodInfo.Create(method, MethodType.OnInit, context),
+            "OnShutdown" => LifecycleMethodInfo.Create(method, MethodType.OnShutdown, context),
+            var methodName => throw new InvalidOperationException($"Unknown method '{methodName}"),
+        };
     }
 
     private static bool TryGetInvocationOperation(

@@ -22,7 +22,7 @@ internal static class HandlerInfoExtractor
         && node.TryGetMethodName(out var name)
         && methodNames.Contains(name);
 
-    internal static HigherOrderMethodInfo? Transformer(
+    internal static InvocationMethodInfo? Transformer(
         GeneratorSyntaxContext context,
         Func<DelegateInfo, bool> delegateFilter,
         CancellationToken cancellationToken
@@ -75,14 +75,15 @@ internal static class HandlerInfoExtractor
             cancellationToken
         )!;
 
-        return new HigherOrderMethodInfo(
-        // targetOperation.TargetMethod.Name,
-        // LocationInfo: context.Node.CreateLocationInfo(),
-        // DelegateInfo: delegateInfo.Value,
-        // InterceptableLocationInfo:
-        // InterceptableLocationInfo.CreateFrom(interceptableLocation),
-        // ArgumentsInfos: argumentInfos
-        );
+        throw new NotImplementedException();
+        // return new InvocationMethodInfo(
+        // // targetOperation.TargetMethod.Name,
+        // // LocationInfo: context.Node.CreateLocationInfo(),
+        // // DelegateInfo: delegateInfo.Value,
+        // // InterceptableLocationInfo:
+        // // InterceptableLocationInfo.CreateFrom(interceptableLocation),
+        // // ArgumentsInfos: argumentInfos
+        // );
     }
 
     private static DelegateInfo? ExtractDelegateInfo(

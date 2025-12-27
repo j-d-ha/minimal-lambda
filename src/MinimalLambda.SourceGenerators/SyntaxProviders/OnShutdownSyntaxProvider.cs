@@ -9,7 +9,7 @@ internal static class OnShutdownSyntaxProvider
     internal static bool Predicate(SyntaxNode node, CancellationToken cancellationToken) =>
         HandlerInfoExtractor.Predicate(node, GeneratorConstants.OnShutdownMethodName);
 
-    internal static HigherOrderMethodInfo? Transformer(
+    internal static InvocationMethodInfo? Transformer(
         GeneratorSyntaxContext context,
         CancellationToken cancellationToken
     ) => HandlerInfoExtractor.Transformer(context, IsBaseOnShutdownCall, cancellationToken);

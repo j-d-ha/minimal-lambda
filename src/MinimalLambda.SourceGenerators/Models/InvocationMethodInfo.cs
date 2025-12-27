@@ -9,20 +9,7 @@ using WellKnownType = MinimalLambda.SourceGenerators.WellKnownTypes.WellKnownTyp
 
 namespace MinimalLambda.SourceGenerators.Models;
 
-internal enum MethodType
-{
-    MapHandler,
-    OnInit,
-    OnShutdown,
-}
-
-internal interface IMethodInfo
-{
-    EquatableArray<DiagnosticInfo> DiagnosticInfos { get; }
-    MethodType MethodType { get; }
-}
-
-internal record HigherOrderMethodInfo(
+internal record InvocationMethodInfo(
     InterceptableLocationInfo InterceptableLocationInfo,
     string InterceptableLocationAttribute,
     string DelegateCastType,
@@ -39,7 +26,7 @@ internal record HigherOrderMethodInfo(
     MethodType MethodType = MethodType.MapHandler
 ) : IMethodInfo;
 
-internal static class HigherOrderMethodInfoExtensions
+internal static class MapHandlerMethodInfoExtensions
 {
     private static IEnumerable<DiagnosticInfo> ReportMultipleEvents(
         IEnumerable<MapHandlerParameterInfo> assignments,
@@ -64,9 +51,9 @@ internal static class HigherOrderMethodInfoExtensions
             );
     }
 
-    extension(HigherOrderMethodInfo)
+    extension(InvocationMethodInfo)
     {
-        internal static HigherOrderMethodInfo Create(
+        internal static InvocationMethodInfo Create(
             IMethodSymbol methodSymbol,
             GeneratorContext context
         )
@@ -109,7 +96,7 @@ internal static class HigherOrderMethodInfoExtensions
                 .UnwrapReturnType(context)
                 .ToGloballyQualifiedName();
 
-            return new HigherOrderMethodInfo(
+            return new InvocationMethodInfo(
                 MethodType: MethodType.MapHandler,
                 InterceptableLocationInfo: interceptableLocation.Value,
                 InterceptableLocationAttribute: interceptableLocation.Value.ToInterceptsLocationAttribute(),

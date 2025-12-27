@@ -3,8 +3,8 @@ using LayeredCraft.SourceGeneratorTools.Types;
 namespace MinimalLambda.SourceGenerators.Models;
 
 internal readonly record struct CompilationInfo(
-    EquatableArray<HigherOrderMethodInfo> MapHandlerInvocationInfos,
-    EquatableArray<HigherOrderMethodInfo> OnShutdownInvocationInfos,
-    EquatableArray<HigherOrderMethodInfo> OnInitInvocationInfos,
+    EquatableArray<InvocationMethodInfo> MapHandlerInvocationInfos,
+    EquatableArray<LifecycleMethodInfo> OnShutdownInvocationInfos,
+    EquatableArray<LifecycleMethodInfo> OnInitInvocationInfos,
     EquatableArray<UseMiddlewareTInfo> UseMiddlewareTInfos
 );

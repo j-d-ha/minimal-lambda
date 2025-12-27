@@ -5,7 +5,7 @@ namespace MinimalLambda.SourceGenerators;
 
 internal static class MapHandlerSources
 {
-    internal static string Generate(EquatableArray<HigherOrderMethodInfo> mapHandlerInvocationInfos)
+    internal static string Generate(EquatableArray<InvocationMethodInfo> mapHandlerInvocationInfos)
     {
         // var mapHandlerCalls = mapHandlerInvocationInfos.Select(mapHandler =>
         // {
