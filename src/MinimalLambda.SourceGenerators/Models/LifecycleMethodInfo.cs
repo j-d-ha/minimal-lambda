@@ -57,9 +57,7 @@ internal static class LifecycleMethodInfoExtensions
              * If handler returns `Task<bool>`, no need to await, can be returned on its own
              * If handler returns `ValueTask<bool>`, must be awaited and then returned
              * If handler returns `bool`, it doesn't need to be awaited and can be returned as
-             * result
-             * default + async, return true
-             * default, return Task.FromResult(true);
+             *      result default + async, return true default, return Task.FromResult(true);
              */
 
             var returnIsTaskBool =
