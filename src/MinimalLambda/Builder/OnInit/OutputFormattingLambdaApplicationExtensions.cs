@@ -1,3 +1,5 @@
+using Microsoft.Extensions.Logging;
+
 namespace MinimalLambda.Builder;
 
 /// <summary>Provides extension methods for managing Lambda runtime output formatting.</summary>
@@ -17,18 +19,17 @@ public static class OutputFormattingLambdaApplicationExtensions
     {
         ArgumentNullException.ThrowIfNull(application);
 
-        // application.OnInit(
-        //     (ILogger<LambdaHostedService>? logger = null) =>
-        //     {
-        //         // This will clear the output formatting set by the Lambda runtime.
-        //         Console.SetOut(new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = true
-        // });
-        //
-        //         logger?.LogInformation("Clearing Lambda output formatting");
-        //
-        //         return Task.FromResult(true);
-        //     }
-        // );
+        application.OnInit(
+            (ILogger<LambdaHostedService>? logger = null) =>
+            {
+                // This will clear the output formatting set by the Lambda runtime.
+                Console.SetOut(new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = true });
+
+                logger?.LogInformation("Clearing Lambda output formatting");
+
+                return Task.FromResult(true);
+            }
+        );
 
         return application;
     }
