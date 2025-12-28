@@ -1,3 +1,4 @@
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis;
@@ -5,45 +6,26 @@ using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Operations;
 using MinimalLambda.SourceGenerators.Models;
+using MinimalLambda.SourceGenerators.WellKnownTypes;
+using WellKnownType = MinimalLambda.SourceGenerators.WellKnownTypes.WellKnownTypeData.WellKnownType;
 
 namespace MinimalLambda.SourceGenerators;
 
 internal static class UseMiddlewareTSyntaxProvider
 {
+    private static readonly string TargetMethodName = "UseMiddleware";
+
     internal static bool Predicate(SyntaxNode node, CancellationToken _) =>
-        !node.IsGeneratedFile() && node.TryGetMethodName(out var name) && name == "UseMiddleware";
+        !node.IsGeneratedFile() && node.TryGetMethodName(out var name) && name == TargetMethodName;
 
     internal static UseMiddlewareTInfo? Transformer(
-        GeneratorSyntaxContext context,
+        GeneratorSyntaxContext syntaxContext,
         CancellationToken cancellationToken
     )
     {
-        var operation = context.SemanticModel.GetOperation(context.Node, cancellationToken);
+        var context = new GeneratorContext(syntaxContext, cancellationToken);
 
-        if (
-            operation
-                is not IInvocationOperation
-                {
-                    TargetMethod:
-                    {
-                        IsGenericMethod: true,
-                        ContainingAssembly.Name: "MinimalLambda",
-                        ContainingNamespace:
-                        {
-                            Name: "Builder",
-                            ContainingNamespace:
-                            { Name: "MinimalLambda", ContainingNamespace.IsGlobalNamespace: true },
-                        },
-                    },
-                } targetOperation
-            || !targetOperation
-                .TargetMethod.ConstructedFrom.TypeParameters[0]
-                .ConstraintTypes.Any(c =>
-                    c.Name == "ILambdaMiddleware"
-                    && c.ContainingNamespace
-                        is { Name: "MinimalLambda", ContainingNamespace.IsGlobalNamespace: true }
-                )
-        )
+        if (!TryGetInvocationOperation(context, out var targetOperation))
             return null;
 
         // get class TypeInfo
@@ -77,5 +59,46 @@ internal static class UseMiddlewareTSyntaxProvider
         );
 
         return useMiddlewareTInfo;
+    }
+
+    private static bool TryGetInvocationOperation(
+        GeneratorContext context,
+        [NotNullWhen(true)] out IInvocationOperation? invocationOperation
+    )
+    {
+        invocationOperation = null;
+
+        var operation = context.SemanticModel.GetOperation(context.Node, context.CancellationToken);
+
+        if (
+            operation
+                is IInvocationOperation
+                {
+                    TargetMethod:
+                    {
+                        IsGenericMethod: true,
+                        ContainingAssembly.Name: "MinimalLambda",
+                        ContainingNamespace:
+                        {
+                            Name: "Builder",
+                            ContainingNamespace:
+                            { Name: "MinimalLambda", ContainingNamespace.IsGlobalNamespace: true },
+                        },
+                    },
+                } targetOperation
+            && targetOperation.TargetMethod.ConstructedFrom.TypeParameters.FirstOrDefault()
+                is { } typeParameter
+            && typeParameter.ConstraintTypes.Any(c =>
+                context.WellKnownTypes.IsTypeMatch(c, WellKnownType.MinimalLambda_ILambdaMiddleware)
+                && c.ContainingNamespace
+                    is { Name: "MinimalLambda", ContainingNamespace.IsGlobalNamespace: true }
+            )
+        )
+        {
+            invocationOperation = targetOperation;
+            return true;
+        }
+
+        return false;
     }
 }
