@@ -59,8 +59,6 @@ internal static class GeneratorConstants
 
     internal const string OnInitMethodName = "OnInit";
 
-    internal const string UseOpenTelemetryTracingMethodName = "UseOpenTelemetryTracing";
-
     internal const string InterceptsLocationAttributeTemplateFile =
         "Templates/InterceptsLocationAttribute.scriban";
 
@@ -70,7 +68,4 @@ internal static class GeneratorConstants
     internal const string UseMiddlewareTTemplateFile = "Templates/UseMiddlewareT.scriban";
 
     internal const string GenericHandlerTemplateFile = "Templates/GenericHandler.scriban";
-
-    internal const string LambdaHostUseOpenTelemetryTracingExtensionsTemplateFile =
-        "Templates/OpenTelemetry.scriban";
 }

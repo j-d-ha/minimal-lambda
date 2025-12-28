@@ -81,9 +81,8 @@ internal static class UseMiddlewareTSource
             };
         });
 
-        var template = TemplateHelper.LoadTemplate(GeneratorConstants.UseMiddlewareTTemplateFile);
-
-        return template.Render(
+        return TemplateHelper.Render(
+            GeneratorConstants.UseMiddlewareTTemplateFile,
             new { MinimalLambdaEmitter.GeneratedCodeAttribute, Calls = useMiddlewareTCalls }
         );
     }

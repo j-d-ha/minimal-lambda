@@ -5,18 +5,15 @@ namespace MinimalLambda.SourceGenerators;
 
 internal static class MapHandlerSources
 {
-    internal static string Generate(EquatableArray<MapHandlerMethodInfo> mapHandlerInvocationInfos)
-    {
-        var template = TemplateHelper.LoadTemplate(
-            GeneratorConstants.LambdaHostMapHandlerExtensionsTemplateFile
-        );
-
-        return template.Render(
+    internal static string Generate(
+        EquatableArray<MapHandlerMethodInfo> mapHandlerInvocationInfos
+    ) =>
+        TemplateHelper.Render(
+            GeneratorConstants.LambdaHostMapHandlerExtensionsTemplateFile,
             new
             {
                 MinimalLambdaEmitter.GeneratedCodeAttribute,
                 MapHandlerCalls = mapHandlerInvocationInfos,
             }
         );
-    }
 }

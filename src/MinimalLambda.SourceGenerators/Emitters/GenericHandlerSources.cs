@@ -11,19 +11,14 @@ internal static class GenericHandlerSources
     ///     handler. The return type of the wrapper is a <c>Task</c> or <c>Task&lt;T&gt;</c> depending on
     ///     the return type of the actual handler.
     /// </summary>
-    internal static string Generate(EquatableArray<LifecycleMethodInfo> lifecycleMethodInfos)
-    {
-        var model = new
-        {
-            Name = lifecycleMethodInfos.First().MethodType,
-            Calls = lifecycleMethodInfos,
-            MinimalLambdaEmitter.GeneratedCodeAttribute,
-        };
-
-        var template = TemplateHelper.LoadTemplate(GeneratorConstants.GenericHandlerTemplateFile);
-
-        var outCode = template.Render(model);
-
-        return outCode;
-    }
+    internal static string Generate(EquatableArray<LifecycleMethodInfo> lifecycleMethodInfos) =>
+        TemplateHelper.Render(
+            GeneratorConstants.GenericHandlerTemplateFile,
+            new
+            {
+                Name = lifecycleMethodInfos.First().MethodType,
+                Calls = lifecycleMethodInfos,
+                MinimalLambdaEmitter.GeneratedCodeAttribute,
+            }
+        );
 }
