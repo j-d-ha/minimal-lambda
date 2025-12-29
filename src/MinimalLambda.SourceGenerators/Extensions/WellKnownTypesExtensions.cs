@@ -24,5 +24,10 @@ internal static class WellKnownTypesExtensions
             var foundType = wellKnownTypes.Get(wellKnownType);
             return type.Equals(foundType, SymbolEqualityComparer.Default);
         }
+
+        internal bool TypeImplementsInterface(
+            INamedTypeSymbol namedTypeSymbol,
+            WellKnownType interfaceType
+        ) => namedTypeSymbol.AllInterfaces.Any(i => wellKnownTypes.IsTypeMatch(i, interfaceType));
     }
 }

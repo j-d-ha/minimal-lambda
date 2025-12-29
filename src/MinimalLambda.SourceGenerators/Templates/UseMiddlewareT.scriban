@@ -2,16 +2,16 @@
     file static class UseMiddlewareExtensions
     {
         {{~ for call in calls ~}}
-        [InterceptsLocation({{ call.location.version }}, "{{ call.location.data }}")]
+        {{ call.interceptable_location_attribute }}
         internal static ILambdaInvocationBuilder UseMiddleware{{ for.index }}<T>(
             this ILambdaInvocationBuilder builder,
             params object[] args
         )
             where T : ILambdaMiddleware
         {
-            var resolver = new {{ call.short_middleware_class_name }}Resolver{{ for.index }}(args);
+            var resolver = new {{ call.class_info.short_name }}Resolver{{ for.index }}(args);
             
-            {{~ if call.is_async_disposable ~}}
+            {{~ if call.class_info.implements_async_disposable ~}}
             builder.Use(next =>
             {
                 return async context =>
@@ -20,7 +20,7 @@
                     await middleware.InvokeAsync(context, next);
                 };
             });
-            {{~ else if call.is_disposable  ~}}
+            {{~ else if call.class_info.implements_disposable  ~}}
             builder.Use(next =>
             {
                 return async context =>
@@ -42,7 +42,7 @@
             return builder;
         }
 
-        private class {{ call.short_middleware_class_name }}Resolver{{ for.index }}
+        private class {{ call.class_info.short_name }}Resolver{{ for.index }}
         {
             {{~ if call.any_parameters && !call.all_from_services ~}}
             private const int NotCached = -1;
@@ -59,7 +59,7 @@
             {{~ if call.any_parameters && !call.all_from_services ~}}
             
             {{~ end ~}}
-            internal {{ call.short_middleware_class_name }}Resolver{{ for.index }}(object[] args) => _args = args;
+            internal {{ call.class_info.short_name }}Resolver{{ for.index }}(object[] args) => _args = args;
 
             internal {{ call.full_middleware_class_name }} Create(ILambdaInvocationContext context)
             {
