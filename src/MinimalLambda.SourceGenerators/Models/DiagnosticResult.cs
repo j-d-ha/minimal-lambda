@@ -1,6 +1,8 @@
 using System;
 using Microsoft.CodeAnalysis;
 
+// ReSharper disable MemberCanBePrivate.Global
+
 namespace MinimalLambda.SourceGenerators.Models;
 
 internal class DiagnosticResult<T>

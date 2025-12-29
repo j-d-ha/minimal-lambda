@@ -2,8 +2,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Threading;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Operations;
 using MinimalLambda.SourceGenerators.Models;
 using MinimalLambda.SourceGenerators.WellKnownTypes;
@@ -28,37 +26,39 @@ internal static class UseMiddlewareTSyntaxProvider
         if (!TryGetInvocationOperation(context, out var targetOperation))
             return null;
 
-        // get class TypeInfo
-        var middlewareClassType = targetOperation.TargetMethod.TypeArguments[0];
+        return UseMiddlewareTInfo.Create(targetOperation, context);
 
-        // Get location of the generic argument
-        Location? genericArgumentLocation = null;
-        if (
-            targetOperation.Syntax is InvocationExpressionSyntax
-            {
-                Expression: MemberAccessExpressionSyntax { Name: GenericNameSyntax genericName },
-            }
-        )
-        {
-            // Get the first type argument's location
-            var typeArgument = genericName.TypeArgumentList.Arguments[0];
-            genericArgumentLocation = typeArgument.GetLocation();
-        }
-
-        var classInfo = ClassInfo.Create(middlewareClassType);
-
-        var interceptableLocation = context.SemanticModel.GetInterceptableLocation(
-            (InvocationExpressionSyntax)targetOperation.Syntax,
-            cancellationToken
-        )!;
-
-        var useMiddlewareTInfo = new UseMiddlewareTInfo(
-            InterceptableLocationInfo.CreateFrom(interceptableLocation),
-            classInfo,
-            genericArgumentLocation?.CreateLocationInfo()
-        );
-
-        return useMiddlewareTInfo;
+        // // get class TypeInfo
+        // var middlewareClassType = targetOperation.TargetMethod.TypeArguments[0];
+        //
+        // // Get location of the generic argument
+        // Location? genericArgumentLocation = null;
+        // if (
+        //     targetOperation.Syntax is InvocationExpressionSyntax
+        //     {
+        //         Expression: MemberAccessExpressionSyntax { Name: GenericNameSyntax genericName },
+        //     }
+        // )
+        // {
+        //     // Get the first type argument's location
+        //     var typeArgument = genericName.TypeArgumentList.Arguments[0];
+        //     genericArgumentLocation = typeArgument.GetLocation();
+        // }
+        //
+        // var classInfo = ClassInfo.Create(middlewareClassType);
+        //
+        // var interceptableLocation = context.SemanticModel.GetInterceptableLocation(
+        //     (InvocationExpressionSyntax)targetOperation.Syntax,
+        //     cancellationToken
+        // )!;
+        //
+        // var useMiddlewareTInfo = new UseMiddlewareTInfo(
+        //     InterceptableLocationInfo.CreateFrom(interceptableLocation),
+        //     classInfo,
+        //     genericArgumentLocation?.ToLocationInfo()
+        // );
+        //
+        // return useMiddlewareTInfo;
     }
 
     private static bool TryGetInvocationOperation(

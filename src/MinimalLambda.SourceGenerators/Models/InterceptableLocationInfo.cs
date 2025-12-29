@@ -48,4 +48,10 @@ internal static class InterceptableLocationInfoExtensions
         internal string ToInterceptsLocationAttribute() =>
             $"""[InterceptsLocation({location.Version}, "{location.Data}")]""";
     }
+
+    extension(InterceptableLocation interceptableLocation)
+    {
+        internal InterceptableLocationInfo ToInterceptableLocationInfo() =>
+            InterceptableLocationInfo.CreateFrom(interceptableLocation);
+    }
 }

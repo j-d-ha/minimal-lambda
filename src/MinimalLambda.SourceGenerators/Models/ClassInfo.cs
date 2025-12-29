@@ -11,14 +11,19 @@ internal readonly record struct ClassInfo(
     string ShortName,
     EquatableArray<MethodInfo> ConstructorInfos,
     EquatableArray<string> ImplementedInterfaces,
-    string TypeKind
+    string TypeKind,
+    bool ImplementsIDisposable = false,
+    bool ImplementsIAsyncDisposable = false
 );
 
 internal static class ClassInfoExtensions
 {
     extension(ClassInfo classInfo)
     {
-        internal static ClassInfo Create(ITypeSymbol typeSymbol)
+        internal static DiagnosticResult<ClassInfo> Create(
+            INamedTypeSymbol typeSymbol,
+            GeneratorContext context
+        )
         {
             var typeKind = typeSymbol.GetTypeKind();
 
@@ -38,12 +43,14 @@ internal static class ClassInfoExtensions
                 .AllInterfaces.Select(i => i.ToGloballyQualifiedName())
                 .ToEquatableArray();
 
-            return new ClassInfo(
-                globallyQualifiedName,
-                shortName,
-                constructorInfo,
-                interfaceNames,
-                typeKind
+            return DiagnosticResult<ClassInfo>.Success(
+                new ClassInfo(
+                    globallyQualifiedName,
+                    shortName,
+                    constructorInfo,
+                    interfaceNames,
+                    typeKind
+                )
             );
         }
 

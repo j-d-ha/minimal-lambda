@@ -28,7 +28,7 @@ internal readonly record struct KeyedServiceKeyInfo(
         {
             var argument = argumentList.Arguments[0];
             var location = argument.Expression.GetLocation();
-            var locationInfo = location.CreateLocationInfo();
+            var locationInfo = location.ToLocationInfo();
             return keyedServiceKeyInfo with { LocationInfo = locationInfo };
         }
 

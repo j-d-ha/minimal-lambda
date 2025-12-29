@@ -35,7 +35,7 @@ internal static class LocationInfoExtensions
 
     extension(Location location)
     {
-        internal LocationInfo? CreateLocationInfo() =>
+        internal LocationInfo? ToLocationInfo() =>
             location.SourceTree is null
                 ? null
                 : new LocationInfo(
@@ -48,12 +48,11 @@ internal static class LocationInfoExtensions
     extension(ISymbol symbol)
     {
         internal LocationInfo? CreateLocationInfo() =>
-            symbol.Locations.FirstOrDefault()?.CreateLocationInfo();
+            symbol.Locations.FirstOrDefault()?.ToLocationInfo();
     }
 
     extension(SyntaxNode syntaxNode)
     {
-        internal LocationInfo? CreateLocationInfo() =>
-            syntaxNode.GetLocation().CreateLocationInfo();
+        internal LocationInfo? CreateLocationInfo() => syntaxNode.GetLocation().ToLocationInfo();
     }
 }

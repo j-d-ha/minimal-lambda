@@ -158,7 +158,7 @@ internal static class ParameterSymbolExtensions
                 ? argumentList
                     .Arguments.ElementAtOrDefault(index)
                     ?.Expression.GetLocation()
-                    .CreateLocationInfo()
+                    .ToLocationInfo()
                 : null;
     }
 }

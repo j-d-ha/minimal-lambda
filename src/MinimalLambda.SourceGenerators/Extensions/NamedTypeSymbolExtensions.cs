@@ -4,7 +4,7 @@ using MinimalLambda.SourceGenerators.WellKnownTypes;
 
 namespace Microsoft.CodeAnalysis;
 
-internal static class SymbolExtensions
+internal static class NamedTypeSymbolExtensions
 {
     extension(INamedTypeSymbol sourceType)
     {
