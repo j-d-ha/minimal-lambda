@@ -52,13 +52,12 @@ internal static class UseMiddlewareTInfoExtensions
                     )
                 );
 
-            var classInfoResult = ClassInfo.Create(middlewareClassType, context);
-            if (!classInfoResult.IsSuccess)
-                diagnosticInfos.Add(classInfoResult.Error!.Value);
+            var (classInfo, diagnostics) = ClassInfo.Create(middlewareClassType, context);
+            diagnosticInfos.AddRange(diagnostics);
 
             return new UseMiddlewareTInfo(
                 interceptableLocation,
-                classInfoResult.Value,
+                classInfo,
                 diagnosticInfos.ToEquatableArray()
             );
         }

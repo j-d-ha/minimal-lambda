@@ -35,7 +35,7 @@ internal static class ClassInfoExtensions
     {
         internal bool AnyParameters => true;
 
-        internal static (ClassInfo? classInfo, DiagnosticInfo[] DiagnosticInfos) Create(
+        internal static (ClassInfo? classInfo, List<DiagnosticInfo> DiagnosticInfos) Create(
             INamedTypeSymbol typeSymbol,
             GeneratorContext context
         )
@@ -77,7 +77,7 @@ internal static class ClassInfoExtensions
                     implementsIDisposable,
                     implementsIAsyncDisposable
                 ),
-                diagnostics.ToArray()
+                diagnostics
             );
         }
     }
