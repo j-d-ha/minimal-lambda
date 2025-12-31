@@ -15,7 +15,10 @@ internal record MiddlewareClassInfo(
     EquatableArray<MiddlewareParameterInfo> ParameterInfos,
     bool ImplementsDisposable,
     bool ImplementsAsyncDisposable
-);
+)
+{
+    internal bool AllFromServices => ParameterInfos.All(p => p.FromServices);
+}
 
 internal static class MiddlewareExtensions
 {
