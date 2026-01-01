@@ -13,7 +13,7 @@ internal record MapHandlerParameterInfo(
     bool IsEvent,
     bool IsFromKeyedService,
     LocationInfo? LocationInfo,
-    MapHandlerParameterSource Source,
+    ParameterSource Source,
     string? KeyedServicesKey
 );
 
@@ -37,7 +37,7 @@ internal static class MapHandlerParameterInfoExtensions
                 Assignment: string.Empty,
                 InfoComment: string.Empty,
                 KeyedServicesKey: string.Empty,
-                Source: MapHandlerParameterSource.Services
+                Source: ParameterSource.Services
             );
 
             // event
@@ -51,7 +51,7 @@ internal static class MapHandlerParameterInfoExtensions
                             // non stream event
                             : $"context.GetRequiredEvent<{paramType}>()",
                         IsEvent = true,
-                        Source = MapHandlerParameterSource.Event,
+                        Source = ParameterSource.Event,
                     }
                 );
 
@@ -67,7 +67,7 @@ internal static class MapHandlerParameterInfoExtensions
                     parameterInfo with
                     {
                         Assignment = "context",
-                        Source = MapHandlerParameterSource.Context,
+                        Source = ParameterSource.Context,
                     }
                 );
 
@@ -82,7 +82,7 @@ internal static class MapHandlerParameterInfoExtensions
                     parameterInfo with
                     {
                         Assignment = "context.CancellationToken",
-                        Source = MapHandlerParameterSource.CancellationToken,
+                        Source = ParameterSource.CancellationToken,
                     }
                 );
 
@@ -96,8 +96,8 @@ internal static class MapHandlerParameterInfoExtensions
                             Assignment = diInfo.Assignment,
                             IsFromKeyedService = diInfo.Key is not null,
                             Source = diInfo.Key is not null
-                                ? MapHandlerParameterSource.KeyedServices
-                                : MapHandlerParameterSource.Services,
+                                ? ParameterSource.KeyedServices
+                                : ParameterSource.Services,
                             KeyedServicesKey = diInfo.Key,
                         }
                     )

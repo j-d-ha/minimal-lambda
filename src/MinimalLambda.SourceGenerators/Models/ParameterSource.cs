@@ -3,9 +3,8 @@ namespace MinimalLambda.SourceGenerators.Models;
 internal enum ParameterSource
 {
     Event,
-    KeyedService,
+    Context,
     CancellationToken,
-    HostContext,
-    LifecycleContext,
-    Service,
+    KeyedServices,
+    Services,
 }

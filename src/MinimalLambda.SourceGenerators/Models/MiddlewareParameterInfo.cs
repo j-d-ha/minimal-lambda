@@ -12,7 +12,7 @@ internal record MiddlewareParameterInfo(
     bool FromServices,
     string FromServicesAssignment,
     string InfoComment,
-    MapHandlerParameterSource ServiceSource,
+    ParameterSource ServiceSource,
     string? KeyedServicesKey
 );
 
@@ -66,8 +66,8 @@ internal static class MiddlewareParameterInfoExtensions
                             FromServices: fromServices,
                             FromServicesAssignment: diInfo.Assignment,
                             ServiceSource: diInfo.Key is not null
-                                ? MapHandlerParameterSource.KeyedServices
-                                : MapHandlerParameterSource.Services,
+                                ? ParameterSource.KeyedServices
+                                : ParameterSource.Services,
                             KeyedServicesKey: diInfo.Key
                         )
                     )

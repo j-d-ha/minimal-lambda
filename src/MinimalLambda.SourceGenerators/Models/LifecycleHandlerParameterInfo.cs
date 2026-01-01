@@ -1,5 +1,4 @@
 using Microsoft.CodeAnalysis;
-using MinimalLambda.SourceGenerators.Extensions;
 using MinimalLambda.SourceGenerators.WellKnownTypes;
 using WellKnownType = MinimalLambda.SourceGenerators.WellKnownTypes.WellKnownTypeData.WellKnownType;
 
@@ -10,7 +9,7 @@ internal record LifecycleHandlerParameterInfo(
     string InfoComment,
     bool IsFromKeyedService,
     LocationInfo? LocationInfo,
-    MapHandlerParameterSource Source,
+    ParameterSource Source,
     string? KeyedServicesKey
 );
 
@@ -29,7 +28,7 @@ internal static class LifecycleHandlerParameterInfoExtensions
                 Assignment: string.Empty,
                 InfoComment: string.Empty,
                 KeyedServicesKey: string.Empty,
-                Source: MapHandlerParameterSource.Services
+                Source: ParameterSource.Services
             );
 
             // context
@@ -43,7 +42,7 @@ internal static class LifecycleHandlerParameterInfoExtensions
                     parameterInfo with
                     {
                         Assignment = "context",
-                        Source = MapHandlerParameterSource.Context,
+                        Source = ParameterSource.Context,
                     }
                 );
 
@@ -58,7 +57,7 @@ internal static class LifecycleHandlerParameterInfoExtensions
                     parameterInfo with
                     {
                         Assignment = "context.CancellationToken",
-                        Source = MapHandlerParameterSource.CancellationToken,
+                        Source = ParameterSource.CancellationToken,
                     }
                 );
 
@@ -72,8 +71,8 @@ internal static class LifecycleHandlerParameterInfoExtensions
                             Assignment = diInfo.Assignment,
                             IsFromKeyedService = diInfo.Key is not null,
                             Source = diInfo.Key is not null
-                                ? MapHandlerParameterSource.KeyedServices
-                                : MapHandlerParameterSource.Services,
+                                ? ParameterSource.KeyedServices
+                                : ParameterSource.Services,
                             KeyedServicesKey = diInfo.Key,
                         }
                     )
