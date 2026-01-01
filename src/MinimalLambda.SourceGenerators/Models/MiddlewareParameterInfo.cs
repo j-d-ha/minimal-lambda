@@ -5,7 +5,7 @@ using WellKnownType = MinimalLambda.SourceGenerators.WellKnownTypes.WellKnownTyp
 namespace MinimalLambda.SourceGenerators.Models;
 
 internal record MiddlewareParameterInfo(
-    string ParameterName,
+    string Name,
     string GloballyQualifiedType,
     string GloballyQualifiedNotNullableType,
     bool FromArguments,
@@ -37,19 +37,20 @@ internal static class MiddlewareParameterInfoExtensions
             var globallyQualifiedNotNullableType =
                 parameterSymbol.Type.ToNotNullableGloballyQualifiedName();
 
-            // determine if it has a `[FromServices]` attribute
-            var fromServices = parameterSymbol.IsDecoratedWithAttribute(
-                WellKnownType.MinimalLambda_Builder_FromServicesAttribute,
-                context
-            );
-
             // determine if it has a `[FromArguments]` attribute
             var fromArguments = parameterSymbol.IsDecoratedWithAttribute(
-                WellKnownType.MinimalLambda_Builder_FromServicesAttribute,
-                context
+                context,
+                WellKnownType.MinimalLambda_Builder_FromArgumentsAttribute
             );
 
-            // assignment from arguments
+            // determine if it has a `[FromServices]` attribute
+            var fromServices =
+                !fromArguments
+                && parameterSymbol.IsDecoratedWithAttribute(
+                    context,
+                    WellKnownType.MinimalLambda_Builder_FromServicesAttribute,
+                    WellKnownType.Microsoft_Extensions_DependencyInjection_FromKeyedServicesAttribute
+                );
 
             // assignment from services
             return parameterSymbol
@@ -58,11 +59,11 @@ internal static class MiddlewareParameterInfoExtensions
                     DiagnosticResult<MiddlewareParameterInfo>.Success(
                         new MiddlewareParameterInfo(
                             InfoComment: "",
-                            ParameterName: name,
+                            Name: name,
                             GloballyQualifiedType: globallyQualifiedType,
                             GloballyQualifiedNotNullableType: globallyQualifiedNotNullableType,
-                            FromArguments: fromServices,
-                            FromServices: fromArguments,
+                            FromArguments: fromArguments,
+                            FromServices: fromServices,
                             FromServicesAssignment: diInfo.Assignment,
                             ServiceSource: diInfo.Key is not null
                                 ? MapHandlerParameterSource.KeyedServices

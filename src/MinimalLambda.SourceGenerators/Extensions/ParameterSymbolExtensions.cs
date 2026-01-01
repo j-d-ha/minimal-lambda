@@ -9,6 +9,18 @@ namespace Microsoft.CodeAnalysis;
 
 internal static class ParameterSymbolExtensions
 {
+    internal static bool IsDecoratedWithAttribute(
+        this IParameterSymbol parameterSymbol,
+        GeneratorContext context,
+        params WellKnownType[] attributeType
+    ) =>
+        parameterSymbol
+            .GetAttributes()
+            .Any(a =>
+                a.AttributeClass is not null
+                && context.WellKnownTypes.IsType(a.AttributeClass, attributeType)
+            );
+
     extension(IParameterSymbol parameterSymbol)
     {
         internal bool IsFromEvent(GeneratorContext context)
@@ -101,17 +113,6 @@ internal static class ParameterSymbolExtensions
                 )
             );
         }
-
-        internal bool IsDecoratedWithAttribute(
-            WellKnownType attributeType,
-            GeneratorContext context
-        ) =>
-            parameterSymbol
-                .GetAttributes()
-                .Any(a =>
-                    a.AttributeClass is not null
-                    && context.WellKnownTypes.IsType(a.AttributeClass, [attributeType])
-                );
     }
 
     extension(AttributeData attributeData)

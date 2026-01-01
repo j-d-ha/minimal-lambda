@@ -12,7 +12,7 @@ internal static class TypeExtractorExtensions
 
     private static readonly SymbolDisplayFormat NotNullableFormat =
         SymbolDisplayFormat.FullyQualifiedFormat.AddMiscellaneousOptions(
-            SymbolDisplayMiscellaneousOptions.IncludeNullableReferenceTypeModifier
+            SymbolDisplayMiscellaneousOptions.ExpandNullable
         );
 
     extension(ITypeSymbol typeSymbol)

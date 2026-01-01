@@ -24,8 +24,6 @@ internal static class GeneratorTestHelpers
 
         var result = driver.GetRunResult();
 
-        // result.Diagnostics.Length.Should().Be(0);s
-
         // Reparse generated trees with the same parse options as the original compilation
         // to ensure consistent syntax tree features (e.g., InterceptorsNamespaces)
         var parseOptions = originalCompilation.SyntaxTrees.First().Options;

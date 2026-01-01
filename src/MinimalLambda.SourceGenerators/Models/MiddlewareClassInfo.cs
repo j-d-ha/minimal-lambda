@@ -14,11 +14,9 @@ internal record MiddlewareClassInfo(
     string ShortName,
     EquatableArray<MiddlewareParameterInfo> ParameterInfos,
     bool ImplementsDisposable,
-    bool ImplementsAsyncDisposable
-)
-{
-    internal bool AllFromServices => ParameterInfos.All(p => p.FromServices);
-}
+    bool ImplementsAsyncDisposable,
+    bool AllParametersFromServices
+);
 
 internal static class MiddlewareExtensions
 {
@@ -68,13 +66,17 @@ internal static class MiddlewareExtensions
                 WellKnownType.System_IAsyncDisposable
             );
 
+            // are all parameters for the constructor from services
+            var allParametersFromServices = parameterInfos.All(p => p.FromServices);
+
             return (
                 new MiddlewareClassInfo(
                     globallyQualifiedName,
                     shortName,
                     parameterInfos.ToEquatableArray(),
                     implementsIDisposable,
-                    implementsIAsyncDisposable
+                    implementsIAsyncDisposable,
+                    allParametersFromServices
                 ),
                 diagnostics
             );
@@ -122,7 +124,9 @@ internal static class MiddlewareExtensions
 
             // 2. default to constructor with most parameters
             _ => (
-                MethodSymbol: constructors.OrderByDescending(c => c.Parameters.Length).First(),
+                MethodSymbol: namedTypeSymbol
+                    .InstanceConstructors.OrderByDescending(c => c.Parameters.Length)
+                    .First(),
                 DiagnosticInfos: []
             ),
         };

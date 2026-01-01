@@ -47,7 +47,7 @@ namespace MinimalLambda.Generated
             where T : ILambdaMiddleware
         {
             var resolver = new MyLambdaMiddleware2Resolver0(args);
-            
+
             builder.Use(next =>
             {
                 return context =>

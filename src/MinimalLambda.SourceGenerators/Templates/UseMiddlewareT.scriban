@@ -10,7 +10,7 @@
             where T : ILambdaMiddleware
         {
             var resolver = new {{ call.class_info.short_name }}Resolver{{ for.index }}(args);
-            
+
             {{~ if call.class_info.implements_async_disposable ~}}
             builder.Use(next =>
             {
@@ -44,33 +44,33 @@
 
         private class {{ call.class_info.short_name }}Resolver{{ for.index }}
         {
-      {{ ~ if call.parameter_infos.size > 0 && !call.parameter_infos.all_from_services ~ }}
+      {{ ~ if call.class_info.parameter_infos.count > 0 && !call.class_info.all_parameters_from_services ~ }}
             private const int NotCached = -1;
             private const int FromServices = -2;
             private bool _cacheBuilt = false;
             {{~ end ~}}
             private readonly object[] _args;
 
-      {{ ~ for parameter in call.parameter_infos ~ }}
+      {{ ~ for parameter in call.class_info.parameter_infos ~ }}
             {{~ if !parameter.from_services ~}}
       private int _cache{{ for.index }} = NotCached; // {{ parameter.globally_qualified_type }}
             {{~ end ~}}
             {{~ end ~}}
-      {{ ~ if call.parameter_infos.size > 0 && !call.parameter_infos.all_from_services ~ }}
-            
-            {{~ end ~}}
+      {{ ~ if call.class_info.parameter_infos.count > 0 && !call.class_info.all_parameters_from_services ~ }}
+
+      {{~ end ~}}
             internal {{ call.class_info.short_name }}Resolver{{ for.index }}(object[] args) => _args = args;
 
       internal {{ call.class_info.globally_qualified_name }} Create(ILambdaInvocationContext
       context)
             {
-      {{ ~ if call.parameter_infos.size > 0 ~ }}
-      {{ ~ if !call.parameter_infos.all_from_services ~ }}
+      {{ ~ if call.class_info.parameter_infos.count > 0 ~ }}
+      {{ ~ if !call.class_info.all_parameters_from_services ~ }}
                 if (!_cacheBuilt)
                     BuildResolutionCache();
 
                 {{~ end ~}}
-      {{ ~ for parameter in call.parameter_infos ~ }}
+      {{ ~ for parameter in call.class_info.parameter_infos ~ }}
                 {{~ if parameter.from_services ~}}
       var arg{{ for.index }} = {{ parameter.from_services_assignment }};
                 {{~ else ~}}
@@ -84,17 +84,18 @@
       : {{ parameter.from_services_assignment }};
                         {{~ end ~}}
                 {{~ end ~}}
-                
+
                 {{~ end ~}}
                 {{~ end ~}}
-      return new {{ call.class_info.globally_qualified_name }}({{ for arg in call.parameter_infos }}
-      arg{{ for.index }}{{ if !for.last }}, {{ end }}{{ end }});
+      return new {{ call.class_info.globally_qualified_name }}
+      ({{ for arg in call.class_info.parameter_infos }}arg{{ for.index }}{{ if !for.last }}
+      , {{ end }}{{ end }});
             }
-      {{ ~ if call.parameter_infos.size > 0 && !call.parameter_infos.all_from_services ~ }}
-            
-            private void BuildResolutionCache()
+      {{ ~ if call.class_info.parameter_infos.count > 0 && !call.class_info.all_parameters_from_services ~ }}
+
+      private void BuildResolutionCache()
             {
-      {{ ~ for parameter in call.parameter_infos ~ }}
+      {{ ~ for parameter in call.class_info.parameter_infos ~ }}
                 {{~ if !parameter.from_services ~}}
                 _cache{{ for.index }} = FromServices;
                 {{~ end ~}}
@@ -108,7 +109,7 @@
 
                     switch (arg)
                     {
-      {{ ~ for parameter in call.parameter_infos ~ }}
+      {{ ~ for parameter in call.class_info.parameter_infos ~ }}
                         {{~ if !parameter.from_services ~}}
       case {{ parameter.globally_qualified_not_nullable_type }} when _cache{{ for.index }} ==
       FromServices:
