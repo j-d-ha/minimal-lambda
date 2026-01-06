@@ -5,7 +5,7 @@ using Microsoft.CodeAnalysis;
 
 namespace MinimalLambda.SourceGenerators.Models;
 
-internal class DiagnosticResult<T>
+internal sealed class DiagnosticResult<T>
 {
     internal bool IsSuccess { get; }
     internal T? Value { get; }
@@ -19,6 +19,8 @@ internal class DiagnosticResult<T>
     }
 
     public static DiagnosticResult<T> Success(T value) => new(true, value, null);
+
+    public static implicit operator DiagnosticResult<T>(T value) => Success(value);
 
     public static DiagnosticResult<T> Failure(DiagnosticInfo error) => new(false, default, error);
 
@@ -41,7 +43,7 @@ internal class DiagnosticResult<T>
         Func<DiagnosticInfo, TResult> onFailure
     ) => IsSuccess ? onSuccess(Value!) : onFailure(Error!);
 
-    public void Do(Action<T> onSuccess, Action<DiagnosticInfo> onFailure)
+    public void Switch(Action<T> onSuccess, Action<DiagnosticInfo> onFailure)
     {
         if (IsSuccess)
             onSuccess(Value!);
