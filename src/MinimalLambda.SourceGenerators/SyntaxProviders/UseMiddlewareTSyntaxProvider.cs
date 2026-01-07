@@ -11,7 +11,7 @@ namespace MinimalLambda.SourceGenerators;
 
 internal static class UseMiddlewareTSyntaxProvider
 {
-    private static readonly string TargetMethodName = "UseMiddleware";
+    private const string TargetMethodName = "UseMiddleware";
 
     internal static bool Predicate(SyntaxNode node, CancellationToken _) =>
         !node.IsGeneratedFile() && node.TryGetMethodName(out var name) && name == TargetMethodName;
@@ -23,42 +23,9 @@ internal static class UseMiddlewareTSyntaxProvider
     {
         var context = new GeneratorContext(syntaxContext, cancellationToken);
 
-        if (!TryGetInvocationOperation(context, out var targetOperation))
-            return null;
-
-        return UseMiddlewareTInfo.Create(targetOperation, context);
-
-        // // get class TypeInfo
-        // var middlewareClassType = targetOperation.TargetMethod.TypeArguments[0];
-        //
-        // // Get location of the generic argument
-        // Location? genericArgumentLocation = null;
-        // if (
-        //     targetOperation.Syntax is InvocationExpressionSyntax
-        //     {
-        //         Expression: MemberAccessExpressionSyntax { Name: GenericNameSyntax genericName },
-        //     }
-        // )
-        // {
-        //     // Get the first type argument's location
-        //     var typeArgument = genericName.TypeArgumentList.Arguments[0];
-        //     genericArgumentLocation = typeArgument.GetLocation();
-        // }
-        //
-        // var classInfo = MiddlewareClassInfo.Create(middlewareClassType);
-        //
-        // var interceptableLocation = context.SemanticModel.GetInterceptableLocation(
-        //     (InvocationExpressionSyntax)targetOperation.Syntax,
-        //     cancellationToken
-        // )!;
-        //
-        // var useMiddlewareTInfo = new UseMiddlewareTInfo(
-        //     InterceptableLocationInfo.CreateFrom(interceptableLocation),
-        //     classInfo,
-        //     genericArgumentLocation?.ToLocationInfo()
-        // );
-        //
-        // return useMiddlewareTInfo;
+        return !TryGetInvocationOperation(context, out var targetOperation)
+            ? null
+            : UseMiddlewareTInfo.Create(targetOperation, context);
     }
 
     private static bool TryGetInvocationOperation(

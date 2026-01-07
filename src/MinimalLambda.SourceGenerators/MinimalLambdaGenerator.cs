@@ -32,42 +32,6 @@ public class MinimalLambdaGenerator : IIncrementalGenerator
             }
         );
 
-        // // Find all MapHandler method calls with lambda analysis
-        // var mapHandlerCalls = context
-        //     .SyntaxProvider.CreateSyntaxProvider(
-        //         MapHandlerSyntaxProvider.Predicate,
-        //         MapHandlerSyntaxProvider.Transformer
-        //     )
-        //     .Where(static m => m is not null)
-        //     .Select(static (m, _) => m!.Value);
-        //
-        // // Find all OnShutdown method calls with lambda analysis
-        // var onShutdownCalls = context
-        //     .SyntaxProvider.CreateSyntaxProvider(
-        //         OnShutdownSyntaxProvider.Predicate,
-        //         OnShutdownSyntaxProvider.Transformer
-        //     )
-        //     .Where(static m => m is not null)
-        //     .Select(static (m, _) => m!.Value);
-        //
-        // // Find all OnInit method calls with lambda analysis
-        // var onInitCalls = context
-        //     .SyntaxProvider.CreateSyntaxProvider(
-        //         OnInitSyntaxProvider.Predicate,
-        //         OnInitSyntaxProvider.Transformer
-        //     )
-        //     .Where(static m => m is not null)
-        //     .Select(static (m, _) => m!.Value);
-        //
-        // // find LambdaApplicationBuilder.Build() calls
-        // var lambdaApplicationBuilderBuildCalls = context
-        //     .SyntaxProvider.CreateSyntaxProvider(
-        //         LambdaApplicationBuilderBuildSyntaxProvider.Predicate,
-        //         LambdaApplicationBuilderBuildSyntaxProvider.Transformer
-        //     )
-        //     .Where(static m => m is not null)
-        //     .Select(static (m, _) => m!.Value);
-
         // handler registration calls
         var registrationCalls = context
             .SyntaxProvider.CreateSyntaxProvider(
@@ -83,13 +47,6 @@ public class MinimalLambdaGenerator : IIncrementalGenerator
                 UseMiddlewareTSyntaxProvider.Transformer
             )
             .WhereNotNull();
-
-        // collect call
-        // var mapHandlerCallsCollected = mapHandlerCalls.Collect();
-        // var onShutdownCallsCollected = onShutdownCalls.Collect();
-        // var onInitCallsCollected = onInitCalls.Collect();
-        // var lambdaApplicationBuilderBuildCallsCollected =
-        //     lambdaApplicationBuilderBuildCalls.Collect();
 
         var registrationCallsCollected = registrationCalls.Collect();
         var useMiddlewareTCallsCollected = useMiddlewareTCalls.Collect();

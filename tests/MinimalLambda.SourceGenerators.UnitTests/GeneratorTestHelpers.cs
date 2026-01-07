@@ -24,6 +24,18 @@ internal static class GeneratorTestHelpers
 
         var result = driver.GetRunResult();
 
+        result
+            .Diagnostics.Should()
+            .BeEmpty(
+                "code should be generated without errors, but found:\n"
+                    + string.Join(
+                        "\n---\n",
+                        result.Diagnostics.Select(e =>
+                            $"  - {e.Id}: {e.GetMessage()} at {e.Location}"
+                        )
+                    )
+            );
+
         // Reparse generated trees with the same parse options as the original compilation
         // to ensure consistent syntax tree features (e.g., InterceptorsNamespaces)
         var parseOptions = originalCompilation.SyntaxTrees.First().Options;
