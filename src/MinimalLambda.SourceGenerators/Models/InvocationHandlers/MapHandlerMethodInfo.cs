@@ -4,7 +4,6 @@ using System.Linq;
 using LayeredCraft.SourceGeneratorTools.Types;
 using Microsoft.CodeAnalysis;
 using MinimalLambda.SourceGenerators.Extensions;
-using MinimalLambda.SourceGenerators.WellKnownTypes;
 using WellKnownType = MinimalLambda.SourceGenerators.WellKnownTypes.WellKnownTypeData.WellKnownType;
 
 namespace MinimalLambda.SourceGenerators.Models;
@@ -78,7 +77,7 @@ internal static class MapHandlerMethodInfoExtensions
 
             var isReturnTypeStream =
                 hasResponse
-                && context.WellKnownTypes.IsTypeMatch(
+                && context.WellKnownTypes.IsType(
                     methodSymbol.ReturnType,
                     WellKnownType.System_IO_Stream
                 );

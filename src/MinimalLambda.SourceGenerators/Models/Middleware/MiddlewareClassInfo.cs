@@ -4,7 +4,6 @@ using System.Linq;
 using LayeredCraft.SourceGeneratorTools.Types;
 using Microsoft.CodeAnalysis;
 using MinimalLambda.SourceGenerators.Extensions;
-using MinimalLambda.SourceGenerators.WellKnownTypes;
 using WellKnownType = MinimalLambda.SourceGenerators.WellKnownTypes.WellKnownTypeData.WellKnownType;
 
 namespace MinimalLambda.SourceGenerators.Models;
@@ -55,15 +54,13 @@ internal static class MiddlewareExtensions
                 : [];
 
             // implements IDisposable
-            var implementsIDisposable = context.WellKnownTypes.TypeImplementsInterface(
-                typeSymbol,
-                WellKnownType.System_IDisposable
+            var implementsIDisposable = typeSymbol.AllInterfaces.Any(i =>
+                context.WellKnownTypes.IsType(i, WellKnownType.System_IDisposable)
             );
 
             // implements IAsyncDisposable
-            var implementsIAsyncDisposable = context.WellKnownTypes.TypeImplementsInterface(
-                typeSymbol,
-                WellKnownType.System_IAsyncDisposable
+            var implementsIAsyncDisposable = typeSymbol.AllInterfaces.Any(i =>
+                context.WellKnownTypes.IsType(i, WellKnownType.System_IAsyncDisposable)
             );
 
             // are all parameters for the constructor from services

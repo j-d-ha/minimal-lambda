@@ -4,7 +4,6 @@ using System.Threading;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.Operations;
 using MinimalLambda.SourceGenerators.Models;
-using MinimalLambda.SourceGenerators.WellKnownTypes;
 using WellKnownType = MinimalLambda.SourceGenerators.WellKnownTypes.WellKnownTypeData.WellKnownType;
 
 namespace MinimalLambda.SourceGenerators;
@@ -56,7 +55,7 @@ internal static class UseMiddlewareTSyntaxProvider
             && targetOperation.TargetMethod.ConstructedFrom.TypeParameters.FirstOrDefault()
                 is { } typeParameter
             && typeParameter.ConstraintTypes.Any(c =>
-                context.WellKnownTypes.IsTypeMatch(c, WellKnownType.MinimalLambda_ILambdaMiddleware)
+                context.WellKnownTypes.IsType(c, WellKnownType.MinimalLambda_ILambdaMiddleware)
             )
         )
         {

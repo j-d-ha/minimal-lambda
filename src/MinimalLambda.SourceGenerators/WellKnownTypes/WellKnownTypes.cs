@@ -120,7 +120,7 @@ internal class WellKnownTypes
         return null;
     }
 
-    public bool IsType(ITypeSymbol type, WellKnownTypeData.WellKnownType[] wellKnownTypes) =>
+    public bool IsType(ITypeSymbol type, params WellKnownTypeData.WellKnownType[] wellKnownTypes) =>
         IsType(type, wellKnownTypes, out _);
 
     public bool IsType(

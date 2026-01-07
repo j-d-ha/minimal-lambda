@@ -2,7 +2,6 @@ using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using MinimalLambda.SourceGenerators;
 using MinimalLambda.SourceGenerators.Extensions;
-using MinimalLambda.SourceGenerators.WellKnownTypes;
 using WellKnownType = MinimalLambda.SourceGenerators.WellKnownTypes.WellKnownTypeData.WellKnownType;
 
 namespace Microsoft.CodeAnalysis;
@@ -88,7 +87,7 @@ internal static class MethodSymbolExtensions
             return true;
 
             bool IsVoidLike(ITypeSymbol type) =>
-                context.WellKnownTypes.IsAnyTypeMatch(
+                context.WellKnownTypes.IsType(
                     type,
                     WellKnownType.System_Void,
                     WellKnownType.System_Threading_Tasks_Task,

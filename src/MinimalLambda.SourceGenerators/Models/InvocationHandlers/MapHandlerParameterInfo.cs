@@ -1,6 +1,5 @@
 using Microsoft.CodeAnalysis;
 using MinimalLambda.SourceGenerators.Extensions;
-using MinimalLambda.SourceGenerators.WellKnownTypes;
 using WellKnownType = MinimalLambda.SourceGenerators.WellKnownTypes.WellKnownTypeData.WellKnownType;
 
 namespace MinimalLambda.SourceGenerators.Models;
@@ -30,7 +29,7 @@ internal static class MapHandlerParameterInfoExtensions
 
             var parameterInfo = new MapHandlerParameterInfo(
                 parameter.Type.QualifiedNullableName,
-                context.WellKnownTypes.IsTypeMatch(parameter.Type, WellKnownType.System_IO_Stream),
+                context.WellKnownTypes.IsType(parameter.Type, WellKnownType.System_IO_Stream),
                 IsEvent: false,
                 IsFromKeyedService: false,
                 LocationInfo: LocationInfo.Create(parameter),
@@ -57,7 +56,7 @@ internal static class MapHandlerParameterInfoExtensions
 
             // context
             if (
-                context.WellKnownTypes.IsAnyTypeMatch(
+                context.WellKnownTypes.IsType(
                     parameter.Type,
                     WellKnownType.Amazon_Lambda_Core_ILambdaContext,
                     WellKnownType.MinimalLambda_ILambdaInvocationContext
@@ -73,7 +72,7 @@ internal static class MapHandlerParameterInfoExtensions
 
             // cancellation token
             if (
-                context.WellKnownTypes.IsTypeMatch(
+                context.WellKnownTypes.IsType(
                     parameter.Type,
                     WellKnownType.System_Threading_CancellationToken
                 )

@@ -1,5 +1,4 @@
 using Microsoft.CodeAnalysis;
-using MinimalLambda.SourceGenerators.WellKnownTypes;
 using WellKnownType = MinimalLambda.SourceGenerators.WellKnownTypes.WellKnownTypeData.WellKnownType;
 
 namespace MinimalLambda.SourceGenerators.Models;
@@ -33,7 +32,7 @@ internal static class LifecycleHandlerParameterInfoExtensions
 
             // context
             if (
-                context.WellKnownTypes.IsAnyTypeMatch(
+                context.WellKnownTypes.IsType(
                     parameter.Type,
                     WellKnownType.MinimalLambda_ILambdaLifecycleContext
                 )
@@ -48,7 +47,7 @@ internal static class LifecycleHandlerParameterInfoExtensions
 
             // cancellation token
             if (
-                context.WellKnownTypes.IsTypeMatch(
+                context.WellKnownTypes.IsType(
                     parameter.Type,
                     WellKnownType.System_Threading_CancellationToken
                 )
