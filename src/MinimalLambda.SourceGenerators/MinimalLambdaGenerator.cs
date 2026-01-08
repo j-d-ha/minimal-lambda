@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using MinimalLambda.SourceGenerators.Emitters;
@@ -49,14 +50,21 @@ public class MinimalLambdaGenerator : IIncrementalGenerator
             .WhereNotNull();
 
         var invocationHandlerCalls = registrationCalls
-            .Where(static c => c is MapHandlerMethodInfo && c.DiagnosticInfos.Count == 0)
+            .Where(static c =>
+                c is MapHandlerMethodInfo
+                && c.DiagnosticInfos.All(d =>
+                    d.DiagnosticDescriptor.DefaultSeverity != DiagnosticSeverity.Error
+                )
+            )
             .Select(static (c, _) => (MapHandlerMethodInfo)c)
             .Collect();
 
         var onInitHandlerCalls = registrationCalls
             .Where(static c =>
                 c is LifecycleMethodInfo l
-                && c.DiagnosticInfos.Count == 0
+                && c.DiagnosticInfos.All(d =>
+                    d.DiagnosticDescriptor.DefaultSeverity != DiagnosticSeverity.Error
+                )
                 && l.MethodType == MethodType.OnInit
             )
             .Select(static (c, _) => (LifecycleMethodInfo)c)
@@ -65,10 +73,20 @@ public class MinimalLambdaGenerator : IIncrementalGenerator
         var onShutdownHandlerCalls = registrationCalls
             .Where(static c =>
                 c is LifecycleMethodInfo l
-                && c.DiagnosticInfos.Count == 0
+                && c.DiagnosticInfos.All(d =>
+                    d.DiagnosticDescriptor.DefaultSeverity != DiagnosticSeverity.Error
+                )
                 && l.MethodType == MethodType.OnShutdown
             )
             .Select(static (c, _) => (LifecycleMethodInfo)c)
+            .Collect();
+
+        var middlewareTCallsCollected = useMiddlewareTCalls
+            .Where(static c =>
+                c.DiagnosticInfos.All(d =>
+                    d.DiagnosticDescriptor.DefaultSeverity != DiagnosticSeverity.Error
+                )
+            )
             .Collect();
 
         context.RegisterSourceOutput(
@@ -84,6 +102,6 @@ public class MinimalLambdaGenerator : IIncrementalGenerator
         context.RegisterSourceOutput(invocationHandlerCalls, InvocationHandlerEmitter.Emit);
         context.RegisterSourceOutput(onInitHandlerCalls, LifecycleHandlerEmitter.Emit);
         context.RegisterSourceOutput(onShutdownHandlerCalls, LifecycleHandlerEmitter.Emit);
-        context.RegisterSourceOutput(useMiddlewareTCalls.Collect(), MiddlewareClassEmitter.Emit);
+        context.RegisterSourceOutput(middlewareTCallsCollected, MiddlewareClassEmitter.Emit);
     }
 }
