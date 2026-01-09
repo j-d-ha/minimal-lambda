@@ -13,6 +13,15 @@ namespace MinimalLambda.SourceGenerators.Emitters;
 /// </summary>
 internal static class TemplateHelper
 {
+    internal static readonly Lazy<string> GeneratedCodeAttribute = new(() =>
+    {
+        var assembly = Assembly.GetExecutingAssembly();
+        var generatorName = assembly.GetName().Name;
+        var generatorVersion = assembly.GetName().Version;
+
+        return $"""[global::System.CodeDom.Compiler.GeneratedCode("{generatorName}", "{generatorVersion}")]""";
+    });
+
     private static readonly ConcurrentDictionary<string, Template> Cache = new();
 
     /// <summary>

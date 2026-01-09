@@ -19,6 +19,9 @@ internal record MiddlewareClassInfo(
 
 internal static class MiddlewareExtensions
 {
+    private const string MiddlewareConstructor =
+        "MinimalLambda.Builder.MiddlewareConstructorAttribute";
+
     extension(MiddlewareClassInfo)
     {
         internal static (MiddlewareClassInfo? Info, List<DiagnosticInfo> Diagnostics) Create(
@@ -126,7 +129,7 @@ internal static class MiddlewareExtensions
                         DiagnosticInfo.Create(
                             Diagnostics.MultipleConstructorsWithAttribute,
                             c.Locations.FirstOrDefault()?.ToLocationInfo(),
-                            [AttributeConstants.MiddlewareConstructor]
+                            [MiddlewareConstructor]
                         )
                     )
                     .ToArray()

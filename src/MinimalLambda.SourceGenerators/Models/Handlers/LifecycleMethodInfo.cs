@@ -17,7 +17,8 @@ internal record LifecycleMethodInfo(
     string HandleResponseAssignment,
     string HandleReturningFromMethod,
     string ReturnType,
-    bool HasAnyFromKeyedServices
+    bool HasAnyFromKeyedServices,
+    string BuilderName
 ) : IMethodInfo;
 
 internal static class LifecycleMethodInfoExtensions
@@ -85,6 +86,7 @@ internal static class LifecycleMethodInfoExtensions
             var hasAnyKeyedServices = assignments.Any(a => a is { IsFromKeyedService: true });
 
             return new LifecycleMethodInfo(
+                BuilderName: "ILambdaOnInitBuilder",
                 MethodType: MethodType.OnInit,
                 InterceptableLocationAttribute: interceptableLocation.Attribute,
                 DelegateCastType: handlerCastType,
@@ -133,6 +135,7 @@ internal static class LifecycleMethodInfoExtensions
             var hasAnyKeyedServices = assignments.Any(a => a is { IsFromKeyedService: true });
 
             return new LifecycleMethodInfo(
+                BuilderName: "ILambdaOnShutdownBuilder",
                 MethodType: MethodType.OnShutdown,
                 InterceptableLocationAttribute: interceptableLocation.Attribute,
                 DelegateCastType: handlerCastType,

@@ -9,6 +9,8 @@ var builder = LambdaApplication.CreateBuilder();
 
 var lambda = builder.Build();
 
+lambda.UseMiddleware<Middleware>();
+
 lambda.MapHandler(
     ([FromEvent] Request request) => new Response($"Hello {request.Name}!", DateTime.UtcNow)
 );

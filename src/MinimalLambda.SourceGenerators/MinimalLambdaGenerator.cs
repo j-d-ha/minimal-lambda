@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using System.Linq;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using MinimalLambda.SourceGenerators.Emitters;
@@ -49,48 +48,39 @@ public class MinimalLambdaGenerator : IIncrementalGenerator
             )
             .WhereNotNull();
 
-        var registrationCallsCollected = registrationCalls.Collect();
-        var useMiddlewareTCallsCollected = useMiddlewareTCalls.Collect();
+        var invocationHandlerCalls = registrationCalls
+            .WhereNoErrors()
+            .Where(static c => c is MapHandlerMethodInfo)
+            .Select(static (c, _) => (MapHandlerMethodInfo)c)
+            .Collect();
 
-        // combine the compilation and map handler calls
-        var combined = registrationCallsCollected
-            .Combine(useMiddlewareTCallsCollected)
-            .Select(
-                CompilationInfo? (t, _) =>
-                {
-                    var (handlerInfos, useMiddlewareInfo) = t;
+        var onInitHandlerCalls = registrationCalls
+            .WhereNoErrors()
+            .Where(static c => c is LifecycleMethodInfo { MethodType: MethodType.OnInit })
+            .Select(static (c, _) => (LifecycleMethodInfo)c)
+            .Collect();
 
-                    if (handlerInfos.Length == 0 && useMiddlewareInfo.Length == 0)
-                        return null;
+        var onShutdownHandlerCalls = registrationCalls
+            .WhereNoErrors()
+            .Where(static c => c is LifecycleMethodInfo { MethodType: MethodType.OnShutdown })
+            .Select(static (c, _) => (LifecycleMethodInfo)c)
+            .Collect();
 
-                    return new CompilationInfo
-                    {
-                        MapHandlerInvocationInfos = handlerInfos
-                            .OfType<MapHandlerMethodInfo>()
-                            .ToEquatableArray(),
-                        OnShutdownInvocationInfos = handlerInfos
-                            .OfType<LifecycleMethodInfo>()
-                            .Where(h => h.MethodType == MethodType.OnShutdown)
-                            .ToEquatableArray(),
-                        OnInitInvocationInfos = handlerInfos
-                            .OfType<LifecycleMethodInfo>()
-                            .Where(h => h.MethodType == MethodType.OnInit)
-                            .ToEquatableArray(),
-                        UseMiddlewareTInfos = useMiddlewareInfo.ToEquatableArray(),
-                    };
-                }
-            );
+        var middlewareTCallsCollected = useMiddlewareTCalls.WhereNoErrors().Collect();
 
-        // Generate source when calls are found
         context.RegisterSourceOutput(
-            combined,
-            (productionContext, info) =>
-            {
-                if (info is null)
-                    return;
-
-                MinimalLambdaEmitter.Generate(productionContext, info.Value);
-            }
+            registrationCalls,
+            (ctx, call) => call.DiagnosticInfos.ForEach(d => d.ReportDiagnostic(ctx))
         );
+
+        context.RegisterSourceOutput(
+            useMiddlewareTCalls,
+            (ctx, call) => call.DiagnosticInfos.ForEach(d => d.ReportDiagnostic(ctx))
+        );
+
+        context.RegisterSourceOutput(invocationHandlerCalls, InvocationHandlerEmitter.Emit);
+        context.RegisterSourceOutput(onInitHandlerCalls, LifecycleHandlerEmitter.Emit);
+        context.RegisterSourceOutput(onShutdownHandlerCalls, LifecycleHandlerEmitter.Emit);
+        context.RegisterSourceOutput(middlewareTCallsCollected, MiddlewareClassEmitter.Emit);
     }
 }
