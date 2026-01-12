@@ -3,7 +3,26 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
-## [Unreleased](https://github.com/j-d-ha/minimal-lambda/compare/v2.1.1...HEAD)
+## [Unreleased](https://github.com/j-d-ha/minimal-lambda/compare/v2.2.0...HEAD)
+
+## [v2.2.0](https://github.com/j-d-ha/minimal-lambda/compare/v2.1.1...v2.2.0) - 2026-01-12
+
+### 🚀 Features
+
+* feat(ci): add auto-approval to automated PR workflows (#283) @j-d-ha
+* feat(tests): add multi-targeting and source generator improvements (#274) @j-d-ha
+* feat(tests): add scrubbers for dynamic snapshot values (#273) @j-d-ha
+
+### 🔄 Refactoring
+
+* refactor(source-generators): modularize code generation and improve generated file organization (#280) @j-d-ha
+* refactor(source-generators): simplify and restructure code generation logic (#279) @j-d-ha
+
+### 🔧 Maintenance
+
+* chore: bump the minor-and-patch group with 6 updates (#281) @dependabot
+* chore(deps-dev): Bump the minor-and-patch group with 2 updates (#277) @dependabot
+* chore: Bump the minor-and-patch group with 4 updates (#275) @dependabot
 
 ## [v2.1.1](https://github.com/j-d-ha/minimal-lambda/compare/v2.0.0...v2.1.1) - 2025-12-22
 
