@@ -84,58 +84,60 @@ internal async Task MyTest(
 
 # Test Commands
 
+Task wrappers (recommended):
+
 ```bash
-# Run all tests across all target frameworks (net8.0, net9.0, net10.0)
-dotnet test
+task test:all       # dotnet test (Release)
+task test:verbose   # dotnet test (detailed logs)
+task test:coverage  # dotnet test + coverage
+task test:watch     # dotnet watch ... test
+```
 
-# Run tests for a specific framework
-# (recommended when working on a single test failure)
-dotnet test --framework net8.0
+Direct `dotnet` commands:
+```bash
+# Run the full test suite (solution-level)
+DOTNET_NOLOGO=1 dotnet test --configuration Release
 
-# Run tests with verbose output
-dotnet test --logger "console;verbosity=detailed"
+# Faster inner loop: run a single target framework (projects are multi-targeted)
+DOTNET_NOLOGO=1 dotnet test --configuration Release -f net10.0
 
-# Run tests in a specific project (avoid running other test projects)
-dotnet test --project test/LayeredCraft.DynamoMapper.Generators.Tests/LayeredCraft.DynamoMapper.Generators.Tests.csproj
-
-# Discover available tests (xUnit v3 + Microsoft.Testing.Platform)
-# Copy the fully-qualified test name from this output.
+# Run a single test project
 DOTNET_NOLOGO=1 dotnet test \
-  --project test/LayeredCraft.DynamoMapper.Generators.Tests/LayeredCraft.DynamoMapper.Generators.Tests.csproj \
-  -f net10.0 \
-  -v q \
-  --list-tests \
-  --no-progress \
-  --no-ansi
+  --project tests/MinimalLambda.UnitTests/MinimalLambda.UnitTests.csproj \
+  --configuration Release -f net10.0
 
-# Run a single test method (exact fully-qualified name)
+# Verbose output for debugging
+DOTNET_NOLOGO=1 dotnet test --configuration Release --logger "console;verbosity=detailed"
+```
+
+Run a single test (xUnit v3 + Microsoft.Testing.Platform)
+
+This repo pins the test runner in `global.json`:
+
+```json
+"test": {"runner": "Microsoft.Testing.Platform"}
+```
+
+```bash
+# list tests (copy fully-qualified name)
 DOTNET_NOLOGO=1 dotnet test \
-  --project test/LayeredCraft.DynamoMapper.Generators.Tests/LayeredCraft.DynamoMapper.Generators.Tests.csproj \
-  -f net10.0 \
-  -v q \
+  --project tests/MinimalLambda.UnitTests/MinimalLambda.UnitTests.csproj \
+  -f net10.0 -v q \
+  --list-tests --no-progress --no-ansi
+
+# run one test method
+DOTNET_NOLOGO=1 dotnet test \
+  --project tests/MinimalLambda.UnitTests/MinimalLambda.UnitTests.csproj \
+  -f net10.0 -v q \
   --filter-method "MyNamespace.MyTestClass.MyTestMethod" \
   --minimum-expected-tests 1 \
-  --no-progress \
-  --no-ansi
+  --no-progress --no-ansi
 
-# Common filter variants
-DOTNET_NOLOGO=1 dotnet test \
-  --project test/LayeredCraft.DynamoMapper.Generators.Tests/LayeredCraft.DynamoMapper.Generators.Tests.csproj \
-  -f net10.0 \
-  -v q \
-  --filter-class "MyNamespace.MyTestClass" \
-  --minimum-expected-tests 1 \
-  --no-progress \
-  --no-ansi
-
-DOTNET_NOLOGO=1 dotnet test \
-  --project test/LayeredCraft.DynamoMapper.Generators.Tests/LayeredCraft.DynamoMapper.Generators.Tests.csproj \
-  -f net10.0 \
-  -v q \
-  --filter-namespace "MyNamespace.Tests" \
-  --minimum-expected-tests 1 \
-  --no-progress \
-  --no-ansi
+# handy filters
+DOTNET_NOLOGO=1 dotnet test --project tests/MinimalLambda.UnitTests/MinimalLambda.UnitTests.csproj -f net10.0 -v q \
+  --filter-class "MyNamespace.MyTestClass" --minimum-expected-tests 1 --no-progress --no-ansi
+DOTNET_NOLOGO=1 dotnet test --project tests/MinimalLambda.UnitTests/MinimalLambda.UnitTests.csproj -f net10.0 -v q \
+  --filter-namespace "MyNamespace.Tests" --minimum-expected-tests 1 --no-progress --no-ansi
 ```
 
 # C# 14 Extension Members - Valid Syntax
