@@ -14,7 +14,7 @@ tasks:
     silent: true
     cmds:
       - echo "🧪 Running unit tests"
-      - dotnet test --configuration Release --filter "Category=Unit" --no-build
+      - dotnet test --configuration Release --filter-trait "Category=Unit" --no-build
       - echo "✅ Unit tests completed!"
 
   coverage:
@@ -22,7 +22,7 @@ tasks:
     silent: true
     cmds:
       - echo "📊 Running tests with coverage collection"
-      - dotnet test --configuration Release --collect:"XPlat Code Coverage" --no-build
+      - dotnet test --configuration Release --coverage --coverage-output-format cobertura --no-build
       - echo "✅ Coverage collection completed!"
 
   watch:
@@ -30,7 +30,7 @@ tasks:
     silent: true
     cmds:
       - echo "👀 Starting test watch mode"
-      - dotnet watch --project tests/MinimalLambda.Tests test --configuration Release
+      - dotnet watch --project tests/MinimalLambda.UnitTests test --configuration Release
 
   verbose:
     desc: Run tests with detailed output for debugging

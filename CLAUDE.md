@@ -82,6 +82,62 @@ internal async Task MyTest(
 - Combine both: use `[AutoNSubstituteData]` with `[Frozen]` to inject configured mocks from a manual
   fixture
 
+# Test Commands
+
+```bash
+# Run all tests across all target frameworks (net8.0, net9.0, net10.0)
+dotnet test
+
+# Run tests for a specific framework
+# (recommended when working on a single test failure)
+dotnet test --framework net8.0
+
+# Run tests with verbose output
+dotnet test --logger "console;verbosity=detailed"
+
+# Run tests in a specific project (avoid running other test projects)
+dotnet test --project test/LayeredCraft.DynamoMapper.Generators.Tests/LayeredCraft.DynamoMapper.Generators.Tests.csproj
+
+# Discover available tests (xUnit v3 + Microsoft.Testing.Platform)
+# Copy the fully-qualified test name from this output.
+DOTNET_NOLOGO=1 dotnet test \
+  --project test/LayeredCraft.DynamoMapper.Generators.Tests/LayeredCraft.DynamoMapper.Generators.Tests.csproj \
+  -f net10.0 \
+  -v q \
+  --list-tests \
+  --no-progress \
+  --no-ansi
+
+# Run a single test method (exact fully-qualified name)
+DOTNET_NOLOGO=1 dotnet test \
+  --project test/LayeredCraft.DynamoMapper.Generators.Tests/LayeredCraft.DynamoMapper.Generators.Tests.csproj \
+  -f net10.0 \
+  -v q \
+  --filter-method "MyNamespace.MyTestClass.MyTestMethod" \
+  --minimum-expected-tests 1 \
+  --no-progress \
+  --no-ansi
+
+# Common filter variants
+DOTNET_NOLOGO=1 dotnet test \
+  --project test/LayeredCraft.DynamoMapper.Generators.Tests/LayeredCraft.DynamoMapper.Generators.Tests.csproj \
+  -f net10.0 \
+  -v q \
+  --filter-class "MyNamespace.MyTestClass" \
+  --minimum-expected-tests 1 \
+  --no-progress \
+  --no-ansi
+
+DOTNET_NOLOGO=1 dotnet test \
+  --project test/LayeredCraft.DynamoMapper.Generators.Tests/LayeredCraft.DynamoMapper.Generators.Tests.csproj \
+  -f net10.0 \
+  -v q \
+  --filter-namespace "MyNamespace.Tests" \
+  --minimum-expected-tests 1 \
+  --no-progress \
+  --no-ansi
+```
+
 # C# 14 Extension Members - Valid Syntax
 
 ## This is VALID C# 14 syntax - do NOT change it

@@ -286,6 +286,13 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
                 if (string.IsNullOrEmpty(options.BootstrapOptions.RuntimeApiEndpoint))
                     options.BootstrapOptions.RuntimeApiEndpoint = "localhost";
             });
+
+            services.PostConfigure<HostOptions>(options =>
+            {
+                var minShutdownTimeout = TimeSpan.FromSeconds(30);
+                if (options.ShutdownTimeout < minShutdownTimeout)
+                    options.ShutdownTimeout = minShutdownTimeout;
+            });
         });
 
         // Build the host but DON'T start it - server will start it

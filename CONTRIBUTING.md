@@ -293,8 +293,8 @@ dotnet test tests/MinimalLambda.UnitTests
 # Run with verbose output
 dotnet test --verbosity detailed
 
-# Run with coverage (if configured)
-dotnet test /p:CollectCoverage=true
+# Run with coverage (MTP)
+dotnet test --coverage --coverage-output-format cobertura
 ```
 
 ### Test Requirements
