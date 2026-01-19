@@ -33,7 +33,7 @@
     <PackageReference Include="AwesomeAssertions" />
     <PackageReference Include="AutoFixture" />
     <PackageReference Include="coverlet.collector" />
-    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage"/>
+    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
     <PackageReference Include="NSubstitute.Analyzers.CSharp">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>

@@ -18,7 +18,7 @@
     <PackageReference Include="Basic.Reference.Assemblies.Net80" />
     <PackageReference Include="Basic.Reference.Assemblies.Net90" />
     <PackageReference Include="coverlet.collector" />
-    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage"/>
+    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
     <PackageReference Include="JetBrains.Annotations" />
     <PackageReference Include="Microsoft.CodeAnalysis" />
     <PackageReference Include="Microsoft.CodeAnalysis.Common" />
