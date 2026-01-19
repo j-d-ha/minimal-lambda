@@ -82,6 +82,64 @@ internal async Task MyTest(
 - Combine both: use `[AutoNSubstituteData]` with `[Frozen]` to inject configured mocks from a manual
   fixture
 
+# Test Commands
+
+Task wrappers (recommended):
+
+```bash
+task test:all       # dotnet test (Release)
+task test:verbose   # dotnet test (detailed logs)
+task test:coverage  # dotnet test + coverage
+task test:watch     # dotnet watch ... test
+```
+
+Direct `dotnet` commands:
+```bash
+# Run the full test suite (solution-level)
+DOTNET_NOLOGO=1 dotnet test --configuration Release
+
+# Faster inner loop: run a single target framework (projects are multi-targeted)
+DOTNET_NOLOGO=1 dotnet test --configuration Release -f net10.0
+
+# Run a single test project
+DOTNET_NOLOGO=1 dotnet test \
+  --project tests/MinimalLambda.UnitTests/MinimalLambda.UnitTests.csproj \
+  --configuration Release -f net10.0
+
+# Verbose output for debugging
+DOTNET_NOLOGO=1 dotnet test --configuration Release --logger "console;verbosity=detailed"
+```
+
+Run a single test (xUnit v3 + Microsoft.Testing.Platform)
+
+This repo pins the test runner in `global.json`:
+
+```json
+"test": {"runner": "Microsoft.Testing.Platform"}
+```
+
+```bash
+# list tests (copy fully-qualified name)
+DOTNET_NOLOGO=1 dotnet test \
+  --project tests/MinimalLambda.UnitTests/MinimalLambda.UnitTests.csproj \
+  -f net10.0 -v q \
+  --list-tests --no-progress --no-ansi
+
+# run one test method
+DOTNET_NOLOGO=1 dotnet test \
+  --project tests/MinimalLambda.UnitTests/MinimalLambda.UnitTests.csproj \
+  -f net10.0 -v q \
+  --filter-method "MyNamespace.MyTestClass.MyTestMethod" \
+  --minimum-expected-tests 1 \
+  --no-progress --no-ansi
+
+# handy filters
+DOTNET_NOLOGO=1 dotnet test --project tests/MinimalLambda.UnitTests/MinimalLambda.UnitTests.csproj -f net10.0 -v q \
+  --filter-class "MyNamespace.MyTestClass" --minimum-expected-tests 1 --no-progress --no-ansi
+DOTNET_NOLOGO=1 dotnet test --project tests/MinimalLambda.UnitTests/MinimalLambda.UnitTests.csproj -f net10.0 -v q \
+  --filter-namespace "MyNamespace.Tests" --minimum-expected-tests 1 --no-progress --no-ansi
+```
+
 # C# 14 Extension Members - Valid Syntax
 
 ## This is VALID C# 14 syntax - do NOT change it

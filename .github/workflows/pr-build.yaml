@@ -107,7 +107,7 @@ jobs:
         run: dotnet build --no-restore --configuration Release /p:TreatWarningsAsErrors=true
         
       - name: Run tests
-        run: dotnet test --no-build --configuration Release --verbosity normal --collect:"XPlat Code Coverage" --results-directory ./coverage
+        run: dotnet test --no-build --configuration Release --verbosity normal --results-directory ./coverage --coverage --coverage-output-format cobertura
         
       - name: Stop SonarQube
         env:
@@ -120,7 +120,7 @@ jobs:
       - name: Upload coverage reports
         uses: codecov/codecov-action@v5
         with:
-          files: ./coverage/**/coverage.cobertura.xml
+          files: ./coverage/**/*.cobertura.xml
           disable_search: true
           token: ${{ secrets.CODECOV_TOKEN }}
           fail_ci_if_error: true
