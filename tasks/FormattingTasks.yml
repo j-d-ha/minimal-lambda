@@ -23,7 +23,7 @@ tasks:
           --verbosity=FATAL \
           --no-build \
           --include="src/**/*;test/**/*;examples/**/*;benchmark/**/*" \
-          --exclude="**/bin/**/*;**/obj/**/*"
+          --exclude="**/bin/**/*;**/obj/**/*;.sonarqube/**/*;codecov*"
       - echo "✅ CleanupCode completed successfully!"
 
   csharpier:
