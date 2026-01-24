@@ -21,9 +21,7 @@ tasks:
           --settings="MinimalLambda.sln.DotSettings" \
           --profile="Built-in: Reformat Code" \
           --verbosity=FATAL \
-          --no-build \
-          --include="src/**/*;test/**/*;examples/**/*;benchmark/**/*" \
-          --exclude="**/bin/**/*;**/obj/**/*;.sonarqube/**/*;codecov*"
+          --no-build
       - echo "✅ CleanupCode completed successfully!"
 
   csharpier:

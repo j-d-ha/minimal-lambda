@@ -80,3 +80,6 @@ nunit-*.xml
 /temp.md
 /site/
 /.cache/
+/.sonarqube/
+/codecov*
+
