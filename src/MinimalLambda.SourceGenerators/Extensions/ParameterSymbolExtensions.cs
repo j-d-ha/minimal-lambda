@@ -53,8 +53,8 @@ internal static class ParameterSymbolExtensions
                             null));
         }
 
-        private DiagnosticResult<(bool IsKeyed, string? Key)> IsFromKeyedService(
-            GeneratorContext context) =>
+        private DiagnosticResult<(bool IsKeyed, string? Key)>
+            IsFromKeyedService(GeneratorContext context) =>
             parameterSymbol
                 .GetAttributes()
                 .FirstOrDefault(attribute => attribute is { AttributeClass: not null }

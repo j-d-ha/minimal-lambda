@@ -61,10 +61,8 @@ internal static class HandlerSyntaxProvider
                 TargetMethod.ContainingNamespace:
                 {
                     Name: "Builder",
-                    ContainingNamespace :
-                    {
-                        Name: "MinimalLambda", ContainingNamespace.IsGlobalNamespace: true,
-                    },
+                    ContainingNamespace
+                    : { Name: "MinimalLambda", ContainingNamespace.IsGlobalNamespace: true, },
                 },
             } targetOperation
             && targetOperation.TargetMethod.ContainingAssembly.Name == "MinimalLambda"

@@ -12,17 +12,19 @@ internal static class LambdaRuntimeRouteManager
         {
             Type = RequestType.GetNextInvocation,
             Method = HttpMethod.Get.Method,
-            Matcher = new TemplateMatcher(
-                TemplateParser.Parse("{version}/runtime/invocation/next"),
-                new RouteValueDictionary()),
+            Matcher =
+                new TemplateMatcher(
+                    TemplateParser.Parse("{version}/runtime/invocation/next"),
+                    new RouteValueDictionary()),
         },
         new()
         {
             Type = RequestType.PostInitError,
             Method = HttpMethod.Post.Method,
-            Matcher = new TemplateMatcher(
-                TemplateParser.Parse("{version}/runtime/init/error"),
-                new RouteValueDictionary()),
+            Matcher =
+                new TemplateMatcher(
+                    TemplateParser.Parse("{version}/runtime/init/error"),
+                    new RouteValueDictionary()),
         },
         new()
         {

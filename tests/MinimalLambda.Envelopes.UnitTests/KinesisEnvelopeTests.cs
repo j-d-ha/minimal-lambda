@@ -91,7 +91,8 @@ public class KinesisEnvelopeTests
 
         var record = new KinesisEnvelopeBase<MessagePayload>.KinesisEventRecordEnvelope
         {
-            Kinesis = new KinesisEnvelopeBase<MessagePayload>.RecordEnvelope { Data = dataStream },
+            Kinesis =
+                new KinesisEnvelopeBase<MessagePayload>.RecordEnvelope { Data = dataStream },
         };
         var envelope = new KinesisEnvelope<MessagePayload> { Records = [record] };
         var options = new EnvelopeOptions
@@ -137,7 +138,8 @@ public class KinesisEnvelopeTests
 
         var record = new KinesisEnvelopeBase<MessagePayload>.KinesisEventRecordEnvelope
         {
-            Kinesis = new KinesisEnvelopeBase<MessagePayload>.RecordEnvelope { Data = dataStream },
+            Kinesis =
+                new KinesisEnvelopeBase<MessagePayload>.RecordEnvelope { Data = dataStream },
         };
         var envelope = new KinesisEnvelope<MessagePayload> { Records = [record] };
         var options = new EnvelopeOptions();
