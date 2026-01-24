@@ -86,7 +86,17 @@ jobs:
         run: dotnet build --no-restore --configuration Release /p:TreatWarningsAsErrors=true
 
       - name: Run tests
-        run: dotnet test --no-build --configuration Release --verbosity normal --results-directory ./coverage --coverage --coverage-output-format cobertura
+        run: |
+          dotnet test \
+          --no-build \
+          --configuration Release 
+          -- \
+          --verbosity minimal \
+          --results-directory ./coverage \
+          --coverage \
+          --coverage-output-format cobertura \
+          --no-progress \
+          --no-ansi
 
       - name: Stop SonarQube
         env:
