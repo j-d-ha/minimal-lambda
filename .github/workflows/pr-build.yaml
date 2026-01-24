@@ -102,7 +102,6 @@ jobs:
           --no-progress \
           --no-ansi
 
-
       - name: Stop SonarQube
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
