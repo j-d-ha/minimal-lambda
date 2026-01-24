@@ -20,8 +20,9 @@ internal class LambdaLifecycleContextFactory(
             Region = configuration["AWS_REGION"] ?? configuration["AWS_DEFAULT_REGION"],
             ExecutionEnvironment = configuration["AWS_EXECUTION_ENV"],
             FunctionName = configuration["AWS_LAMBDA_FUNCTION_NAME"],
-            FunctionMemorySize =
-                int.TryParse(configuration["AWS_LAMBDA_FUNCTION_MEMORY_SIZE"], out var memorySize)
+            FunctionMemorySize = int.TryParse(
+                configuration["AWS_LAMBDA_FUNCTION_MEMORY_SIZE"],
+                out var memorySize)
                     ? memorySize
                     : null,
             FunctionVersion = configuration["AWS_LAMBDA_FUNCTION_VERSION"],
