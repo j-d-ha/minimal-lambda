@@ -25,7 +25,6 @@
     <PackageReference Include="NSubstitute"/>
     <PackageReference Include="AutoFixture"/>
     <PackageReference Include="AwesomeAssertions"/>
-    <PackageReference Include="coverlet.collector"/>
     <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage"/>
     <PackageReference Include="Microsoft.Extensions.Diagnostics.Testing"/>
     <PackageReference Include="NSubstitute.Analyzers.CSharp">
