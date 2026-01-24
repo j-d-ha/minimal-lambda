@@ -39,3 +39,20 @@ tasks:
       - echo "🔍 Running tests with verbose output"
       - dotnet test --configuration Release --verbosity detailed --no-build
       - echo "✅ Verbose test run completed!"
+  
+  ci:
+    desc: Run complete CI test suite
+    silent: true
+    cmds:
+      - echo "🔍 Running tests with CI configuration"
+      - |
+        dotnet test \
+          --no-build \
+          --configuration Release \
+          --verbosity minimal \
+          --results-directory ./coverage \
+          --coverage \
+          --coverage-output-format cobertura \
+          --no-progress \
+          --no-ansi
+      - echo "✅ CI test run completed!"
