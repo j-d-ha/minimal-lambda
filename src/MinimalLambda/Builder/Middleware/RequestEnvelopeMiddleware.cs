@@ -42,18 +42,14 @@ public static class RequestEnvelopeMiddleware
             {
                 return async context =>
                 {
-                    if (
-                        context.Features.TryGet(out IEventFeature? eventFeature)
-                        && eventFeature.GetEvent(context) is IRequestEnvelope requestEnvelope
-                    )
+                    if (context.Features.TryGet(out IEventFeature? eventFeature)
+                        && eventFeature.GetEvent(context) is IRequestEnvelope requestEnvelope)
                         requestEnvelope.ExtractPayload(GetOptions());
 
                     await next(context);
 
-                    if (
-                        context.Features.TryGet(out IResponseFeature? responseFeature)
-                        && responseFeature.GetResponse() is IResponseEnvelope responseEnvelope
-                    )
+                    if (context.Features.TryGet(out IResponseFeature? responseFeature)
+                        && responseFeature.GetResponse() is IResponseEnvelope responseEnvelope)
                         responseEnvelope.PackPayload(GetOptions());
                 };
             });
@@ -61,8 +57,8 @@ public static class RequestEnvelopeMiddleware
             return application;
 
             EnvelopeOptions GetOptions() =>
-                envelopeOptions ??= application
-                    .Services.GetRequiredService<IOptions<EnvelopeOptions>>()
+                envelopeOptions ??= application.Services
+                    .GetRequiredService<IOptions<EnvelopeOptions>>()
                     .Value;
         }
     }

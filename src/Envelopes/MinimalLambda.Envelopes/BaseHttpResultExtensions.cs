@@ -3,8 +3,7 @@ namespace MinimalLambda.Envelopes;
 /// <summary>Provides factory extension methods for creating HTTP results.</summary>
 public static class BaseHttpResultExtensions
 {
-    extension<TResult>(IHttpResult<TResult>)
-        where TResult : IHttpResult<TResult>
+    extension<TResult>(IHttpResult<TResult>) where TResult : IHttpResult<TResult>
     {
         /// <summary>Creates an HTTP result with the specified status code.</summary>
         /// <param name="statusCode">The HTTP status code.</param>
@@ -25,8 +24,7 @@ public static class BaseHttpResultExtensions
                     {
                         ["Content-Type"] = "text/plain; charset=utf-8",
                     },
-                    false
-                )
+                    false)
                 .Customize(result => result.Body = body);
 
         /// <summary>Creates an application/json HTTP result.</summary>
@@ -42,12 +40,10 @@ public static class BaseHttpResultExtensions
                 {
                     ["Content-Type"] = "application/json; charset=utf-8",
                 },
-                false
-            );
+                false);
     }
 
-    extension<TResult>(TResult result)
-        where TResult : IHttpResult<TResult>
+    extension<TResult>(TResult result) where TResult : IHttpResult<TResult>
     {
         /// <summary>Applies customizations to the result.</summary>
         /// <param name="customizer">An action to customize the result properties.</param>

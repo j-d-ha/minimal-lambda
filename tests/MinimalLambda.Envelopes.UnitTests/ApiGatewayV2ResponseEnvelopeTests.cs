@@ -20,10 +20,8 @@ public class ApiGatewayV2ResponseEnvelopeTests
     {
         // Arrange
         var responseData = _fixture.Create<ResponsePayload>();
-        var envelope = new ApiGatewayV2ResponseEnvelope<ResponsePayload>
-        {
-            BodyContent = responseData,
-        };
+        var envelope =
+            new ApiGatewayV2ResponseEnvelope<ResponsePayload> { BodyContent = responseData };
         var options = new EnvelopeOptions();
 
         // Act
@@ -33,8 +31,7 @@ public class ApiGatewayV2ResponseEnvelopeTests
         envelope.Body.Should().NotBeNull();
         var deserializedData = JsonSerializer.Deserialize<ResponsePayload>(
             envelope.Body,
-            options.JsonOptions
-        );
+            options.JsonOptions);
         deserializedData.Should().NotBeNull();
         deserializedData.Message.Should().Be(responseData.Message);
         deserializedData.Code.Should().Be(responseData.Code);
@@ -45,10 +42,8 @@ public class ApiGatewayV2ResponseEnvelopeTests
     {
         // Arrange
         var responseData = new ResponsePayload("test", 42);
-        var envelope = new ApiGatewayV2ResponseEnvelope<ResponsePayload>
-        {
-            BodyContent = responseData,
-        };
+        var envelope =
+            new ApiGatewayV2ResponseEnvelope<ResponsePayload> { BodyContent = responseData };
         var options = new EnvelopeOptions
         {
             JsonOptions = new JsonSerializerOptions
@@ -88,10 +83,8 @@ public class ApiGatewayV2ResponseEnvelopeTests
     {
         // Arrange
         var responseData = _fixture.Create<ResponsePayload>();
-        var envelope = new ApiGatewayV2ResponseEnvelope<ResponsePayload>
-        {
-            BodyContent = responseData,
-        };
+        var envelope =
+            new ApiGatewayV2ResponseEnvelope<ResponsePayload> { BodyContent = responseData };
         var options = new EnvelopeOptions();
 
         // Act
@@ -110,8 +103,7 @@ public class ApiGatewayV2ResponseEnvelopeTests
     {
         // Arrange
         var property = typeof(ApiGatewayV2ResponseEnvelope<ResponsePayload>).GetProperty(
-            nameof(ApiGatewayV2ResponseEnvelope<>.BodyContent)
-        );
+            nameof(ApiGatewayV2ResponseEnvelope<>.BodyContent));
 
         // Act
         var hasJsonIgnoreAttribute =
@@ -137,10 +129,8 @@ public class ApiGatewayV2ResponseEnvelopeTests
         // Arrange
         var firstData = new ResponsePayload("First", 1);
         var secondData = new ResponsePayload("Second", 2);
-        var envelope = new ApiGatewayV2ResponseEnvelope<ResponsePayload>
-        {
-            BodyContent = firstData,
-        };
+        var envelope =
+            new ApiGatewayV2ResponseEnvelope<ResponsePayload> { BodyContent = firstData };
         var options = new EnvelopeOptions();
 
         // Act
@@ -181,16 +171,13 @@ public class ApiGatewayV2ResponseEnvelopeTests
     {
         // Arrange
         var responseData = _fixture.Create<ResponsePayload>();
-        var envelope = new ApiGatewayV2ResponseEnvelope<ResponsePayload>
-        {
-            BodyContent = responseData,
-        };
+        var envelope =
+            new ApiGatewayV2ResponseEnvelope<ResponsePayload> { BodyContent = responseData };
         var options = new EnvelopeOptions
         {
             JsonOptions = new JsonSerializerOptions
             {
-                PropertyNamingPolicy = JsonNamingPolicy.CamelCase,
-                WriteIndented = true,
+                PropertyNamingPolicy = JsonNamingPolicy.CamelCase, WriteIndented = true,
             },
         };
 
@@ -202,8 +189,7 @@ public class ApiGatewayV2ResponseEnvelopeTests
         envelope.Body.Should().Contain("\n"); // WriteIndented adds newlines
         var deserializedData = JsonSerializer.Deserialize<ResponsePayload>(
             envelope.Body,
-            options.JsonOptions
-        );
+            options.JsonOptions);
         deserializedData.Should().NotBeNull();
         deserializedData.Message.Should().Be(responseData.Message);
     }

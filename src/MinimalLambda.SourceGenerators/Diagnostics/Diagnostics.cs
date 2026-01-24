@@ -13,8 +13,7 @@ internal static class Diagnostics
         "Handler method contains multiple parameters that use the '{0}' attribute. Only one parameter can use this attribute.",
         UsageCategory,
         DiagnosticSeverity.Error,
-        true
-    );
+        true);
 
     internal static readonly DiagnosticDescriptor InvalidAttributeArgument = new(
         "LH0003",
@@ -22,18 +21,16 @@ internal static class Diagnostics
         "An argument of type '{0}' is not valid for this attribute. Please use a valid type.",
         UsageCategory,
         DiagnosticSeverity.Error,
-        true
-    );
+        true);
 
     public static readonly DiagnosticDescriptor CSharpVersionTooLow = new(
         "LH0004",
         "C# language version too low",
         "MinimalLambda requires C# 11 or newer (or LanguageVersion=default with a modern SDK). "
-            + "Set <LangVersion>latest</LangVersion> or enable preview features.",
+        + "Set <LangVersion>latest</LangVersion> or enable preview features.",
         ConfigurationCategory,
         DiagnosticSeverity.Error,
-        true
-    );
+        true);
 
     public static readonly DiagnosticDescriptor MultipleConstructorsWithAttribute = new(
         "LH0005",
@@ -41,8 +38,7 @@ internal static class Diagnostics
         "Type contains multiple constructors that use the '{0}' attribute. Only one constructor can use this attribute.",
         ConfigurationCategory,
         DiagnosticSeverity.Error,
-        true
-    );
+        true);
 
     public static readonly DiagnosticDescriptor MustBeConcreteType = new(
         "LH0006",
@@ -50,6 +46,5 @@ internal static class Diagnostics
         "The type '{0}' must be a concrete class. Interfaces, abstract classes, and other non-instantiable types cannot be used as middleware.",
         ConfigurationCategory,
         DiagnosticSeverity.Error,
-        true
-    );
+        true);
 }

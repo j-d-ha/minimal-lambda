@@ -85,8 +85,7 @@ public class KinesisEnvelopeTests
         var payload = _fixture.Create<MessagePayload>();
         var json = JsonSerializer.Serialize(
             payload,
-            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
-        );
+            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
         var base64String = Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
         var dataStream = new MemoryStream(Encoding.UTF8.GetBytes(base64String));
 
@@ -153,8 +152,7 @@ public class KinesisEnvelopeTests
     {
         // Arrange
         var property = typeof(KinesisEnvelopeBase<MessagePayload>.RecordEnvelope).GetProperty(
-            nameof(KinesisEnvelopeBase<MessagePayload>.RecordEnvelope.DataContent)
-        );
+            nameof(KinesisEnvelopeBase<MessagePayload>.RecordEnvelope.DataContent));
 
         // Act
         var hasJsonIgnoreAttribute =
@@ -175,8 +173,7 @@ public class KinesisEnvelopeTests
     }
 
     private static KinesisEnvelopeBase<T>.KinesisEventRecordEnvelope CreateKinesisRecord<T>(
-        T payload
-    )
+        T payload)
     {
         var json = JsonSerializer.Serialize(payload);
         var base64String = Convert.ToBase64String(Encoding.UTF8.GetBytes(json));

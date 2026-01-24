@@ -36,8 +36,7 @@ public static class OnShutdownOpenTelemetryExtensions
         ///     </para>
         /// </remarks>
         public ILambdaOnShutdownBuilder OnShutdownFlushOpenTelemetry(
-            int timeoutMilliseconds = Timeout.Infinite
-        )
+            int timeoutMilliseconds = Timeout.Infinite)
         {
             ArgumentNullException.ThrowIfNull(application);
 
@@ -68,8 +67,7 @@ public static class OnShutdownOpenTelemetryExtensions
         ///     </para>
         /// </remarks>
         public ILambdaOnShutdownBuilder OnShutdownFlushTracer(
-            int timeoutMilliseconds = Timeout.Infinite
-        )
+            int timeoutMilliseconds = Timeout.Infinite)
         {
             ArgumentNullException.ThrowIfNull(application);
 
@@ -78,16 +76,12 @@ public static class OnShutdownOpenTelemetryExtensions
                 application.Services.GetService<ILoggerFactory>()?.CreateLogger(LogCategory)
                 ?? NullLogger.Instance;
 
-            application.OnShutdown(
-                (CancellationToken cancellationToken) =>
-                    RunForceFlush(
-                        "tracer",
-                        tracerProvider.ForceFlush,
-                        timeoutMilliseconds,
-                        logger,
-                        cancellationToken
-                    )
-            );
+            application.OnShutdown((CancellationToken cancellationToken) => RunForceFlush(
+                "tracer",
+                tracerProvider.ForceFlush,
+                timeoutMilliseconds,
+                logger,
+                cancellationToken));
 
             return application;
         }
@@ -112,8 +106,7 @@ public static class OnShutdownOpenTelemetryExtensions
         ///     </para>
         /// </remarks>
         public ILambdaOnShutdownBuilder OnShutdownFlushMeter(
-            int timeoutMilliseconds = Timeout.Infinite
-        )
+            int timeoutMilliseconds = Timeout.Infinite)
         {
             ArgumentNullException.ThrowIfNull(application);
 
@@ -122,16 +115,12 @@ public static class OnShutdownOpenTelemetryExtensions
                 application.Services.GetService<ILoggerFactory>()?.CreateLogger(LogCategory)
                 ?? NullLogger.Instance;
 
-            application.OnShutdown(
-                (CancellationToken cancellationToken) =>
-                    RunForceFlush(
-                        "meter",
-                        meterProvider.ForceFlush,
-                        timeoutMilliseconds,
-                        logger,
-                        cancellationToken
-                    )
-            );
+            application.OnShutdown((CancellationToken cancellationToken) => RunForceFlush(
+                "meter",
+                meterProvider.ForceFlush,
+                timeoutMilliseconds,
+                logger,
+                cancellationToken));
 
             return application;
         }
@@ -142,8 +131,7 @@ public static class OnShutdownOpenTelemetryExtensions
             Func<int, bool> flusher,
             int timeoutMilliseconds,
             ILogger logger,
-            CancellationToken cancellationToken
-        )
+            CancellationToken cancellationToken)
         {
             var flusherTask = Task.Run(() => flusher(timeoutMilliseconds), cancellationToken);
 
@@ -153,8 +141,7 @@ public static class OnShutdownOpenTelemetryExtensions
             {
                 logger.LogWarning(
                     "OpenTelemetry {ProviderName} provider force flush failed to complete within allocated time",
-                    providerName
-                );
+                    providerName);
 
                 return;
             }
@@ -162,8 +149,7 @@ public static class OnShutdownOpenTelemetryExtensions
             logger.LogInformation(
                 "OpenTelemetry {ProviderName} provider force flush {Status}",
                 providerName,
-                flusherTask.Result ? "succeeded" : "failed"
-            );
+                flusherTask.Result ? "succeeded" : "failed");
         }
     }
 }

@@ -15,9 +15,9 @@ internal class GeneratorContext
         Node = context.Node;
         SemanticModel = context.SemanticModel;
         CancellationToken = cancellationToken;
-        WellKnownTypes = SourceGenerators.WellKnownTypes.WellKnownTypes.GetOrCreate(
-            context.SemanticModel.Compilation
-        );
+        WellKnownTypes =
+            SourceGenerators.WellKnownTypes.WellKnownTypes.GetOrCreate(
+                context.SemanticModel.Compilation);
     }
 }
 

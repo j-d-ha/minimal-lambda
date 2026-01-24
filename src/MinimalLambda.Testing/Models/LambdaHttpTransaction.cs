@@ -21,8 +21,7 @@ internal class LambdaHttpTransaction
         {
             Request = request,
             ResponseTcs = new TaskCompletionSource<HttpResponseMessage>(
-                TaskCreationOptions.RunContinuationsAsynchronously
-            ),
+                TaskCreationOptions.RunContinuationsAsynchronously),
         };
 
     /// <summary>Completes the transaction with a successful HTTP response.</summary>

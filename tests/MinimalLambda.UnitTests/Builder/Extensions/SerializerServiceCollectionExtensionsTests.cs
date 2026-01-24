@@ -7,11 +7,12 @@ namespace MinimalLambda.UnitTests.Builder.Extensions;
 public class SerializerServiceCollectionExtensionsTests
 {
     [Fact]
-    public void AddLambdaSerializerWithContext_WithNullServiceCollection_ThrowsArgumentNullException()
+    public void
+        AddLambdaSerializerWithContext_WithNullServiceCollection_ThrowsArgumentNullException()
     {
         // Act
-        var act = () =>
-            ((IServiceCollection)null!).AddLambdaSerializerWithContext<TestJsonSerializerContext>();
+        var act = () => ((IServiceCollection)null!)
+            .AddLambdaSerializerWithContext<TestJsonSerializerContext>();
 
         // Assert
         act.Should().ThrowExactly<ArgumentNullException>();

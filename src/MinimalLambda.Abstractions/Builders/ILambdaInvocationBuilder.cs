@@ -52,8 +52,7 @@ public interface ILambdaInvocationBuilder
     /// </param>
     /// <returns>The current <see cref="ILambdaInvocationBuilder" /> instance for method chaining.</returns>
     ILambdaInvocationBuilder Use(
-        Func<LambdaInvocationDelegate, LambdaInvocationDelegate> middleware
-    );
+        Func<LambdaInvocationDelegate, LambdaInvocationDelegate> middleware);
 
     /// <summary>Builds the final invocation delegate by composing the handler and middleware.</summary>
     /// <remarks>

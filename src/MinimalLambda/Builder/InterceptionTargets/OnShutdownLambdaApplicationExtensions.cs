@@ -30,8 +30,7 @@ public static class OnShutdownLambdaApplicationExtensions
     /// <seealso cref="ILambdaOnShutdownBuilder.OnShutdown(LambdaShutdownDelegate)" />
     public static ILambdaOnShutdownBuilder OnShutdown(
         this ILambdaOnShutdownBuilder application,
-        Delegate handler
-    )
+        Delegate handler)
     {
         Debug.Fail("This method should have been intercepted at compile time!");
         throw new InvalidOperationException("This method is replaced at compile time.");

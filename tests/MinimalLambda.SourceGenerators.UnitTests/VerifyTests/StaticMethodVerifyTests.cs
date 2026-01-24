@@ -24,8 +24,7 @@ public class MethodHandlerVerifyTests
             {
                 Console.WriteLine("Hello World!");
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_MethodHandler_BlockBody_InputDiKeyedServices() =>
@@ -61,8 +60,7 @@ public class MethodHandlerVerifyTests
                     return service.GetMessage();
                 }
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_MethodHandler_BlockBody_TypeCast_Static() =>
@@ -84,8 +82,7 @@ public class MethodHandlerVerifyTests
             {
                 return 0;
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_MethodHandler_BlockBody_TypeCast() =>
@@ -110,8 +107,7 @@ public class MethodHandlerVerifyTests
                     return 0;
                 }
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_MethodHandler_TypeCast_ExtraParentheses() =>
@@ -133,8 +129,7 @@ public class MethodHandlerVerifyTests
             {
                 return 0;
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_MethodHandler_ReturnTask() =>
@@ -158,8 +153,7 @@ public class MethodHandlerVerifyTests
             {
                 return Task.CompletedTask;
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_MethodHandler_ReturnTaskString() =>
@@ -183,8 +177,7 @@ public class MethodHandlerVerifyTests
             {
                 return Task.FromResult("Hello World!");
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_MethodHandler_Async_ReturnTaskString() =>
@@ -208,8 +201,7 @@ public class MethodHandlerVerifyTests
             {
                 return "Hello World!";
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_MethodHandler_AsyncVoid() =>
@@ -233,6 +225,5 @@ public class MethodHandlerVerifyTests
             {
                 Console.WriteLine("Hello World!");
             }
-            """
-        );
+            """);
 }

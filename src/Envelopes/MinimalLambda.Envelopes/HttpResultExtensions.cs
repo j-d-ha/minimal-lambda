@@ -5,8 +5,7 @@ namespace MinimalLambda.Envelopes;
 /// <summary>Provides convenience extension methods for common HTTP status codes.</summary>
 public static class HttpResultExtensions
 {
-    extension<TResult>(IHttpResult<TResult>)
-        where TResult : IHttpResult<TResult>
+    extension<TResult>(IHttpResult<TResult>) where TResult : IHttpResult<TResult>
     {
         // ── 200 Ok ───────────────────────────────────────────────────────────────────────
 
@@ -164,8 +163,7 @@ public static class HttpResultExtensions
         public static TResult UnprocessableEntity<T>(T bodyContent) =>
             BaseHttpResultExtensions.Json<TResult, T>(
                 StatusCodes.Status422UnprocessableEntity,
-                bodyContent
-            );
+                bodyContent);
 
         // ── 500 Internal Server Error ────────────────────────────────────────────────────
 
@@ -181,7 +179,6 @@ public static class HttpResultExtensions
         public static TResult InternalServerError<T>(T bodyContent) =>
             BaseHttpResultExtensions.Json<TResult, T>(
                 StatusCodes.Status500InternalServerError,
-                bodyContent
-            );
+                bodyContent);
     }
 }

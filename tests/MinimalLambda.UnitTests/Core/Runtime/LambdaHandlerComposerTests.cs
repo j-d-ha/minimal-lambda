@@ -89,8 +89,7 @@ public class LambdaHandlerComposerTests
                 .Create(
                     Arg.Any<ILambdaContext>(),
                     Arg.Any<IDictionary<string, object?>>(),
-                    Arg.Any<CancellationToken>()
-                )
+                    Arg.Any<CancellationToken>())
                 .Returns(_ =>
                 {
                     // Create a new mock context for each call
@@ -109,8 +108,7 @@ public class LambdaHandlerComposerTests
                 CancellationFactory,
                 Options,
                 LambdaInvocationContextFactory,
-                InvocationDataFeatureFactory
-            );
+                InvocationDataFeatureFactory);
 
         /// <summary>Sets the invocation handler that will be built by the builder.</summary>
         public void SetInvocationHandler(LambdaInvocationDelegate handler) =>
@@ -147,14 +145,12 @@ public class LambdaHandlerComposerTests
             parameterIndex == 4 ? null : _fixture.InvocationDataFeatureFactory;
 
         // Act & Assert
-        var act = () =>
-            new LambdaHandlerComposer(
-                invocationBuilderFactory!,
-                cancellationFactory!,
-                options!,
-                contextFactory!,
-                invocationDataFeatureFactory!
-            );
+        var act = () => new LambdaHandlerComposer(
+            invocationBuilderFactory!,
+            cancellationFactory!,
+            options!,
+            contextFactory!,
+            invocationDataFeatureFactory!);
         act.Should().ThrowExactly<ArgumentNullException>();
     }
 
@@ -233,8 +229,7 @@ public class LambdaHandlerComposerTests
             _fixture.CancellationFactory,
             options,
             _fixture.LambdaInvocationContextFactory,
-            _fixture.InvocationDataFeatureFactory
-        );
+            _fixture.InvocationDataFeatureFactory);
 
         // Act
         composer.CreateHandler(CancellationToken.None);
@@ -269,9 +264,7 @@ public class LambdaHandlerComposerTests
         await handler(new MemoryStream(), _fixture.LambdaContext);
 
         // Assert
-        _fixture
-            .CancellationFactory.Received(1)
-            .NewCancellationTokenSource(_fixture.LambdaContext);
+        _fixture.CancellationFactory.Received(1).NewCancellationTokenSource(_fixture.LambdaContext);
     }
 
     [Fact]

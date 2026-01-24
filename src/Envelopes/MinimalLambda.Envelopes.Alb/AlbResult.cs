@@ -44,8 +44,7 @@ public sealed class AlbResult : ApplicationLoadBalancerResponse, IHttpResult<Alb
         int statusCode,
         T? bodyContent,
         IDictionary<string, string> headers,
-        bool isBase64Encoded
-    ) =>
+        bool isBase64Encoded) =>
         new(
             new AlbResponseEnvelope<T>
             {
@@ -53,8 +52,7 @@ public sealed class AlbResult : ApplicationLoadBalancerResponse, IHttpResult<Alb
                 BodyContent = bodyContent,
                 Headers = headers,
                 IsBase64Encoded = isBase64Encoded,
-            }
-        );
+            });
 
     /// <summary>Creates an ALB result from an existing response envelope.</summary>
     /// <typeparam name="T">The type of content in the envelope's body.</typeparam>

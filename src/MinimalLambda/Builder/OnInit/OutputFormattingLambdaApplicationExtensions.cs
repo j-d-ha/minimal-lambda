@@ -14,22 +14,19 @@ public static class OutputFormattingLambdaApplicationExtensions
     /// <param name="application">The Lambda application to configure.</param>
     /// <returns>The configured <see cref="ILambdaOnInitBuilder" /> for method chaining.</returns>
     public static ILambdaOnInitBuilder OnInitClearLambdaOutputFormatting(
-        this ILambdaOnInitBuilder application
-    )
+        this ILambdaOnInitBuilder application)
     {
         ArgumentNullException.ThrowIfNull(application);
 
-        application.OnInit(
-            (ILogger<LambdaHostedService>? logger = null) =>
-            {
-                // This will clear the output formatting set by the Lambda runtime.
-                Console.SetOut(new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = true });
+        application.OnInit((ILogger<LambdaHostedService>? logger = null) =>
+        {
+            // This will clear the output formatting set by the Lambda runtime.
+            Console.SetOut(new StreamWriter(Console.OpenStandardOutput()) { AutoFlush = true });
 
-                logger?.LogInformation("Clearing Lambda output formatting");
+            logger?.LogInformation("Clearing Lambda output formatting");
 
-                return Task.FromResult(true);
-            }
-        );
+            return Task.FromResult(true);
+        });
 
         return application;
     }

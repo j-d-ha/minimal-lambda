@@ -23,8 +23,7 @@ public class OnInitVerifyTests
 
             await lambda.RunAsync();
             """,
-            0
-        );
+            0);
 
     [Fact]
     public async Task Test_OnInit_ExplicitReturnTypeAsync() =>
@@ -45,8 +44,7 @@ public class OnInitVerifyTests
             });
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_OnInit_NoInput_NoOutput() =>
@@ -64,8 +62,7 @@ public class OnInitVerifyTests
             lambda.OnInit(() => { });
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_OnInit_NoInput_ReturnBool() =>
@@ -83,8 +80,7 @@ public class OnInitVerifyTests
             lambda.OnInit(() => true);
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_OnInit_NoInput_ReturnTaskBool() =>
@@ -102,8 +98,7 @@ public class OnInitVerifyTests
             lambda.OnInit(() => Task.FromResult(true));
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_OnInit_NoInput_ReturnAsyncBool() =>
@@ -121,8 +116,7 @@ public class OnInitVerifyTests
             lambda.OnInit(async () => true);
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_OnInit_NoInput_ReturnNotExpectedType() =>
@@ -140,8 +134,7 @@ public class OnInitVerifyTests
             lambda.OnInit(() => "string");
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_OnInit_NoInput_ReturnNotExpectedTypeTask() =>
@@ -159,8 +152,7 @@ public class OnInitVerifyTests
             lambda.OnInit(() => Task.FromResult("string"));
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_OnInit_NoInput_ReturnNotExpectedTypeAsync() =>
@@ -178,8 +170,7 @@ public class OnInitVerifyTests
             lambda.OnInit(async () => "string");
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_OnInit_PrimitiveInput() =>
@@ -202,8 +193,7 @@ public class OnInitVerifyTests
             );
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_OnInit_NullableValueAndReferenceInputs() =>
@@ -231,8 +221,7 @@ public class OnInitVerifyTests
             {
                 Task<string> GetMessage();
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_OnInit_OneOfEachPossibleKindOfInput() =>
@@ -268,8 +257,7 @@ public class OnInitVerifyTests
             {
                 Task<string> GetMessage();
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_OnInit_MultipleCalls() =>
@@ -309,8 +297,7 @@ public class OnInitVerifyTests
             {
                 Task<string> GetMessage();
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_OnInit_MethodHandler_NoDi() =>
@@ -336,8 +323,7 @@ public class OnInitVerifyTests
                     return Task.FromResult(true);
                 }
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_OnInit_MethodHandler_AsyncAndDi() =>
@@ -368,8 +354,7 @@ public class OnInitVerifyTests
             {
                 Task<bool> ShouldContinue();
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_OnInit_MethodHandler_AsyncAndDiAndReturnUnexpectedType() =>
@@ -400,6 +385,5 @@ public class OnInitVerifyTests
             {
                 Task<string> ShouldContinue();
             }
-            """
-        );
+            """);
 }

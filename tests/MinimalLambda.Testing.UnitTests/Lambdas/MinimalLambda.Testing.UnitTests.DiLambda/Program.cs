@@ -10,40 +10,35 @@ builder.Services.AddSingleton<IService, Service>();
 
 await using var lambda = builder.Build();
 
-lambda.OnInit(
-    (ILifecycleService service, ILogger<DiLambda> logger) =>
-    {
-        logger.LogInformation("Init 1");
-        return service.OnStart();
-    }
-);
+lambda.OnInit((ILifecycleService service, ILogger<DiLambda> logger) =>
+{
+    logger.LogInformation("Init 1");
+    return service.OnStart();
+});
 
-lambda.UseMiddleware(
-    async (context, next) =>
-    {
-        var logger = context.ServiceProvider.GetRequiredService<ILogger<DiLambda>>();
+lambda.UseMiddleware(async (context, next) =>
+{
+    var logger = context.ServiceProvider.GetRequiredService<ILogger<DiLambda>>();
 
-        logger.LogInformation("Middleware 1: Before");
-        await next(context);
-        logger.LogInformation("Middleware 1: After");
-    }
-);
+    logger.LogInformation("Middleware 1: Before");
+    await next(context);
+    logger.LogInformation("Middleware 1: After");
+});
 
-lambda.MapHandler(
-    ([FromEvent] DiLambdaRequest diLambdaRequest, IService service, ILogger<DiLambda> logger) =>
-    {
-        logger.LogInformation("Lambda handler");
-        return new DiLambdaResponse(service.GetMessage(diLambdaRequest.Name), DateTime.UtcNow);
-    }
-);
+lambda.MapHandler((
+    [FromEvent] DiLambdaRequest diLambdaRequest,
+    IService service,
+    ILogger<DiLambda> logger) =>
+{
+    logger.LogInformation("Lambda handler");
+    return new DiLambdaResponse(service.GetMessage(diLambdaRequest.Name), DateTime.UtcNow);
+});
 
-lambda.OnShutdown(
-    (ILifecycleService service, ILogger<DiLambda> logger) =>
-    {
-        logger.LogInformation("Shutdown 1");
-        service.OnStop();
-    }
-);
+lambda.OnShutdown((ILifecycleService service, ILogger<DiLambda> logger) =>
+{
+    logger.LogInformation("Shutdown 1");
+    service.OnStop();
+});
 
 await lambda.RunAsync();
 

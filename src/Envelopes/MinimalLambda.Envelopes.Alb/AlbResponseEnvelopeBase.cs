@@ -13,8 +13,7 @@ namespace MinimalLambda.Envelopes.Alb;
 ///     into the response body using their chosen serialization strategy.
 /// </remarks>
 public abstract class AlbResponseEnvelopeBase<T>
-    : ApplicationLoadBalancerResponse,
-        IResponseEnvelope
+    : ApplicationLoadBalancerResponse, IResponseEnvelope
 {
     /// <summary>The deserialized content of the <see cref="ApplicationLoadBalancerResponse.Body" /></summary>
     [JsonIgnore]

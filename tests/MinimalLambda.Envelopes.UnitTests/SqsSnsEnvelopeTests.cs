@@ -24,10 +24,8 @@ public class SqsSnsEnvelopeTests
         var outerJson = JsonSerializer.Serialize(snsEnvelope);
 
         var record =
-            new SqsEnvelopeBase<SnsEnvelopeBase<MessagePayload>.SnsMessageEnvelope>.SqsMessageEnvelope
-            {
-                Body = outerJson,
-            };
+            new SqsEnvelopeBase<SnsEnvelopeBase<MessagePayload>.SnsMessageEnvelope>.
+                SqsMessageEnvelope { Body = outerJson };
         var envelope = new SqsSnsEnvelope<MessagePayload> { Records = [record] };
         var options = new EnvelopeOptions();
 
@@ -62,20 +60,14 @@ public class SqsSnsEnvelopeTests
         var outerJson3 = JsonSerializer.Serialize(snsEnvelope3);
 
         var record1 =
-            new SqsEnvelopeBase<SnsEnvelopeBase<MessagePayload>.SnsMessageEnvelope>.SqsMessageEnvelope
-            {
-                Body = outerJson1,
-            };
+            new SqsEnvelopeBase<SnsEnvelopeBase<MessagePayload>.SnsMessageEnvelope>.
+                SqsMessageEnvelope { Body = outerJson1 };
         var record2 =
-            new SqsEnvelopeBase<SnsEnvelopeBase<MessagePayload>.SnsMessageEnvelope>.SqsMessageEnvelope
-            {
-                Body = outerJson2,
-            };
+            new SqsEnvelopeBase<SnsEnvelopeBase<MessagePayload>.SnsMessageEnvelope>.
+                SqsMessageEnvelope { Body = outerJson2 };
         var record3 =
-            new SqsEnvelopeBase<SnsEnvelopeBase<MessagePayload>.SnsMessageEnvelope>.SqsMessageEnvelope
-            {
-                Body = outerJson3,
-            };
+            new SqsEnvelopeBase<SnsEnvelopeBase<MessagePayload>.SnsMessageEnvelope>.
+                SqsMessageEnvelope { Body = outerJson3 };
 
         var envelope = new SqsSnsEnvelope<MessagePayload> { Records = [record1, record2, record3] };
         var options = new EnvelopeOptions();
@@ -118,16 +110,13 @@ public class SqsSnsEnvelopeTests
         var payload = _fixture.Create<MessagePayload>();
         var innerJson = JsonSerializer.Serialize(
             payload,
-            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
-        );
+            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
         var snsEnvelope = new { Message = innerJson };
         var outerJson = JsonSerializer.Serialize(snsEnvelope);
 
         var record =
-            new SqsEnvelopeBase<SnsEnvelopeBase<MessagePayload>.SnsMessageEnvelope>.SqsMessageEnvelope
-            {
-                Body = outerJson,
-            };
+            new SqsEnvelopeBase<SnsEnvelopeBase<MessagePayload>.SnsMessageEnvelope>.
+                SqsMessageEnvelope { Body = outerJson };
         var envelope = new SqsSnsEnvelope<MessagePayload> { Records = [record] };
         var options = new EnvelopeOptions
         {
@@ -152,10 +141,8 @@ public class SqsSnsEnvelopeTests
     {
         // Arrange
         var record =
-            new SqsEnvelopeBase<SnsEnvelopeBase<MessagePayload>.SnsMessageEnvelope>.SqsMessageEnvelope
-            {
-                Body = null,
-            };
+            new SqsEnvelopeBase<SnsEnvelopeBase<MessagePayload>.SnsMessageEnvelope>.
+                SqsMessageEnvelope { Body = null };
         var envelope = new SqsSnsEnvelope<MessagePayload> { Records = [record] };
         var options = new EnvelopeOptions();
 
@@ -170,10 +157,8 @@ public class SqsSnsEnvelopeTests
         // Arrange
         var invalidJson = _fixture.Create<string>();
         var record =
-            new SqsEnvelopeBase<SnsEnvelopeBase<MessagePayload>.SnsMessageEnvelope>.SqsMessageEnvelope
-            {
-                Body = invalidJson,
-            };
+            new SqsEnvelopeBase<SnsEnvelopeBase<MessagePayload>.SnsMessageEnvelope>.
+                SqsMessageEnvelope { Body = invalidJson };
         var envelope = new SqsSnsEnvelope<MessagePayload> { Records = [record] };
         var options = new EnvelopeOptions();
 
@@ -190,10 +175,8 @@ public class SqsSnsEnvelopeTests
         var outerJson = JsonSerializer.Serialize(snsEnvelope);
 
         var record =
-            new SqsEnvelopeBase<SnsEnvelopeBase<MessagePayload>.SnsMessageEnvelope>.SqsMessageEnvelope
-            {
-                Body = outerJson,
-            };
+            new SqsEnvelopeBase<SnsEnvelopeBase<MessagePayload>.SnsMessageEnvelope>.
+                SqsMessageEnvelope { Body = outerJson };
         var envelope = new SqsSnsEnvelope<MessagePayload> { Records = [record] };
         var options = new EnvelopeOptions();
 
@@ -211,10 +194,8 @@ public class SqsSnsEnvelopeTests
         var outerJson = JsonSerializer.Serialize(snsEnvelope);
 
         var record =
-            new SqsEnvelopeBase<SnsEnvelopeBase<MessagePayload>.SnsMessageEnvelope>.SqsMessageEnvelope
-            {
-                Body = outerJson,
-            };
+            new SqsEnvelopeBase<SnsEnvelopeBase<MessagePayload>.SnsMessageEnvelope>.
+                SqsMessageEnvelope { Body = outerJson };
         var envelope = new SqsSnsEnvelope<MessagePayload> { Records = [record] };
         var options = new EnvelopeOptions();
 
@@ -244,10 +225,8 @@ public class SqsSnsEnvelopeTests
         var outerJson = JsonSerializer.Serialize(snsEnvelope);
 
         var record =
-            new SqsEnvelopeBase<SnsEnvelopeBase<MessagePayload>.SnsMessageEnvelope>.SqsMessageEnvelope
-            {
-                Body = outerJson,
-            };
+            new SqsEnvelopeBase<SnsEnvelopeBase<MessagePayload>.SnsMessageEnvelope>.
+                SqsMessageEnvelope { Body = outerJson };
         var envelope = new SqsSnsEnvelope<MessagePayload> { Records = [record] };
         var options = new EnvelopeOptions();
 

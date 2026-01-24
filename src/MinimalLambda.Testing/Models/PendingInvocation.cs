@@ -28,15 +28,13 @@ internal class PendingInvocation
     internal static PendingInvocation Create(
         string requestId,
         HttpResponseMessage eventResponse,
-        DateTimeOffset deadlineUtc
-    ) =>
+        DateTimeOffset deadlineUtc) =>
         new()
         {
             RequestId = requestId,
             EventResponse = eventResponse,
             ResponseTcs = new TaskCompletionSource<InvocationCompletion>(
-                TaskCreationOptions.RunContinuationsAsynchronously
-            ),
+                TaskCreationOptions.RunContinuationsAsynchronously),
             DeadlineUtc = deadlineUtc,
         };
 }

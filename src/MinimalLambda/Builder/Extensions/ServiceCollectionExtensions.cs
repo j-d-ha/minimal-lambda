@@ -20,20 +20,14 @@ public static class ServiceCollectionExtensions
             ArgumentNullException.ThrowIfNull(services);
 
             // register core factories
-            services.AddSingleton<
-                ILambdaInvocationBuilderFactory,
-                DefaultLambdaInvocationBuilderFactory
-            >();
+            services.AddSingleton<ILambdaInvocationBuilderFactory,
+                DefaultLambdaInvocationBuilderFactory>();
             services.AddSingleton<ILambdaOnInitBuilderFactory, DefaultLambdaOnInitBuilderFactory>();
-            services.AddSingleton<
-                ILambdaOnShutdownBuilderFactory,
-                DefaultLambdaOnShutdownBuilderFactory
-            >();
+            services.AddSingleton<ILambdaOnShutdownBuilderFactory,
+                DefaultLambdaOnShutdownBuilderFactory>();
             services.AddSingleton<IFeatureCollectionFactory, DefaultFeatureCollectionFactory>();
-            services.AddSingleton<
-                ILambdaInvocationContextFactory,
-                LambdaInvocationContextFactory
-            >();
+            services.AddSingleton<ILambdaInvocationContextFactory,
+                LambdaInvocationContextFactory>();
             services.AddSingleton<ILambdaLifecycleContextFactory, LambdaLifecycleContextFactory>();
             services.AddSingleton<IInvocationDataFeatureFactory, InvocationDataFeatureFactory>();
 
@@ -45,20 +39,14 @@ public static class ServiceCollectionExtensions
             services.AddHostedService<LambdaHostedService>();
 
             // Register options related services
-            services.AddSingleton<
-                IPostConfigureOptions<HostOptions>,
-                HostOptionsPostConfiguration
-            >();
-            services.AddSingleton<
-                IPostConfigureOptions<EnvelopeOptions>,
-                EnvelopeOptionsPostConfiguration
-            >();
+            services.AddSingleton<IPostConfigureOptions<HostOptions>,
+                HostOptionsPostConfiguration>();
+            services.AddSingleton<IPostConfigureOptions<EnvelopeOptions>,
+                EnvelopeOptionsPostConfiguration>();
 
             // Register IFeatureProvider factories
-            services.AddSingleton<
-                IResponseFeatureProviderFactory,
-                ResponseFeatureProviderFactory
-            >();
+            services.AddSingleton<IResponseFeatureProviderFactory,
+                ResponseFeatureProviderFactory>();
             services.AddSingleton<IEventFeatureProviderFactory, EventFeatureProviderFactory>();
 
             return services;
@@ -72,8 +60,8 @@ public static class ServiceCollectionExtensions
         [UnconditionalSuppressMessage(
             "Aot",
             "IL2026:RequiresUnreferencedCode",
-            Justification = "DefaultLambdaJsonSerializer is a fallback. Users can AddLambdaSerializerWithContext for AOT scenarios."
-        )]
+            Justification =
+                "DefaultLambdaJsonSerializer is a fallback. Users can AddLambdaSerializerWithContext for AOT scenarios.")]
         public IServiceCollection TryAddLambdaHostDefaultServices()
         {
             ArgumentNullException.ThrowIfNull(services);
@@ -85,10 +73,8 @@ public static class ServiceCollectionExtensions
                 services.TryAddSingleton<ILambdaSerializer, DefaultLambdaJsonSerializer>();
 #pragma warning restore IL2026
 
-            services.TryAddSingleton<
-                ILambdaCancellationFactory,
-                DefaultLambdaCancellationFactory
-            >();
+            services.TryAddSingleton<ILambdaCancellationFactory,
+                DefaultLambdaCancellationFactory>();
 
             return services;
         }
@@ -108,10 +94,8 @@ public static class ServiceCollectionExtensions
         {
             ArgumentNullException.ThrowIfNull(services);
 
-            services.AddSingleton<
-                ILambdaInvocationContextAccessor,
-                LambdaInvocationContextAccessor
-            >();
+            services.AddSingleton<ILambdaInvocationContextAccessor,
+                LambdaInvocationContextAccessor>();
 
             return services;
         }

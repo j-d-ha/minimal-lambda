@@ -13,8 +13,7 @@ internal record MapHandlerParameterInfo(
     bool IsFromKeyedService,
     LocationInfo? LocationInfo,
     ParameterSource Source,
-    string? KeyedServicesKey
-);
+    string? KeyedServicesKey);
 
 internal static class MapHandlerParameterInfoExtensions
 {
@@ -22,8 +21,7 @@ internal static class MapHandlerParameterInfoExtensions
     {
         internal static DiagnosticResult<MapHandlerParameterInfo> Create(
             IParameterSymbol parameter,
-            GeneratorContext context
-        )
+            GeneratorContext context)
         {
             var paramType = parameter.Type.QualifiedNullableName;
 
@@ -36,8 +34,7 @@ internal static class MapHandlerParameterInfoExtensions
                 Assignment: string.Empty,
                 InfoComment: string.Empty,
                 KeyedServicesKey: string.Empty,
-                Source: ParameterSource.Services
-            );
+                Source: ParameterSource.Services);
 
             // event
             if (parameter.IsFromEvent(context))
@@ -51,56 +48,43 @@ internal static class MapHandlerParameterInfoExtensions
                             : $"context.GetRequiredEvent<{paramType}>()",
                         IsEvent = true,
                         Source = ParameterSource.Event,
-                    }
-                );
+                    });
 
             // context
-            if (
-                context.WellKnownTypes.IsType(
+            if (context.WellKnownTypes.IsType(
                     parameter.Type,
                     WellKnownType.Amazon_Lambda_Core_ILambdaContext,
-                    WellKnownType.MinimalLambda_ILambdaInvocationContext
-                )
-            )
+                    WellKnownType.MinimalLambda_ILambdaInvocationContext))
                 return DiagnosticResult<MapHandlerParameterInfo>.Success(
                     parameterInfo with
                     {
-                        Assignment = "context",
-                        Source = ParameterSource.Context,
-                    }
-                );
+                        Assignment = "context", Source = ParameterSource.Context,
+                    });
 
             // cancellation token
-            if (
-                context.WellKnownTypes.IsType(
+            if (context.WellKnownTypes.IsType(
                     parameter.Type,
-                    WellKnownType.System_Threading_CancellationToken
-                )
-            )
+                    WellKnownType.System_Threading_CancellationToken))
                 return DiagnosticResult<MapHandlerParameterInfo>.Success(
                     parameterInfo with
                     {
                         Assignment = "context.CancellationToken",
                         Source = ParameterSource.CancellationToken,
-                    }
-                );
+                    });
 
             // default assignment from Di
             return parameter
                 .GetDiParameterAssignment(context)
-                .Bind(diInfo =>
-                    DiagnosticResult<MapHandlerParameterInfo>.Success(
-                        parameterInfo with
-                        {
-                            Assignment = diInfo.Assignment,
-                            IsFromKeyedService = diInfo.Key is not null,
-                            Source = diInfo.Key is not null
-                                ? ParameterSource.KeyedServices
-                                : ParameterSource.Services,
-                            KeyedServicesKey = diInfo.Key,
-                        }
-                    )
-                );
+                .Bind(diInfo => DiagnosticResult<MapHandlerParameterInfo>.Success(
+                    parameterInfo with
+                    {
+                        Assignment = diInfo.Assignment,
+                        IsFromKeyedService = diInfo.Key is not null,
+                        Source = diInfo.Key is not null
+                            ? ParameterSource.KeyedServices
+                            : ParameterSource.Services,
+                        KeyedServicesKey = diInfo.Key,
+                    }));
         }
     }
 }

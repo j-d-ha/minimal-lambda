@@ -18,13 +18,13 @@ public sealed class KinesisEnvelope<T> : KinesisEnvelopeBase<T>
     [UnconditionalSuppressMessage(
         "Aot",
         "IL3050:RequiresDynamicCode",
-        Justification = "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T"
-    )]
+        Justification =
+            "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T")]
     [UnconditionalSuppressMessage(
         "Aot",
         "IL2026:RequiresUnreferencedCode",
-        Justification = "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T"
-    )]
+        Justification =
+            "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T")]
     public override void ExtractPayload(EnvelopeOptions options)
     {
         foreach (var record in Records)
@@ -32,14 +32,12 @@ public sealed class KinesisEnvelope<T> : KinesisEnvelopeBase<T>
             using var reader = new StreamReader(
                 record.Kinesis.Data,
                 Encoding.UTF8,
-                leaveOpen: true
-            );
+                leaveOpen: true);
             var base64String = reader.ReadToEnd();
             var jsonBytes = Convert.FromBase64String(base64String);
             record.Kinesis.DataContent = JsonSerializer.Deserialize<T>(
                 jsonBytes,
-                options.JsonOptions
-            );
+                options.JsonOptions);
         }
     }
 }

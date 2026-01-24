@@ -7,8 +7,7 @@ namespace MinimalLambda.SourceGenerators.Models;
 internal readonly record struct LocationInfo(
     string FilePath,
     TextSpan TextSpan,
-    LinePositionSpan LineSpan
-);
+    LinePositionSpan LineSpan);
 
 internal static class LocationInfoExtensions
 {
@@ -23,8 +22,7 @@ internal static class LocationInfoExtensions
                 : new LocationInfo(
                     location.SourceTree.FilePath,
                     location.SourceSpan,
-                    location.GetLineSpan().Span
-                );
+                    location.GetLineSpan().Span);
 
         internal static LocationInfo? Create(ISymbol symbol) =>
             LocationInfo.Create(symbol.Locations.FirstOrDefault());
@@ -41,8 +39,7 @@ internal static class LocationInfoExtensions
                 : new LocationInfo(
                     location.SourceTree.FilePath,
                     location.SourceSpan,
-                    location.GetLineSpan().Span
-                );
+                    location.GetLineSpan().Span);
     }
 
     extension(ISymbol symbol)

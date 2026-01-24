@@ -70,8 +70,7 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
                 EnvironmentName = settings.EnvironmentName,
                 ApplicationName = settings.ApplicationName,
                 ContentRootPath = settings.ContentRootPath,
-            }
-        );
+            });
 
         if (!settings.DisableDefaults)
         {
@@ -124,9 +123,8 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
     /// <inheritdoc />
     public void ConfigureContainer<TContainerBuilder>(
         IServiceProviderFactory<TContainerBuilder> factory,
-        Action<TContainerBuilder>? configure = null
-    )
-        where TContainerBuilder : notnull => _hostBuilder.ConfigureContainer(factory, configure);
+        Action<TContainerBuilder>? configure = null) where TContainerBuilder : notnull =>
+        _hostBuilder.ConfigureContainer(factory, configure);
 
     private void AddDefaultServices() =>
         Services.AddLogging(logging =>
@@ -136,18 +134,16 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
 
             logging.Configure(options =>
             {
-                options.ActivityTrackingOptions =
-                    ActivityTrackingOptions.SpanId
-                    | ActivityTrackingOptions.TraceId
-                    | ActivityTrackingOptions.ParentId;
+                options.ActivityTrackingOptions = ActivityTrackingOptions.SpanId
+                                                  | ActivityTrackingOptions.TraceId
+                                                  | ActivityTrackingOptions.ParentId;
             });
         });
 
     private DefaultServiceProviderFactory GetServiceProviderFactory() =>
         Environment.IsDevelopment()
             ? new DefaultServiceProviderFactory(
-                new ServiceProviderOptions { ValidateScopes = true, ValidateOnBuild = true }
-            )
+                new ServiceProviderOptions { ValidateScopes = true, ValidateOnBuild = true })
             : new DefaultServiceProviderFactory();
 
     /// <summary>Applies default configuration sources to the application's configuration manager.</summary>
@@ -188,10 +184,8 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
     {
         // If the user has set the ContentRootPath explicitly, we don't need to do anything. This
         // will also capture if the user set DOTNET_CONTENTROOT.
-        if (
-            settings.ContentRootPath is not null
-            || settings.Configuration?[HostDefaults.ContentRootKey] is not null
-        )
+        if (settings.ContentRootPath is not null
+            || settings.Configuration?[HostDefaults.ContentRootKey] is not null)
             return;
 
         // If the user does not set DOTNET_CONTENTROOT or sets the content root explicitly, we will
@@ -222,14 +216,11 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
         // ignore case for Windows path comparisons given the file system is usually (always?) going
         // to be case insensitive for the system path.
         var cwd = System.Environment.CurrentDirectory;
-        if (
-            !OperatingSystem.IsWindows()
+        if (!OperatingSystem.IsWindows()
             || !string.Equals(
                 cwd,
                 System.Environment.SystemDirectory,
-                StringComparison.OrdinalIgnoreCase
-            )
-        )
+                StringComparison.OrdinalIgnoreCase))
             settings.ContentRootPath = cwd;
     }
 
@@ -300,8 +291,7 @@ public sealed class LambdaApplicationBuilder : IHostApplicationBuilder
         ArgumentNullException.ThrowIfNull(builder);
         Debug.Assert(_builtApplication is not null);
 
-        var settings = _builtApplication
-            .Services.GetRequiredService<IOptions<LambdaHostOptions>>()
+        var settings = _builtApplication.Services.GetRequiredService<IOptions<LambdaHostOptions>>()
             .Value;
 
         // Add default OnInit handlers if asked for

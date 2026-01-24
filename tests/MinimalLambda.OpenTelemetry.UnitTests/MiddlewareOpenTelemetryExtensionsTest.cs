@@ -23,8 +23,7 @@ public class MiddlewareOpenTelemetryExtensionsTest
     [AutoNSubstituteData]
     public void UseOpenTelemetryTracing_WithNoTracerProvider_ThrowsInvalidOperationException(
         [Frozen] IServiceProvider serviceProvider,
-        ILambdaInvocationBuilder builder
-    )
+        ILambdaInvocationBuilder builder)
     {
         // Arrange
         serviceProvider.GetService(typeof(TracerProvider)).Returns(null);
@@ -34,11 +33,11 @@ public class MiddlewareOpenTelemetryExtensionsTest
         Action act = () => builder.UseOpenTelemetryTracing();
 
         // Assert
-        act.Should()
+        act
+            .Should()
             .ThrowExactly<InvalidOperationException>()
             .WithMessage(
-                "No service for type 'OpenTelemetry.Trace.TracerProvider' has been registered."
-            );
+                "No service for type 'OpenTelemetry.Trace.TracerProvider' has been registered.");
     }
 
     [Theory]
@@ -46,8 +45,7 @@ public class MiddlewareOpenTelemetryExtensionsTest
     public void UseOpenTelemetryTracing_RegistersMiddleware_AndReturnsBuilder(
         [Frozen] IServiceProvider serviceProvider,
         [Frozen] ILambdaInvocationBuilder builder,
-        TracerProvider tracerProvider
-    )
+        TracerProvider tracerProvider)
     {
         // Arrange
         serviceProvider.GetService(typeof(TracerProvider)).Returns(tracerProvider);
@@ -73,8 +71,7 @@ public class MiddlewareOpenTelemetryExtensionsTest
         [Frozen] ILambdaInvocationBuilder builder,
         TracerProvider tracerProvider,
         ILambdaInvocationContext context,
-        IFeatureCollection features
-    )
+        IFeatureCollection features)
     {
         // Arrange
         Func<LambdaInvocationDelegate, LambdaInvocationDelegate>? capturedMiddleware = null;
@@ -84,9 +81,7 @@ public class MiddlewareOpenTelemetryExtensionsTest
         builder
             .Use(
                 Arg.Do<Func<LambdaInvocationDelegate, LambdaInvocationDelegate>>(m =>
-                    capturedMiddleware = m
-                )
-            )
+                    capturedMiddleware = m))
             .Returns(builder);
 
         context.Features.Returns(features);

@@ -23,8 +23,7 @@ public class OnShutdownVerifyTests
 
             await lambda.RunAsync();
             """,
-            0
-        );
+            0);
 
     [Fact]
     public async Task Test_OnShutdown_NoInput() =>
@@ -45,8 +44,7 @@ public class OnShutdownVerifyTests
             });
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_OnShutdown_NoInput_ReturnUnexpectedType() =>
@@ -67,8 +65,7 @@ public class OnShutdownVerifyTests
             });
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_OnShutdown_NoInput_ReturnUnexpectedTypeTask() =>
@@ -89,8 +86,7 @@ public class OnShutdownVerifyTests
             });
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_OnShutdown_NoInput_ReturnUnexpectedTypeAsync() =>
@@ -111,8 +107,7 @@ public class OnShutdownVerifyTests
             });
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_OnShutdown_PrimitiveInput() =>
@@ -135,8 +130,7 @@ public class OnShutdownVerifyTests
             );
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_OnShutdown_NullableValueAndReferenceInputs() =>
@@ -164,8 +158,7 @@ public class OnShutdownVerifyTests
             {
                 Task<string> GetMessage();
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_OnShutdown_OneOfEachPossibleKindOfInput() =>
@@ -201,8 +194,7 @@ public class OnShutdownVerifyTests
             {
                 Task<string> GetMessage();
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_OnShutdown_MultipleCalls() =>
@@ -242,8 +234,7 @@ public class OnShutdownVerifyTests
             {
                 Task<string> GetMessage();
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_OnShutdown_BlockLambda_ReturnsImplicitVoid() =>
@@ -267,6 +258,5 @@ public class OnShutdownVerifyTests
 
             await lambda.RunAsync();
 
-            """
-        );
+            """);
 }

@@ -38,11 +38,11 @@ public class OnShutdownOpenTelemetryExtensionsTests
         Action act = () => mockApp.OnShutdownFlushTracer();
 
         // Assert
-        act.Should()
+        act
+            .Should()
             .ThrowExactly<InvalidOperationException>()
             .WithMessage(
-                "No service for type 'OpenTelemetry.Trace.TracerProvider' has been registered."
-            );
+                "No service for type 'OpenTelemetry.Trace.TracerProvider' has been registered.");
     }
 
     [Fact]
@@ -92,8 +92,7 @@ public class OnShutdownOpenTelemetryExtensionsTests
                     Level = LogLevel.Information,
                     Category = "MinimalLambda.OpenTelemetry",
                     Message = "OpenTelemetry tracer provider force flush succeeded",
-                }
-            );
+                });
     }
 
     [Fact]
@@ -103,8 +102,7 @@ public class OnShutdownOpenTelemetryExtensionsTests
         LambdaShutdownDelegate? capturedShutdownAction = null;
         var mockApp = CreateMockApp(
             a => capturedShutdownAction = a,
-            options => options.TracerShouldSucceed = false
-        );
+            options => options.TracerShouldSucceed = false);
 
         var mockContext = Substitute.For<ILambdaLifecycleContext>();
 
@@ -127,8 +125,7 @@ public class OnShutdownOpenTelemetryExtensionsTests
                     Level = LogLevel.Information,
                     Category = "MinimalLambda.OpenTelemetry",
                     Message = "OpenTelemetry tracer provider force flush failed",
-                }
-            );
+                });
     }
 
     [Fact]
@@ -138,8 +135,7 @@ public class OnShutdownOpenTelemetryExtensionsTests
         LambdaShutdownDelegate? capturedShutdownAction = null;
         var mockApp = CreateMockApp(
             a => capturedShutdownAction = a,
-            options => options.TracerDelay = TimeSpan.FromMilliseconds(10)
-        );
+            options => options.TracerDelay = TimeSpan.FromMilliseconds(10));
 
         var mockContext = Substitute.For<ILambdaLifecycleContext>();
         mockContext.CancellationToken.Returns(new CancellationToken(true));
@@ -162,9 +158,9 @@ public class OnShutdownOpenTelemetryExtensionsTests
                 {
                     Level = LogLevel.Warning,
                     Category = "MinimalLambda.OpenTelemetry",
-                    Message = "OpenTelemetry tracer provider force flush failed to complete within allocated time",
-                }
-            );
+                    Message =
+                        "OpenTelemetry tracer provider force flush failed to complete within allocated time",
+                });
     }
 
     #endregion
@@ -197,11 +193,11 @@ public class OnShutdownOpenTelemetryExtensionsTests
         Action act = () => mockApp.OnShutdownFlushMeter();
 
         // Assert
-        act.Should()
+        act
+            .Should()
             .ThrowExactly<InvalidOperationException>()
             .WithMessage(
-                "No service for type 'OpenTelemetry.Metrics.MeterProvider' has been registered."
-            );
+                "No service for type 'OpenTelemetry.Metrics.MeterProvider' has been registered.");
     }
 
     [Fact]
@@ -251,8 +247,7 @@ public class OnShutdownOpenTelemetryExtensionsTests
                     Level = LogLevel.Information,
                     Category = "MinimalLambda.OpenTelemetry",
                     Message = "OpenTelemetry meter provider force flush succeeded",
-                }
-            );
+                });
     }
 
     [Fact]
@@ -262,8 +257,7 @@ public class OnShutdownOpenTelemetryExtensionsTests
         LambdaShutdownDelegate? capturedShutdownAction = null;
         var mockApp = CreateMockApp(
             a => capturedShutdownAction = a,
-            options => options.MeterShouldSucceed = false
-        );
+            options => options.MeterShouldSucceed = false);
 
         var mockContext = Substitute.For<ILambdaLifecycleContext>();
         // Act
@@ -285,8 +279,7 @@ public class OnShutdownOpenTelemetryExtensionsTests
                     Level = LogLevel.Information,
                     Category = "MinimalLambda.OpenTelemetry",
                     Message = "OpenTelemetry meter provider force flush failed",
-                }
-            );
+                });
     }
 
     [Fact]
@@ -296,8 +289,7 @@ public class OnShutdownOpenTelemetryExtensionsTests
         LambdaShutdownDelegate? capturedShutdownAction = null;
         var mockApp = CreateMockApp(
             a => capturedShutdownAction = a,
-            options => options.MeterDelay = TimeSpan.FromMilliseconds(10)
-        );
+            options => options.MeterDelay = TimeSpan.FromMilliseconds(10));
 
         var mockContext = Substitute.For<ILambdaLifecycleContext>();
         mockContext.CancellationToken.Returns(new CancellationToken(true));
@@ -320,9 +312,9 @@ public class OnShutdownOpenTelemetryExtensionsTests
                 {
                     Level = LogLevel.Warning,
                     Category = "MinimalLambda.OpenTelemetry",
-                    Message = "OpenTelemetry meter provider force flush failed to complete within allocated time",
-                }
-            );
+                    Message =
+                        "OpenTelemetry meter provider force flush failed to complete within allocated time",
+                });
     }
 
     #endregion
@@ -411,16 +403,14 @@ public class OnShutdownOpenTelemetryExtensionsTests
                     Level = LogLevel.Information,
                     Category = "MinimalLambda.OpenTelemetry",
                     Message = "OpenTelemetry meter provider force flush succeeded",
-                }
-            )
+                })
             .And.ContainEquivalentOf(
                 new
                 {
                     Level = LogLevel.Information,
                     Category = "MinimalLambda.OpenTelemetry",
                     Message = "OpenTelemetry tracer provider force flush succeeded",
-                }
-            );
+                });
     }
 
     [Fact]
@@ -430,8 +420,7 @@ public class OnShutdownOpenTelemetryExtensionsTests
         var shutdownActions = new List<LambdaShutdownDelegate>();
         var mockApp = CreateMockApp(
             a => shutdownActions.Add(a),
-            options => options.TracerShouldSucceed = false
-        );
+            options => options.TracerShouldSucceed = false);
 
         var mockContext = Substitute.For<ILambdaLifecycleContext>();
 
@@ -454,16 +443,14 @@ public class OnShutdownOpenTelemetryExtensionsTests
                     Level = LogLevel.Information,
                     Category = "MinimalLambda.OpenTelemetry",
                     Message = "OpenTelemetry meter provider force flush succeeded",
-                }
-            )
+                })
             .And.ContainEquivalentOf(
                 new
                 {
                     Level = LogLevel.Information,
                     Category = "MinimalLambda.OpenTelemetry",
                     Message = "OpenTelemetry tracer provider force flush failed",
-                }
-            );
+                });
     }
 
     [Fact]
@@ -473,8 +460,7 @@ public class OnShutdownOpenTelemetryExtensionsTests
         var shutdownActions = new List<LambdaShutdownDelegate>();
         var mockApp = CreateMockApp(
             a => shutdownActions.Add(a),
-            options => options.MeterShouldSucceed = false
-        );
+            options => options.MeterShouldSucceed = false);
 
         var mockContext = Substitute.For<ILambdaLifecycleContext>();
 
@@ -497,16 +483,14 @@ public class OnShutdownOpenTelemetryExtensionsTests
                     Level = LogLevel.Information,
                     Category = "MinimalLambda.OpenTelemetry",
                     Message = "OpenTelemetry meter provider force flush failed",
-                }
-            )
+                })
             .And.ContainEquivalentOf(
                 new
                 {
                     Level = LogLevel.Information,
                     Category = "MinimalLambda.OpenTelemetry",
                     Message = "OpenTelemetry tracer provider force flush succeeded",
-                }
-            );
+                });
     }
 
     [Fact]
@@ -520,8 +504,7 @@ public class OnShutdownOpenTelemetryExtensionsTests
             {
                 options.MeterDelay = TimeSpan.FromMilliseconds(10);
                 options.TracerDelay = TimeSpan.FromMilliseconds(10);
-            }
-        );
+            });
 
         var mockContext = Substitute.For<ILambdaLifecycleContext>();
         mockContext.CancellationToken.Returns(new CancellationToken(true));
@@ -544,17 +527,17 @@ public class OnShutdownOpenTelemetryExtensionsTests
                 {
                     Level = LogLevel.Warning,
                     Category = "MinimalLambda.OpenTelemetry",
-                    Message = "OpenTelemetry meter provider force flush failed to complete within allocated time",
-                }
-            )
+                    Message =
+                        "OpenTelemetry meter provider force flush failed to complete within allocated time",
+                })
             .And.ContainEquivalentOf(
                 new
                 {
                     Level = LogLevel.Warning,
                     Category = "MinimalLambda.OpenTelemetry",
-                    Message = "OpenTelemetry tracer provider force flush failed to complete within allocated time",
-                }
-            );
+                    Message =
+                        "OpenTelemetry tracer provider force flush failed to complete within allocated time",
+                });
     }
 
     #endregion
@@ -563,8 +546,7 @@ public class OnShutdownOpenTelemetryExtensionsTests
 
     private static ILambdaOnShutdownBuilder CreateMockApp(
         Action<LambdaShutdownDelegate> onShutdown,
-        Action<MockOptions>? configureOptions = null
-    )
+        Action<MockOptions>? configureOptions = null)
     {
         var options = new MockOptions();
         configureOptions?.Invoke(options);
@@ -580,14 +562,12 @@ public class OnShutdownOpenTelemetryExtensionsTests
             .WithTracing(builder =>
             {
                 builder.AddProcessor(
-                    new MockProcessor<Activity>(options.TracerDelay, options.TracerShouldSucceed)
-                );
+                    new MockProcessor<Activity>(options.TracerDelay, options.TracerShouldSucceed));
             })
             .WithMetrics(builder =>
             {
                 builder.AddReader(
-                    new MockMetricReader(options.MeterDelay, options.MeterShouldSucceed)
-                );
+                    new MockMetricReader(options.MeterDelay, options.MeterShouldSucceed));
             });
 
         serviceCollection.AddLogging(builder =>

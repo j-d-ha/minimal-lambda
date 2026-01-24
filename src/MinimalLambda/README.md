@@ -1,12 +1,14 @@
 # MinimalLambda
 
-**Minimal API-style ergonomics, Lambda-first runtime** – Build Lambda functions for any trigger using familiar .NET patterns without sacrificing Lambda-specific capabilities.
+**Minimal API-style ergonomics, Lambda-first runtime** – Build Lambda functions for any trigger
+using familiar .NET patterns without sacrificing Lambda-specific capabilities.
 
 > 📚 **[View Full Documentation](https://j-d-ha.github.io/minimal-lambda/)**
 
 ## Overview
 
-Write Lambda functions with the familiar minimal API pattern from ASP.NET Core, adapted for Lambda's execution model:
+Write Lambda functions with the familiar minimal API pattern from ASP.NET Core, adapted for Lambda's
+execution model:
 
 ```csharp
 var builder = LambdaApplication.CreateBuilder();
@@ -22,11 +24,13 @@ await lambda.RunAsync();
 The framework provides:
 
 - **Minimal API Pattern**: `lambda.MapHandler(...)` in the same declarative style as `app.MapGet()`
-- **Dependency Injection**: The ASP.NET Core container with scoped lifetimes tailored to Lambda invocations
+- **Dependency Injection**: The ASP.NET Core container with scoped lifetimes tailored to Lambda
+  invocations
 - **Middleware Pipeline**: Familiar `Use()` pattern for cross-cutting concerns
 - **Source Generated**: Compile-time code generation for zero reflection overhead
 - **Native AOT Ready**: Full AOT support for sub-100ms cold starts
-- **Lambda-Optimized**: Envelopes, lifecycle hooks, automatic cancellation tokens, and timeout handling
+- **Lambda-Optimized**: Envelopes, lifecycle hooks, automatic cancellation tokens, and timeout
+  handling
 
 ## Installation
 
@@ -63,7 +67,8 @@ lambda.MapHandler(([FromEvent] string input) => $"Hello {input}!");
 await lambda.RunAsync();
 ```
 
-The `[FromEvent]` attribute tells the framework which parameter receives the deserialized event. You can
+The `[FromEvent]` attribute tells the framework which parameter receives the deserialized event. You
+can
 also inject dependencies:
 
 ```csharp
@@ -196,7 +201,8 @@ builder.Services.AddScoped<IRepository, Repository>();    // New per invocation
 
 Each invocation receives its own scope—scoped services are isolated per request. `OnInit()` and
 `OnShutdown()` handlers receive their own scopes as well. You can also request the
-`ILambdaInvocationContext` or `CancellationToken` in any handler, and they're automatically injected.
+`ILambdaInvocationContext` or `CancellationToken` in any handler, and they're automatically
+injected.
 
 ### Source Generation & Interceptors
 
@@ -272,12 +278,12 @@ the [configuration guide](https://github.com/j-d-ha/minimal-lambda/wiki/Configur
 Additional packages in the minimal-lambda framework for abstractions, observability, and event
 source handling.
 
-| Package                                                                                                         | NuGet                                                                                                                                                            | Downloads                                                                                                                                                              |
-|-----------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Package                                                                                                       | NuGet                                                                                                                                                          | Downloads                                                                                                                                                            |
+|---------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [**MinimalLambda**](../MinimalLambda/README.md)                                                               | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.svg)](https://www.nuget.org/packages/MinimalLambda)                                                     | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.svg)](https://www.nuget.org/packages/MinimalLambda/)                                                     |
 | [**MinimalLambda.Abstractions**](../MinimalLambda.Abstractions/README.md)                                     | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Abstractions.svg)](https://www.nuget.org/packages/MinimalLambda.Abstractions)                           | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.Abstractions.svg)](https://www.nuget.org/packages/MinimalLambda.Abstractions/)                           |
 | [**MinimalLambda.OpenTelemetry**](../MinimalLambda.OpenTelemetry/README.md)                                   | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.OpenTelemetry.svg)](https://www.nuget.org/packages/MinimalLambda.OpenTelemetry)                         | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.OpenTelemetry.svg)](https://www.nuget.org/packages/MinimalLambda.OpenTelemetry/)                         |
-| [**MinimalLambda.Testing**](../MinimalLambda.Testing/README.md) | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Testing.svg)](https://www.nuget.org/packages/MinimalLambda.Testing) | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.Testing.svg)](https://www.nuget.org/packages/MinimalLambda.Testing/) |
+| [**MinimalLambda.Testing**](../MinimalLambda.Testing/README.md)                                               | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Testing.svg)](https://www.nuget.org/packages/MinimalLambda.Testing)                                     | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.Testing.svg)](https://www.nuget.org/packages/MinimalLambda.Testing/)                                     |
 | [**MinimalLambda.Envelopes**](../Envelopes/MinimalLambda.Envelopes/README.md)                                 | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes)                                 | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.Envelopes.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes/)                                 |
 | [**MinimalLambda.Envelopes.Sqs**](../Envelopes/MinimalLambda.Envelopes.Sqs/README.md)                         | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.Sqs.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.Sqs)                         | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.Envelopes.Sqs.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.Sqs/)                         |
 | [**MinimalLambda.Envelopes.ApiGateway**](../Envelopes/MinimalLambda.Envelopes.ApiGateway/README.md)           | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.ApiGateway.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.ApiGateway)           | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.Envelopes.ApiGateway.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.ApiGateway/)           |

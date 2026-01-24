@@ -15,8 +15,7 @@ internal sealed class LambdaInvocationContext : ILambdaInvocationContext, IAsync
         IServiceScopeFactory serviceScopeFactory,
         IDictionary<string, object?> properties,
         IFeatureCollection featuresCollection,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(lambdaContext);
         ArgumentNullException.ThrowIfNull(serviceScopeFactory);

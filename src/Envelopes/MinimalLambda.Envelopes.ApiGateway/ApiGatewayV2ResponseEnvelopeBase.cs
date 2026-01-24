@@ -13,8 +13,7 @@ namespace MinimalLambda.Envelopes.ApiGateway;
 ///     into the response body using their chosen serialization strategy.
 /// </remarks>
 public abstract class ApiGatewayV2ResponseEnvelopeBase<T>
-    : APIGatewayHttpApiV2ProxyResponse,
-        IResponseEnvelope
+    : APIGatewayHttpApiV2ProxyResponse, IResponseEnvelope
 {
     /// <summary>The deserialized content of the <see cref="APIGatewayHttpApiV2ProxyResponse.Body" /></summary>
     [JsonIgnore]

@@ -15,24 +15,19 @@ internal static class EnumerableExtensions
         }
 
         internal (List<TOut> Data, List<DiagnosticInfo> Diagnostics) CollectDiagnosticResults<TOut>(
-            Func<T, DiagnosticResult<TOut>> extractor
-        ) =>
+            Func<T, DiagnosticResult<TOut>> extractor) =>
             enumerable
                 .Select(extractor)
                 .Aggregate(
-                    (
-                        Successes: new List<TOut>(enumerable is ICollection<T> c ? c.Count : 0),
-                        Diagnostics: new List<DiagnosticInfo>()
-                    ),
+                    (Successes: new List<TOut>(enumerable is ICollection<T> c ? c.Count : 0),
+                        Diagnostics: new List<DiagnosticInfo>()),
                     static (acc, result) =>
                     {
                         result.Switch(
                             info => acc.Successes.Add(info),
-                            diagnostic => acc.Diagnostics.Add(diagnostic)
-                        );
+                            diagnostic => acc.Diagnostics.Add(diagnostic));
 
                         return acc;
-                    }
-                );
+                    });
     }
 }

@@ -14,8 +14,7 @@ internal static class LambdaRuntimeRouteManager
             Method = HttpMethod.Get.Method,
             Matcher = new TemplateMatcher(
                 TemplateParser.Parse("{version}/runtime/invocation/next"),
-                new RouteValueDictionary()
-            ),
+                new RouteValueDictionary()),
         },
         new()
         {
@@ -23,8 +22,7 @@ internal static class LambdaRuntimeRouteManager
             Method = HttpMethod.Post.Method,
             Matcher = new TemplateMatcher(
                 TemplateParser.Parse("{version}/runtime/init/error"),
-                new RouteValueDictionary()
-            ),
+                new RouteValueDictionary()),
         },
         new()
         {
@@ -32,8 +30,7 @@ internal static class LambdaRuntimeRouteManager
             Method = HttpMethod.Post.Method,
             Matcher = new TemplateMatcher(
                 TemplateParser.Parse("{version}/runtime/invocation/{requestId}/response"),
-                new RouteValueDictionary()
-            ),
+                new RouteValueDictionary()),
         },
         new()
         {
@@ -41,16 +38,14 @@ internal static class LambdaRuntimeRouteManager
             Method = HttpMethod.Post.Method,
             Matcher = new TemplateMatcher(
                 TemplateParser.Parse("{version}/runtime/invocation/{requestId}/error"),
-                new RouteValueDictionary()
-            ),
+                new RouteValueDictionary()),
         },
     ];
 
     internal static bool TryMatch(
         HttpRequestMessage request,
         [NotNullWhen(true)] out RequestType? routeType,
-        [NotNullWhen(true)] out RouteValueDictionary? values
-    )
+        [NotNullWhen(true)] out RouteValueDictionary? values)
     {
         routeType = null;
         values = null;

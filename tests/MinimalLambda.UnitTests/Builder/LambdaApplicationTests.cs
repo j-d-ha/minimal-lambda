@@ -306,8 +306,7 @@ public class LambdaApplicationTests
         middlewares
             .Should()
             .BeAssignableTo<
-                IReadOnlyList<Func<LambdaInvocationDelegate, LambdaInvocationDelegate>>
-            >();
+                IReadOnlyList<Func<LambdaInvocationDelegate, LambdaInvocationDelegate>>>();
     }
 
     [Fact]
@@ -324,8 +323,7 @@ public class LambdaApplicationTests
         middlewares
             .Should()
             .BeAssignableTo<
-                IReadOnlyList<Func<LambdaInvocationDelegate, LambdaInvocationDelegate>>
-            >();
+                IReadOnlyList<Func<LambdaInvocationDelegate, LambdaInvocationDelegate>>>();
     }
 
     [Fact]

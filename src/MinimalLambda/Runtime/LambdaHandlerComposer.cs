@@ -17,8 +17,7 @@ internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory
         ILambdaCancellationFactory cancellationFactory,
         IOptions<LambdaHostedServiceOptions> options,
         ILambdaInvocationContextFactory contextFactory,
-        IInvocationDataFeatureFactory invocationDataFeatureFactory
-    )
+        IInvocationDataFeatureFactory invocationDataFeatureFactory)
     {
         ArgumentNullException.ThrowIfNull(cancellationFactory);
         ArgumentNullException.ThrowIfNull(lambdaInvocationBuilderFactory);
@@ -48,9 +47,8 @@ internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory
         {
             // Create a base cancellation token source using the provided token source factory.
             // This allows cancellation when the maximum lifetime of the lambda has been reached.
-            using var cancellationTokenSource = _cancellationFactory.NewCancellationTokenSource(
-                lambdaContext
-            );
+            using var cancellationTokenSource =
+                _cancellationFactory.NewCancellationTokenSource(lambdaContext);
 
             // Combine the base cancellation token source with the stoppingToken.
             // This allows for cancellation when either:
@@ -58,16 +56,14 @@ internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory
             // - The lambda runtime has started to shut down
             using var linkedTokenSource = CancellationTokenSource.CreateLinkedTokenSource(
                 stoppingToken,
-                cancellationTokenSource.Token
-            );
+                cancellationTokenSource.Token);
 
             // Create a new lambda host context. This will also create a new service scope
             // the first time that the service container is accessed.
             var lambdaInvocationContext = _contextFactory.Create(
                 lambdaContext,
                 builder.Properties,
-                linkedTokenSource.Token
-            );
+                linkedTokenSource.Token);
 
             await using (lambdaInvocationContext as IAsyncDisposable)
             {
@@ -77,11 +73,8 @@ internal sealed class LambdaHandlerComposer : ILambdaHandlerFactory
                 // Invoke the handler wrapped in the middleware pipeline.
                 await handler.Invoke(lambdaInvocationContext).ConfigureAwait(false);
 
-                if (
-                    lambdaInvocationContext.Features.TryGet<IResponseFeature>(
-                        out var responseFeature
-                    )
-                )
+                if (lambdaInvocationContext.Features.TryGet<IResponseFeature>(
+                        out var responseFeature))
                     responseFeature.SerializeToStream(lambdaInvocationContext);
 
                 // If no serializer is provided, return an empty stream.

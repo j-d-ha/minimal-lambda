@@ -24,8 +24,7 @@ public class UseMiddlewareTVerifyTests
                     await next(context);
                 }
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_MiddlewareClass_AbstractMiddleware() =>
@@ -54,8 +53,7 @@ public class UseMiddlewareTVerifyTests
             {
                 public string Do() => "Hello World!";
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_MiddlewareClass_ConstructorWithArgs() =>
@@ -91,8 +89,7 @@ public class UseMiddlewareTVerifyTests
             {
                 string GetMessage();
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_MiddlewareClass_MultipleConstructorsAndOneWithMiddlewareConstructor() =>
@@ -134,8 +131,7 @@ public class UseMiddlewareTVerifyTests
             {
                 string GetMessage();
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_MiddlewareClass_FromServicesAttribute() =>
@@ -167,8 +163,7 @@ public class UseMiddlewareTVerifyTests
             {
                 string GetMessage();
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_MiddlewareClass_FromKeyedServicesAttribute() =>
@@ -200,8 +195,7 @@ public class UseMiddlewareTVerifyTests
             {
                 string GetMessage();
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_MiddlewareClass_FromArgumentsAttribute() =>
@@ -228,8 +222,7 @@ public class UseMiddlewareTVerifyTests
                     await next(context);
                 }
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_MiddlewareClass_NullableParameter() =>
@@ -260,8 +253,7 @@ public class UseMiddlewareTVerifyTests
             {
                 string GetMessage();
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_MiddlewareClass_OptionalParameterWithDefaultValue() =>
@@ -289,8 +281,7 @@ public class UseMiddlewareTVerifyTests
                     await next(context);
                 }
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_MiddlewareClass_MixedParameterSources() =>
@@ -324,8 +315,7 @@ public class UseMiddlewareTVerifyTests
             internal interface ILogger { }
             internal interface ICache { }
             internal interface IMetrics { }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_MiddlewareClass_WithArgsArray() =>
@@ -357,8 +347,7 @@ public class UseMiddlewareTVerifyTests
             {
                 string GetMessage();
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_MiddlewareClass_ComplexRealWorldScenario() =>
@@ -393,8 +382,7 @@ public class UseMiddlewareTVerifyTests
             internal interface ILogger { }
             internal interface IMetrics { }
             internal interface IDataService { }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_MiddlewareClass_IDisposable() =>
@@ -421,8 +409,7 @@ public class UseMiddlewareTVerifyTests
 
                 public void Dispose() { }
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_MiddlewareClass_IAsyncDisposable() =>
@@ -449,6 +436,5 @@ public class UseMiddlewareTVerifyTests
 
                 public async ValueTask DisposeAsync() { }
             }
-            """
-        );
+            """);
 }

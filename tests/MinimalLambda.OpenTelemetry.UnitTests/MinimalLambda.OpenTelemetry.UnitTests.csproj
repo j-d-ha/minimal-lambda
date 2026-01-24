@@ -9,39 +9,39 @@
     <IsTestProject>true</IsTestProject>
   </PropertyGroup>
   <ItemGroup>
-    <Using Include="AutoFixture" />
-    <Using Include="AutoFixture.Xunit3" />
-    <Using Include="AwesomeAssertions" />
-    <Using Include="JetBrains.Annotations" />
-    <Using Include="MinimalLambda.Builder" />
-    <Using Include="NSubstitute" />
-    <Using Include="Xunit" />
+    <Using Include="AutoFixture"/>
+    <Using Include="AutoFixture.Xunit3"/>
+    <Using Include="AwesomeAssertions"/>
+    <Using Include="JetBrains.Annotations"/>
+    <Using Include="MinimalLambda.Builder"/>
+    <Using Include="NSubstitute"/>
+    <Using Include="Xunit"/>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="AutoFixture.AutoNSubstitute" />
-    <PackageReference Include="AutoFixture.Xunit3" />
-    <PackageReference Include="JetBrains.Annotations" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="NSubstitute" />
-    <PackageReference Include="AutoFixture" />
-    <PackageReference Include="AwesomeAssertions" />
-    <PackageReference Include="coverlet.collector" />
-    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
-    <PackageReference Include="Microsoft.Extensions.Diagnostics.Testing" />
+    <PackageReference Include="AutoFixture.AutoNSubstitute"/>
+    <PackageReference Include="AutoFixture.Xunit3"/>
+    <PackageReference Include="JetBrains.Annotations"/>
+    <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+    <PackageReference Include="NSubstitute"/>
+    <PackageReference Include="AutoFixture"/>
+    <PackageReference Include="AwesomeAssertions"/>
+    <PackageReference Include="coverlet.collector"/>
+    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage"/>
+    <PackageReference Include="Microsoft.Extensions.Diagnostics.Testing"/>
     <PackageReference Include="NSubstitute.Analyzers.CSharp">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="OpenTelemetry.Exporter.InMemory" />
+    <PackageReference Include="OpenTelemetry.Exporter.InMemory"/>
     <PackageReference Include="xunit.runner.visualstudio">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="xunit.v3" />
-    <PackageReference Include="OpenTelemetry.Extensions.Hosting" />
+    <PackageReference Include="xunit.v3"/>
+    <PackageReference Include="OpenTelemetry.Extensions.Hosting"/>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\MinimalLambda.OpenTelemetry\MinimalLambda.OpenTelemetry.csproj" />
-    <ProjectReference Include="..\..\src\MinimalLambda.Abstractions\MinimalLambda.Abstractions.csproj" />
+    <ProjectReference Include="..\..\src\MinimalLambda.OpenTelemetry\MinimalLambda.OpenTelemetry.csproj"/>
+    <ProjectReference Include="..\..\src\MinimalLambda.Abstractions\MinimalLambda.Abstractions.csproj"/>
   </ItemGroup>
 </Project>

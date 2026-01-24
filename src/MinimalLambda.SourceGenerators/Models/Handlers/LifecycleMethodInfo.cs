@@ -18,8 +18,7 @@ internal record LifecycleMethodInfo(
     string HandleReturningFromMethod,
     string ReturnType,
     bool HasAnyFromKeyedServices,
-    string BuilderName
-) : IMethodInfo;
+    string BuilderName) : IMethodInfo;
 
 internal static class LifecycleMethodInfoExtensions
 {
@@ -27,31 +26,27 @@ internal static class LifecycleMethodInfoExtensions
     {
         internal static LifecycleMethodInfo CreateForInit(
             IMethodSymbol methodSymbol,
-            GeneratorContext context
-        )
+            GeneratorContext context)
         {
             var handlerCastType = methodSymbol.GetCastableSignature();
 
             if (!InterceptableLocationInfo.TryGet(context, out var interceptableLocation))
                 throw new InvalidOperationException("Unable to get interceptable location");
 
-            var (assignments, diagnostics) = methodSymbol.Parameters.CollectDiagnosticResults(
-                parameter => LifecycleHandlerParameterInfo.Create(parameter, context)
-            );
+            var (assignments, diagnostics) =
+                methodSymbol.Parameters.CollectDiagnosticResults(parameter =>
+                    LifecycleHandlerParameterInfo.Create(parameter, context));
 
             var isAwaitable = methodSymbol.IsAwaitable(context);
 
             var hasResponse = methodSymbol.HasMeaningfulReturnType(
                 context,
-                out var unwrappedReturnType
-            );
+                out var unwrappedReturnType);
 
-            var unwrappedReturnIsBool =
-                hasResponse
-                && context.WellKnownTypes.IsType(
-                    unwrappedReturnType!,
-                    WellKnownTypeData.WellKnownType.System_Boolean
-                );
+            var unwrappedReturnIsBool = hasResponse
+                                        && context.WellKnownTypes.IsType(
+                                            unwrappedReturnType!,
+                                            WellKnownTypeData.WellKnownType.System_Boolean);
 
             /*
              * Return rules:
@@ -61,18 +56,18 @@ internal static class LifecycleMethodInfoExtensions
              *      result default + async, return true default, return Task.FromResult(true);
              */
 
-            var returnIsTaskBool =
-                methodSymbol.ReturnType is INamedTypeSymbol namedTypeSymbol
-                && context.WellKnownTypes.IsType(
-                    namedTypeSymbol.ConstructedFrom,
-                    WellKnownTypeData.WellKnownType.System_Threading_Tasks_Task_T
-                )
-                && unwrappedReturnIsBool;
+            var returnIsTaskBool = methodSymbol.ReturnType is INamedTypeSymbol namedTypeSymbol
+                                   && context.WellKnownTypes.IsType(
+                                       namedTypeSymbol.ConstructedFrom,
+                                       WellKnownTypeData.WellKnownType
+                                           .System_Threading_Tasks_Task_T)
+                                   && unwrappedReturnIsBool;
 
             var shouldAwait = isAwaitable && !returnIsTaskBool;
 
-            var handleResponseAssignment =
-                hasResponse && unwrappedReturnIsBool ? "var response = " : string.Empty;
+            var handleResponseAssignment = hasResponse && unwrappedReturnIsBool
+                ? "var response = "
+                : string.Empty;
 
             var handleReturningFromMethod = hasResponse switch
             {
@@ -96,30 +91,27 @@ internal static class LifecycleMethodInfoExtensions
                 HandleResponseAssignment: handleResponseAssignment,
                 HandleReturningFromMethod: handleReturningFromMethod,
                 ReturnType: "Task<bool>",
-                HasAnyFromKeyedServices: hasAnyKeyedServices
-            );
+                HasAnyFromKeyedServices: hasAnyKeyedServices);
         }
 
         internal static LifecycleMethodInfo CreateForShutdown(
             IMethodSymbol methodSymbol,
-            GeneratorContext context
-        )
+            GeneratorContext context)
         {
             var handlerCastType = methodSymbol.GetCastableSignature();
 
             if (!InterceptableLocationInfo.TryGet(context, out var interceptableLocation))
                 throw new InvalidOperationException("Unable to get interceptable location");
 
-            var (assignments, diagnostics) = methodSymbol.Parameters.CollectDiagnosticResults(
-                parameter => LifecycleHandlerParameterInfo.Create(parameter, context)
-            );
+            var (assignments, diagnostics) =
+                methodSymbol.Parameters.CollectDiagnosticResults(parameter =>
+                    LifecycleHandlerParameterInfo.Create(parameter, context));
 
             var isAwaitable = methodSymbol.IsAwaitable(context);
 
             var returnIsTask = context.WellKnownTypes.IsType(
                 methodSymbol.ReturnType,
-                WellKnownTypeData.WellKnownType.System_Threading_Tasks_Task
-            );
+                WellKnownTypeData.WellKnownType.System_Threading_Tasks_Task);
 
             var shouldAwait = isAwaitable && !returnIsTask;
 
@@ -145,8 +137,7 @@ internal static class LifecycleMethodInfoExtensions
                 HandleResponseAssignment: handleResponseAssignment,
                 HandleReturningFromMethod: handleReturningFromMethod,
                 ReturnType: "Task",
-                HasAnyFromKeyedServices: hasAnyKeyedServices
-            );
+                HasAnyFromKeyedServices: hasAnyKeyedServices);
         }
     }
 }

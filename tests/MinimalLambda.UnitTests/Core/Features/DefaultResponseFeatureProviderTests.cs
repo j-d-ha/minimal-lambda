@@ -8,8 +8,7 @@ public class DefaultResponseFeatureProviderTests
     [Theory]
     [AutoNSubstituteData]
     internal void Constructor_WithValidSerializer_SuccessfullyConstructs(
-        DefaultResponseFeatureProvider<string> provider
-    ) =>
+        DefaultResponseFeatureProvider<string> provider) =>
         // Assert
         provider.Should().NotBeNull();
 
@@ -20,8 +19,7 @@ public class DefaultResponseFeatureProviderTests
     [Theory]
     [AutoNSubstituteData]
     internal void Provider_ImplementsIFeatureProvider(
-        DefaultResponseFeatureProvider<string> provider
-    ) =>
+        DefaultResponseFeatureProvider<string> provider) =>
         // Assert
         provider.Should().BeAssignableTo<IFeatureProvider>();
 
@@ -42,8 +40,7 @@ public class DefaultResponseFeatureProviderTests
     [Theory]
     [AutoNSubstituteData]
     internal void TryCreate_WithIResponseFeatureType_ReturnsTrue(
-        DefaultResponseFeatureProvider<string> provider
-    )
+        DefaultResponseFeatureProvider<string> provider)
     {
         // Act
         var result = provider.TryCreate(typeof(IResponseFeature), out var feature);
@@ -56,8 +53,7 @@ public class DefaultResponseFeatureProviderTests
     [Theory]
     [AutoNSubstituteData]
     internal void TryCreate_WithIResponseFeatureType_CreatesDefaultResponseFeature(
-        DefaultResponseFeatureProvider<string> provider
-    )
+        DefaultResponseFeatureProvider<string> provider)
     {
         // Act
         provider.TryCreate(typeof(IResponseFeature), out var feature);
@@ -69,8 +65,7 @@ public class DefaultResponseFeatureProviderTests
     [Theory]
     [AutoNSubstituteData]
     internal void TryCreate_WithIResponseFeatureType_CreatesNewInstanceEachCall(
-        DefaultResponseFeatureProvider<string> provider
-    )
+        DefaultResponseFeatureProvider<string> provider)
     {
         // Act
         provider.TryCreate(typeof(IResponseFeature), out var feature1);
@@ -87,8 +82,7 @@ public class DefaultResponseFeatureProviderTests
     [Theory]
     [AutoNSubstituteData]
     internal void TryCreate_WithWrongType_ReturnsFalse(
-        DefaultResponseFeatureProvider<string> provider
-    )
+        DefaultResponseFeatureProvider<string> provider)
     {
         // Act
         var result = provider.TryCreate(typeof(ILambdaSerializer), out var feature);
@@ -101,8 +95,7 @@ public class DefaultResponseFeatureProviderTests
     [Theory]
     [AutoNSubstituteData]
     internal void TryCreate_WithStringType_ReturnsFalse(
-        DefaultResponseFeatureProvider<string> provider
-    )
+        DefaultResponseFeatureProvider<string> provider)
     {
         // Act
         var result = provider.TryCreate(typeof(string), out var feature);
@@ -115,8 +108,7 @@ public class DefaultResponseFeatureProviderTests
     [Theory]
     [AutoNSubstituteData]
     internal void TryCreate_WithNullType_ReturnsFalse(
-        DefaultResponseFeatureProvider<string> provider
-    )
+        DefaultResponseFeatureProvider<string> provider)
     {
         // Act
         var result = provider.TryCreate(null!, out var feature);
@@ -133,8 +125,7 @@ public class DefaultResponseFeatureProviderTests
     [Theory]
     [AutoNSubstituteData]
     internal void TryCreate_WithComplexGenericType_CreatesCorrectFeature(
-        DefaultResponseFeatureProvider<TestResponse> provider
-    )
+        DefaultResponseFeatureProvider<TestResponse> provider)
     {
         // Act
         provider.TryCreate(typeof(IResponseFeature), out var feature);
@@ -146,8 +137,7 @@ public class DefaultResponseFeatureProviderTests
     [Theory]
     [AutoNSubstituteData]
     internal void TryCreate_WithListGenericType_CreatesCorrectFeature(
-        DefaultResponseFeatureProvider<List<string>> provider
-    )
+        DefaultResponseFeatureProvider<List<string>> provider)
     {
         // Act
         provider.TryCreate(typeof(IResponseFeature), out var feature);
@@ -159,8 +149,7 @@ public class DefaultResponseFeatureProviderTests
     [Theory]
     [AutoNSubstituteData]
     internal void TryCreate_WithNullableType_CreatesCorrectFeature(
-        DefaultResponseFeatureProvider<int?> provider
-    )
+        DefaultResponseFeatureProvider<int?> provider)
     {
         // Act
         provider.TryCreate(typeof(IResponseFeature), out var feature);
@@ -176,8 +165,7 @@ public class DefaultResponseFeatureProviderTests
     [Theory]
     [AutoNSubstituteData]
     internal void Provider_CanBeUsedAsIFeatureProviderDependency(
-        DefaultResponseFeatureProvider<string> provider
-    )
+        DefaultResponseFeatureProvider<string> provider)
     {
         // Act
         IFeatureProvider featureProvider = provider;
@@ -192,8 +180,7 @@ public class DefaultResponseFeatureProviderTests
     [AutoNSubstituteData]
     internal void Provider_WithDifferentGenericTypes_CreatesTypedFeatures(
         DefaultResponseFeatureProvider<string> stringProvider,
-        DefaultResponseFeatureProvider<int> intProvider
-    )
+        DefaultResponseFeatureProvider<int> intProvider)
     {
         // Act
         stringProvider.TryCreate(typeof(IResponseFeature), out var stringFeature);

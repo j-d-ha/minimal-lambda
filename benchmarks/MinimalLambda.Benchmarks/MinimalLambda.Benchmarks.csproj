@@ -16,9 +16,9 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="BenchmarkDotNet" />
+    <PackageReference Include="BenchmarkDotNet"/>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\MinimalLambda\MinimalLambda.csproj" />
+    <ProjectReference Include="..\..\src\MinimalLambda\MinimalLambda.csproj"/>
   </ItemGroup>
 </Project>

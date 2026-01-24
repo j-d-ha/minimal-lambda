@@ -12,22 +12,22 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <EnvelopeRootAssembly Include="MinimalLambda.Envelopes.Alb" />
-    <EnvelopeRootAssembly Include="MinimalLambda.Envelopes.ApiGateway" />
-    <EnvelopeRootAssembly Include="MinimalLambda.Envelopes.CloudWatchLogs" />
-    <EnvelopeRootAssembly Include="MinimalLambda.Envelopes.Kafka" />
-    <EnvelopeRootAssembly Include="MinimalLambda.Envelopes.KinesisFirehose" />
-    <EnvelopeRootAssembly Include="MinimalLambda.Envelopes.Kinesis" />
-    <EnvelopeRootAssembly Include="MinimalLambda.Envelopes.Sns" />
-    <EnvelopeRootAssembly Include="MinimalLambda.Envelopes.Sqs" />
-    <EnvelopeRootAssembly Include="MinimalLambda.Envelopes" />
-    <CoreRootAssembly Include="MinimalLambda.Abstractions" />
-    <CoreRootAssembly Include="MinimalLambda.OpenTelemetry" />
-    <CoreRootAssembly Include="MinimalLambda" />
+    <EnvelopeRootAssembly Include="MinimalLambda.Envelopes.Alb"/>
+    <EnvelopeRootAssembly Include="MinimalLambda.Envelopes.ApiGateway"/>
+    <EnvelopeRootAssembly Include="MinimalLambda.Envelopes.CloudWatchLogs"/>
+    <EnvelopeRootAssembly Include="MinimalLambda.Envelopes.Kafka"/>
+    <EnvelopeRootAssembly Include="MinimalLambda.Envelopes.KinesisFirehose"/>
+    <EnvelopeRootAssembly Include="MinimalLambda.Envelopes.Kinesis"/>
+    <EnvelopeRootAssembly Include="MinimalLambda.Envelopes.Sns"/>
+    <EnvelopeRootAssembly Include="MinimalLambda.Envelopes.Sqs"/>
+    <EnvelopeRootAssembly Include="MinimalLambda.Envelopes"/>
+    <CoreRootAssembly Include="MinimalLambda.Abstractions"/>
+    <CoreRootAssembly Include="MinimalLambda.OpenTelemetry"/>
+    <CoreRootAssembly Include="MinimalLambda"/>
   </ItemGroup>
   <ItemGroup>
-    <TrimmerRootAssembly Include="@(EnvelopeRootAssembly)" />
-    <TrimmerRootAssembly Include="@(CoreRootAssembly)" />
+    <TrimmerRootAssembly Include="@(EnvelopeRootAssembly)"/>
+    <TrimmerRootAssembly Include="@(CoreRootAssembly)"/>
     <TrimmerRootAssembly
       Update="@(EnvelopeRootAssembly)"
       Path="$(MSBuildThisFileDirectory)..\..\src\Envelopes\%(Identity)\%(Identity).csproj"
@@ -36,6 +36,6 @@
       Update="@(CoreRootAssembly)"
       Path="$(MSBuildThisFileDirectory)..\..\src\%(Identity)\%(Identity).csproj"
     />
-    <ProjectReference Include="@(TrimmerRootAssembly->'%(Path)')" />
+    <ProjectReference Include="@(TrimmerRootAssembly->'%(Path)')"/>
   </ItemGroup>
 </Project>

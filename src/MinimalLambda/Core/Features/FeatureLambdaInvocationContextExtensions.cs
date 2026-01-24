@@ -50,8 +50,7 @@ public static class FeatureLambdaInvocationContextExtensions
 
             if (!context.TryGetEvent<T>(out var eventT))
                 throw new InvalidOperationException(
-                    $"Lambda event of type '{typeof(T).FullName}' is not available in the context."
-                );
+                    $"Lambda event of type '{typeof(T).FullName}' is not available in the context.");
 
             return eventT;
         }
@@ -102,8 +101,7 @@ public static class FeatureLambdaInvocationContextExtensions
 
             if (!context.TryGetResponse<T>(out var responseT))
                 throw new InvalidOperationException(
-                    $"Lambda response of type '{typeof(T).FullName}' is not available in the context."
-                );
+                    $"Lambda response of type '{typeof(T).FullName}' is not available in the context.");
 
             return responseT;
         }

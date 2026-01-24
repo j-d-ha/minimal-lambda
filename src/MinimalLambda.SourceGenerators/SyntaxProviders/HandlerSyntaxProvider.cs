@@ -29,8 +29,7 @@ internal static class HandlerSyntaxProvider
 
     internal static IMethodInfo? Transformer(
         GeneratorSyntaxContext syntaxContext,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         var context = new GeneratorContext(syntaxContext, cancellationToken);
 
@@ -51,32 +50,29 @@ internal static class HandlerSyntaxProvider
 
     private static bool TryGetInvocationOperation(
         GeneratorContext context,
-        [NotNullWhen(true)] out IInvocationOperation? invocationOperation
-    )
+        [NotNullWhen(true)] out IInvocationOperation? invocationOperation)
     {
         invocationOperation = null;
 
         var operation = context.SemanticModel.GetOperation(context.Node, context.CancellationToken);
 
-        if (
-            operation
-                is IInvocationOperation
+        if (operation is IInvocationOperation
+            {
+                TargetMethod.ContainingNamespace:
                 {
-                    TargetMethod.ContainingNamespace:
+                    Name: "Builder",
+                    ContainingNamespace :
                     {
-                        Name: "Builder",
-                        ContainingNamespace:
-                        { Name: "MinimalLambda", ContainingNamespace.IsGlobalNamespace: true },
+                        Name: "MinimalLambda", ContainingNamespace.IsGlobalNamespace: true,
                     },
-                } targetOperation
+                },
+            } targetOperation
             && targetOperation.TargetMethod.ContainingAssembly.Name == "MinimalLambda"
             && targetOperation.TryGetRouteHandlerArgument(out var routeHandlerParameter)
             && routeHandlerParameter is { Parameter.Type: { } delegateType }
             && SymbolEqualityComparer.Default.Equals(
                 delegateType,
-                context.WellKnownTypes.Get(WellKnownType.System_Delegate)
-            )
-        )
+                context.WellKnownTypes.Get(WellKnownType.System_Delegate)))
         {
             invocationOperation = targetOperation;
             return true;
@@ -88,8 +84,7 @@ internal static class HandlerSyntaxProvider
     private static bool TryGetHandlerMethod(
         this IInvocationOperation invocation,
         SemanticModel semanticModel,
-        [NotNullWhen(true)] out IMethodSymbol? method
-    )
+        [NotNullWhen(true)] out IMethodSymbol? method)
     {
         method = null;
         if (invocation.TryGetRouteHandlerArgument(out var argument))
@@ -103,33 +98,29 @@ internal static class HandlerSyntaxProvider
 
     private static IMethodSymbol? ResolveMethodFromOperation(
         IOperation operation,
-        SemanticModel semanticModel
-    ) =>
+        SemanticModel semanticModel) =>
         operation switch
         {
             IArgumentOperation argument => ResolveMethodFromOperation(
                 argument.Value,
-                semanticModel
-            ),
+                semanticModel),
             IConversionOperation conv => ResolveMethodFromOperation(conv.Operand, semanticModel),
             IDelegateCreationOperation del => ResolveMethodFromOperation(del.Target, semanticModel),
-            IFieldReferenceOperation { Field.IsReadOnly: true } f
-                when ResolveDeclarationOperation(f.Field, semanticModel) is { } op =>
-                ResolveMethodFromOperation(op, semanticModel),
+            IFieldReferenceOperation { Field.IsReadOnly: true } f when ResolveDeclarationOperation(
+                f.Field,
+                semanticModel) is { } op => ResolveMethodFromOperation(op, semanticModel),
             IAnonymousFunctionOperation anon => anon.Symbol,
             ILocalFunctionOperation local => local.Symbol,
             IMethodReferenceOperation method => method.Method,
             IParenthesizedOperation parenthesized => ResolveMethodFromOperation(
                 parenthesized.Operand,
-                semanticModel
-            ),
+                semanticModel),
             _ => null,
         };
 
     private static bool TryGetRouteHandlerArgument(
         this IInvocationOperation invocation,
-        [NotNullWhen(true)] out IArgumentOperation? argumentOperation
-    )
+        [NotNullWhen(true)] out IArgumentOperation? argumentOperation)
     {
         argumentOperation = null;
         var routeHandlerArgumentOrdinal = invocation.Arguments.Length - 1;
@@ -146,8 +137,7 @@ internal static class HandlerSyntaxProvider
 
     private static IOperation? ResolveDeclarationOperation(
         ISymbol symbol,
-        SemanticModel? semanticModel
-    ) =>
+        SemanticModel? semanticModel) =>
         symbol
             .DeclaringSyntaxReferences.Select(syntaxReference => syntaxReference.GetSyntax())
             .OfType<VariableDeclaratorSyntax>()
@@ -155,9 +145,8 @@ internal static class HandlerSyntaxProvider
             .Select(syn =>
             {
                 var expr = syn.Initializer!.Value;
-                var targetSemanticModel = semanticModel?.Compilation.GetSemanticModel(
-                    expr.SyntaxTree
-                );
+                var targetSemanticModel =
+                    semanticModel?.Compilation.GetSemanticModel(expr.SyntaxTree);
                 return targetSemanticModel?.GetOperation(expr);
             })
             .FirstOrDefault(operation => operation is not null);

@@ -17,13 +17,13 @@ public sealed class AlbResponseEnvelope<T> : AlbResponseEnvelopeBase<T>
     [UnconditionalSuppressMessage(
         "Aot",
         "IL3050:RequiresDynamicCode",
-        Justification = "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T"
-    )]
+        Justification =
+            "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T")]
     [UnconditionalSuppressMessage(
         "Aot",
         "IL2026:RequiresUnreferencedCode",
-        Justification = "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T"
-    )]
+        Justification =
+            "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T")]
     public override void PackPayload(EnvelopeOptions options) =>
         Body = JsonSerializer.Serialize(BodyContent, options.JsonOptions);
 }

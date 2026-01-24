@@ -5,32 +5,46 @@
 [![Quality Gate Status](https://sonarcloud.io/api/project_badges/measure?project=j-d-ha_minimal-lambda&metric=alert_status&token=9fb519975d91379dcfbc6c13a4bd4207131af6e3)](https://sonarcloud.io/summary/new_code?id=j-d-ha_minimal-lambda)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-**Lambda-first hosting with Minimal API-inspired patterns** – Familiar .NET ergonomics with handlers, DI, and middleware, purpose-built for AWS Lambda triggers.
+**Lambda-first hosting with Minimal API-inspired patterns** – Familiar .NET ergonomics with
+handlers, DI, and middleware, purpose-built for AWS Lambda triggers.
 
 > 📚 **[View Full Documentation](https://j-d-ha.github.io/minimal-lambda/)**
 
 ## Overview
 
-MinimalLambda brings the clean, declarative style of ASP.NET Core Minimal APIs to AWS Lambda while staying grounded in Lambda’s execution model. Use the same mental model (builder, DI, middleware, handler mapping) while leaning on Lambda-specific features like strongly-typed envelopes, lifecycle hooks, scoped invocations, and source generation.
+MinimalLambda brings the clean, declarative style of ASP.NET Core Minimal APIs to AWS Lambda while
+staying grounded in Lambda’s execution model. Use the same mental model (builder, DI, middleware,
+handler mapping) while leaning on Lambda-specific features like strongly-typed envelopes, lifecycle
+hooks, scoped invocations, and source generation.
 
 - **Familiar builder flow**: `LambdaApplication.CreateBuilder()` → `Build()` → `RunAsync()`
-- **.NET DI you already use**: `builder.Services.AddScoped<IMyService, MyService>()` with Lambda-safe lifetimes
+- **.NET DI you already use**: `builder.Services.AddScoped<IMyService, MyService>()` with
+  Lambda-safe lifetimes
 - **Handler mapping, Lambda edition**: `lambda.MapHandler(...)` instead of crafting raw handlers
 - **Middleware for cross-cutting concerns**: `lambda.UseMiddleware(...)` to wrap your pipeline
-- **Lambda-first runtime**: Lifecycle hooks, cancellation token management, and strongly typed envelope models for event triggers
+- **Lambda-first runtime**: Lifecycle hooks, cancellation token management, and strongly typed
+  envelope models for event triggers
 
-Instead of writing boilerplate Lambda handlers, you keep familiar .NET patterns while the framework handles event envelopes, dependency injection, scoped lifetimes, middleware, and compile-time code generation for zero reflection overhead.
+Instead of writing boilerplate Lambda handlers, you keep familiar .NET patterns while the framework
+handles event envelopes, dependency injection, scoped lifetimes, middleware, and compile-time code
+generation for zero reflection overhead.
 
 ## Key Features
 
-- **Minimal API Pattern** – Map handlers with `lambda.MapHandler(...)` just like `app.MapGet()` in ASP.NET Core – clean, declarative, and intuitive
-- **Dependency Injection** – Constructor and parameter injection using `Microsoft.Extensions.DependencyInjection` with proper scoped lifetimes per invocation
-- **Middleware Pipeline** – Familiar `Use()` pattern for cross-cutting concerns like logging, validation, and error handling
-- **Source Generated** – Compile-time code generation for zero reflection overhead and optimal performance
+- **Minimal API Pattern** – Map handlers with `lambda.MapHandler(...)` just like `app.MapGet()` in
+  ASP.NET Core – clean, declarative, and intuitive
+- **Dependency Injection** – Constructor and parameter injection using
+  `Microsoft.Extensions.DependencyInjection` with proper scoped lifetimes per invocation
+- **Middleware Pipeline** – Familiar `Use()` pattern for cross-cutting concerns like logging,
+  validation, and error handling
+- **Source Generated** – Compile-time code generation for zero reflection overhead and optimal
+  performance
 - **AOT Ready** – Native AOT compilation support for fast cold starts
 - **Built-in Observability** – OpenTelemetry integration for distributed tracing and metrics
-- **Type-Safe Envelopes** – Strongly-typed event wrappers for SQS, SNS, API Gateway, Kinesis, and more
-- **Minimal Runtime Overhead** – Lightweight abstraction layer built on the same foundation as ASP.NET Core
+- **Type-Safe Envelopes** – Strongly-typed event wrappers for SQS, SNS, API Gateway, Kinesis, and
+  more
+- **Minimal Runtime Overhead** – Lightweight abstraction layer built on the same foundation as
+  ASP.NET Core
 
 ## Packages
 
@@ -41,20 +55,20 @@ The framework is divided into multiple NuGet packages:
 The core packages provide the fundamental hosting framework, abstractions, and observability support
 for building AWS Lambda functions.
 
-| Package                                                                        | NuGet                                                                                                                                    | Downloads                                                                                                                                      |
-|--------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------|
-| [**MinimalLambda**](./src/MinimalLambda/README.md)                        | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.svg)](https://www.nuget.org/packages/MinimalLambda)                             | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.svg)](https://www.nuget.org/packages/MinimalLambda/)                             |
+| Package                                                                        | NuGet                                                                                                                                  | Downloads                                                                                                                                    |
+|--------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------|
+| [**MinimalLambda**](./src/MinimalLambda/README.md)                             | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.svg)](https://www.nuget.org/packages/MinimalLambda)                             | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.svg)](https://www.nuget.org/packages/MinimalLambda/)                             |
 | [**MinimalLambda.Abstractions**](./src/MinimalLambda.Abstractions/README.md)   | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Abstractions.svg)](https://www.nuget.org/packages/MinimalLambda.Abstractions)   | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.Abstractions.svg)](https://www.nuget.org/packages/MinimalLambda.Abstractions/)   |
 | [**MinimalLambda.OpenTelemetry**](./src/MinimalLambda.OpenTelemetry/README.md) | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.OpenTelemetry.svg)](https://www.nuget.org/packages/MinimalLambda.OpenTelemetry) | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.OpenTelemetry.svg)](https://www.nuget.org/packages/MinimalLambda.OpenTelemetry/) |
-| [**MinimalLambda.Testing**](./src/MinimalLambda.Testing/README.md) | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Testing.svg)](https://www.nuget.org/packages/MinimalLambda.Testing) | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.Testing.svg)](https://www.nuget.org/packages/MinimalLambda.Testing/) |
+| [**MinimalLambda.Testing**](./src/MinimalLambda.Testing/README.md)             | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Testing.svg)](https://www.nuget.org/packages/MinimalLambda.Testing)             | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.Testing.svg)](https://www.nuget.org/packages/MinimalLambda.Testing/)             |
 
 ### Envelopes Packages
 
 Envelope packages provide specialized support for handling different AWS Lambda event sources,
 including SQS, SNS, API Gateway, Kinesis, and more.
 
-| Package                                                                                              | NuGet                                                                                                                                                            | Downloads                                                                                                                                                              |
-|------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Package                                                                                            | NuGet                                                                                                                                                          | Downloads                                                                                                                                                            |
+|----------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [**MinimalLambda.Envelopes**](./src/Envelopes/MinimalLambda.Envelopes/README.md)                   | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes)                                 | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.Envelopes.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes/)                                 |
 | [**MinimalLambda.Envelopes.Sqs**](./MinimalLambda.Envelopes.Sqs/README.md)                         | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.Sqs.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.Sqs)                         | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.Envelopes.Sqs.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.Sqs/)                         |
 | [**MinimalLambda.Envelopes.ApiGateway**](./MinimalLambda.Envelopes.ApiGateway/README.md)           | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Envelopes.ApiGateway.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.ApiGateway)           | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.Envelopes.ApiGateway.svg)](https://www.nuget.org/packages/MinimalLambda.Envelopes.ApiGateway/)           |

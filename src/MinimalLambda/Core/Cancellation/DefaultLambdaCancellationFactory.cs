@@ -30,8 +30,7 @@ internal class DefaultLambdaCancellationFactory : ILambdaCancellationFactory
         if (options.Value.InvocationCancellationBuffer < TimeSpan.Zero)
             throw new ArgumentException(
                 "The InvocationCancellationBuffer inside options must be greater than or equal to zero.",
-                nameof(options)
-            );
+                nameof(options));
 
         _bufferDuration = options.Value.InvocationCancellationBuffer;
     }
@@ -68,10 +67,9 @@ internal class DefaultLambdaCancellationFactory : ILambdaCancellationFactory
         if (maxAllowedDuration <= TimeSpan.Zero)
             throw new InvalidOperationException(
                 "CancellationTokenSource provided with insufficient time. "
-                    + $"Lambda Remaining Time = {context.RemainingTime:c}, "
-                    + $"Cancellation Token Buffer = {_bufferDuration:c}, "
-                    + $"Candidate Token Duration = {maxAllowedDuration:c}"
-            );
+                + $"Lambda Remaining Time = {context.RemainingTime:c}, "
+                + $"Cancellation Token Buffer = {_bufferDuration:c}, "
+                + $"Candidate Token Duration = {maxAllowedDuration:c}");
 
         return new CancellationTokenSource(maxAllowedDuration);
     }

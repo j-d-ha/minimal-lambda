@@ -51,9 +51,10 @@ public sealed class LambdaApplication
 
     /// <summary>Gets the application's logger.</summary>
     public ILogger Logger =>
-        field ??=
-            _host.Services.GetService<ILoggerFactory>()?.CreateLogger(Environment.ApplicationName)
-            ?? NullLogger.Instance;
+        field ??= _host
+                      .Services.GetService<ILoggerFactory>()
+                      ?.CreateLogger(Environment.ApplicationName)
+                  ?? NullLogger.Instance;
 
     /// <inheritdoc />
     public ValueTask DisposeAsync() => ((IAsyncDisposable)_host).DisposeAsync();
@@ -95,8 +96,7 @@ public sealed class LambdaApplication
 
     /// <inheritdoc />
     public ILambdaInvocationBuilder Use(
-        Func<LambdaInvocationDelegate, LambdaInvocationDelegate> middleware
-    )
+        Func<LambdaInvocationDelegate, LambdaInvocationDelegate> middleware)
     {
         _invocationBuilder.Use(middleware);
         return this;

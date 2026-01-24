@@ -13,8 +13,7 @@ namespace MinimalLambda.Envelopes.KinesisFirehose;
 ///     their chosen serialization strategy.
 /// </remarks>
 public abstract class KinesisFirehoseResponseEnvelopeBase<T>
-    : KinesisFirehoseResponse,
-        IResponseEnvelope
+    : KinesisFirehoseResponse, IResponseEnvelope
 {
     /// <inheritdoc cref="KinesisFirehoseResponse.Records" />
     public new required IList<FirehoseRecordEnvelope> Records { get; set; }

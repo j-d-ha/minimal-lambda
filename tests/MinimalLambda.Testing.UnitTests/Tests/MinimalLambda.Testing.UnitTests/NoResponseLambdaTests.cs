@@ -12,13 +12,11 @@ public class NoResponseLambdaTests
     {
         await using var factory =
             new LambdaApplicationFactory<NoResponseLambda>().WithCancellationToken(
-                TestContext.Current.CancellationToken
-            );
+                TestContext.Current.CancellationToken);
 
         var response = await factory.TestServer.InvokeNoResponseAsync(
             new NoResponseLambdaRequest("World"),
-            TestContext.Current.CancellationToken
-        );
+            TestContext.Current.CancellationToken);
 
         response.WasSuccess.Should().BeTrue();
         response.Should().NotBeNull();
@@ -29,8 +27,7 @@ public class NoResponseLambdaTests
     {
         await using var factory =
             new LambdaApplicationFactory<NoResponseLambda>().WithCancellationToken(
-                TestContext.Current.CancellationToken
-            );
+                TestContext.Current.CancellationToken);
 
         var act = () => factory.TestServer.Services.GetRequiredService<IHostApplicationLifetime>();
 
@@ -42,8 +39,7 @@ public class NoResponseLambdaTests
     {
         await using var factory =
             new LambdaApplicationFactory<NoResponseLambda>().WithCancellationToken(
-                TestContext.Current.CancellationToken
-            );
+                TestContext.Current.CancellationToken);
 
         var act = async () =>
         {

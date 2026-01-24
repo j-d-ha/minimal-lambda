@@ -45,13 +45,11 @@ public static class LambdaTestServerExtensions
         /// </remarks>
         public Task<InvocationResponse<TResponse>> InvokeAsync<TEvent, TResponse>(
             TEvent invokeEvent,
-            CancellationToken cancellationToken = default
-        ) =>
+            CancellationToken cancellationToken = default) =>
             server.InvokeAsync<TEvent, TResponse>(
                 invokeEvent,
                 false,
-                cancellationToken: cancellationToken
-            );
+                cancellationToken: cancellationToken);
 
         /// <summary>Invokes the Lambda function without an event and waits for the response.</summary>
         /// <typeparam name="TResponse">The expected type of the Lambda function's response.</typeparam>
@@ -84,13 +82,11 @@ public static class LambdaTestServerExtensions
         ///     </para>
         /// </remarks>
         public Task<InvocationResponse<TResponse>> InvokeNoEventAsync<TResponse>(
-            CancellationToken cancellationToken = default
-        ) =>
+            CancellationToken cancellationToken = default) =>
             server.InvokeAsync<object, TResponse>(
                 null,
                 false,
-                cancellationToken: cancellationToken
-            );
+                cancellationToken: cancellationToken);
 
         /// <summary>
         ///     Invokes the Lambda function with the specified event but does not expect or deserialize a
@@ -128,12 +124,10 @@ public static class LambdaTestServerExtensions
         /// </remarks>
         public async Task<InvocationResponse> InvokeNoResponseAsync<TEvent>(
             TEvent invokeEvent,
-            CancellationToken cancellationToken = default
-        ) =>
+            CancellationToken cancellationToken = default) =>
             await server.InvokeAsync<TEvent, object>(
                 invokeEvent,
                 true,
-                cancellationToken: cancellationToken
-            );
+                cancellationToken: cancellationToken);
     }
 }

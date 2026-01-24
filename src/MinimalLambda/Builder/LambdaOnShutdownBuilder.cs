@@ -12,8 +12,7 @@ internal class LambdaOnShutdownBuilder : ILambdaOnShutdownBuilder
     public LambdaOnShutdownBuilder(
         IServiceProvider serviceProvider,
         IServiceScopeFactory scopeFactory,
-        ILambdaLifecycleContextFactory contextFactory
-    )
+        ILambdaLifecycleContextFactory contextFactory)
     {
         ArgumentNullException.ThrowIfNull(serviceProvider);
         ArgumentNullException.ThrowIfNull(scopeFactory);
@@ -52,14 +51,12 @@ internal class LambdaOnShutdownBuilder : ILambdaOnShutdownBuilder
                 if (errors.Length != 0)
                     throw new AggregateException(
                         "Encountered errors while running OnShutdown handlers:",
-                        errors
-                    );
+                        errors);
             };
 
     private async Task<Exception?> RunShutdownHandler(
         LambdaShutdownDelegate handler,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         try
         {

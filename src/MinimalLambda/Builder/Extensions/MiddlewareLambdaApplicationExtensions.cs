@@ -28,8 +28,7 @@ public static class MiddlewareLambdaApplicationExtensions
         /// </exception>
         /// <seealso cref="ILambdaInvocationBuilder.Use" />
         public ILambdaInvocationBuilder UseMiddleware(
-            Func<ILambdaInvocationContext, LambdaInvocationDelegate, Task> middleware
-        )
+            Func<ILambdaInvocationContext, LambdaInvocationDelegate, Task> middleware)
         {
             ArgumentNullException.ThrowIfNull(application);
 

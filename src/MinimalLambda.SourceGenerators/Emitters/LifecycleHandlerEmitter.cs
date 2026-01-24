@@ -11,8 +11,7 @@ internal static class LifecycleHandlerEmitter
 
     internal static void Emit(
         SourceProductionContext context,
-        ImmutableArray<LifecycleMethodInfo> infos
-    )
+        ImmutableArray<LifecycleMethodInfo> infos)
     {
         if (infos.Length == 0)
             return;
@@ -21,13 +20,7 @@ internal static class LifecycleHandlerEmitter
 
         var code = TemplateHelper.Render(
             GenericHandlerTemplateFile,
-            new
-            {
-                TemplateHelper.GeneratedCodeAttribute,
-                Name = name,
-                Calls = infos,
-            }
-        );
+            new { TemplateHelper.GeneratedCodeAttribute, Name = name, Calls = infos });
 
         context.AddSource($"MinimalLambda.{name}Handlers.g.cs", code);
     }

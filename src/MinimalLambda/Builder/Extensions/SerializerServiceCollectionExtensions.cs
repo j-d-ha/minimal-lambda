@@ -32,15 +32,14 @@ public static class SerializerServiceCollectionExtensions
         /// <seealso cref="SourceGeneratorLambdaJsonSerializer{TContext}" />
         /// <seealso cref="JsonSerializerContext" />
         public IServiceCollection AddLambdaSerializerWithContext<
-            [DynamicallyAccessedMembers(DynamicallyAccessedMemberTypes.PublicConstructors)] TContext
-        >()
-            where TContext : JsonSerializerContext
+            [DynamicallyAccessedMembers(
+                DynamicallyAccessedMemberTypes.PublicConstructors)]
+            TContext>() where TContext : JsonSerializerContext
         {
             ArgumentNullException.ThrowIfNull(serviceCollection);
 
-            serviceCollection.AddSingleton<ILambdaSerializer>(
-                _ => new SourceGeneratorLambdaJsonSerializer<TContext>()
-            );
+            serviceCollection.AddSingleton<ILambdaSerializer>(_ =>
+                new SourceGeneratorLambdaJsonSerializer<TContext>());
 
             return serviceCollection;
         }

@@ -19,8 +19,7 @@ public class ExpressionLambdaVerifyTests
 
             await lambda.RunAsync();
             """,
-            0
-        );
+            0);
 
     [Fact]
     public async Task Test_ExpressionLambda_NoInput_NoOutput() =>
@@ -37,8 +36,7 @@ public class ExpressionLambdaVerifyTests
             lambda.MapHandler(() => { });
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_ExpressionLambda_NoInput_ReturnString() =>
@@ -55,8 +53,7 @@ public class ExpressionLambdaVerifyTests
             lambda.MapHandler(() => "hello world");
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_ExpressionLambda_NoInput_ReturnNullablePrimitive() =>
@@ -72,8 +69,7 @@ public class ExpressionLambdaVerifyTests
             lambda.MapHandler(int? () => 1);
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_ExpressionLambda_NoInput_ReturnGenericObject() =>
@@ -93,8 +89,7 @@ public class ExpressionLambdaVerifyTests
             record Response<T>(T Data);
 
             record Data(string Message);
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_ExpressionLambda_InputDi_Async() =>
@@ -118,8 +113,7 @@ public class ExpressionLambdaVerifyTests
             {
                 string GetMessage();
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_ExpressionLambda_InputDi_AsyncAndAwait() =>
@@ -144,11 +138,11 @@ public class ExpressionLambdaVerifyTests
             {
                 Task<string> GetMessage();
             }
-            """
-        );
+            """);
 
     [Fact]
-    public async Task Test_ExpressionLambda_InputDi_AsyncAndAwait_EventAndResponseDifferentNamespace() =>
+    public async Task
+        Test_ExpressionLambda_InputDi_AsyncAndAwait_EventAndResponseDifferentNamespace() =>
         await GeneratorTestHelpers.Verify(
             """
             using System.Threading.Tasks;
@@ -179,8 +173,7 @@ public class ExpressionLambdaVerifyTests
 
                 public record Response(string Message);
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_ExpressionLambda_ReturnExplicitType() =>
@@ -215,8 +208,7 @@ public class ExpressionLambdaVerifyTests
                 public Task<string> GetMessage() => Task.FromResult("hello world");
             }
 
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_ExpressionLambda_NullableInput_ReturnImplicitNullable() =>
@@ -237,8 +229,7 @@ public class ExpressionLambdaVerifyTests
             {
                 string? GetMessage();
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_ExpressionLambda_NullableInput_ReturnExplicitNullable() =>
@@ -259,8 +250,7 @@ public class ExpressionLambdaVerifyTests
             {
                 string? GetMessage();
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_ExpressionLambda_NullableInput_ReturnNullableValueType() =>
@@ -283,8 +273,7 @@ public class ExpressionLambdaVerifyTests
             {
                 MyStruct? GetMessage();
             }
-            """
-        );
+            """);
 
     // Additional handler type not shown in the examples - generic handlers with complex custom
     // types
@@ -324,8 +313,7 @@ public class ExpressionLambdaVerifyTests
             {
                 Task<string> GetMessage();
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_ExpressionLambda_Async_ReturnExplicitTask() =>
@@ -342,8 +330,7 @@ public class ExpressionLambdaVerifyTests
             lambda.MapHandler(async Task () => { });
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_ExpressionLambda_ReturnExplicitTask() =>
@@ -363,8 +350,7 @@ public class ExpressionLambdaVerifyTests
             });
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_ExpressionLambda_AsksForCancellationToken() =>
@@ -381,8 +367,7 @@ public class ExpressionLambdaVerifyTests
             lambda.MapHandler((CancellationToken cancellationToken) => "hello world");
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_ExpressionLambda_AsksForCancellationTokenAndLambdaContext() =>
@@ -400,8 +385,7 @@ public class ExpressionLambdaVerifyTests
             lambda.MapHandler((CancellationToken ct, ILambdaContext ctx) => "hello world");
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_ExpressionLambda_AsksForCancellationTokenAndLambdaInvocationContext() =>
@@ -419,8 +403,7 @@ public class ExpressionLambdaVerifyTests
             lambda.MapHandler((CancellationToken ct, ILambdaInvocationContext ctx) => "hello world");
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_ExpressionLambda_InputStream() =>
@@ -438,8 +421,7 @@ public class ExpressionLambdaVerifyTests
             lambda.MapHandler(([FromEvent] Stream input) => { });
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_ExpressionLambda_ExplicitVoid() =>
@@ -458,8 +440,7 @@ public class ExpressionLambdaVerifyTests
             lambda.MapHandler(void () => { });
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_ExpressionLambda_OptionalInjectedParam() =>
@@ -480,6 +461,5 @@ public class ExpressionLambdaVerifyTests
             {
                 string? GetMessage();
             }
-            """
-        );
+            """);
 }

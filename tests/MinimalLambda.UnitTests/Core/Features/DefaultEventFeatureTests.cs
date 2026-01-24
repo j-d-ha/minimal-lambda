@@ -15,8 +15,7 @@ public class DefaultEventFeatureTests
         [Frozen] IInvocationDataFeature dataFeature,
         [Frozen] Stream stream,
         DefaultEventFeature<string> feature,
-        ILambdaInvocationContext context
-    )
+        ILambdaInvocationContext context)
     {
         // Arrange
         features.Get<IInvocationDataFeature>().Returns(dataFeature);
@@ -45,8 +44,7 @@ public class DefaultEventFeatureTests
     [Theory]
     [AutoNSubstituteData]
     internal void Constructor_WithValidSerializer_SuccessfullyConstructs(
-        ILambdaSerializer serializer
-    )
+        ILambdaSerializer serializer)
     {
         // Act
         var feature = new DefaultEventFeature<string>(serializer);
@@ -64,8 +62,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_WithSimpleStringEvent_ReturnsDeserializedString(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<string> feature,
-        ILambdaInvocationContext context
-    )
+        ILambdaInvocationContext context)
     {
         // Arrange
         const string expectedEvent = "test-event-data";
@@ -84,8 +81,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_WithComplexObject_ReturnsDeserializedObject(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<TestEvent> feature,
-        ILambdaInvocationContext context
-    )
+        ILambdaInvocationContext context)
     {
         // Arrange
         var expectedEvent = new TestEvent { Id = 42, Name = "test" };
@@ -104,8 +100,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_WithNullableEvent_ReturnsDeserializedNullValue(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<string?> feature,
-        ILambdaInvocationContext context
-    )
+        ILambdaInvocationContext context)
     {
         // Arrange
         string? expectedEvent = null;
@@ -127,8 +122,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_CallsDeserializerOnFirstInvocation(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<string> feature,
-        ILambdaInvocationContext context
-    )
+        ILambdaInvocationContext context)
     {
         // Arrange
         const string expectedEvent = "test-data";
@@ -146,8 +140,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_CachesResultAndDoesNotDeserializeOnSecondInvocation(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<string> feature,
-        ILambdaInvocationContext context
-    )
+        ILambdaInvocationContext context)
     {
         // Arrange
         const string expectedEvent = "test-data";
@@ -168,8 +161,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_ReturnsSameCachedInstanceOnMultipleInvocations(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<TestEvent> feature,
-        ILambdaInvocationContext context
-    )
+        ILambdaInvocationContext context)
     {
         // Arrange
         var expectedEvent = new TestEvent { Id = 1, Name = "cached" };
@@ -192,8 +184,7 @@ public class DefaultEventFeatureTests
         ILambdaSerializer serializer1,
         ILambdaInvocationContext context1,
         ILambdaSerializer serializer2,
-        ILambdaInvocationContext context2
-    )
+        ILambdaInvocationContext context2)
     {
         // Arrange
         const string event1 = "event-1";
@@ -225,14 +216,12 @@ public class DefaultEventFeatureTests
     internal void GetEvent_WithGenericListType_ReturnsDeserializedList(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<List<TestEvent>> feature,
-        ILambdaInvocationContext context
-    )
+        ILambdaInvocationContext context)
     {
         // Arrange
         var expectedList = new List<TestEvent>
         {
-            new() { Id = 1, Name = "item1" },
-            new() { Id = 2, Name = "item2" },
+            new() { Id = 1, Name = "item1" }, new() { Id = 2, Name = "item2" },
         };
         serializer.Deserialize<List<TestEvent>>(Arg.Any<Stream>()).Returns(expectedList);
 
@@ -249,8 +238,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_WithGenericDictionaryType_ReturnsDeserializedDictionary(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<Dictionary<string, int>> feature,
-        ILambdaInvocationContext context
-    )
+        ILambdaInvocationContext context)
     {
         // Arrange
         var expectedDict = new Dictionary<string, int> { { "key1", 10 }, { "key2", 20 } };
@@ -268,16 +256,12 @@ public class DefaultEventFeatureTests
     internal void GetEvent_WithNestedGenericType_ReturnsDeserializedNestedType(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<NestedEvent> feature,
-        ILambdaInvocationContext context
-    )
+        ILambdaInvocationContext context)
     {
         // Arrange
         var expectedNested = new NestedEvent
         {
-            Items = new List<TestEvent>
-            {
-                new() { Id = 1, Name = "nested1" },
-            },
+            Items = new List<TestEvent> { new() { Id = 1, Name = "nested1" } },
         };
         serializer.Deserialize<NestedEvent>(Arg.Any<Stream>()).Returns(expectedNested);
 
@@ -297,8 +281,7 @@ public class DefaultEventFeatureTests
     internal void IEventFeatureGetEvent_ReturnsObjectCastFromGenericGetEvent(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<string> feature,
-        ILambdaInvocationContext context
-    )
+        ILambdaInvocationContext context)
     {
         // Arrange
         const string expectedEvent = "interface-test";
@@ -316,8 +299,7 @@ public class DefaultEventFeatureTests
     internal void IEventFeatureGetEvent_AndGenericGetEvent_ReturnSameCachedInstance(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<TestEvent> feature,
-        ILambdaInvocationContext context
-    )
+        ILambdaInvocationContext context)
     {
         // Arrange
         var expectedEvent = new TestEvent { Id = 99, Name = "same" };
@@ -334,8 +316,7 @@ public class DefaultEventFeatureTests
     [Theory]
     [AutoNSubstituteData]
     internal void GenericAndNonGenericInterfaces_AreImplementedCorrectly(
-        [Frozen] ILambdaSerializer serializer
-    )
+        [Frozen] ILambdaSerializer serializer)
     {
         // Arrange
         var feature = new DefaultEventFeature<string>(serializer);
@@ -354,8 +335,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_WhenDeserializerThrowsException_PropagatesException(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<string> feature,
-        ILambdaInvocationContext context
-    )
+        ILambdaInvocationContext context)
     {
         // Arrange
         serializer
@@ -372,8 +352,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_AfterDeserializationException_RethrowsExceptionOnNextCall(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<string> feature,
-        ILambdaInvocationContext context
-    )
+        ILambdaInvocationContext context)
     {
         // Arrange
         serializer
@@ -399,8 +378,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_WithEmptyMemoryStream_DeserializesEmptyStream(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<string> feature,
-        ILambdaInvocationContext context
-    )
+        ILambdaInvocationContext context)
     {
         // Arrange
         serializer.Deserialize<string>(Arg.Any<Stream>()).Returns("");
@@ -417,8 +395,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_WithValueTypeDefaultValue_ReturnsDefaultOfT(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<int> feature,
-        ILambdaInvocationContext context
-    )
+        ILambdaInvocationContext context)
     {
         // Arrange
         serializer.Deserialize<int>(Arg.Any<Stream>()).Returns(0);
@@ -435,8 +412,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_WithLargeObject_ReturnsDeserializedLargeObject(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<TestEvent> feature,
-        ILambdaInvocationContext context
-    )
+        ILambdaInvocationContext context)
     {
         // Arrange
         var largeEvent = new TestEvent { Id = int.MaxValue, Name = new string('x', 10000) };
@@ -455,8 +431,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_WithNullableStruct_ReturnsDeserializedNullValue(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<int?> feature,
-        ILambdaInvocationContext context
-    )
+        ILambdaInvocationContext context)
     {
         // Arrange
         int? expectedEvent = null;
@@ -474,8 +449,7 @@ public class DefaultEventFeatureTests
     internal void GetEvent_WithNullableStructValue_ReturnsDeserializedValue(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeature<int?> feature,
-        ILambdaInvocationContext context
-    )
+        ILambdaInvocationContext context)
     {
         // Arrange
         int? expectedEvent = 42;

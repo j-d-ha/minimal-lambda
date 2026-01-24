@@ -25,7 +25,6 @@ namespace MinimalLambda.Builder;
 ///     </code>
 /// </example>
 [Obsolete(
-    "This Attribute is obsolete because it does not follow .NET naming conventions and can cuse naming conflicts with System.Diagnostics.Tracing.EventAttribute. Use FromEventAttribute instead."
-)]
+    "This Attribute is obsolete because it does not follow .NET naming conventions and can cuse naming conflicts with System.Diagnostics.Tracing.EventAttribute. Use FromEventAttribute instead.")]
 [AttributeUsage(AttributeTargets.Parameter)]
 public sealed class EventAttribute : Attribute;

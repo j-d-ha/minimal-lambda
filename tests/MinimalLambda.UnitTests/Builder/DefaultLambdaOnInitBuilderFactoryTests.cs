@@ -32,8 +32,7 @@ public class DefaultLambdaOnInitBuilderFactoryTests
             serviceProvider!,
             scopeFactory!,
             options!,
-            contextFactory!
-        );
+            contextFactory!);
 
         // Act & Assert - validation happens in LambdaOnInitBuilder constructor
         var act = () => factory.CreateBuilder();
@@ -48,8 +47,7 @@ public class DefaultLambdaOnInitBuilderFactoryTests
             _serviceProvider,
             _scopeFactory,
             _options,
-            _contextFactory
-        );
+            _contextFactory);
 
         // Assert
         factory.Should().NotBeNull();
@@ -63,8 +61,7 @@ public class DefaultLambdaOnInitBuilderFactoryTests
             _serviceProvider,
             _scopeFactory,
             _options,
-            _contextFactory
-        );
+            _contextFactory);
 
         // Act
         var builder = factory.CreateBuilder();
@@ -82,8 +79,7 @@ public class DefaultLambdaOnInitBuilderFactoryTests
             _serviceProvider,
             _scopeFactory,
             _options,
-            _contextFactory
-        );
+            _contextFactory);
 
         // Act
         var builder = factory.CreateBuilder();
@@ -100,8 +96,7 @@ public class DefaultLambdaOnInitBuilderFactoryTests
             _serviceProvider,
             _scopeFactory,
             _options,
-            _contextFactory
-        );
+            _contextFactory);
 
         // Act
         var builder1 = factory.CreateBuilder();

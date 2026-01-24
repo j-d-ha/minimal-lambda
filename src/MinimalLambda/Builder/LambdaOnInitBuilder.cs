@@ -15,8 +15,7 @@ internal class LambdaOnInitBuilder : ILambdaOnInitBuilder
         IServiceProvider serviceProvider,
         IServiceScopeFactory scopeFactory,
         IOptions<LambdaHostOptions> options,
-        ILambdaLifecycleContextFactory contextFactory
-    )
+        ILambdaLifecycleContextFactory contextFactory)
     {
         ArgumentNullException.ThrowIfNull(serviceProvider);
         ArgumentNullException.ThrowIfNull(scopeFactory);
@@ -62,8 +61,7 @@ internal class LambdaOnInitBuilder : ILambdaOnInitBuilder
                 catch (TaskCanceledException) when (cts.Token.IsCancellationRequested)
                 {
                     throw new OperationCanceledException(
-                        "Running OnInit handlers did not complete within the allocated timeout period."
-                    );
+                        "Running OnInit handlers did not complete within the allocated timeout period.");
                 }
 
                 var (errors, shouldContinue) = results.Aggregate(
@@ -76,22 +74,19 @@ internal class LambdaOnInitBuilder : ILambdaOnInitBuilder
                             acc.shouldContinue = false;
 
                         return acc;
-                    }
-                );
+                    });
 
                 if (errors.Count > 0)
                     throw new AggregateException(
                         "Encountered errors while running OnInit handlers:",
-                        errors
-                    );
+                        errors);
 
                 return shouldContinue;
             };
 
     private async Task<(Exception? Error, bool ShouldContinue)> RunInitHandler(
         LambdaInitDelegate handler,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         try
         {

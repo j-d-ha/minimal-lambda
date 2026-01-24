@@ -75,8 +75,7 @@ public class ApiGatewayResultTests
             204,
             null,
             new Dictionary<string, string>(),
-            false
-        );
+            false);
         result.PackPayload(options);
 
         // Assert

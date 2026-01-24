@@ -12,31 +12,25 @@ var lambda = builder.Build();
 
 lambda.UseClearLambdaOutputFormatting();
 
-lambda.UseMiddleware(
-    async (context, next) =>
-    {
-        Console.WriteLine("[Middleware 1] Before");
-        await next(context);
-        Console.WriteLine("[Middleware 1] After");
-    }
-);
+lambda.UseMiddleware(async (context, next) =>
+{
+    Console.WriteLine("[Middleware 1] Before");
+    await next(context);
+    Console.WriteLine("[Middleware 1] After");
+});
 
-lambda.UseMiddleware(
-    async (context, next) =>
-    {
-        Console.WriteLine("[Middleware 2] Before");
-        await next(context);
-        Console.WriteLine("[Middleware 2] After");
-    }
-);
+lambda.UseMiddleware(async (context, next) =>
+{
+    Console.WriteLine("[Middleware 2] Before");
+    await next(context);
+    Console.WriteLine("[Middleware 2] After");
+});
 
-lambda.MapHandler(
-    ([FromEvent] string input) =>
-    {
-        Console.WriteLine("hello world from aot");
-        return "hello world from aot";
-    }
-);
+lambda.MapHandler(([FromEvent] string input) =>
+{
+    Console.WriteLine("hello world from aot");
+    return "hello world from aot";
+});
 
 await lambda.RunAsync();
 

@@ -24,14 +24,16 @@ public class KafkaEnvelopeTests
         var record = CreateKafkaRecord(payload);
         var envelope = new KafkaEnvelope<MessagePayload>
         {
-            Records = new Dictionary<
-                string,
-                IList<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope>
-            >
-            {
-                ["test-topic"] =
-                    new List<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope> { record },
-            },
+            Records =
+                new Dictionary<string,
+                    IList<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope>>
+                {
+                    ["test-topic"] =
+                        new List<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope>
+                        {
+                            record,
+                        },
+                },
         };
         var options = new EnvelopeOptions();
 
@@ -58,19 +60,16 @@ public class KafkaEnvelopeTests
 
         var envelope = new KafkaEnvelope<MessagePayload>
         {
-            Records = new Dictionary<
-                string,
-                IList<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope>
-            >
-            {
-                ["test-topic"] =
-                    new List<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope>
-                    {
-                        record1,
-                        record2,
-                        record3,
-                    },
-            },
+            Records =
+                new Dictionary<string,
+                    IList<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope>>
+                {
+                    ["test-topic"] =
+                        new List<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope>
+                        {
+                            record1, record2, record3,
+                        },
+                },
         };
         var options = new EnvelopeOptions();
 
@@ -100,21 +99,21 @@ public class KafkaEnvelopeTests
 
         var envelope = new KafkaEnvelope<MessagePayload>
         {
-            Records = new Dictionary<
-                string,
-                IList<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope>
-            >
-            {
-                ["topic-1"] = new List<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope>
+            Records =
+                new Dictionary<string,
+                    IList<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope>>
                 {
-                    record1,
-                    record2,
+                    ["topic-1"] =
+                        new List<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope>
+                        {
+                            record1, record2,
+                        },
+                    ["topic-2"] =
+                        new List<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope>
+                        {
+                            record3,
+                        },
                 },
-                ["topic-2"] = new List<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope>
-                {
-                    record3,
-                },
-            },
         };
         var options = new EnvelopeOptions();
 
@@ -137,10 +136,8 @@ public class KafkaEnvelopeTests
         var envelope = new KafkaEnvelope<MessagePayload>
         {
             Records =
-                new Dictionary<
-                    string,
-                    IList<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope>
-                >(),
+                new Dictionary<string,
+                    IList<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope>>(),
         };
         var options = new EnvelopeOptions();
 
@@ -158,25 +155,24 @@ public class KafkaEnvelopeTests
         var payload = _fixture.Create<MessagePayload>();
         var json = JsonSerializer.Serialize(
             payload,
-            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
-        );
+            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
         var base64String = Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
         var valueStream = new MemoryStream(Encoding.UTF8.GetBytes(base64String));
 
-        var record = new KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope
-        {
-            Value = valueStream,
-        };
+        var record =
+            new KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope { Value = valueStream };
         var envelope = new KafkaEnvelope<MessagePayload>
         {
-            Records = new Dictionary<
-                string,
-                IList<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope>
-            >
-            {
-                ["test-topic"] =
-                    new List<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope> { record },
-            },
+            Records =
+                new Dictionary<string,
+                    IList<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope>>
+                {
+                    ["test-topic"] =
+                        new List<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope>
+                        {
+                            record,
+                        },
+                },
         };
         var options = new EnvelopeOptions
         {
@@ -199,20 +195,20 @@ public class KafkaEnvelopeTests
     public void ExtractPayload_WithNullValue_ThrowsArgumentNullException()
     {
         // Arrange
-        var record = new KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope
-        {
-            Value = null,
-        };
+        var record =
+            new KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope { Value = null };
         var envelope = new KafkaEnvelope<MessagePayload>
         {
-            Records = new Dictionary<
-                string,
-                IList<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope>
-            >
-            {
-                ["test-topic"] =
-                    new List<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope> { record },
-            },
+            Records =
+                new Dictionary<string,
+                    IList<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope>>
+                {
+                    ["test-topic"] =
+                        new List<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope>
+                        {
+                            record,
+                        },
+                },
         };
         var options = new EnvelopeOptions();
 
@@ -229,20 +225,20 @@ public class KafkaEnvelopeTests
         var base64String = Convert.ToBase64String(Encoding.UTF8.GetBytes(invalidJson));
         var valueStream = new MemoryStream(Encoding.UTF8.GetBytes(base64String));
 
-        var record = new KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope
-        {
-            Value = valueStream,
-        };
+        var record =
+            new KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope { Value = valueStream };
         var envelope = new KafkaEnvelope<MessagePayload>
         {
-            Records = new Dictionary<
-                string,
-                IList<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope>
-            >
-            {
-                ["test-topic"] =
-                    new List<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope> { record },
-            },
+            Records =
+                new Dictionary<string,
+                    IList<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope>>
+                {
+                    ["test-topic"] =
+                        new List<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope>
+                        {
+                            record,
+                        },
+                },
         };
         var options = new EnvelopeOptions();
 
@@ -257,8 +253,7 @@ public class KafkaEnvelopeTests
         // Arrange
         var property =
             typeof(KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope).GetProperty(
-                nameof(KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope.ValueContent)
-            );
+                nameof(KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope.ValueContent));
 
         // Act
         var hasJsonIgnoreAttribute =
@@ -275,10 +270,8 @@ public class KafkaEnvelopeTests
         var envelope = new KafkaEnvelope<MessagePayload>
         {
             Records =
-                new Dictionary<
-                    string,
-                    IList<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope>
-                >(),
+                new Dictionary<string,
+                    IList<KafkaEnvelopeBase<MessagePayload>.KafkaEventRecordEnvelope>>(),
         };
 
         // Assert

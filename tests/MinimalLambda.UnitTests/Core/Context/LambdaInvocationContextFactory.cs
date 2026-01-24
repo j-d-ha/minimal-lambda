@@ -13,8 +13,7 @@ public class LambdaInvocationContextFactoryTests
         {
             _ = new LambdaInvocationContextFactory(
                 null!,
-                Substitute.For<IFeatureCollectionFactory>()
-            );
+                Substitute.For<IFeatureCollectionFactory>());
         };
         act.Should().Throw<ArgumentNullException>();
     }
@@ -34,14 +33,12 @@ public class LambdaInvocationContextFactoryTests
     [AutoNSubstituteData]
     internal void Constructor_WithValidDependencies_SuccessfullyConstructs(
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollectionFactory featureCollectionFactory
-    )
+        IFeatureCollectionFactory featureCollectionFactory)
     {
         // Act
         var factory = new LambdaInvocationContextFactory(
             serviceScopeFactory,
-            featureCollectionFactory
-        );
+            featureCollectionFactory);
 
         // Assert
         factory.Should().NotBeNull();
@@ -53,8 +50,7 @@ public class LambdaInvocationContextFactoryTests
         // Act
         var factory = new LambdaInvocationContextFactory(
             Substitute.For<IServiceScopeFactory>(),
-            Substitute.For<IFeatureCollectionFactory>()
-        );
+            Substitute.For<IFeatureCollectionFactory>());
 
         // Assert
         factory.Should().NotBeNull();
@@ -66,14 +62,12 @@ public class LambdaInvocationContextFactoryTests
         [Frozen] IFeatureCollectionFactory featureCollectionFactory,
         IServiceScopeFactory serviceScopeFactory,
         ILambdaContext lambdaContext,
-        IDictionary<string, object?> properties
-    )
+        IDictionary<string, object?> properties)
     {
         // Arrange
         var factory = new LambdaInvocationContextFactory(
             serviceScopeFactory,
-            featureCollectionFactory
-        );
+            featureCollectionFactory);
 
         // Act
         _ = factory.Create(lambdaContext, properties, CancellationToken.None);
@@ -89,15 +83,13 @@ public class LambdaInvocationContextFactoryTests
         IServiceScopeFactory serviceScopeFactory,
         IFeatureCollectionFactory featureCollectionFactory,
         ILambdaContext lambdaContext,
-        IDictionary<string, object?> properties
-    )
+        IDictionary<string, object?> properties)
     {
         // Arrange
         var factory = new LambdaInvocationContextFactory(
             serviceScopeFactory,
             featureCollectionFactory,
-            contextAccessor
-        );
+            contextAccessor);
 
         // Act
         _ = factory.Create(lambdaContext, properties, CancellationToken.None);
@@ -113,8 +105,7 @@ public class LambdaInvocationContextFactoryTests
         IFeatureProvider eventFeatureProvider,
         IFeatureProvider responseFeatureProvider,
         ILambdaInvocationContext lambdaContext,
-        LambdaInvocationContextFactory factory
-    )
+        LambdaInvocationContextFactory factory)
     {
         // Arrange
         var properties = new Dictionary<string, object?>
@@ -135,9 +126,7 @@ public class LambdaInvocationContextFactoryTests
                 Arg.Is<IEnumerable<IFeatureProvider>>(providers =>
                     providers.Count() == 2
                     && providers.Contains(eventFeatureProvider)
-                    && providers.Contains(responseFeatureProvider)
-                )
-            );
+                    && providers.Contains(responseFeatureProvider)));
         // ReSharper restore PossibleMultipleEnumeration
     }
 }

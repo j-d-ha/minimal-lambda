@@ -9,9 +9,8 @@ var builder = LambdaApplication.CreateBuilder();
 var lambda = builder.Build();
 
 // Map your handler - the event is automatically injected
-lambda.MapHandler(
-    ([FromEvent] Request request) => new Response($"Hello {request.Name}!", DateTime.UtcNow)
-);
+lambda.MapHandler(([FromEvent] Request request) =>
+new Response($"Hello {request.Name}!", DateTime.UtcNow));
 
 // Run the Lambda
 await lambda.RunAsync();

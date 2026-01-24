@@ -11,8 +11,7 @@ public class FeatureLambdaInvocationContextExtensionsTest
         [Frozen] IFeatureCollection features,
         ILambdaInvocationContext context,
         IEventFeature<TestEvent> eventFeature,
-        TestEvent expectedEvent
-    )
+        TestEvent expectedEvent)
     {
         // Arrange
         features.Get<IEventFeature>().Returns(eventFeature);
@@ -29,8 +28,7 @@ public class FeatureLambdaInvocationContextExtensionsTest
     [AutoNSubstituteData]
     public void GetEvent_ReturnsNullWhenFeatureNotInCollection(
         [Frozen] IFeatureCollection features,
-        ILambdaInvocationContext context
-    )
+        ILambdaInvocationContext context)
     {
         // Arrange
         features.Get<IEventFeature>().Returns((IEventFeature?)null);
@@ -47,8 +45,7 @@ public class FeatureLambdaInvocationContextExtensionsTest
     public void GetEvent_ReturnsNullWhenGetEventReturnsNull(
         [Frozen] IFeatureCollection features,
         ILambdaInvocationContext context,
-        IEventFeature eventFeature
-    )
+        IEventFeature eventFeature)
     {
         // Arrange
         features.Get<IEventFeature>().Returns(eventFeature);
@@ -67,8 +64,7 @@ public class FeatureLambdaInvocationContextExtensionsTest
         [Frozen] IFeatureCollection features,
         ILambdaInvocationContext context,
         IEventFeature eventFeature,
-        string wrongTypeEvent
-    )
+        string wrongTypeEvent)
     {
         // Arrange
         features.Get<IEventFeature>().Returns(eventFeature);
@@ -87,8 +83,7 @@ public class FeatureLambdaInvocationContextExtensionsTest
         [Frozen] IFeatureCollection features,
         ILambdaInvocationContext context,
         IEventFeature<string> eventFeature,
-        string stringEvent
-    )
+        string stringEvent)
     {
         // Arrange
         features.Get<IEventFeature>().Returns(eventFeature);
@@ -111,8 +106,7 @@ public class FeatureLambdaInvocationContextExtensionsTest
         [Frozen] IFeatureCollection features,
         ILambdaInvocationContext context,
         IEventFeature<TestEvent> eventFeature,
-        TestEvent expectedEvent
-    )
+        TestEvent expectedEvent)
     {
         // Arrange
         features.Get<IEventFeature>().Returns(eventFeature);
@@ -130,8 +124,7 @@ public class FeatureLambdaInvocationContextExtensionsTest
     [AutoNSubstituteData]
     public void TryGetEvent_ReturnsFalseWhenFeatureNotFound(
         [Frozen] IFeatureCollection features,
-        ILambdaInvocationContext context
-    )
+        ILambdaInvocationContext context)
     {
         // Arrange
         features.Get<IEventFeature>().Returns((IEventFeature?)null);
@@ -150,8 +143,7 @@ public class FeatureLambdaInvocationContextExtensionsTest
         [Frozen] IFeatureCollection features,
         ILambdaInvocationContext context,
         IEventFeature eventFeature,
-        string wrongTypeEvent
-    )
+        string wrongTypeEvent)
     {
         // Arrange
         features.Get<IEventFeature>().Returns(eventFeature);
@@ -171,8 +163,7 @@ public class FeatureLambdaInvocationContextExtensionsTest
         [Frozen] IFeatureCollection features,
         ILambdaInvocationContext context,
         IEventFeature<string> eventFeature,
-        string stringEvent
-    )
+        string stringEvent)
     {
         // Arrange
         features.Get<IEventFeature>().Returns(eventFeature);
@@ -196,8 +187,7 @@ public class FeatureLambdaInvocationContextExtensionsTest
         [Frozen] IFeatureCollection features,
         ILambdaInvocationContext context,
         IResponseFeature<TestResponse> responseFeature,
-        TestResponse expectedResponse
-    )
+        TestResponse expectedResponse)
     {
         // Arrange
         features.Get<IResponseFeature>().Returns(responseFeature);
@@ -214,8 +204,7 @@ public class FeatureLambdaInvocationContextExtensionsTest
     [AutoNSubstituteData]
     public void GetResponse_ReturnsNullWhenFeatureNotInCollection(
         [Frozen] IFeatureCollection features,
-        ILambdaInvocationContext context
-    )
+        ILambdaInvocationContext context)
     {
         // Arrange
         features.Get<IResponseFeature>().Returns((IResponseFeature?)null);
@@ -232,8 +221,7 @@ public class FeatureLambdaInvocationContextExtensionsTest
     public void GetResponse_ReturnsNullWhenGetResponseReturnsNull(
         [Frozen] IFeatureCollection features,
         ILambdaInvocationContext context,
-        IResponseFeature responseFeature
-    )
+        IResponseFeature responseFeature)
     {
         // Arrange
         features.Get<IResponseFeature>().Returns(responseFeature);
@@ -252,8 +240,7 @@ public class FeatureLambdaInvocationContextExtensionsTest
         [Frozen] IFeatureCollection features,
         ILambdaInvocationContext context,
         IResponseFeature responseFeature,
-        string wrongTypeResponse
-    )
+        string wrongTypeResponse)
     {
         // Arrange
         features.Get<IResponseFeature>().Returns(responseFeature);
@@ -272,8 +259,7 @@ public class FeatureLambdaInvocationContextExtensionsTest
         [Frozen] IFeatureCollection features,
         ILambdaInvocationContext context,
         IResponseFeature<string> responseFeature,
-        string stringResponse
-    )
+        string stringResponse)
     {
         // Arrange
         features.Get<IResponseFeature>().Returns(responseFeature);
@@ -296,8 +282,7 @@ public class FeatureLambdaInvocationContextExtensionsTest
         [Frozen] IFeatureCollection features,
         ILambdaInvocationContext context,
         IResponseFeature<TestResponse> responseFeature,
-        TestResponse expectedResponse
-    )
+        TestResponse expectedResponse)
     {
         // Arrange
         features.Get<IResponseFeature>().Returns(responseFeature);
@@ -315,8 +300,7 @@ public class FeatureLambdaInvocationContextExtensionsTest
     [AutoNSubstituteData]
     public void TryGetResponse_ReturnsFalseWhenFeatureNotFound(
         [Frozen] IFeatureCollection features,
-        ILambdaInvocationContext context
-    )
+        ILambdaInvocationContext context)
     {
         // Arrange
         features.Get<IResponseFeature>().Returns((IResponseFeature?)null);
@@ -335,8 +319,7 @@ public class FeatureLambdaInvocationContextExtensionsTest
         [Frozen] IFeatureCollection features,
         ILambdaInvocationContext context,
         IResponseFeature responseFeature,
-        string wrongTypeResponse
-    )
+        string wrongTypeResponse)
     {
         // Arrange
         features.Get<IResponseFeature>().Returns(responseFeature);
@@ -356,8 +339,7 @@ public class FeatureLambdaInvocationContextExtensionsTest
         [Frozen] IFeatureCollection features,
         ILambdaInvocationContext context,
         IResponseFeature<string> responseFeature,
-        string stringResponse
-    )
+        string stringResponse)
     {
         // Arrange
         features.Get<IResponseFeature>().Returns(responseFeature);
@@ -381,8 +363,7 @@ public class FeatureLambdaInvocationContextExtensionsTest
         [Frozen] IFeatureCollection features,
         ILambdaInvocationContext context,
         IEventFeature<TestEvent> eventFeature,
-        TestEvent expectedEvent
-    )
+        TestEvent expectedEvent)
     {
         // Arrange
         features.Get<IEventFeature>().Returns(eventFeature);
@@ -399,19 +380,18 @@ public class FeatureLambdaInvocationContextExtensionsTest
     [AutoNSubstituteData]
     public void GetRequiredEvent_ThrowsInvalidOperationExceptionWhenFeatureNotFound(
         [Frozen] IFeatureCollection features,
-        ILambdaInvocationContext context
-    )
+        ILambdaInvocationContext context)
     {
         // Arrange
         features.Get<IEventFeature>().Returns((IEventFeature?)null);
 
         // Act & Assert
         var act = () => context.GetRequiredEvent<TestEvent>();
-        act.Should()
+        act
+            .Should()
             .ThrowExactly<InvalidOperationException>()
             .WithMessage(
-                $"Lambda event of type '{typeof(TestEvent).FullName}' is not available in the context."
-            );
+                $"Lambda event of type '{typeof(TestEvent).FullName}' is not available in the context.");
     }
 
     [Theory]
@@ -419,8 +399,7 @@ public class FeatureLambdaInvocationContextExtensionsTest
     public void GetRequiredEvent_ThrowsInvalidOperationExceptionWhenEventIsNull(
         [Frozen] IFeatureCollection features,
         ILambdaInvocationContext context,
-        IEventFeature eventFeature
-    )
+        IEventFeature eventFeature)
     {
         // Arrange
         features.Get<IEventFeature>().Returns(eventFeature);
@@ -428,11 +407,11 @@ public class FeatureLambdaInvocationContextExtensionsTest
 
         // Act & Assert
         var act = () => context.GetRequiredEvent<TestEvent>();
-        act.Should()
+        act
+            .Should()
             .ThrowExactly<InvalidOperationException>()
             .WithMessage(
-                $"Lambda event of type '{typeof(TestEvent).FullName}' is not available in the context."
-            );
+                $"Lambda event of type '{typeof(TestEvent).FullName}' is not available in the context.");
     }
 
     [Theory]
@@ -441,8 +420,7 @@ public class FeatureLambdaInvocationContextExtensionsTest
         [Frozen] IFeatureCollection features,
         ILambdaInvocationContext context,
         IEventFeature eventFeature,
-        string wrongTypeEvent
-    )
+        string wrongTypeEvent)
     {
         // Arrange
         features.Get<IEventFeature>().Returns(eventFeature);
@@ -450,11 +428,11 @@ public class FeatureLambdaInvocationContextExtensionsTest
 
         // Act & Assert
         var act = () => context.GetRequiredEvent<TestEvent>();
-        act.Should()
+        act
+            .Should()
             .ThrowExactly<InvalidOperationException>()
             .WithMessage(
-                $"Lambda event of type '{typeof(TestEvent).FullName}' is not available in the context."
-            );
+                $"Lambda event of type '{typeof(TestEvent).FullName}' is not available in the context.");
     }
 
     [Theory]
@@ -463,8 +441,7 @@ public class FeatureLambdaInvocationContextExtensionsTest
         [Frozen] IFeatureCollection features,
         ILambdaInvocationContext context,
         IEventFeature<string> eventFeature,
-        string stringEvent
-    )
+        string stringEvent)
     {
         // Arrange
         features.Get<IEventFeature>().Returns(eventFeature);
@@ -487,8 +464,7 @@ public class FeatureLambdaInvocationContextExtensionsTest
         [Frozen] IFeatureCollection features,
         ILambdaInvocationContext context,
         IResponseFeature<TestResponse> responseFeature,
-        TestResponse expectedResponse
-    )
+        TestResponse expectedResponse)
     {
         // Arrange
         features.Get<IResponseFeature>().Returns(responseFeature);
@@ -505,19 +481,18 @@ public class FeatureLambdaInvocationContextExtensionsTest
     [AutoNSubstituteData]
     public void GetRequiredResponse_ThrowsInvalidOperationExceptionWhenFeatureNotFound(
         [Frozen] IFeatureCollection features,
-        ILambdaInvocationContext context
-    )
+        ILambdaInvocationContext context)
     {
         // Arrange
         features.Get<IResponseFeature>().Returns((IResponseFeature?)null);
 
         // Act & Assert
         var act = () => context.GetRequiredResponse<TestResponse>();
-        act.Should()
+        act
+            .Should()
             .ThrowExactly<InvalidOperationException>()
             .WithMessage(
-                $"Lambda response of type '{typeof(TestResponse).FullName}' is not available in the context."
-            );
+                $"Lambda response of type '{typeof(TestResponse).FullName}' is not available in the context.");
     }
 
     [Theory]
@@ -525,8 +500,7 @@ public class FeatureLambdaInvocationContextExtensionsTest
     public void GetRequiredResponse_ThrowsInvalidOperationExceptionWhenResponseIsNull(
         [Frozen] IFeatureCollection features,
         ILambdaInvocationContext context,
-        IResponseFeature responseFeature
-    )
+        IResponseFeature responseFeature)
     {
         // Arrange
         features.Get<IResponseFeature>().Returns(responseFeature);
@@ -534,11 +508,11 @@ public class FeatureLambdaInvocationContextExtensionsTest
 
         // Act & Assert
         var act = () => context.GetRequiredResponse<TestResponse>();
-        act.Should()
+        act
+            .Should()
             .ThrowExactly<InvalidOperationException>()
             .WithMessage(
-                $"Lambda response of type '{typeof(TestResponse).FullName}' is not available in the context."
-            );
+                $"Lambda response of type '{typeof(TestResponse).FullName}' is not available in the context.");
     }
 
     [Theory]
@@ -547,8 +521,7 @@ public class FeatureLambdaInvocationContextExtensionsTest
         [Frozen] IFeatureCollection features,
         ILambdaInvocationContext context,
         IResponseFeature responseFeature,
-        string wrongTypeResponse
-    )
+        string wrongTypeResponse)
     {
         // Arrange
         features.Get<IResponseFeature>().Returns(responseFeature);
@@ -556,11 +529,11 @@ public class FeatureLambdaInvocationContextExtensionsTest
 
         // Act & Assert
         var act = () => context.GetRequiredResponse<TestResponse>();
-        act.Should()
+        act
+            .Should()
             .ThrowExactly<InvalidOperationException>()
             .WithMessage(
-                $"Lambda response of type '{typeof(TestResponse).FullName}' is not available in the context."
-            );
+                $"Lambda response of type '{typeof(TestResponse).FullName}' is not available in the context.");
     }
 
     [Theory]
@@ -569,8 +542,7 @@ public class FeatureLambdaInvocationContextExtensionsTest
         [Frozen] IFeatureCollection features,
         ILambdaInvocationContext context,
         IResponseFeature<string> responseFeature,
-        string stringResponse
-    )
+        string stringResponse)
     {
         // Arrange
         features.Get<IResponseFeature>().Returns(responseFeature);

@@ -11,16 +11,14 @@ internal static class InvocationHandlerEmitter
 
     internal static void Emit(
         SourceProductionContext context,
-        ImmutableArray<MapHandlerMethodInfo> infos
-    )
+        ImmutableArray<MapHandlerMethodInfo> infos)
     {
         if (infos.Length == 0)
             return;
 
         var code = TemplateHelper.Render(
             LambdaHostMapHandlerExtensionsTemplateFile,
-            new { TemplateHelper.GeneratedCodeAttribute, MapHandlerCalls = infos }
-        );
+            new { TemplateHelper.GeneratedCodeAttribute, MapHandlerCalls = infos });
 
         context.AddSource("MinimalLambda.InvocationHandlers.g.cs", code);
     }

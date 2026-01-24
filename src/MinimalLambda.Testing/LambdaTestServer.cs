@@ -35,16 +35,14 @@ public class LambdaTestServer : IAsyncDisposable
 
     /// <summary>TCS used to signal the startup has completed</summary>
     private readonly TaskCompletionSource<InitResponse> _initCompletionTcs = new(
-        TaskCreationOptions.RunContinuationsAsynchronously
-    );
+        TaskCreationOptions.RunContinuationsAsynchronously);
 
     /// <summary>JSON serializer options used to serialize/deserilize Lambda events and responses.</summary>
     private readonly JsonSerializerOptions _jsonSerializerOptions;
 
     /// <summary>Channel used to queue pending invocations in a FIFO manner.</summary>
     private readonly Channel<string> _pendingInvocationIds = Channel.CreateUnbounded<string>(
-        new UnboundedChannelOptions { SingleReader = true, SingleWriter = false }
-    );
+        new UnboundedChannelOptions { SingleReader = true, SingleWriter = false });
 
     /// <summary>Dictionary to track all invocations that have been sent to Lambda.</summary>
     private readonly ConcurrentDictionary<string, PendingInvocation> _pendingInvocations = new();
@@ -60,8 +58,7 @@ public class LambdaTestServer : IAsyncDisposable
     /// <summary>Channel used to by the Lambda to send events to the server.</summary>
     private readonly Channel<LambdaHttpTransaction> _transactionChannel =
         Channel.CreateUnbounded<LambdaHttpTransaction>(
-            new UnboundedChannelOptions { SingleReader = true, SingleWriter = false }
-        );
+            new UnboundedChannelOptions { SingleReader = true, SingleWriter = false });
 
     /// <summary>Host application lifetime used to signal shutdown to the captioned Host.</summary>
     private IHostApplicationLifetime? _applicationLifetime;
@@ -84,8 +81,7 @@ public class LambdaTestServer : IAsyncDisposable
     internal LambdaTestServer(
         Task<Exception?>? entryPointCompletion,
         LambdaServerOptions serverOptions,
-        CancellationToken shutdownToken = default
-    )
+        CancellationToken shutdownToken = default)
     {
         ArgumentNullException.ThrowIfNull(entryPointCompletion);
 
@@ -208,8 +204,7 @@ public class LambdaTestServer : IAsyncDisposable
                 return new InitResponse { InitStatus = InitStatus.InitAlreadyCompleted };
             else if (State != ServerState.Created)
                 throw new InvalidOperationException(
-                    $"{nameof(LambdaTestServer)} has already been started and cannot be restarted."
-                );
+                    $"{nameof(LambdaTestServer)} has already been started and cannot be restarted.");
 
             if (_host is null)
                 throw new InvalidOperationException("Host is not set.");
@@ -247,8 +242,7 @@ public class LambdaTestServer : IAsyncDisposable
             }
 
             throw new InvalidOperationException(
-                $"{nameof(LambdaTestServer)} initialization failed with neither an error nor completion."
-            );
+                $"{nameof(LambdaTestServer)} initialization failed with neither an error nor completion.");
         }
         finally
         {
@@ -306,26 +300,21 @@ public class LambdaTestServer : IAsyncDisposable
         TEvent? invokeEvent,
         bool noResponse,
         string? traceId = null,
-        CancellationToken cancellationToken = default
-    )
+        CancellationToken cancellationToken = default)
     {
         // inorder to allow
         if (State != ServerState.Running)
         {
             var initResponse = await StartAsync(cancellationToken);
-            if (
-                initResponse.InitStatus
-                is not (InitStatus.InitCompleted or InitStatus.InitAlreadyCompleted)
-            )
+            if (initResponse.InitStatus is not (InitStatus.InitCompleted
+                or InitStatus.InitAlreadyCompleted))
                 throw new InvalidOperationException(
-                    $"{nameof(LambdaTestServer)} failed to initialize and returned a status of {initResponse.InitStatus.ToString()}."
-                );
+                    $"{nameof(LambdaTestServer)} failed to initialize and returned a status of {initResponse.InitStatus.ToString()}.");
         }
 
         if (State != ServerState.Running)
             throw new InvalidOperationException(
-                $"{nameof(LambdaTestServer)} is in state {State} and cannot invoke an event. Expected state: Running."
-            );
+                $"{nameof(LambdaTestServer)} is in state {State} and cannot invoke an event. Expected state: Running.");
 
         using var cts = LinkedCtsWithInvocationDeadline(cancellationToken);
 
@@ -350,32 +339,25 @@ public class LambdaTestServer : IAsyncDisposable
         var responseMessage = completion.Request;
         var wasSuccess = completion.RequestType == RequestType.PostResponse;
 
-        var response =
-            wasSuccess && !noResponse
-                ? await (
-                    responseMessage.Content?.ReadFromJsonAsync<TResponse>(
-                        _jsonSerializerOptions,
-                        cts.Token
-                    ) ?? Task.FromResult<TResponse?>(default)
-                )
-                : default;
+        var response = wasSuccess && !noResponse
+            ? await (responseMessage.Content?.ReadFromJsonAsync<TResponse>(
+                         _jsonSerializerOptions,
+                         cts.Token)
+                     ?? Task.FromResult<TResponse?>(default))
+            : default;
 
         var error = !wasSuccess
-            ? await (
-                responseMessage.Content?.ReadFromJsonAsync<ErrorResponse>(
-                    _jsonSerializerOptions,
-                    cts.Token
-                ) ?? Task.FromResult<ErrorResponse?>(null)
-            )
+            ? await (responseMessage.Content?.ReadFromJsonAsync<ErrorResponse>(
+                         _jsonSerializerOptions,
+                         cts.Token)
+                     ?? Task.FromResult<ErrorResponse?>(null))
             : null;
 
         _pendingInvocations.TryRemove(requestId, out _);
 
         return new InvocationResponse<TResponse>
         {
-            WasSuccess = wasSuccess,
-            Response = response,
-            Error = error,
+            WasSuccess = wasSuccess, Response = response, Error = error,
         };
     }
 
@@ -410,8 +392,7 @@ public class LambdaTestServer : IAsyncDisposable
     {
         if (State is <= ServerState.Created or >= ServerState.Stopping)
             throw new InvalidOperationException(
-                $"{nameof(LambdaTestServer)} cannot be stopped in state {State}."
-            );
+                $"{nameof(LambdaTestServer)} cannot be stopped in state {State}.");
 
         State = ServerState.Stopping;
 
@@ -435,20 +416,15 @@ public class LambdaTestServer : IAsyncDisposable
     {
         try
         {
-            await foreach (
-                var transaction in _transactionChannel.Reader.ReadAllAsync(_shutdownCts.Token)
-            )
+            await foreach (var transaction in _transactionChannel.Reader.ReadAllAsync(
+                               _shutdownCts.Token))
             {
-                if (
-                    !LambdaRuntimeRouteManager.TryMatch(
+                if (!LambdaRuntimeRouteManager.TryMatch(
                         transaction.Request,
                         out var requestType,
-                        out var routeValues
-                    )
-                )
+                        out var routeValues))
                     throw new InvalidOperationException(
-                        $"Unexpected request received from the Lambda HTTP handler: {transaction.Request.Method} {transaction.Request.RequestUri}"
-                    );
+                        $"Unexpected request received from the Lambda HTTP handler: {transaction.Request.Method} {transaction.Request.RequestUri}");
 
                 switch (requestType.Value)
                 {
@@ -470,8 +446,7 @@ public class LambdaTestServer : IAsyncDisposable
 
                     default:
                         throw new InvalidOperationException(
-                            $"Unexpected request type {requestType} for {transaction.Request.RequestUri}"
-                        );
+                            $"Unexpected request type {requestType} for {transaction.Request.RequestUri}");
                 }
             }
         }
@@ -485,8 +460,7 @@ public class LambdaTestServer : IAsyncDisposable
     {
         if (State == ServerState.Starting)
             _initCompletionTcs.SetResult(
-                new InitResponse { InitStatus = InitStatus.InitCompleted }
-            );
+                new InitResponse { InitStatus = InitStatus.InitCompleted });
 
         if (await _pendingInvocationIds.Reader.WaitToReadAsync(_shutdownCts.Token))
         {
@@ -498,8 +472,7 @@ public class LambdaTestServer : IAsyncDisposable
 
     private async Task HandlePostResponseAsync(
         LambdaHttpTransaction transaction,
-        RouteValueDictionary routeValues
-    )
+        RouteValueDictionary routeValues)
     {
         _pendingInvocations.GetRequired(routeValues["requestId"]?.ToString(), out var pending);
 
@@ -507,14 +480,12 @@ public class LambdaTestServer : IAsyncDisposable
         transaction.Respond(CreateSuccessResponse());
 
         pending.ResponseTcs.SetResult(
-            await CreateCompletionAsync(RequestType.PostResponse, transaction.Request)
-        );
+            await CreateCompletionAsync(RequestType.PostResponse, transaction.Request));
     }
 
     private async Task HandlePostErrorAsync(
         LambdaHttpTransaction transaction,
-        RouteValueDictionary routeValues
-    )
+        RouteValueDictionary routeValues)
     {
         _pendingInvocations.GetRequired(routeValues["requestId"]?.ToString(), out var pending);
 
@@ -522,8 +493,7 @@ public class LambdaTestServer : IAsyncDisposable
         transaction.Respond(CreateSuccessResponse());
 
         pending.ResponseTcs.SetResult(
-            await CreateCompletionAsync(RequestType.PostError, transaction.Request)
-        );
+            await CreateCompletionAsync(RequestType.PostError, transaction.Request));
     }
 
     private async Task HandlePostInitErrorAsync(LambdaHttpTransaction transaction)
@@ -533,39 +503,32 @@ public class LambdaTestServer : IAsyncDisposable
             _initCompletionTcs.SetResult(
                 new InitResponse
                 {
-                    Error = await (
-                        transaction.Request.Content?.ReadFromJsonAsync<ErrorResponse>(
-                            _jsonSerializerOptions
-                        ) ?? Task.FromResult<ErrorResponse?>(null)
-                    ),
+                    Error =
+                        await (transaction.Request.Content?.ReadFromJsonAsync<ErrorResponse>(
+                                   _jsonSerializerOptions)
+                               ?? Task.FromResult<ErrorResponse?>(null)),
                     InitStatus = InitStatus.InitError,
-                }
-            );
+                });
             return;
         }
 
         throw new InvalidOperationException(
-            $"{nameof(LambdaTestServer)} is already started and as such an initialization error cannot be reported."
-        );
+            $"{nameof(LambdaTestServer)} is already started and as such an initialization error cannot be reported.");
     }
 
     private HttpResponseMessage CreateEventResponse<TEvent>(
         TEvent? invokeEvent,
         string requestId,
-        string traceId
-    )
+        string traceId)
     {
-        var response = new HttpResponseMessage(HttpStatusCode.OK)
-        {
-            Version = Version.Parse("1.1"),
-        };
+        var response =
+            new HttpResponseMessage(HttpStatusCode.OK) { Version = Version.Parse("1.1") };
 
         if (invokeEvent is not null)
             response.Content = new StringContent(
                 JsonSerializer.Serialize(invokeEvent, _jsonSerializerOptions),
                 Encoding.UTF8,
-                "application/json"
-            );
+                "application/json");
 
         // Add standard HTTP headers
         response.Headers.Date = new DateTimeOffset(DateTime.UtcNow, TimeSpan.Zero);
@@ -592,13 +555,11 @@ public class LambdaTestServer : IAsyncDisposable
 
     private static async Task<InvocationCompletion> CreateCompletionAsync(
         RequestType requestType,
-        HttpRequestMessage sourceRequest
-    )
+        HttpRequestMessage sourceRequest)
     {
         var clonedRequest = new HttpRequestMessage(sourceRequest.Method, sourceRequest.RequestUri)
         {
-            Version = sourceRequest.Version,
-            VersionPolicy = sourceRequest.VersionPolicy,
+            Version = sourceRequest.Version, VersionPolicy = sourceRequest.VersionPolicy,
         };
 
         foreach (var header in sourceRequest.Headers)
@@ -629,19 +590,16 @@ public class LambdaTestServer : IAsyncDisposable
                 {"status":"success"}
                 """,
                 Encoding.UTF8,
-                "application/json"
-            ),
+                "application/json"),
             Version = Version.Parse("1.1"),
         };
 
     private CancellationTokenSource LinkedCtsWithInvocationDeadline(
-        CancellationToken cancellationTokens
-    )
+        CancellationToken cancellationTokens)
     {
         var cts = CancellationTokenSource.CreateLinkedTokenSource(
             cancellationTokens,
-            _shutdownCts.Token
-        );
+            _shutdownCts.Token);
         cts.CancelAfter(_serverOptions.FunctionTimeout);
 
         return cts;

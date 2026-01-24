@@ -16,10 +16,8 @@ namespace MinimalLambda.SourceGenerators.WellKnownTypes;
 
 internal class WellKnownTypes
 {
-    private static readonly BoundedCacheWithFactory<
-        Compilation,
-        WellKnownTypes
-    > LazyWellKnownTypesCache = new();
+    private static readonly BoundedCacheWithFactory<Compilation, WellKnownTypes>
+        LazyWellKnownTypesCache = new();
 
     public static WellKnownTypes GetOrCreate(Compilation compilation) =>
         LazyWellKnownTypesCache.GetOrCreateValue(compilation, static c => new WellKnownTypes(c));
@@ -49,8 +47,7 @@ internal class WellKnownTypes
 
             Debug.Assert(
                 name == typeIdName,
-                $"Enum name ({typeIdName}) and type name ({name}) must match at {i}"
-            );
+                $"Enum name ({typeIdName}) and type name ({name}) must match at {i}");
         }
     }
 
@@ -77,12 +74,10 @@ internal class WellKnownTypes
     private INamedTypeSymbol GetAndCache(int index)
     {
         var result = GetTypeByMetadataNameInTargetAssembly(
-            WellKnownTypeData.WellKnownTypeNames[index]
-        );
+            WellKnownTypeData.WellKnownTypeNames[index]);
         if (result == null)
             throw new InvalidOperationException(
-                $"Failed to resolve well-known type '{WellKnownTypeData.WellKnownTypeNames[index]}'."
-            );
+                $"Failed to resolve well-known type '{WellKnownTypeData.WellKnownTypeNames[index]}'.");
 
         Interlocked.CompareExchange(ref _lazyWellKnownTypes[index], result, null);
 
@@ -105,16 +100,12 @@ internal class WellKnownTypes
         // namespace + type name in their apps or libraries.
         // Workaround this situation by prioritizing types in System and Microsoft assemblies.
         foreach (var type in types)
-            if (
-                type.ContainingAssembly.Identity.Name.StartsWith(
+            if (type.ContainingAssembly.Identity.Name.StartsWith(
                     "System.",
-                    StringComparison.Ordinal
-                )
+                    StringComparison.Ordinal)
                 || type.ContainingAssembly.Identity.Name.StartsWith(
                     "Microsoft.",
-                    StringComparison.Ordinal
-                )
-            )
+                    StringComparison.Ordinal))
                 return type;
 
         return null;
@@ -126,8 +117,7 @@ internal class WellKnownTypes
     public bool IsType(
         ITypeSymbol type,
         WellKnownTypeData.WellKnownType[] wellKnownTypes,
-        [NotNullWhen(true)] out WellKnownTypeData.WellKnownType? match
-    )
+        [NotNullWhen(true)] out WellKnownTypeData.WellKnownType? match)
     {
         foreach (var wellKnownType in wellKnownTypes)
             if (SymbolEqualityComparer.Default.Equals(type, Get(wellKnownType)))
@@ -142,8 +132,7 @@ internal class WellKnownTypes
 
     public bool Implements(
         ITypeSymbol type,
-        WellKnownTypeData.WellKnownType[] interfaceWellKnownTypes
-    )
+        WellKnownTypeData.WellKnownType[] interfaceWellKnownTypes)
     {
         foreach (var wellKnownType in interfaceWellKnownTypes)
             if (Implements(type, Get(wellKnownType)))

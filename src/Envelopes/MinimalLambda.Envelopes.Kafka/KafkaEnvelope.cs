@@ -18,22 +18,22 @@ public sealed class KafkaEnvelope<T> : KafkaEnvelopeBase<T>
     [UnconditionalSuppressMessage(
         "Aot",
         "IL3050:RequiresDynamicCode",
-        Justification = "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T"
-    )]
+        Justification =
+            "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T")]
     [UnconditionalSuppressMessage(
         "Aot",
         "IL2026:RequiresUnreferencedCode",
-        Justification = "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T"
-    )]
+        Justification =
+            "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T")]
     public override void ExtractPayload(EnvelopeOptions options)
     {
         foreach (var topic in Records)
-        foreach (var record in topic.Value)
-        {
-            using var reader = new StreamReader(record.Value, Encoding.UTF8, leaveOpen: true);
-            var base64String = reader.ReadToEnd();
-            var jsonBytes = Convert.FromBase64String(base64String);
-            record.ValueContent = JsonSerializer.Deserialize<T>(jsonBytes, options.JsonOptions);
-        }
+            foreach (var record in topic.Value)
+            {
+                using var reader = new StreamReader(record.Value, Encoding.UTF8, leaveOpen: true);
+                var base64String = reader.ReadToEnd();
+                var jsonBytes = Convert.FromBase64String(base64String);
+                record.ValueContent = JsonSerializer.Deserialize<T>(jsonBytes, options.JsonOptions);
+            }
     }
 }

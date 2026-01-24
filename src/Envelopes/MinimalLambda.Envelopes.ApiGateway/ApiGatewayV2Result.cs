@@ -14,8 +14,7 @@ namespace MinimalLambda.Envelopes.ApiGateway;
 ///     returning responses from Lambda proxy integrations with API Gateway HTTP APIs.
 /// </remarks>
 public sealed class ApiGatewayV2Result
-    : APIGatewayHttpApiV2ProxyResponse,
-        IHttpResult<ApiGatewayV2Result>
+    : APIGatewayHttpApiV2ProxyResponse, IHttpResult<ApiGatewayV2Result>
 {
     [JsonIgnore]
     private readonly IResponseEnvelope? _inner;
@@ -45,8 +44,7 @@ public sealed class ApiGatewayV2Result
         int statusCode,
         T? bodyContent,
         IDictionary<string, string> headers,
-        bool isBase64Encoded
-    ) =>
+        bool isBase64Encoded) =>
         new(
             new ApiGatewayV2ResponseEnvelope<T>
             {
@@ -54,8 +52,7 @@ public sealed class ApiGatewayV2Result
                 BodyContent = bodyContent,
                 Headers = headers,
                 IsBase64Encoded = isBase64Encoded,
-            }
-        );
+            });
 
     /// <summary>Creates an API Gateway v2 result from an existing response envelope.</summary>
     /// <typeparam name="T">The type of content in the envelope's body.</typeparam>

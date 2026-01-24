@@ -27,29 +27,26 @@ lambda.OnInit(() =>
     return Task.FromResult(true);
 });
 
-lambda.OnInit(
-    async Task<bool> (ILogger<Program> logger, CancellationToken cancellationToken) =>
+lambda.OnInit(async Task<bool> (ILogger<Program> logger, CancellationToken cancellationToken) =>
+{
+    var stopwatch = Stopwatch.StartNew();
+    while (!cancellationToken.IsCancellationRequested)
     {
-        var stopwatch = Stopwatch.StartNew();
-        while (!cancellationToken.IsCancellationRequested)
+        logger.LogInformation(
+            "Waiting for init to timeout. {ElapsedMilliseconds}ms elapsed",
+            stopwatch.ElapsedMilliseconds);
+        try
         {
-            logger.LogInformation(
-                "Waiting for init to timeout. {ElapsedMilliseconds}ms elapsed",
-                stopwatch.ElapsedMilliseconds
-            );
-            try
-            {
-                await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
-            }
-            catch
-            {
-                // ignored
-            }
+            await Task.Delay(TimeSpan.FromMilliseconds(100), cancellationToken);
         }
-
-        return true;
+        catch
+        {
+            // ignored
+        }
     }
-);
+
+    return true;
+});
 
 lambda.MapHandler(() =>
 {
@@ -57,21 +54,17 @@ lambda.MapHandler(() =>
     return new Response("Hello world");
 });
 
-lambda.OnShutdown(
-    (CancellationToken _) =>
-    {
-        Console.WriteLine("Shutting down...");
-        return Task.CompletedTask;
-    }
-);
+lambda.OnShutdown((CancellationToken _) =>
+{
+    Console.WriteLine("Shutting down...");
+    return Task.CompletedTask;
+});
 
-lambda.OnShutdown(
-    Task (IService service) =>
-    {
-        Console.WriteLine(service.GetMessage());
-        return Task.CompletedTask;
-    }
-);
+lambda.OnShutdown(Task (IService service) =>
+{
+    Console.WriteLine(service.GetMessage());
+    return Task.CompletedTask;
+});
 
 lambda.OnShutdown(Task () => Task.CompletedTask);
 

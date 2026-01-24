@@ -12,38 +12,30 @@ internal static class ParameterSymbolExtensions
     internal static bool IsDecoratedWithAttribute(
         this IParameterSymbol parameterSymbol,
         GeneratorContext context,
-        params WellKnownType[] attributeType
-    ) =>
+        params WellKnownType[] attributeType) =>
         parameterSymbol
             .GetAttributes()
-            .Any(a =>
-                a.AttributeClass is not null
-                && context.WellKnownTypes.IsType(a.AttributeClass, attributeType)
-            );
+            .Any(a => a.AttributeClass is not null
+                      && context.WellKnownTypes.IsType(a.AttributeClass, attributeType));
 
     extension(IParameterSymbol parameterSymbol)
     {
         internal bool IsFromEvent(GeneratorContext context) =>
             parameterSymbol
                 .GetAttributes()
-                .Any(attribute =>
-                    attribute.AttributeClass is not null
-                    && context.WellKnownTypes.IsType(
-                        attribute.AttributeClass,
-                        WellKnownType.MinimalLambda_Builder_EventAttribute,
-                        WellKnownType.MinimalLambda_Builder_FromEventAttribute
-                    )
-                );
+                .Any(attribute => attribute.AttributeClass is not null
+                                  && context.WellKnownTypes.IsType(
+                                      attribute.AttributeClass,
+                                      WellKnownType.MinimalLambda_Builder_EventAttribute,
+                                      WellKnownType.MinimalLambda_Builder_FromEventAttribute));
 
         internal DiagnosticResult<(string Assignment, string? Key)> GetDiParameterAssignment(
-            GeneratorContext context
-        )
+            GeneratorContext context)
         {
             var paramType = parameterSymbol.Type.QualifiedNullableName;
 
-            var isRequired =
-                parameterSymbol.IsOptional
-                || parameterSymbol.NullableAnnotation == NullableAnnotation.Annotated;
+            var isRequired = parameterSymbol.IsOptional
+                             || parameterSymbol.NullableAnnotation == NullableAnnotation.Annotated;
 
             return parameterSymbol
                 .IsFromKeyedService(context)
@@ -53,29 +45,23 @@ internal static class ParameterSymbolExtensions
                             isRequired
                                 ? $"context.ServiceProvider.GetKeyedService<{paramType}>({result.Key})"
                                 : $"context.ServiceProvider.GetRequiredKeyedService<{paramType}>({result.Key})",
-                            result.Key
-                        )
+                            result.Key)
                         : (
                             isRequired
                                 ? $"context.ServiceProvider.GetService<{paramType}>()"
                                 : $"context.ServiceProvider.GetRequiredService<{paramType}>()",
-                            null
-                        )
-                );
+                            null));
         }
 
         private DiagnosticResult<(bool IsKeyed, string? Key)> IsFromKeyedService(
-            GeneratorContext context
-        ) =>
+            GeneratorContext context) =>
             parameterSymbol
                 .GetAttributes()
-                .FirstOrDefault(attribute =>
-                    attribute is { AttributeClass: not null }
-                    && context.WellKnownTypes.IsType(
-                        attribute.AttributeClass,
-                        WellKnownType.Microsoft_Extensions_DependencyInjection_FromKeyedServicesAttribute
-                    )
-                )
+                .FirstOrDefault(attribute => attribute is { AttributeClass: not null }
+                                             && context.WellKnownTypes.IsType(
+                                                 attribute.AttributeClass,
+                                                 WellKnownType
+                                                     .Microsoft_Extensions_DependencyInjection_FromKeyedServicesAttribute))
                 ?.ExtractKeyedServiceKey()
                 .Bind<(bool, string?)>(key => (true, key))
             ?? (false, null);
@@ -104,13 +90,12 @@ internal static class ParameterSymbolExtensions
                 return DiagnosticResult<string>.Failure(
                     MinimalLambda.SourceGenerators.Diagnostics.InvalidAttributeArgument,
                     attributeData.GetAttributeArgumentLocation(0),
-                    argument.Type?.QualifiedNullableName
-                );
+                    argument.Type?.QualifiedNullableName);
 
             return argument.Kind switch
             {
-                TypedConstantKind.Primitive when value is string strValue =>
-                    CSharp.SymbolDisplay.FormatLiteral(strValue, true),
+                TypedConstantKind.Primitive when value is string strValue => CSharp.SymbolDisplay
+                    .FormatLiteral(strValue, true),
 
                 TypedConstantKind.Primitive when value is char charValue => $"'{charValue}'",
 
@@ -129,8 +114,10 @@ internal static class ParameterSymbolExtensions
         }
 
         private LocationInfo? GetAttributeArgumentLocation(int index) =>
-            attributeData.ApplicationSyntaxReference?.GetSyntax()
-                is AttributeSyntax { ArgumentList: { } argumentList }
+            attributeData.ApplicationSyntaxReference?.GetSyntax() is AttributeSyntax
+            {
+                ArgumentList: { } argumentList,
+            }
                 ? argumentList
                     .Arguments.ElementAtOrDefault(index)
                     ?.Expression.GetLocation()

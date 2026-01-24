@@ -30,13 +30,13 @@ public sealed class CloudWatchLogsEnvelope<T> : CloudWatchLogsEnvelopeBase<T>
     [UnconditionalSuppressMessage(
         "Aot",
         "IL3050:RequiresDynamicCode",
-        Justification = "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T"
-    )]
+        Justification =
+            "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T")]
     [UnconditionalSuppressMessage(
         "Aot",
         "IL2026:RequiresUnreferencedCode",
-        Justification = "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T"
-    )]
+        Justification =
+            "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T")]
     public override void ExtractPayload(EnvelopeOptions options)
     {
         base.ExtractPayload(options);
@@ -44,7 +44,6 @@ public sealed class CloudWatchLogsEnvelope<T> : CloudWatchLogsEnvelopeBase<T>
         foreach (var logEvent in AwslogsContent!.LogEvents)
             logEvent.MessageContent = JsonSerializer.Deserialize<T>(
                 logEvent.Message,
-                options.JsonOptions
-            );
+                options.JsonOptions);
     }
 }

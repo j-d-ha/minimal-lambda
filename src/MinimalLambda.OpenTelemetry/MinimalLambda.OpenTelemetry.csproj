@@ -24,8 +24,8 @@
     <NoWarn>$(NoWarn);AD0001</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MinimalLambda.Abstractions\MinimalLambda.Abstractions.csproj" />
-    <ProjectReference Include="..\MinimalLambda\MinimalLambda.csproj" />
+    <ProjectReference Include="..\MinimalLambda.Abstractions\MinimalLambda.Abstractions.csproj"/>
+    <ProjectReference Include="..\MinimalLambda\MinimalLambda.csproj"/>
     <ProjectReference
       Include="..\MinimalLambda.SourceGenerators\MinimalLambda.SourceGenerators.csproj"
       ReferenceOutputAssembly="false"
@@ -33,9 +33,9 @@
     />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="OpenTelemetry.Instrumentation.AWSLambda" />
+    <PackageReference Include="OpenTelemetry.Instrumentation.AWSLambda"/>
   </ItemGroup>
   <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 </Project>

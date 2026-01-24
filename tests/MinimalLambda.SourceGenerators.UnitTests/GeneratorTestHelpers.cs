@@ -28,21 +28,18 @@ internal static class GeneratorTestHelpers
             .Diagnostics.Should()
             .BeEmpty(
                 "code should be generated without errors, but found:\n"
-                    + string.Join(
-                        "\n---\n",
-                        result.Diagnostics.Select(e =>
-                            $"  - {e.Id}: {e.GetMessage()} at {e.Location}"
-                        )
-                    )
-            );
+                + string.Join(
+                    "\n---\n",
+                    result.Diagnostics.Select(e =>
+                        $"  - {e.Id}: {e.GetMessage()} at {e.Location}")));
 
         // Reparse generated trees with the same parse options as the original compilation
         // to ensure consistent syntax tree features (e.g., InterceptorsNamespaces)
         var parseOptions = originalCompilation.SyntaxTrees.First().Options;
         var reparsedTrees = result
-            .GeneratedTrees.Select(tree =>
-                CSharpSyntaxTree.ParseText(tree.GetText(), (CSharpParseOptions)parseOptions)
-            )
+            .GeneratedTrees.Select(tree => CSharpSyntaxTree.ParseText(
+                tree.GetText(),
+                (CSharpParseOptions)parseOptions))
             .ToArray();
 
         // Add generated trees to original compilation
@@ -57,11 +54,9 @@ internal static class GeneratorTestHelpers
             .Should()
             .BeEmpty(
                 "generated code should compile without errors, but found:\n"
-                    + string.Join(
-                        "\n",
-                        errors.Select(e => $"  - {e.Id}: {e.GetMessage()} at {e.Location}")
-                    )
-            );
+                + string.Join(
+                    "\n",
+                    errors.Select(e => $"  - {e.Id}: {e.GetMessage()} at {e.Location}")));
 
         if (expectedTrees > -1)
             result.GeneratedTrees.Length.Should().Be(expectedTrees);
@@ -75,12 +70,9 @@ internal static class GeneratorTestHelpers
                 // replace
                 // [global::System.CodeDom.Compiler.GeneratedCode("MinimalLambda.SourceGenerators",
                 // "0.0.0")]
-                if (
-                    line.Contains(
+                if (line.Contains(
                         "global::System.CodeDom.Compiler.GeneratedCode",
-                        StringComparison.Ordinal
-                    )
-                )
+                        StringComparison.Ordinal))
                     return RegexHelper.GeneratedCodeAttributeRegex().Replace(line, "REPLACED");
 
                 // replace [InterceptsLocation(1, "")]
@@ -95,8 +87,7 @@ internal static class GeneratorTestHelpers
     internal static (GeneratorDriver driver, Compilation compilation) GenerateFromSource(
         string source,
         Dictionary<string, ReportDiagnostic>? diagnosticsToSuppress = null,
-        LanguageVersion languageVersion = LanguageVersion.CSharp14
-    )
+        LanguageVersion languageVersion = LanguageVersion.CSharp14)
     {
         IEnumerable<KeyValuePair<string, string>> features =
         [
@@ -131,20 +122,17 @@ internal static class GeneratorTestHelpers
 
         var compilationOptions = new CSharpCompilationOptions(
             OutputKind.ConsoleApplication,
-            nullableContextOptions: NullableContextOptions.Enable
-        );
+            nullableContextOptions: NullableContextOptions.Enable);
 
         if (diagnosticsToSuppress is not null)
-            compilationOptions = compilationOptions.WithSpecificDiagnosticOptions(
-                diagnosticsToSuppress
-            );
+            compilationOptions =
+                compilationOptions.WithSpecificDiagnosticOptions(diagnosticsToSuppress);
 
         var compilation = CSharpCompilation.Create(
             "Tests",
             [syntaxTree],
             references,
-            compilationOptions
-        );
+            compilationOptions);
 
         var generator = new MinimalLambdaGenerator().AsSourceGenerator();
 
@@ -163,7 +151,6 @@ internal static partial class RegexHelper
     [GeneratedRegex(
         """(?<=\[InterceptsLocation\(\d+, ")([A-Za-z0-9+/=]{2,})(?="\)\])""",
         RegexOptions.None,
-        "en-US"
-    )]
+        "en-US")]
     internal static partial Regex InterceptsLocationRegex();
 }

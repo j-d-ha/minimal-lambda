@@ -14,8 +14,7 @@ internal record MiddlewareClassInfo(
     EquatableArray<MiddlewareParameterInfo> ParameterInfos,
     bool ImplementsDisposable,
     bool ImplementsAsyncDisposable,
-    bool AllParametersFromServices
-);
+    bool AllParametersFromServices);
 
 internal static class MiddlewareExtensions
 {
@@ -27,21 +26,17 @@ internal static class MiddlewareExtensions
         internal static (MiddlewareClassInfo? Info, List<DiagnosticInfo> Diagnostics) Create(
             INamedTypeSymbol typeSymbol,
             Location? location,
-            GeneratorContext context
-        )
+            GeneratorContext context)
         {
             // validate that middleware class is a concrete -> not interface or abstract class
             if (typeSymbol.TypeKind == TypeKind.Interface || typeSymbol.IsAbstract)
-                return (
-                    null,
-                    [
-                        DiagnosticInfo.Create(
-                            Diagnostics.MustBeConcreteType,
-                            location?.ToLocationInfo(),
-                            [typeSymbol.QualifiedName]
-                        ),
-                    ]
-                );
+                return (null,
+                [
+                    DiagnosticInfo.Create(
+                        Diagnostics.MustBeConcreteType,
+                        location?.ToLocationInfo(),
+                        [typeSymbol.QualifiedName]),
+                ]);
 
             List<DiagnosticInfo> diagnostics = [];
 
@@ -63,8 +58,7 @@ internal static class MiddlewareExtensions
             var parameterInfos = constructor is not null
                 ? constructor
                     .Parameters.CollectDiagnosticResults(parameter =>
-                        MiddlewareParameterInfo.Create(parameter, context)
-                    )
+                        MiddlewareParameterInfo.Create(parameter, context))
                     .Map(results =>
                     {
                         diagnostics.AddRange(results.Diagnostics);
@@ -74,13 +68,11 @@ internal static class MiddlewareExtensions
 
             // implements IDisposable
             var implementsIDisposable = typeSymbol.AllInterfaces.Any(i =>
-                context.WellKnownTypes.IsType(i, WellKnownType.System_IDisposable)
-            );
+                context.WellKnownTypes.IsType(i, WellKnownType.System_IDisposable));
 
             // implements IAsyncDisposable
             var implementsIAsyncDisposable = typeSymbol.AllInterfaces.Any(i =>
-                context.WellKnownTypes.IsType(i, WellKnownType.System_IAsyncDisposable)
-            );
+                context.WellKnownTypes.IsType(i, WellKnownType.System_IAsyncDisposable));
 
             // are all parameters for the constructor from services
             var allParametersFromServices = parameterInfos.All(p => p.FromServices);
@@ -92,48 +84,37 @@ internal static class MiddlewareExtensions
                     parameterInfos.ToEquatableArray(),
                     implementsIDisposable,
                     implementsIAsyncDisposable,
-                    allParametersFromServices
-                ),
-                diagnostics
-            );
+                    allParametersFromServices), diagnostics);
         }
     }
 
     private static (IMethodSymbol? MethodSymbol, DiagnosticInfo[] DiagnosticInfos) GetConstructor(
         INamedTypeSymbol namedTypeSymbol,
-        GeneratorContext context
-    )
+        GeneratorContext context)
     {
         // 1. Get constructors annotated with `[MiddlewareConstructor]`
         var constructors = namedTypeSymbol
             .InstanceConstructors.Where(c =>
-                c.GetAttributes()
-                    .Any(a =>
-                        a.AttributeClass is not null
-                        && context.WellKnownTypes.IsType(
-                            a.AttributeClass,
-                            WellKnownType.MinimalLambda_Builder_MiddlewareConstructorAttribute
-                        )
-                    )
-            )
+                c
+                    .GetAttributes()
+                    .Any(a => a.AttributeClass is not null
+                              && context.WellKnownTypes.IsType(
+                                  a.AttributeClass,
+                                  WellKnownType
+                                      .MinimalLambda_Builder_MiddlewareConstructorAttribute)))
             .ToArray();
 
         return constructors.Length switch
         {
             // if more than one found, we will return diagnostics
-            > 1 => (
-                MethodSymbol: null,
+            > 1 => (MethodSymbol: null,
                 DiagnosticInfos: constructors
                     .Skip(1)
-                    .Select(c =>
-                        DiagnosticInfo.Create(
-                            Diagnostics.MultipleConstructorsWithAttribute,
-                            c.Locations.FirstOrDefault()?.ToLocationInfo(),
-                            [MiddlewareConstructor]
-                        )
-                    )
-                    .ToArray()
-            ),
+                    .Select(c => DiagnosticInfo.Create(
+                        Diagnostics.MultipleConstructorsWithAttribute,
+                        c.Locations.FirstOrDefault()?.ToLocationInfo(),
+                        [MiddlewareConstructor]))
+                    .ToArray()),
 
             // return single constructor that has an `[MiddlewareConstructor]` attribute
             1 => (MethodSymbol: constructors.FirstOrDefault(), DiagnosticInfos: []),
@@ -142,9 +123,7 @@ internal static class MiddlewareExtensions
             _ => (
                 MethodSymbol: namedTypeSymbol
                     .InstanceConstructors.OrderByDescending(c => c.Parameters.Length)
-                    .First(),
-                DiagnosticInfos: []
-            ),
+                    .First(), DiagnosticInfos: []),
         };
     }
 }
