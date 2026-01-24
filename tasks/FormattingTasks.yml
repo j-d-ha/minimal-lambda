@@ -22,7 +22,7 @@ tasks:
           --profile="Built-in: Reformat Code" \
           --verbosity=FATAL \
           --no-build \
-          --include="**/*" \
+          --include="src/**/*;test/**/*;examples/**/*;benchmark/**/*" \
           --exclude="**/bin/**/*;**/obj/**/*"
       - echo "✅ CleanupCode completed successfully!"
 
