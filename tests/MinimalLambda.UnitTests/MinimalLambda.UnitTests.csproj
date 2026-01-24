@@ -47,4 +47,7 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\MinimalLambda\MinimalLambda.csproj"/>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest"/>
+  </ItemGroup>
 </Project>

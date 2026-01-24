@@ -47,4 +47,7 @@
   <PropertyGroup>
     <ExcludeByFile>**/Scriban/**/*.cs</ExcludeByFile>
   </PropertyGroup>
+  <ItemGroup>
+    <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest"/>
+  </ItemGroup>
 </Project>

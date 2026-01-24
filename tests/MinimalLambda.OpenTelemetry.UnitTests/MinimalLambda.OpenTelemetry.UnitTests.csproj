@@ -44,4 +44,7 @@
     <ProjectReference Include="..\..\src\MinimalLambda.OpenTelemetry\MinimalLambda.OpenTelemetry.csproj"/>
     <ProjectReference Include="..\..\src\MinimalLambda.Abstractions\MinimalLambda.Abstractions.csproj"/>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest"/>
+  </ItemGroup>
 </Project>

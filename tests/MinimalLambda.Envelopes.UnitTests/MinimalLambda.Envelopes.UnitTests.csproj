@@ -38,4 +38,12 @@
     <ProjectReference Include="..\..\src\Envelopes\MinimalLambda.Envelopes.Sns\MinimalLambda.Envelopes.Sns.csproj"/>
     <ProjectReference Include="..\..\src\Envelopes\MinimalLambda.Envelopes.Sqs\MinimalLambda.Envelopes.Sqs.csproj"/>
   </ItemGroup>
+  <ItemGroup>
+    <Content Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest"/>
+  </ItemGroup>
 </Project>
