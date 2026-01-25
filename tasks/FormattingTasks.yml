@@ -21,7 +21,8 @@ tasks:
           --settings="MinimalLambda.sln.DotSettings" \
           --profile="Built-in: Reformat Code" \
           --verbosity=FATAL \
-          --no-build
+          --no-build \
+          --exclude="**.props"
       - echo "✅ CleanupCode completed successfully!"
 
   csharpier:
