@@ -541,19 +541,15 @@ internal async Task InvokeAsync_ReturnsCachedResult_WhenCacheHit()
     var logger = Substitute.For<ILogger<CachingMiddleware>>();
     var cachedResponse = new Response("cached");
 
-    primaryCache.TryGetAsync("test-key", out Arg.Any<Response>())
+    primaryCache
+        .TryGetAsync("test-key", out Arg.Any<Response>())
         .Returns(x =>
         {
             x[1] = cachedResponse;
             return true;
         });
 
-    var middleware = new CachingMiddleware(
-        "test-key",
-        primaryCache,
-        fallbackCache,
-        logger,
-        null);
+    var middleware = new CachingMiddleware("test-key", primaryCache, fallbackCache, logger, null);
 
     var context = Substitute.For<ILambdaInvocationContext>();
     var responseFeature = Substitute.For<IResponseFeature<Response>>();
@@ -586,9 +582,7 @@ internal sealed class JwtAuthMiddleware : ILambdaMiddleware
     private readonly IJwtValidator _jwtValidator;
     private readonly ILogger<JwtAuthMiddleware> _logger;
 
-    public JwtAuthMiddleware(
-        IJwtValidator jwtValidator,
-        ILogger<JwtAuthMiddleware> logger)
+    public JwtAuthMiddleware(IJwtValidator jwtValidator, ILogger<JwtAuthMiddleware> logger)
     {
         _jwtValidator = jwtValidator;
         _logger = logger;
@@ -598,8 +592,8 @@ internal sealed class JwtAuthMiddleware : ILambdaMiddleware
     {
         // Extract JWT from event (e.g., API Gateway authorizer context)
         var request = context.GetEvent<ApiGatewayProxyRequest>();
-        if (request?.Headers is null ||
-            !request.Headers.TryGetValue("Authorization", out var authHeader))
+        if (request?.Headers is null
+            || !request.Headers.TryGetValue("Authorization", out var authHeader))
         {
             _logger.LogWarning("Missing Authorization header");
             SetUnauthorizedResponse(context);
@@ -630,8 +624,7 @@ internal sealed class JwtAuthMiddleware : ILambdaMiddleware
         {
             responseFeature.Response = new ApiGatewayProxyResponse
             {
-                StatusCode = 401,
-                Body = "{\"error\":\"Unauthorized\"}"
+                StatusCode = 401, Body = "{\"error\":\"Unauthorized\"}"
             };
         }
     }
@@ -753,8 +746,8 @@ internal sealed class ConditionalValidationMiddleware : ILambdaMiddleware
             if (!result.IsValid)
             {
                 // Set error response and short-circuit
-                context.Features.Get<IResponseFeature<ErrorResponse>>()!.Response
-                    = new ErrorResponse(result.Errors);
+                context.Features.Get<IResponseFeature<ErrorResponse>>()!.Response =
+                    new ErrorResponse(result.Errors);
                 return;
             }
         }
@@ -785,8 +778,8 @@ internal sealed class RateLimitMiddleware : ILambdaMiddleware
         if (!await _rateLimiter.AllowRequestAsync(clientId))
         {
             // Rate limit exceeded
-            context.Features.Get<IResponseFeature<ErrorResponse>>()!.Response
-                = new ErrorResponse("Rate limit exceeded");
+            context.Features.Get<IResponseFeature<ErrorResponse>>()!.Response =
+              new ErrorResponse("Rate limit exceeded");
             return;
         }
 
@@ -820,8 +813,8 @@ internal sealed class MaintenanceModeMiddleware : ILambdaMiddleware
     {
         if (await _featureFlags.IsEnabledAsync("maintenance-mode"))
         {
-            context.Features.Get<IResponseFeature<MaintenanceResponse>>()!.Response
-                = new MaintenanceResponse("Service unavailable during maintenance");
+            context.Features.Get<IResponseFeature<MaintenanceResponse>>()!.Response =
+                new MaintenanceResponse("Service unavailable during maintenance");
             return; // Don't call next
         }
 
