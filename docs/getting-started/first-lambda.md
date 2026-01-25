@@ -38,14 +38,12 @@ using System.Text.Json.Serialization;
 // Request model - what your Lambda receives
 public record GreetingRequest(
     [property: JsonPropertyName("name")] string Name,
-    [property: JsonPropertyName("language")] string? Language
-);
+    [property: JsonPropertyName("language")] string? Language);
 
 // Response model - what your Lambda returns
 public record GreetingResponse(
     [property: JsonPropertyName("message")] string Message,
-    [property: JsonPropertyName("timestamp")] DateTime Timestamp
-);
+    [property: JsonPropertyName("timestamp")] DateTime Timestamp );
 ```
 
 !!! tip "Why Records?"
@@ -122,16 +120,14 @@ Add middleware to log when requests are received and completed. Middleware runs 
 
 ```csharp title="Program.cs (continued)"
 // Add logging middleware
-lambda.UseMiddleware(
-    async (context, next) =>
-    {
-        var logger = context.ServiceProvider.GetRequiredService<ILogger<GreetingService>>();
+lambda.UseMiddleware(async (context, next) =>
+{
+    var logger = context.ServiceProvider.GetRequiredService<ILogger<GreetingService>>();
 
-        logger.LogInformation("Request received at {Timestamp}", DateTime.UtcNow);
-        await next(context);
-        logger.LogInformation("Request completed at {Timestamp}", DateTime.UtcNow);
-    }
-);
+    logger.LogInformation("Request received at {Timestamp}", DateTime.UtcNow);
+    await next(context);
+    logger.LogInformation("Request completed at {Timestamp}", DateTime.UtcNow);
+});
 ```
 
 !!! tip "Middleware Use Cases"
@@ -159,13 +155,11 @@ Map your handler function with the `[FromEvent]` attribute to mark the Lambda ev
 
 ```csharp title="Program.cs (continued)"
 // Register the handler with dependency injection
-lambda.MapHandler(
-    ([FromEvent] GreetingRequest request, IGreetingService service) =>
-    {
-        var message = service.GetGreeting(request.Name, request.Language);
-        return new GreetingResponse(message, DateTime.UtcNow);
-    }
-);
+lambda.MapHandler(([FromEvent] GreetingRequest request, IGreetingService service) =>
+{
+    var message = service.GetGreeting(request.Name, request.Language);
+    return new GreetingResponse(message, DateTime.UtcNow);
+});
 ```
 
 !!! warning "The [FromEvent] Attribute"
@@ -206,25 +200,21 @@ builder.Services.ConfigureLambdaHostOptions(options =>
 var lambda = builder.Build();
 
 // Middleware
-lambda.UseMiddleware(
-    async (context, next) =>
-    {
-        var logger = context.ServiceProvider.GetRequiredService<ILogger<GreetingService>>();
+lambda.UseMiddleware(async (context, next) =>
+{
+    var logger = context.ServiceProvider.GetRequiredService<ILogger<GreetingService>>();
 
-        logger.LogInformation("Request received at {Timestamp}", DateTime.UtcNow);
-        await next(context);
-        logger.LogInformation("Request completed at {Timestamp}", DateTime.UtcNow);
-    }
-);
+    logger.LogInformation("Request received at {Timestamp}", DateTime.UtcNow);
+    await next(context);
+    logger.LogInformation("Request completed at {Timestamp}", DateTime.UtcNow);
+});
 
 // Handler
-lambda.MapHandler(
-    ([FromEvent] GreetingRequest request, IGreetingService service) =>
-    {
-        var message = service.GetGreeting(request.Name, request.Language);
-        return new GreetingResponse(message, DateTime.UtcNow);
-    }
-);
+lambda.MapHandler(([FromEvent] GreetingRequest request, IGreetingService service) =>
+{
+    var message = service.GetGreeting(request.Name, request.Language);
+    return new GreetingResponse(message, DateTime.UtcNow);
+});
 
 // Run
 await lambda.RunAsync();
@@ -232,13 +222,11 @@ await lambda.RunAsync();
 // Request and Response models
 public record GreetingRequest(
     [property: JsonPropertyName("name")] string Name,
-    [property: JsonPropertyName("language")] string? Language
-);
+    [property: JsonPropertyName("language")] string? Language);
 
 public record GreetingResponse(
     [property: JsonPropertyName("message")] string Message,
-    [property: JsonPropertyName("timestamp")] DateTime Timestamp
-);
+    [property: JsonPropertyName("timestamp")] DateTime Timestamp);
 
 // Service interface
 public interface IGreetingService
