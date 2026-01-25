@@ -39,5 +39,6 @@
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions"/>
     <PackageReference Include="Microsoft.AspNetCore.Routing"/>
     <PackageReference Include="Microsoft.Extensions.DependencyModel"/>
+  <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" />
   </ItemGroup>
 </Project>
