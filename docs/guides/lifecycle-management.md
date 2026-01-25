@@ -143,8 +143,7 @@ builder.Services.AddKeyedSingleton<IMyClient, SecondaryClient>("secondary");
 lambda.OnInit(async (
     [FromKeyedServices("primary")] IMyClient primaryClient,
     [FromKeyedServices("secondary")] IMyClient secondaryClient,
-    CancellationToken ct
-) =>
+    CancellationToken ct) =>
 {
     await primaryClient.WarmupAsync(ct);
     await secondaryClient.WarmupAsync(ct);
@@ -165,15 +164,13 @@ lambda.OnInit(async (ILambdaLifecycleContext context, ILogger<Program> logger) =
         "Initializing {FunctionName} v{Version} in {Region}",
         context.FunctionName,
         context.FunctionVersion,
-        context.Region
-    );
+        context.Region);
 
     logger.LogInformation(
         "Memory: {Memory}MB, Init type: {InitType}, Elapsed: {Elapsed}ms",
         context.FunctionMemorySize,
         context.InitializationType,
-        context.ElapsedTime.TotalMilliseconds
-    );
+        context.ElapsedTime.TotalMilliseconds);
 
     return true;
 });
