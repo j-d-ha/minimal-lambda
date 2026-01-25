@@ -202,9 +202,9 @@ that instantiates your middleware and resolves constructor parameters automatica
 no runtime overhead.
 
 !!! tip "Reusable packages"
-Class-based middleware is a good fit for shared packages: ship the middleware type and attributes,
-and the consuming app's build generates the wiring code. The generated code lives in the
-application's build output, not in your package.
+    Class-based middleware is a good fit for shared packages: ship the middleware type and attributes,
+    and the consuming app's build generates the wiring code. The generated code lives in the
+    application's build output, not in your package.
 
 #### Dependency Injection
 
@@ -369,9 +369,9 @@ await lambda.RunAsync();
 ```
 
 !!! tip "When to use [FromArguments]"
-Use `[FromArguments]` for configuration values that vary per middleware registration (like
-cache keys, API endpoints, or feature flags). This makes the middleware reusable with
-different configurations.
+    Use `[FromArguments]` for configuration values that vary per middleware registration (like
+    cache keys, API endpoints, or feature flags). This makes the middleware reusable with
+    different configurations.
 
 #### Multiple Constructors
 
@@ -429,8 +429,8 @@ internal sealed class AuthMiddleware : ILambdaMiddleware
 ```
 
 !!! warning
-Only one constructor can have `[MiddlewareConstructor]`. Applying it to multiple constructors
-triggers compile-time diagnostic **LH0005**.
+    Only one constructor can have `[MiddlewareConstructor]`. Applying it to multiple constructors
+    triggers compile-time diagnostic **LH0005**.
 
 #### Lifecycle and Disposal
 
@@ -488,9 +488,9 @@ internal sealed class TracingMiddleware : ILambdaMiddleware, IAsyncDisposable
 - The generated code prefers `IAsyncDisposable` over `IDisposable` if both are implemented
 
 !!! info "Singleton vs. Per-Invocation"
-Unlike services registered in DI (which can be singleton, scoped, or transient), middleware
-instances are **always per-invocation**. For shared state, inject singleton services into the
-middleware constructor.
+    Unlike services registered in DI (which can be singleton, scoped, or transient), middleware
+    instances are **always per-invocation**. For shared state, inject singleton services into the
+    middleware constructor.
 
 For more on lifecycle hooks, see [Lifecycle Management](lifecycle-management.md).
 
@@ -571,8 +571,8 @@ internal async Task InvokeAsync_ReturnsCachedResult_WhenCacheHit()
 ```
 
 !!! tip "Testing Strategy"
-Test middleware in isolation by mocking `ILambdaInvocationContext` and the `next` delegate.
-This keeps tests fast and focused on middleware behavior without spinning up the entire pipeline.
+    Test middleware in isolation by mocking `ILambdaInvocationContext` and the `next` delegate.
+    This keeps tests fast and focused on middleware behavior without spinning up the entire pipeline.
 
 For more testing patterns, see [Testing](testing.md).
 
@@ -853,8 +853,8 @@ lambda.UseMiddleware<ConcreteMiddleware>(); // Concrete class
 ```
 
 !!! info "Compile-Time Safety"
-These diagnostics catch configuration errors during build, not at runtime. This prevents
-deployment of misconfigured middleware.
+    These diagnostics catch configuration errors during build, not at runtime. This prevents
+    deployment of misconfigured middleware.
 
 ## Working with Features
 
