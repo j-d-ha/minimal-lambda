@@ -19,8 +19,8 @@ tasks:
         dotnet jb cleanupcode  \
           MinimalLambda.sln \
           --settings="MinimalLambda.sln.DotSettings" \
-          --profile="Full Cleanup Custom" \
-          --verbosity=INFO \
+          --profile="Built-in: Reformat Code" \
+          --verbosity=FATAL \
           --no-build
       - echo "✅ CleanupCode completed successfully!"
 

@@ -5,8 +5,7 @@ namespace MinimalLambda.Envelopes;
 ///     Gateway v2 Lambda integrations.
 /// </summary>
 /// <typeparam name="TSelf">The concrete implementing type for fluent method chaining.</typeparam>
-public interface IHttpResult<out TSelf> : IResponseEnvelope
-    where TSelf : IHttpResult<TSelf>
+public interface IHttpResult<out TSelf> : IResponseEnvelope where TSelf : IHttpResult<TSelf>
 {
     /// <summary>Gets or sets the response body content.</summary>
     public string Body { get; set; }
@@ -31,6 +30,5 @@ public interface IHttpResult<out TSelf> : IResponseEnvelope
         int statusCode,
         TResponse? bodyContent,
         IDictionary<string, string> headers,
-        bool isBase64Encoded
-    );
+        bool isBase64Encoded);
 }

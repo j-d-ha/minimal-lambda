@@ -13,8 +13,7 @@ internal record MiddlewareParameterInfo(
     string FromServicesAssignment,
     string InfoComment,
     ParameterSource ServiceSource,
-    string? KeyedServicesKey
-);
+    string? KeyedServicesKey);
 
 internal static class MiddlewareParameterInfoExtensions
 {
@@ -22,8 +21,7 @@ internal static class MiddlewareParameterInfoExtensions
     {
         internal static DiagnosticResult<MiddlewareParameterInfo> Create(
             IParameterSymbol parameterSymbol,
-            GeneratorContext context
-        )
+            GeneratorContext context)
         {
             context.ThrowIfCancellationRequested();
 
@@ -39,38 +37,32 @@ internal static class MiddlewareParameterInfoExtensions
             // determine if it has a `[FromArguments]` attribute
             var fromArguments = parameterSymbol.IsDecoratedWithAttribute(
                 context,
-                WellKnownType.MinimalLambda_Builder_FromArgumentsAttribute
-            );
+                WellKnownType.MinimalLambda_Builder_FromArgumentsAttribute);
 
             // determine if it has a `[FromServices]` attribute
-            var fromServices =
-                !fromArguments
-                && parameterSymbol.IsDecoratedWithAttribute(
-                    context,
-                    WellKnownType.MinimalLambda_Builder_FromServicesAttribute,
-                    WellKnownType.Microsoft_Extensions_DependencyInjection_FromKeyedServicesAttribute
-                );
+            var fromServices = !fromArguments
+                               && parameterSymbol.IsDecoratedWithAttribute(
+                                   context,
+                                   WellKnownType.MinimalLambda_Builder_FromServicesAttribute,
+                                   WellKnownType
+                                       .Microsoft_Extensions_DependencyInjection_FromKeyedServicesAttribute);
 
             // assignment from services
             return parameterSymbol
                 .GetDiParameterAssignment(context)
-                .Bind(diInfo =>
-                    DiagnosticResult<MiddlewareParameterInfo>.Success(
-                        new MiddlewareParameterInfo(
-                            InfoComment: "",
-                            Name: name,
-                            GloballyQualifiedType: globallyQualifiedType,
-                            GloballyQualifiedNotNullableType: globallyQualifiedNotNullableType,
-                            FromArguments: fromArguments,
-                            FromServices: fromServices,
-                            FromServicesAssignment: diInfo.Assignment,
-                            ServiceSource: diInfo.Key is not null
-                                ? ParameterSource.KeyedServices
-                                : ParameterSource.Services,
-                            KeyedServicesKey: diInfo.Key
-                        )
-                    )
-                );
+                .Bind(diInfo => DiagnosticResult<MiddlewareParameterInfo>.Success(
+                    new MiddlewareParameterInfo(
+                        InfoComment: "",
+                        Name: name,
+                        GloballyQualifiedType: globallyQualifiedType,
+                        GloballyQualifiedNotNullableType: globallyQualifiedNotNullableType,
+                        FromArguments: fromArguments,
+                        FromServices: fromServices,
+                        FromServicesAssignment: diInfo.Assignment,
+                        ServiceSource: diInfo.Key is not null
+                            ? ParameterSource.KeyedServices
+                            : ParameterSource.Services,
+                        KeyedServicesKey: diInfo.Key)));
         }
     }
 }

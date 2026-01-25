@@ -17,13 +17,13 @@ public sealed class ApiGatewayRequestEnvelope<T> : ApiGatewayRequestEnvelopeBase
     [UnconditionalSuppressMessage(
         "Aot",
         "IL3050:RequiresDynamicCode",
-        Justification = "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T"
-    )]
+        Justification =
+            "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T")]
     [UnconditionalSuppressMessage(
         "Aot",
         "IL2026:RequiresUnreferencedCode",
-        Justification = "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T"
-    )]
+        Justification =
+            "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T")]
     public override void ExtractPayload(EnvelopeOptions options) =>
         BodyContent = JsonSerializer.Deserialize<T>(Body, options.JsonOptions);
 }

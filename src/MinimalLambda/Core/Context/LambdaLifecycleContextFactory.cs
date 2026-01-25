@@ -6,15 +6,13 @@ namespace MinimalLambda;
 internal class LambdaLifecycleContextFactory(
     IServiceScopeFactory scopeFactory,
     ILifetimeStopwatch stopwatch,
-    IConfiguration configuration
-) : ILambdaLifecycleContextFactory
+    IConfiguration configuration) : ILambdaLifecycleContextFactory
 {
     private LambdaLifecycleContext.Core? _contextCore;
 
     public ILambdaLifecycleContext Create(
         IDictionary<string, object?> properties,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         _contextCore ??= new LambdaLifecycleContext.Core
         {
@@ -22,12 +20,12 @@ internal class LambdaLifecycleContextFactory(
             Region = configuration["AWS_REGION"] ?? configuration["AWS_DEFAULT_REGION"],
             ExecutionEnvironment = configuration["AWS_EXECUTION_ENV"],
             FunctionName = configuration["AWS_LAMBDA_FUNCTION_NAME"],
-            FunctionMemorySize = int.TryParse(
-                configuration["AWS_LAMBDA_FUNCTION_MEMORY_SIZE"],
-                out var memorySize
-            )
-                ? memorySize
-                : null,
+            FunctionMemorySize =
+                int.TryParse(
+                    configuration["AWS_LAMBDA_FUNCTION_MEMORY_SIZE"],
+                    out var memorySize)
+                    ? memorySize
+                    : null,
             FunctionVersion = configuration["AWS_LAMBDA_FUNCTION_VERSION"],
             InitializationType = configuration["AWS_LAMBDA_INITIALIZATION_TYPE"],
             LogGroupName = configuration["AWS_LAMBDA_LOG_GROUP_NAME"],
@@ -39,7 +37,6 @@ internal class LambdaLifecycleContextFactory(
             _contextCore,
             scopeFactory,
             properties,
-            cancellationToken
-        );
+            cancellationToken);
     }
 }

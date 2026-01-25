@@ -10,15 +10,13 @@ public class LambdaLifecycleContextTests
     internal void Constructor_WithValidParameters_SuccessfullyConstructs(
         IServiceScopeFactory serviceScopeFactory,
         IDictionary<string, object?> properties,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         // Arrange
         var stopwatch = new LifetimeStopwatch();
         var contextCore = new LambdaLifecycleContext.Core
         {
-            Stopwatch = stopwatch,
-            Region = "us-east-1",
+            Stopwatch = stopwatch, Region = "us-east-1",
         };
 
         // Act
@@ -26,8 +24,7 @@ public class LambdaLifecycleContextTests
             contextCore,
             serviceScopeFactory,
             properties,
-            cancellationToken
-        );
+            cancellationToken);
 
         // Assert
         context.Should().NotBeNull();
@@ -37,8 +34,7 @@ public class LambdaLifecycleContextTests
     [AutoNSubstituteData]
     internal void CancellationToken_ReturnsCancellationTokenPassedToConstructor(
         IServiceScopeFactory serviceScopeFactory,
-        IDictionary<string, object?> properties
-    )
+        IDictionary<string, object?> properties)
     {
         // Arrange
         var stopwatch = new LifetimeStopwatch();
@@ -50,8 +46,7 @@ public class LambdaLifecycleContextTests
             contextCore,
             serviceScopeFactory,
             properties,
-            expectedToken
-        );
+            expectedToken);
 
         // Assert
         context.CancellationToken.Should().Be(expectedToken);
@@ -61,25 +56,20 @@ public class LambdaLifecycleContextTests
     [AutoNSubstituteData]
     internal void Properties_ReturnsPropertiesDictionaryPassedToConstructor(
         IServiceScopeFactory serviceScopeFactory,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         // Arrange
         var stopwatch = new LifetimeStopwatch();
         var contextCore = new LambdaLifecycleContext.Core { Stopwatch = stopwatch };
-        var propertiesDict = new Dictionary<string, object?>
-        {
-            { "key1", "value1" },
-            { "key2", 42 },
-        };
+        var propertiesDict =
+            new Dictionary<string, object?> { { "key1", "value1" }, { "key2", 42 } };
 
         // Act
         var context = new LambdaLifecycleContext(
             contextCore,
             serviceScopeFactory,
             propertiesDict,
-            cancellationToken
-        );
+            cancellationToken);
 
         // Assert
         context.Properties.Should().BeEquivalentTo(propertiesDict);
@@ -103,8 +93,7 @@ public class LambdaLifecycleContextTests
             contextCore,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         // Act
         var result = context.ServiceProvider;
@@ -118,8 +107,7 @@ public class LambdaLifecycleContextTests
     [Theory]
     [AutoNSubstituteData]
     internal void ServiceProvider_ReturnsSameScopeOnSubsequentAccess(
-        IServiceScopeFactory serviceScopeFactory
-    )
+        IServiceScopeFactory serviceScopeFactory)
     {
         // Arrange
         var mockScope = Substitute.For<IServiceScope>();
@@ -134,8 +122,7 @@ public class LambdaLifecycleContextTests
             contextCore,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         // Act
         var result1 = context.ServiceProvider;
@@ -153,8 +140,7 @@ public class LambdaLifecycleContextTests
     internal void ElapsedTime_ReturnsValueFromContextCore(
         IServiceScopeFactory serviceScopeFactory,
         IDictionary<string, object?> properties,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         // Arrange
         var stopwatch = new LifetimeStopwatch();
@@ -164,16 +150,13 @@ public class LambdaLifecycleContextTests
             contextCore,
             serviceScopeFactory,
             properties,
-            cancellationToken
-        );
+            cancellationToken);
 
         // Act
         var result = context.ElapsedTime;
 
         // Assert
-        (result >= TimeSpan.Zero)
-            .Should()
-            .BeTrue();
+        (result >= TimeSpan.Zero).Should().BeTrue();
     }
 
     [Theory]
@@ -181,24 +164,21 @@ public class LambdaLifecycleContextTests
     internal void Region_ReturnsValueFromContextCore(
         IServiceScopeFactory serviceScopeFactory,
         IDictionary<string, object?> properties,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         // Arrange
         const string expectedValue = "us-west-2";
         var stopwatch = new LifetimeStopwatch();
         var contextCore = new LambdaLifecycleContext.Core
         {
-            Stopwatch = stopwatch,
-            Region = expectedValue,
+            Stopwatch = stopwatch, Region = expectedValue,
         };
 
         var context = new LambdaLifecycleContext(
             contextCore,
             serviceScopeFactory,
             properties,
-            cancellationToken
-        );
+            cancellationToken);
 
         // Act
         var result = context.Region;
@@ -212,24 +192,21 @@ public class LambdaLifecycleContextTests
     internal void ExecutionEnvironment_ReturnsValueFromContextCore(
         IServiceScopeFactory serviceScopeFactory,
         IDictionary<string, object?> properties,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         // Arrange
         const string expectedValue = "AWS_Lambda_dotnet8";
         var stopwatch = new LifetimeStopwatch();
         var contextCore = new LambdaLifecycleContext.Core
         {
-            Stopwatch = stopwatch,
-            ExecutionEnvironment = expectedValue,
+            Stopwatch = stopwatch, ExecutionEnvironment = expectedValue,
         };
 
         var context = new LambdaLifecycleContext(
             contextCore,
             serviceScopeFactory,
             properties,
-            cancellationToken
-        );
+            cancellationToken);
 
         // Act
         var result = context.ExecutionEnvironment;
@@ -243,24 +220,21 @@ public class LambdaLifecycleContextTests
     internal void FunctionName_ReturnsValueFromContextCore(
         IServiceScopeFactory serviceScopeFactory,
         IDictionary<string, object?> properties,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         // Arrange
         const string expectedValue = "my-lambda-function";
         var stopwatch = new LifetimeStopwatch();
         var contextCore = new LambdaLifecycleContext.Core
         {
-            Stopwatch = stopwatch,
-            FunctionName = expectedValue,
+            Stopwatch = stopwatch, FunctionName = expectedValue,
         };
 
         var context = new LambdaLifecycleContext(
             contextCore,
             serviceScopeFactory,
             properties,
-            cancellationToken
-        );
+            cancellationToken);
 
         // Act
         var result = context.FunctionName;
@@ -274,24 +248,21 @@ public class LambdaLifecycleContextTests
     internal void FunctionMemorySize_ReturnsValueFromContextCore(
         IServiceScopeFactory serviceScopeFactory,
         IDictionary<string, object?> properties,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         // Arrange
         const int expectedValue = 512;
         var stopwatch = new LifetimeStopwatch();
         var contextCore = new LambdaLifecycleContext.Core
         {
-            Stopwatch = stopwatch,
-            FunctionMemorySize = expectedValue,
+            Stopwatch = stopwatch, FunctionMemorySize = expectedValue,
         };
 
         var context = new LambdaLifecycleContext(
             contextCore,
             serviceScopeFactory,
             properties,
-            cancellationToken
-        );
+            cancellationToken);
 
         // Act
         var result = context.FunctionMemorySize;
@@ -305,24 +276,21 @@ public class LambdaLifecycleContextTests
     internal void FunctionVersion_ReturnsValueFromContextCore(
         IServiceScopeFactory serviceScopeFactory,
         IDictionary<string, object?> properties,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         // Arrange
         const string expectedValue = "$LATEST";
         var stopwatch = new LifetimeStopwatch();
         var contextCore = new LambdaLifecycleContext.Core
         {
-            Stopwatch = stopwatch,
-            FunctionVersion = expectedValue,
+            Stopwatch = stopwatch, FunctionVersion = expectedValue,
         };
 
         var context = new LambdaLifecycleContext(
             contextCore,
             serviceScopeFactory,
             properties,
-            cancellationToken
-        );
+            cancellationToken);
 
         // Act
         var result = context.FunctionVersion;
@@ -336,24 +304,21 @@ public class LambdaLifecycleContextTests
     internal void InitializationType_ReturnsValueFromContextCore(
         IServiceScopeFactory serviceScopeFactory,
         IDictionary<string, object?> properties,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         // Arrange
         const string expectedValue = "on-demand";
         var stopwatch = new LifetimeStopwatch();
         var contextCore = new LambdaLifecycleContext.Core
         {
-            Stopwatch = stopwatch,
-            InitializationType = expectedValue,
+            Stopwatch = stopwatch, InitializationType = expectedValue,
         };
 
         var context = new LambdaLifecycleContext(
             contextCore,
             serviceScopeFactory,
             properties,
-            cancellationToken
-        );
+            cancellationToken);
 
         // Act
         var result = context.InitializationType;
@@ -367,24 +332,21 @@ public class LambdaLifecycleContextTests
     internal void LogGroupName_ReturnsValueFromContextCore(
         IServiceScopeFactory serviceScopeFactory,
         IDictionary<string, object?> properties,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         // Arrange
         const string expectedValue = "/aws/lambda/my-function";
         var stopwatch = new LifetimeStopwatch();
         var contextCore = new LambdaLifecycleContext.Core
         {
-            Stopwatch = stopwatch,
-            LogGroupName = expectedValue,
+            Stopwatch = stopwatch, LogGroupName = expectedValue,
         };
 
         var context = new LambdaLifecycleContext(
             contextCore,
             serviceScopeFactory,
             properties,
-            cancellationToken
-        );
+            cancellationToken);
 
         // Act
         var result = context.LogGroupName;
@@ -398,24 +360,21 @@ public class LambdaLifecycleContextTests
     internal void LogStreamName_ReturnsValueFromContextCore(
         IServiceScopeFactory serviceScopeFactory,
         IDictionary<string, object?> properties,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         // Arrange
         const string expectedValue = "2024/12/16/[$LATEST]abcdef123456";
         var stopwatch = new LifetimeStopwatch();
         var contextCore = new LambdaLifecycleContext.Core
         {
-            Stopwatch = stopwatch,
-            LogStreamName = expectedValue,
+            Stopwatch = stopwatch, LogStreamName = expectedValue,
         };
 
         var context = new LambdaLifecycleContext(
             contextCore,
             serviceScopeFactory,
             properties,
-            cancellationToken
-        );
+            cancellationToken);
 
         // Act
         var result = context.LogStreamName;
@@ -429,24 +388,21 @@ public class LambdaLifecycleContextTests
     internal void TaskRoot_ReturnsValueFromContextCore(
         IServiceScopeFactory serviceScopeFactory,
         IDictionary<string, object?> properties,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         // Arrange
         const string expectedValue = "/var/task";
         var stopwatch = new LifetimeStopwatch();
         var contextCore = new LambdaLifecycleContext.Core
         {
-            Stopwatch = stopwatch,
-            TaskRoot = expectedValue,
+            Stopwatch = stopwatch, TaskRoot = expectedValue,
         };
 
         var context = new LambdaLifecycleContext(
             contextCore,
             serviceScopeFactory,
             properties,
-            cancellationToken
-        );
+            cancellationToken);
 
         // Act
         var result = context.TaskRoot;
@@ -458,8 +414,7 @@ public class LambdaLifecycleContextTests
     [Theory]
     [AutoNSubstituteData]
     internal async Task DisposeAsync_DisposesServiceScopeWhenAsyncDisposable(
-        IServiceScopeFactory serviceScopeFactory
-    )
+        IServiceScopeFactory serviceScopeFactory)
     {
         // Arrange
         var asyncDisposableScope = Substitute.For<IServiceScope, IAsyncDisposable>();
@@ -474,8 +429,7 @@ public class LambdaLifecycleContextTests
             contextCore,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
-            CancellationToken.None
-        );
+            CancellationToken.None);
         _ = context.ServiceProvider; // Trigger lazy initialization
 
         // Act
@@ -488,8 +442,7 @@ public class LambdaLifecycleContextTests
     [Theory]
     [AutoNSubstituteData]
     internal async Task DisposeAsync_DisposesServiceScopeSynchronouslyWhenNotAsyncDisposable(
-        IServiceScopeFactory serviceScopeFactory
-    )
+        IServiceScopeFactory serviceScopeFactory)
     {
         // Arrange
         var mockScope = Substitute.For<IServiceScope>();
@@ -504,8 +457,7 @@ public class LambdaLifecycleContextTests
             contextCore,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
-            CancellationToken.None
-        );
+            CancellationToken.None);
         _ = context.ServiceProvider; // Trigger lazy initialization
 
         // Act
@@ -518,8 +470,7 @@ public class LambdaLifecycleContextTests
     [Theory]
     [AutoNSubstituteData]
     internal async Task DisposeAsync_DoesNotDisposeIfServiceProviderNeverAccessed(
-        IServiceScopeFactory serviceScopeFactory
-    )
+        IServiceScopeFactory serviceScopeFactory)
     {
         // Arrange
         var stopwatch = new LifetimeStopwatch();
@@ -529,8 +480,7 @@ public class LambdaLifecycleContextTests
             contextCore,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         // Act
         await context.DisposeAsync();
@@ -542,8 +492,7 @@ public class LambdaLifecycleContextTests
     [Theory]
     [AutoNSubstituteData]
     internal async Task DisposeAsync_CanBeCalledMultipleTimes(
-        IServiceScopeFactory serviceScopeFactory
-    )
+        IServiceScopeFactory serviceScopeFactory)
     {
         // Arrange
         var stopwatch = new LifetimeStopwatch();
@@ -553,8 +502,7 @@ public class LambdaLifecycleContextTests
             contextCore,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         // Act
         var act = async () =>
@@ -580,8 +528,7 @@ public class LambdaLifecycleContextTests
             contextCore,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         // Assert
         context.Should().BeAssignableTo<IAsyncDisposable>();
@@ -600,8 +547,7 @@ public class LambdaLifecycleContextTests
             contextCore,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         // Assert
         context.Should().BeAssignableTo<ILambdaLifecycleContext>();
@@ -615,13 +561,11 @@ public class LambdaLifecycleContextTests
         var stopwatch = new LifetimeStopwatch();
         var contextCore1 = new LambdaLifecycleContext.Core
         {
-            Stopwatch = stopwatch,
-            Region = "us-east-1",
+            Stopwatch = stopwatch, Region = "us-east-1",
         };
         var contextCore2 = new LambdaLifecycleContext.Core
         {
-            Stopwatch = stopwatch,
-            Region = "us-west-2",
+            Stopwatch = stopwatch, Region = "us-west-2",
         };
 
         var properties1 = new Dictionary<string, object?>();
@@ -632,14 +576,12 @@ public class LambdaLifecycleContextTests
             contextCore1,
             serviceScopeFactory,
             properties1,
-            CancellationToken.None
-        );
+            CancellationToken.None);
         var context2 = new LambdaLifecycleContext(
             contextCore2,
             serviceScopeFactory,
             properties2,
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         properties1["key"] = "value1";
         properties2["key"] = "value2";
@@ -656,8 +598,7 @@ public class LambdaLifecycleContextTests
     internal void NullableProperties_ReturnNullWhenNotSet(
         IServiceScopeFactory serviceScopeFactory,
         IDictionary<string, object?> properties,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         // Arrange
         var stopwatch = new LifetimeStopwatch();
@@ -668,8 +609,7 @@ public class LambdaLifecycleContextTests
             contextCore,
             serviceScopeFactory,
             properties,
-            cancellationToken
-        );
+            cancellationToken);
 
         // Assert
         context.Region.Should().BeNull();

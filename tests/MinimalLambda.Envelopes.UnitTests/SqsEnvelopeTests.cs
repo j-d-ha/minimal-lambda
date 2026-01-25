@@ -86,8 +86,7 @@ public class SqsEnvelopeTests
         var payload = _fixture.Create<MessagePayload>();
         var json = JsonSerializer.Serialize(
             payload,
-            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
-        );
+            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
         var record = new SqsEnvelopeBase<MessagePayload>.SqsMessageEnvelope { Body = json };
         var envelope = new SqsEnvelope<MessagePayload> { Records = [record] };
         var options = new EnvelopeOptions
@@ -152,10 +151,8 @@ public class SqsEnvelopeTests
     {
         // Arrange
         var malformedJson = """{"Content":"Valid","Priority":"NotAnInt"}""";
-        var record = new SqsEnvelopeBase<MessagePayload>.SqsMessageEnvelope
-        {
-            Body = malformedJson,
-        };
+        var record =
+            new SqsEnvelopeBase<MessagePayload>.SqsMessageEnvelope { Body = malformedJson };
         var envelope = new SqsEnvelope<MessagePayload> { Records = [record] };
         var options = new EnvelopeOptions();
 
@@ -184,8 +181,7 @@ public class SqsEnvelopeTests
     {
         // Arrange
         var property = typeof(SqsEnvelopeBase<MessagePayload>.SqsMessageEnvelope).GetProperty(
-            nameof(SqsEnvelopeBase<MessagePayload>.SqsMessageEnvelope.BodyContent)
-        );
+            nameof(SqsEnvelopeBase<MessagePayload>.SqsMessageEnvelope.BodyContent));
 
         // Act
         var hasJsonIgnoreAttribute =
@@ -221,14 +217,10 @@ public class SqsEnvelopeTests
         // Arrange
         var validPayload = _fixture.Create<MessagePayload>();
         var validJson = JsonSerializer.Serialize(validPayload);
-        var validRecord = new SqsEnvelopeBase<MessagePayload>.SqsMessageEnvelope
-        {
-            Body = validJson,
-        };
-        var invalidRecord = new SqsEnvelopeBase<MessagePayload>.SqsMessageEnvelope
-        {
-            Body = "invalid",
-        };
+        var validRecord =
+            new SqsEnvelopeBase<MessagePayload>.SqsMessageEnvelope { Body = validJson };
+        var invalidRecord =
+            new SqsEnvelopeBase<MessagePayload>.SqsMessageEnvelope { Body = "invalid" };
 
         var envelope = new SqsEnvelope<MessagePayload> { Records = [validRecord, invalidRecord] };
         var options = new EnvelopeOptions();

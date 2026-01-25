@@ -35,8 +35,7 @@ public class LambdaInvocationContextAccessorTests
     [AutoNSubstituteData]
     internal void LambdaInvocationContext_WhenSetToNewValue_ReturnsNewValue(
         ILambdaInvocationContext context1,
-        ILambdaInvocationContext context2
-    )
+        ILambdaInvocationContext context2)
     {
         // Arrange
         var accessor = new LambdaInvocationContextAccessor();
@@ -54,8 +53,7 @@ public class LambdaInvocationContextAccessorTests
     [Theory]
     [AutoNSubstituteData]
     internal void LambdaInvocationContext_WhenSetToNull_BecomesNull(
-        ILambdaInvocationContext context
-    )
+        ILambdaInvocationContext context)
     {
         // Arrange
         var accessor = new LambdaInvocationContextAccessor();
@@ -73,8 +71,7 @@ public class LambdaInvocationContextAccessorTests
     [AutoNSubstituteData]
     internal void LambdaInvocationContext_MultipleInstances_ShareAsyncLocalState(
         ILambdaInvocationContext context1,
-        ILambdaInvocationContext context2
-    )
+        ILambdaInvocationContext context2)
     {
         // Arrange
         var accessor1 = new LambdaInvocationContextAccessor();

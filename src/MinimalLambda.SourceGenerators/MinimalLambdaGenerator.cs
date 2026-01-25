@@ -12,14 +12,11 @@ public class MinimalLambdaGenerator : IIncrementalGenerator
     public void Initialize(IncrementalGeneratorInitializationContext context)
     {
         // Language version gate - only generate source if C# 11 or later is used
-        var csharpSufficient = context.CompilationProvider.Select(
-            static (compilation, _) =>
-                compilation
-                    is CSharpCompilation
-                    {
-                        LanguageVersion: LanguageVersion.Default or >= LanguageVersion.CSharp11,
-                    }
-        );
+        var csharpSufficient = context.CompilationProvider.Select(static (compilation, _) =>
+            compilation is CSharpCompilation
+            {
+                LanguageVersion: LanguageVersion.Default or >= LanguageVersion.CSharp11,
+            });
 
         context.RegisterSourceOutput(
             csharpSufficient,
@@ -27,25 +24,21 @@ public class MinimalLambdaGenerator : IIncrementalGenerator
             {
                 if (!ok)
                     spc.ReportDiagnostic(
-                        Diagnostic.Create(Diagnostics.CSharpVersionTooLow, Location.None)
-                    );
-            }
-        );
+                        Diagnostic.Create(Diagnostics.CSharpVersionTooLow, Location.None));
+            });
 
         // handler registration calls
         var registrationCalls = context
             .SyntaxProvider.CreateSyntaxProvider(
                 HandlerSyntaxProvider.Predicate,
-                HandlerSyntaxProvider.Transformer
-            )
+                HandlerSyntaxProvider.Transformer)
             .WhereNotNull();
 
         // find UseMiddleware<T>() calls
         var useMiddlewareTCalls = context
             .SyntaxProvider.CreateSyntaxProvider(
                 UseMiddlewareTSyntaxProvider.Predicate,
-                UseMiddlewareTSyntaxProvider.Transformer
-            )
+                UseMiddlewareTSyntaxProvider.Transformer)
             .WhereNotNull();
 
         var invocationHandlerCalls = registrationCalls
@@ -70,13 +63,11 @@ public class MinimalLambdaGenerator : IIncrementalGenerator
 
         context.RegisterSourceOutput(
             registrationCalls,
-            (ctx, call) => call.DiagnosticInfos.ForEach(d => d.ReportDiagnostic(ctx))
-        );
+            (ctx, call) => call.DiagnosticInfos.ForEach(d => d.ReportDiagnostic(ctx)));
 
         context.RegisterSourceOutput(
             useMiddlewareTCalls,
-            (ctx, call) => call.DiagnosticInfos.ForEach(d => d.ReportDiagnostic(ctx))
-        );
+            (ctx, call) => call.DiagnosticInfos.ForEach(d => d.ReportDiagnostic(ctx)));
 
         context.RegisterSourceOutput(invocationHandlerCalls, InvocationHandlerEmitter.Emit);
         context.RegisterSourceOutput(onInitHandlerCalls, LifecycleHandlerEmitter.Emit);

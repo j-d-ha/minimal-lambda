@@ -11,15 +11,13 @@ internal static class SyntaxNodeExtensions
         internal bool TryGetMethodName([NotNullWhen(true)] out string? methodName)
         {
             methodName = null;
-            if (
-                node is InvocationExpressionSyntax
+            if (node is InvocationExpressionSyntax
                 {
                     Expression: MemberAccessExpressionSyntax
                     {
                         Name.Identifier.ValueText: var method,
                     },
-                }
-            )
+                })
             {
                 methodName = method;
                 return true;

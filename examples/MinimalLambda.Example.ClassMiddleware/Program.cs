@@ -11,9 +11,8 @@ var lambda = builder.Build();
 
 lambda.UseMiddleware<Middleware>();
 
-lambda.MapHandler(
-    ([FromEvent] Request request) => new Response($"Hello {request.Name}!", DateTime.UtcNow)
-);
+lambda.MapHandler(([FromEvent] Request request) =>
+new Response($"Hello {request.Name}!", DateTime.UtcNow));
 
 await lambda.RunAsync();
 

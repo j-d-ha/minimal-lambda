@@ -28,8 +28,8 @@ internal sealed class DiagnosticResult<T>
     public static DiagnosticResult<T> Failure(
         DiagnosticDescriptor diagnosticDescriptor,
         LocationInfo? locationInfo = null,
-        params object?[] messageArgs
-    ) => new(false, default, new DiagnosticInfo(diagnosticDescriptor, locationInfo, messageArgs));
+        params object?[] messageArgs) =>
+        new(false, default, new DiagnosticInfo(diagnosticDescriptor, locationInfo, messageArgs));
 
     public DiagnosticResult<TNew> Map<TNew>(Func<T, TNew> map) =>
         IsSuccess
@@ -41,8 +41,8 @@ internal sealed class DiagnosticResult<T>
 
     public TResult Match<TResult>(
         Func<T, TResult> onSuccess,
-        Func<DiagnosticInfo, TResult> onFailure
-    ) => IsSuccess ? onSuccess(Value!) : onFailure(Error!);
+        Func<DiagnosticInfo, TResult> onFailure) =>
+        IsSuccess ? onSuccess(Value!) : onFailure(Error!);
 
     public void Switch(Action<T> onSuccess, Action<DiagnosticInfo> onFailure)
     {

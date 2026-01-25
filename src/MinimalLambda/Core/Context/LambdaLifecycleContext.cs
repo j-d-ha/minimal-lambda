@@ -6,8 +6,7 @@ internal class LambdaLifecycleContext(
     LambdaLifecycleContext.Core contextCore,
     IServiceScopeFactory scopeFactory,
     IDictionary<string, object?> properties,
-    CancellationToken cancellationToken
-) : ILambdaLifecycleContext, IAsyncDisposable
+    CancellationToken cancellationToken) : ILambdaLifecycleContext, IAsyncDisposable
 {
     private IServiceScope? _instanceServicesScope;
 

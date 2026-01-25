@@ -26,8 +26,7 @@ public class DefaultResponseFeatureTests
     [Theory]
     [AutoNSubstituteData]
     internal void Constructor_WithValidSerializer_SuccessfullyConstructs(
-        DefaultResponseFeature<string> feature
-    ) =>
+        DefaultResponseFeature<string> feature) =>
         // Assert
         feature.Should().NotBeNull();
 
@@ -38,8 +37,7 @@ public class DefaultResponseFeatureTests
     [Theory]
     [AutoNSubstituteData]
     internal void SetResponse_WithValue_StoresAndRetrievesValue(
-        DefaultResponseFeature<string> feature
-    )
+        DefaultResponseFeature<string> feature)
     {
         // Arrange
         const string expectedResponse = "test-response";
@@ -55,8 +53,7 @@ public class DefaultResponseFeatureTests
     [Theory]
     [AutoNSubstituteData]
     internal void GetResponse_WithoutSetResponse_ReturnsDefault(
-        DefaultResponseFeature<string> feature
-    )
+        DefaultResponseFeature<string> feature)
     {
         // Act
         var result = feature.GetResponse();
@@ -68,8 +65,7 @@ public class DefaultResponseFeatureTests
     [Theory]
     [AutoNSubstituteData]
     internal void GetResponse_WithoutSetResponse_ReturnsDefaultForValueType(
-        DefaultResponseFeature<int> feature
-    )
+        DefaultResponseFeature<int> feature)
     {
         // Act
         var result = feature.GetResponse();
@@ -81,8 +77,7 @@ public class DefaultResponseFeatureTests
     [Theory]
     [AutoNSubstituteData]
     internal void SetResponse_WithNullValue_StoresAndRetrievesNull(
-        DefaultResponseFeature<string?> feature
-    )
+        DefaultResponseFeature<string?> feature)
     {
         // Act
         feature.SetResponse(null);
@@ -95,8 +90,7 @@ public class DefaultResponseFeatureTests
     [Theory]
     [AutoNSubstituteData]
     internal void SetResponse_MultipleTimesWithDifferentValues_ReturnsLastValue(
-        DefaultResponseFeature<string> feature
-    )
+        DefaultResponseFeature<string> feature)
     {
         // Arrange
         const string firstResponse = "first";
@@ -116,8 +110,7 @@ public class DefaultResponseFeatureTests
     [Theory]
     [AutoNSubstituteData]
     internal void SetResponse_WithComplexObject_StoresAndRetrievesObject(
-        DefaultResponseFeature<TestResponse> feature
-    )
+        DefaultResponseFeature<TestResponse> feature)
     {
         // Arrange
         var expectedResponse = new TestResponse { Id = 42, Message = "test" };
@@ -141,8 +134,7 @@ public class DefaultResponseFeatureTests
         [Frozen] ILambdaSerializer serializer,
         DefaultResponseFeature<string> feature,
         ILambdaInvocationContext context,
-        string testData
-    )
+        string testData)
     {
         // Arrange
         feature.SetResponse(testData);
@@ -159,8 +151,7 @@ public class DefaultResponseFeatureTests
     internal void SerializeToStream_WhenResponseNotSet_DoesNotCallSerializer(
         [Frozen] ILambdaSerializer serializer,
         DefaultResponseFeature<string> feature,
-        ILambdaInvocationContext context
-    )
+        ILambdaInvocationContext context)
     {
         // Act
         feature.SerializeToStream(context);
@@ -175,8 +166,7 @@ public class DefaultResponseFeatureTests
         [Frozen] Stream responseStream,
         DefaultResponseFeature<string> feature,
         ILambdaInvocationContext context,
-        string testData
-    )
+        string testData)
     {
         // Arrange
         feature.SetResponse(testData);
@@ -194,8 +184,7 @@ public class DefaultResponseFeatureTests
         [Frozen] Stream responseStream,
         DefaultResponseFeature<string> feature,
         ILambdaInvocationContext context,
-        string testData
-    )
+        string testData)
     {
         // Arrange
         feature.SetResponse(testData);
@@ -214,8 +203,7 @@ public class DefaultResponseFeatureTests
     [Theory]
     [AutoNSubstituteData]
     internal void IResponseFeatureGetResponse_DelegatestoGenericGetResponse(
-        DefaultResponseFeature<string> feature
-    )
+        DefaultResponseFeature<string> feature)
     {
         // Arrange
         const string expectedResponse = "interface-test";
@@ -231,8 +219,7 @@ public class DefaultResponseFeatureTests
     [Theory]
     [AutoNSubstituteData]
     internal void IResponseFeatureGetResponse_ReturnsObjectType(
-        DefaultResponseFeature<string> feature
-    )
+        DefaultResponseFeature<string> feature)
     {
         // Arrange
         const string response = "test";
@@ -248,16 +235,14 @@ public class DefaultResponseFeatureTests
     [Theory]
     [AutoNSubstituteData]
     internal void Feature_ImplementsIResponseFeatureGeneric(
-        DefaultResponseFeature<string> feature
-    ) =>
+        DefaultResponseFeature<string> feature) =>
         // Assert
         feature.Should().BeAssignableTo<IResponseFeature<string>>();
 
     [Theory]
     [AutoNSubstituteData]
     internal void Feature_ImplementsIResponseFeatureNonGeneric(
-        DefaultResponseFeature<string> feature
-    ) =>
+        DefaultResponseFeature<string> feature) =>
         // Assert
         feature.Should().BeAssignableTo<IResponseFeature>();
 
@@ -298,8 +283,7 @@ public class DefaultResponseFeatureTests
     [Theory]
     [AutoNSubstituteData]
     internal void Feature_WorksWithNullableValueTypes_NullableInt(
-        DefaultResponseFeature<int?> feature
-    )
+        DefaultResponseFeature<int?> feature)
     {
         // Arrange
         int? expectedResponse = 99;

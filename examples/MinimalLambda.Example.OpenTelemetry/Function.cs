@@ -8,8 +8,7 @@ internal static class Function
         [FromEvent] Request request,
         IService service,
         Instrumentation instrumentation,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         using var activity = instrumentation.ActivitySource.StartActivity();
 

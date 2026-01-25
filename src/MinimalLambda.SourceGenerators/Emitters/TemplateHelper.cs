@@ -19,7 +19,8 @@ internal static class TemplateHelper
         var generatorName = assembly.GetName().Name;
         var generatorVersion = assembly.GetName().Version;
 
-        return $"""[global::System.CodeDom.Compiler.GeneratedCode("{generatorName}", "{generatorVersion}")]""";
+        return
+            $"""[global::System.CodeDom.Compiler.GeneratedCode("{generatorName}", "{generatorVersion}")]""";
     });
 
     private static readonly ConcurrentDictionary<string, Template> Cache = new();
@@ -70,8 +71,7 @@ internal static class TemplateHelper
             var availableResources = string.Join(", ", assembly.GetManifestResourceNames());
             throw new InvalidOperationException(
                 $"Did not find required resource ending in '{templateName}' in assembly '{baseName}'. "
-                    + $"Available resources: {availableResources}"
-            );
+                + $"Available resources: {availableResources}");
         }
 
         // Load the template content
@@ -79,8 +79,7 @@ internal static class TemplateHelper
         if (stream == null)
             throw new FileNotFoundException(
                 $"Template '{relativePath}' not found in embedded resources. "
-                    + $"Manifest resource name: '{manifestTemplateName}'"
-            );
+                + $"Manifest resource name: '{manifestTemplateName}'");
 
         using var reader = new StreamReader(stream);
         var templateContent = reader.ReadToEnd();
@@ -92,11 +91,8 @@ internal static class TemplateHelper
         var errors = string.Join(
             "\n",
             template.Messages.Select(m =>
-                $"{relativePath}({m.Span.Start.Line},{m.Span.Start.Column}): {m.Message}"
-            )
-        );
+                $"{relativePath}({m.Span.Start.Line},{m.Span.Start.Column}): {m.Message}"));
         throw new InvalidOperationException(
-            $"Failed to parse template '{relativePath}':\n{errors}"
-        );
+            $"Failed to parse template '{relativePath}':\n{errors}");
     }
 }

@@ -28,8 +28,7 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
         IHostApplicationLifetime lifetime,
         ILambdaOnInitBuilderFactory lambdaOnInitBuilderFactory,
         IOptions<LambdaHostedServiceOptions> lambdaHostOptions,
-        ILambdaOnShutdownBuilderFactory lambdaOnShutdownBuilderFactory
-    )
+        ILambdaOnShutdownBuilderFactory lambdaOnShutdownBuilderFactory)
     {
         ArgumentNullException.ThrowIfNull(bootstrap);
         ArgumentNullException.ThrowIfNull(handlerFactory);
@@ -105,8 +104,7 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
 
         // Signal cancellation to the executing method. If disposed or called, this might throw.
         await (_stoppingCts?.CancelAsync() ?? Task.CompletedTask).ConfigureAwait(
-            ConfigureAwaitOptions.SuppressThrowing
-        );
+            ConfigureAwaitOptions.SuppressThrowing);
 
         List<Exception> exceptions = [];
 
@@ -123,9 +121,7 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
                 exceptions.Add(
                     new OperationCanceledException(
                         "Graceful shutdown of the Lambda function failed: the bootstrap operation did "
-                            + "not complete within the allocated timeout period."
-                    )
-                );
+                        + "not complete within the allocated timeout period."));
         }
         catch (Exception ex)
         {
@@ -146,16 +142,14 @@ internal sealed class LambdaHostedService : IHostedService, IDisposable
         if (exceptions.Count > 0)
             throw new AggregateException(
                 $"{nameof(LambdaHostedService)} encountered errors while running",
-                exceptions
-            );
+                exceptions);
     }
 
     /// <summary>Executes the Lambda hosting environment startup sequence.</summary>
     private async Task ExecuteAsync(
         Func<Stream, ILambdaContext, Task<Stream>> handler,
         Func<CancellationToken, Task<bool>>? initializer,
-        CancellationToken stoppingToken
-    )
+        CancellationToken stoppingToken)
     {
         try
         {

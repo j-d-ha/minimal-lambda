@@ -23,9 +23,7 @@ public class KinesisFirehoseResponseEnvelopeTests
         var payload = _fixture.Create<TestPayload>();
         var record = new KinesisFirehoseResponseEnvelopeBase<TestPayload>.FirehoseRecordEnvelope
         {
-            RecordId = "record-1",
-            Result = "Ok",
-            DataContent = payload,
+            RecordId = "record-1", Result = "Ok", DataContent = payload,
         };
 
         var envelope = new KinesisFirehoseResponseEnvelope<TestPayload> { Records = [record] };
@@ -37,12 +35,10 @@ public class KinesisFirehoseResponseEnvelopeTests
         // Assert
         record.Base64EncodedData.Should().NotBeNullOrEmpty();
         var decodedJson = Encoding.UTF8.GetString(
-            Convert.FromBase64String(record.Base64EncodedData)
-        );
+            Convert.FromBase64String(record.Base64EncodedData));
         var deserializedData = JsonSerializer.Deserialize<TestPayload>(
             decodedJson,
-            options.JsonOptions
-        );
+            options.JsonOptions);
         deserializedData.Should().NotBeNull();
         deserializedData.Name.Should().Be(payload.Name);
         deserializedData.Value.Should().Be(payload.Value);
@@ -58,21 +54,15 @@ public class KinesisFirehoseResponseEnvelopeTests
 
         var record1 = new KinesisFirehoseResponseEnvelopeBase<TestPayload>.FirehoseRecordEnvelope
         {
-            RecordId = "record-1",
-            Result = "Ok",
-            DataContent = payload1,
+            RecordId = "record-1", Result = "Ok", DataContent = payload1,
         };
         var record2 = new KinesisFirehoseResponseEnvelopeBase<TestPayload>.FirehoseRecordEnvelope
         {
-            RecordId = "record-2",
-            Result = "Ok",
-            DataContent = payload2,
+            RecordId = "record-2", Result = "Ok", DataContent = payload2,
         };
         var record3 = new KinesisFirehoseResponseEnvelopeBase<TestPayload>.FirehoseRecordEnvelope
         {
-            RecordId = "record-3",
-            Result = "Ok",
-            DataContent = payload3,
+            RecordId = "record-3", Result = "Ok", DataContent = payload3,
         };
 
         var envelope = new KinesisFirehoseResponseEnvelope<TestPayload>
@@ -90,14 +80,11 @@ public class KinesisFirehoseResponseEnvelopeTests
         record3.Base64EncodedData.Should().NotBeNullOrEmpty();
 
         var decoded1 = JsonSerializer.Deserialize<TestPayload>(
-            Encoding.UTF8.GetString(Convert.FromBase64String(record1.Base64EncodedData))
-        );
+            Encoding.UTF8.GetString(Convert.FromBase64String(record1.Base64EncodedData)));
         var decoded2 = JsonSerializer.Deserialize<TestPayload>(
-            Encoding.UTF8.GetString(Convert.FromBase64String(record2.Base64EncodedData))
-        );
+            Encoding.UTF8.GetString(Convert.FromBase64String(record2.Base64EncodedData)));
         var decoded3 = JsonSerializer.Deserialize<TestPayload>(
-            Encoding.UTF8.GetString(Convert.FromBase64String(record3.Base64EncodedData))
-        );
+            Encoding.UTF8.GetString(Convert.FromBase64String(record3.Base64EncodedData)));
 
         decoded1!.Name.Should().Be(payload1.Name);
         decoded2!.Name.Should().Be(payload2.Name);
@@ -111,9 +98,7 @@ public class KinesisFirehoseResponseEnvelopeTests
         var payload = new TestPayload("test", 42);
         var record = new KinesisFirehoseResponseEnvelopeBase<TestPayload>.FirehoseRecordEnvelope
         {
-            RecordId = "record-1",
-            Result = "Ok",
-            DataContent = payload,
+            RecordId = "record-1", Result = "Ok", DataContent = payload,
         };
 
         var envelope = new KinesisFirehoseResponseEnvelope<TestPayload> { Records = [record] };
@@ -131,8 +116,7 @@ public class KinesisFirehoseResponseEnvelopeTests
         // Assert
         record.Base64EncodedData.Should().NotBeNullOrEmpty();
         var decodedJson = Encoding.UTF8.GetString(
-            Convert.FromBase64String(record.Base64EncodedData)
-        );
+            Convert.FromBase64String(record.Base64EncodedData));
         decodedJson.Should().Contain("\"name\"");
         decodedJson.Should().Contain("\"value\"");
         decodedJson.Should().NotContain("\"Name\"");
@@ -145,9 +129,7 @@ public class KinesisFirehoseResponseEnvelopeTests
         // Arrange
         var record = new KinesisFirehoseResponseEnvelopeBase<TestPayload>.FirehoseRecordEnvelope
         {
-            RecordId = "record-1",
-            Result = "Ok",
-            DataContent = null,
+            RecordId = "record-1", Result = "Ok", DataContent = null,
         };
 
         var envelope = new KinesisFirehoseResponseEnvelope<TestPayload> { Records = [record] };
@@ -159,8 +141,7 @@ public class KinesisFirehoseResponseEnvelopeTests
         // Assert
         record.Base64EncodedData.Should().NotBeNullOrEmpty();
         var decodedJson = Encoding.UTF8.GetString(
-            Convert.FromBase64String(record.Base64EncodedData)
-        );
+            Convert.FromBase64String(record.Base64EncodedData));
         decodedJson.Should().Be("null");
     }
 
@@ -169,13 +150,10 @@ public class KinesisFirehoseResponseEnvelopeTests
     {
         // Arrange
         var property =
-            typeof(KinesisFirehoseResponseEnvelopeBase<TestPayload>.FirehoseRecordEnvelope).GetProperty(
-                nameof(
-                    KinesisFirehoseResponseEnvelopeBase<TestPayload>
-                        .FirehoseRecordEnvelope
-                        .DataContent
-                )
-            );
+            typeof(KinesisFirehoseResponseEnvelopeBase<TestPayload>.FirehoseRecordEnvelope)
+                .GetProperty(
+                    nameof(KinesisFirehoseResponseEnvelopeBase<TestPayload>.FirehoseRecordEnvelope
+                        .DataContent));
 
         // Act
         var hasJsonIgnoreAttribute =

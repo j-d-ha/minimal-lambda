@@ -8,8 +8,7 @@ public class DefaultEventFeatureProviderTests
     [Theory]
     [AutoNSubstituteData]
     internal void Constructor_WithValidSerializer_SuccessfullyConstructs(
-        DefaultEventFeatureProvider<string> provider
-    ) =>
+        DefaultEventFeatureProvider<string> provider) =>
         // Assert
         provider.Should().NotBeNull();
 
@@ -20,8 +19,7 @@ public class DefaultEventFeatureProviderTests
     [Theory]
     [AutoNSubstituteData]
     internal void Provider_ImplementsIFeatureProvider(
-        DefaultEventFeatureProvider<string> provider
-    ) =>
+        DefaultEventFeatureProvider<string> provider) =>
         // Assert
         provider.Should().BeAssignableTo<IFeatureProvider>();
 
@@ -42,8 +40,7 @@ public class DefaultEventFeatureProviderTests
     [Theory]
     [AutoNSubstituteData]
     internal void TryCreate_WithIEventFeatureType_ReturnsTrue(
-        DefaultEventFeatureProvider<string> provider
-    )
+        DefaultEventFeatureProvider<string> provider)
     {
         // Act
         var result = provider.TryCreate(typeof(IEventFeature), out var feature);
@@ -56,8 +53,7 @@ public class DefaultEventFeatureProviderTests
     [Theory]
     [AutoNSubstituteData]
     internal void TryCreate_WithIEventFeatureType_CreatesDefaultEventFeature(
-        DefaultEventFeatureProvider<string> provider
-    )
+        DefaultEventFeatureProvider<string> provider)
     {
         // Act
         provider.TryCreate(typeof(IEventFeature), out var feature);
@@ -69,8 +65,7 @@ public class DefaultEventFeatureProviderTests
     [Theory]
     [AutoNSubstituteData]
     internal void TryCreate_WithIEventFeatureType_CreatesNewInstanceEachCall(
-        DefaultEventFeatureProvider<string> provider
-    )
+        DefaultEventFeatureProvider<string> provider)
     {
         // Act
         provider.TryCreate(typeof(IEventFeature), out var feature1);
@@ -85,8 +80,7 @@ public class DefaultEventFeatureProviderTests
     internal void TryCreate_WithIEventFeatureType_InitializesFeatureWithSerializer(
         [Frozen] ILambdaSerializer serializer,
         DefaultEventFeatureProvider<string> provider,
-        ILambdaInvocationContext context
-    )
+        ILambdaInvocationContext context)
     {
         // Arrange
         const string expectedEvent = "test-event";
@@ -119,8 +113,7 @@ public class DefaultEventFeatureProviderTests
     [Theory]
     [AutoNSubstituteData]
     internal void TryCreate_WithStringType_ReturnsFalse(
-        DefaultEventFeatureProvider<string> provider
-    )
+        DefaultEventFeatureProvider<string> provider)
     {
         // Act
         var result = provider.TryCreate(typeof(string), out var feature);
@@ -149,8 +142,7 @@ public class DefaultEventFeatureProviderTests
     [Theory]
     [AutoNSubstituteData]
     internal void TryCreate_WithComplexGenericType_CreatesCorrectFeature(
-        DefaultEventFeatureProvider<TestEvent> provider
-    )
+        DefaultEventFeatureProvider<TestEvent> provider)
     {
         // Act
         provider.TryCreate(typeof(IEventFeature), out var feature);
@@ -162,8 +154,7 @@ public class DefaultEventFeatureProviderTests
     [Theory]
     [AutoNSubstituteData]
     internal void TryCreate_WithListGenericType_CreatesCorrectFeature(
-        DefaultEventFeatureProvider<List<string>> provider
-    )
+        DefaultEventFeatureProvider<List<string>> provider)
     {
         // Act
         provider.TryCreate(typeof(IEventFeature), out var feature);
@@ -175,8 +166,7 @@ public class DefaultEventFeatureProviderTests
     [Theory]
     [AutoNSubstituteData]
     internal void TryCreate_WithNullableType_CreatesCorrectFeature(
-        DefaultEventFeatureProvider<int?> provider
-    )
+        DefaultEventFeatureProvider<int?> provider)
     {
         // Act
         provider.TryCreate(typeof(IEventFeature), out var feature);
@@ -192,8 +182,7 @@ public class DefaultEventFeatureProviderTests
     [Theory]
     [AutoNSubstituteData]
     internal void Provider_CanBeUsedAsIFeatureProviderDependency(
-        DefaultEventFeatureProvider<string> provider
-    )
+        DefaultEventFeatureProvider<string> provider)
     {
         // Act
         IFeatureProvider featureProvider = provider;
@@ -208,8 +197,7 @@ public class DefaultEventFeatureProviderTests
     [AutoNSubstituteData]
     internal void Provider_WithDifferentGenericTypes_CreatesTypedFeatures(
         DefaultEventFeatureProvider<string> stringProvider,
-        DefaultEventFeatureProvider<int> intProvider
-    )
+        DefaultEventFeatureProvider<int> intProvider)
     {
         // Act
         stringProvider.TryCreate(typeof(IEventFeature), out var stringFeature);

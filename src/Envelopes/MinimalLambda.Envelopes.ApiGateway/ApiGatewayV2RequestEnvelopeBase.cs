@@ -13,8 +13,7 @@ namespace MinimalLambda.Envelopes.ApiGateway;
 ///     <see cref="BodyContent" /> property using their chosen deserialization strategy.
 /// </remarks>
 public abstract class ApiGatewayV2RequestEnvelopeBase<T>
-    : APIGatewayHttpApiV2ProxyRequest,
-        IRequestEnvelope
+    : APIGatewayHttpApiV2ProxyRequest, IRequestEnvelope
 {
     /// <summary>The deserialized content of the <see cref="APIGatewayHttpApiV2ProxyRequest.Body" /></summary>
     [JsonIgnore]

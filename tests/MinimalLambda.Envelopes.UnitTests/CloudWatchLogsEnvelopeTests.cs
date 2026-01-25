@@ -58,26 +58,24 @@ public class CloudWatchLogsEnvelopeTests
         for (var i = 0; i < payloads.Length; i++)
         {
             envelope.AwslogsContent.LogEvents[i].MessageContent.Should().NotBeNull();
-            envelope
-                .AwslogsContent.LogEvents[i]
-                .MessageContent!.Content.Should()
+            envelope.AwslogsContent.LogEvents[i].MessageContent!
+                .Content.Should()
                 .Be(payloads[i].Content);
-            envelope
-                .AwslogsContent.LogEvents[i]
-                .MessageContent!.Priority.Should()
+            envelope.AwslogsContent.LogEvents[i].MessageContent!
+                .Priority.Should()
                 .Be(payloads[i].Priority);
         }
     }
 
     [Fact]
-    public void ExtractPayload_Generic_WithCamelCaseNamingPolicy_DeserializesWithCamelCaseProperties()
+    public void
+        ExtractPayload_Generic_WithCamelCaseNamingPolicy_DeserializesWithCamelCaseProperties()
     {
         // Arrange
         var payload = _fixture.Create<TestPayload>();
         var envelope = CreateGenericEnvelope(
             payload,
-            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
-        );
+            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
         var options = new EnvelopeOptions
         {
             JsonOptions = new JsonSerializerOptions
@@ -156,8 +154,7 @@ public class CloudWatchLogsEnvelopeTests
             logStream,
             messageType,
             owner,
-            subscriptionFilters
-        );
+            subscriptionFilters);
         var options = new EnvelopeOptions();
 
         // Act
@@ -195,7 +192,8 @@ public class CloudWatchLogsEnvelopeTests
     }
 
     [Fact]
-    public void ExtractPayload_NonGeneric_WithMultipleLogEvents_SetsAllMessageContentsToRawMessages()
+    public void
+        ExtractPayload_NonGeneric_WithMultipleLogEvents_SetsAllMessageContentsToRawMessages()
     {
         // Arrange
         var messages = _fixture.CreateMany<string>(3).ToArray();
@@ -249,8 +247,7 @@ public class CloudWatchLogsEnvelopeTests
             logStream,
             messageType,
             owner,
-            subscriptionFilters
-        );
+            subscriptionFilters);
         var options = new EnvelopeOptions();
 
         // Act
@@ -297,8 +294,7 @@ public class CloudWatchLogsEnvelopeTests
     {
         // Arrange
         var property = typeof(CloudWatchLogsEnvelopeBase<TestPayload>).GetProperty(
-            nameof(CloudWatchLogsEnvelopeBase<TestPayload>.AwslogsContent)
-        );
+            nameof(CloudWatchLogsEnvelopeBase<TestPayload>.AwslogsContent));
 
         // Act
         var hasJsonIgnoreAttribute =
@@ -313,8 +309,7 @@ public class CloudWatchLogsEnvelopeTests
     {
         // Arrange
         var property = typeof(CloudWatchLogsEnvelopeBase<TestPayload>.LogEventEnvelope).GetProperty(
-            nameof(CloudWatchLogsEnvelopeBase<TestPayload>.LogEventEnvelope.MessageContent)
-        );
+            nameof(CloudWatchLogsEnvelopeBase<TestPayload>.LogEventEnvelope.MessageContent));
 
         // Act
         var hasJsonIgnoreAttribute =
@@ -330,29 +325,23 @@ public class CloudWatchLogsEnvelopeTests
 
     private CloudWatchLogsEnvelope<TestPayload> CreateGenericEnvelope(
         TestPayload payload,
-        JsonSerializerOptions? messageSerializerOptions = null
-    )
+        JsonSerializerOptions? messageSerializerOptions = null)
     {
         var messageJson = JsonSerializer.Serialize(payload, messageSerializerOptions);
         return CreateGenericEnvelopeWithMessageContent(messageJson);
     }
 
     private CloudWatchLogsEnvelope<TestPayload> CreateGenericEnvelopeWithMultipleEvents(
-        TestPayload[] payloads
-    )
+        TestPayload[] payloads)
     {
         var logEvents = payloads
-            .Select(
-                (p, i) =>
-                    new
-                    {
-                        id = i.ToString(),
-                        timestamp = new DateTimeOffset(
-                            DateTime.UtcNow.AddMinutes(i)
-                        ).ToUnixTimeMilliseconds(),
-                        message = JsonSerializer.Serialize(p),
-                    }
-            )
+            .Select((p, i) => new
+            {
+                id = i.ToString(),
+                timestamp =
+                    new DateTimeOffset(DateTime.UtcNow.AddMinutes(i)).ToUnixTimeMilliseconds(),
+                message = JsonSerializer.Serialize(p),
+            })
             .ToArray();
 
         var awslogsData = new
@@ -369,20 +358,20 @@ public class CloudWatchLogsEnvelopeTests
     }
 
     private CloudWatchLogsEnvelope<TestPayload> CreateGenericEnvelopeWithMessageContent(
-        string messageContent
-    )
+        string messageContent)
     {
         var awslogsData = new
         {
-            logEvents = new[]
-            {
-                new
+            logEvents =
+                new[]
                 {
-                    id = _fixture.Create<string>(),
-                    timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-                    message = messageContent,
+                    new
+                    {
+                        id = _fixture.Create<string>(),
+                        timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                        message = messageContent,
+                    },
                 },
-            },
             logGroup = _fixture.Create<string>(),
             logStream = _fixture.Create<string>(),
             messageType = "DATA_MESSAGE",
@@ -399,8 +388,7 @@ public class CloudWatchLogsEnvelopeTests
         string logStream,
         string messageType,
         string owner,
-        string[] subscriptionFilters
-    )
+        string[] subscriptionFilters)
     {
         var awslogsData = new
         {
@@ -424,8 +412,7 @@ public class CloudWatchLogsEnvelopeTests
     }
 
     private CloudWatchLogsEnvelope<TestPayload> CreateGenericEnvelopeWithAwslogsData(
-        object awslogsData
-    )
+        object awslogsData)
     {
         var envelopeOptions = new EnvelopeOptions();
 
@@ -449,15 +436,16 @@ public class CloudWatchLogsEnvelopeTests
     {
         var awslogsData = new
         {
-            logEvents = new[]
-            {
-                new
+            logEvents =
+                new[]
                 {
-                    id = _fixture.Create<string>(),
-                    timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-                    message,
+                    new
+                    {
+                        id = _fixture.Create<string>(),
+                        timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                        message,
+                    },
                 },
-            },
             logGroup = _fixture.Create<string>(),
             logStream = _fixture.Create<string>(),
             messageType = "DATA_MESSAGE",
@@ -471,17 +459,13 @@ public class CloudWatchLogsEnvelopeTests
     private CloudWatchLogsEnvelope CreateNonGenericEnvelopeWithMultipleEvents(string[] messages)
     {
         var logEvents = messages
-            .Select(
-                (m, i) =>
-                    new
-                    {
-                        id = i.ToString(),
-                        timestamp = new DateTimeOffset(
-                            DateTime.UtcNow.AddMinutes(i)
-                        ).ToUnixTimeMilliseconds(),
-                        message = m,
-                    }
-            )
+            .Select((m, i) => new
+            {
+                id = i.ToString(),
+                timestamp =
+                    new DateTimeOffset(DateTime.UtcNow.AddMinutes(i)).ToUnixTimeMilliseconds(),
+                message = m,
+            })
             .ToArray();
 
         var awslogsData = new
@@ -503,20 +487,20 @@ public class CloudWatchLogsEnvelopeTests
         string logStream,
         string messageType,
         string owner,
-        string[] subscriptionFilters
-    )
+        string[] subscriptionFilters)
     {
         var awslogsData = new
         {
-            logEvents = new[]
-            {
-                new
+            logEvents =
+                new[]
                 {
-                    id = _fixture.Create<string>(),
-                    timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
-                    message,
+                    new
+                    {
+                        id = _fixture.Create<string>(),
+                        timestamp = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
+                        message,
+                    },
                 },
-            },
             logGroup,
             logStream,
             messageType,

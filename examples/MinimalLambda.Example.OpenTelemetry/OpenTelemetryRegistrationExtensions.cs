@@ -13,41 +13,33 @@ internal static class OpenTelemetryRegistrationExtensions
     {
         services
             .AddOpenTelemetry()
-            .WithTracing(configure =>
-                configure
-                    .AddAWSLambdaConfigurations()
-                    .AddSource(Instrumentation.ActivitySourceName)
-                    .SetResourceBuilder(
-                        ResourceBuilder
-                            .CreateDefault()
-                            .AddService(
-                                Instrumentation.ActivitySourceName,
-                                serviceVersion: Instrumentation.ActivitySourceVersion
-                            )
-                    )
-                    .AddOtlpExporter(options =>
-                    {
-                        options.Endpoint = new Uri("http://localhost:4318/v1/traces");
-                        options.Protocol = OtlpExportProtocol.HttpProtobuf;
-                    })
-            )
-            .WithMetrics(configure =>
-                configure
-                    .AddMeter(Instrumentation.ActivitySourceName)
-                    .SetResourceBuilder(
-                        ResourceBuilder
-                            .CreateDefault()
-                            .AddService(
-                                Instrumentation.ActivitySourceName,
-                                serviceVersion: Instrumentation.ActivitySourceVersion
-                            )
-                    )
-                    .AddOtlpExporter(options =>
-                    {
-                        options.Endpoint = new Uri("http://localhost:4318/v1/metrics");
-                        options.Protocol = OtlpExportProtocol.HttpProtobuf;
-                    })
-            );
+            .WithTracing(configure => configure
+                .AddAWSLambdaConfigurations()
+                .AddSource(Instrumentation.ActivitySourceName)
+                .SetResourceBuilder(
+                    ResourceBuilder
+                        .CreateDefault()
+                        .AddService(
+                            Instrumentation.ActivitySourceName,
+                            serviceVersion: Instrumentation.ActivitySourceVersion))
+                .AddOtlpExporter(options =>
+                {
+                    options.Endpoint = new Uri("http://localhost:4318/v1/traces");
+                    options.Protocol = OtlpExportProtocol.HttpProtobuf;
+                }))
+            .WithMetrics(configure => configure
+                .AddMeter(Instrumentation.ActivitySourceName)
+                .SetResourceBuilder(
+                    ResourceBuilder
+                        .CreateDefault()
+                        .AddService(
+                            Instrumentation.ActivitySourceName,
+                            serviceVersion: Instrumentation.ActivitySourceVersion))
+                .AddOtlpExporter(options =>
+                {
+                    options.Endpoint = new Uri("http://localhost:4318/v1/metrics");
+                    options.Protocol = OtlpExportProtocol.HttpProtobuf;
+                }));
 
         return services;
     }

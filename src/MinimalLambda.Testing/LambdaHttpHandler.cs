@@ -8,18 +8,15 @@ namespace MinimalLambda.Testing;
 /// </summary>
 internal class LambdaTestingHttpHandler(
     Channel<LambdaHttpTransaction> transactionChannel,
-    CancellationToken stoppingToken
-) : HttpMessageHandler
+    CancellationToken stoppingToken) : HttpMessageHandler
 {
     protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         using var cts = CancellationTokenSource.CreateLinkedTokenSource(
             cancellationToken,
-            stoppingToken
-        );
+            stoppingToken);
 
         // Buffer the content to make it re-readable for downstream consumers
         if (request.Content != null)
@@ -50,8 +47,7 @@ internal class LambdaTestingHttpHandler(
         {
             // TestServer is shutting down; propagate cancellation to caller
             var canceled = new TaskCompletionSource<HttpResponseMessage>(
-                TaskCreationOptions.RunContinuationsAsynchronously
-            );
+                TaskCreationOptions.RunContinuationsAsynchronously);
             canceled.TrySetCanceled(cts.Token);
             return await canceled.Task;
         }

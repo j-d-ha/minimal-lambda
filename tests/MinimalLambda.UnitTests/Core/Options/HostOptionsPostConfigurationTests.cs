@@ -31,14 +31,12 @@ public class HostOptionsPostConfigurationTests
     public void PostConfigure_WithValidHostOptions_SetsShutdownTimeout()
     {
         // Arrange
-        var lambdaHostOptions = Microsoft.Extensions.Options.Options.Create(
-            new LambdaHostOptions()
-        );
+        var lambdaHostOptions =
+            Microsoft.Extensions.Options.Options.Create(new LambdaHostOptions());
         var postConfig = new HostOptionsPostConfiguration(lambdaHostOptions);
         var hostOptions = new HostOptions();
-        var expectedTimeout =
-            lambdaHostOptions.Value.ShutdownDuration
-            - lambdaHostOptions.Value.ShutdownDurationBuffer;
+        var expectedTimeout = lambdaHostOptions.Value.ShutdownDuration
+                              - lambdaHostOptions.Value.ShutdownDurationBuffer;
 
         // Act
         postConfig.PostConfigure(null, hostOptions);
@@ -51,9 +49,8 @@ public class HostOptionsPostConfigurationTests
     public void PostConfigure_WithDefaultLambdaHostOptions_CalculatesCorrectTimeout()
     {
         // Arrange
-        var lambdaHostOptions = Microsoft.Extensions.Options.Options.Create(
-            new LambdaHostOptions()
-        );
+        var lambdaHostOptions =
+            Microsoft.Extensions.Options.Options.Create(new LambdaHostOptions());
         var postConfig = new HostOptionsPostConfiguration(lambdaHostOptions);
         var hostOptions = new HostOptions();
 
@@ -77,8 +74,7 @@ public class HostOptionsPostConfigurationTests
             {
                 ShutdownDuration = TimeSpan.FromMilliseconds(10),
                 ShutdownDurationBuffer = TimeSpan.FromMilliseconds(100),
-            }
-        );
+            });
         var postConfig = new HostOptionsPostConfiguration(lambdaHostOptions);
         var hostOptions = new HostOptions();
 
@@ -95,8 +91,10 @@ public class HostOptionsPostConfigurationTests
         // Arrange
         var duration = TimeSpan.FromMilliseconds(100);
         var lambdaHostOptions = Microsoft.Extensions.Options.Options.Create(
-            new LambdaHostOptions { ShutdownDuration = duration, ShutdownDurationBuffer = duration }
-        );
+            new LambdaHostOptions
+            {
+                ShutdownDuration = duration, ShutdownDurationBuffer = duration,
+            });
         var postConfig = new HostOptionsPostConfiguration(lambdaHostOptions);
         var hostOptions = new HostOptions();
 
@@ -116,8 +114,7 @@ public class HostOptionsPostConfigurationTests
             {
                 ShutdownDuration = TimeSpan.FromSeconds(30),
                 ShutdownDurationBuffer = TimeSpan.FromSeconds(2),
-            }
-        );
+            });
         var postConfig = new HostOptionsPostConfiguration(lambdaHostOptions);
         var hostOptions = new HostOptions();
         var expectedTimeout = TimeSpan.FromSeconds(28);
@@ -133,15 +130,13 @@ public class HostOptionsPostConfigurationTests
     public void PostConfigure_CanBeCalledMultipleTimes()
     {
         // Arrange
-        var lambdaHostOptions = Microsoft.Extensions.Options.Options.Create(
-            new LambdaHostOptions()
-        );
+        var lambdaHostOptions =
+            Microsoft.Extensions.Options.Options.Create(new LambdaHostOptions());
         var postConfig = new HostOptionsPostConfiguration(lambdaHostOptions);
         var hostOptions1 = new HostOptions();
         var hostOptions2 = new HostOptions();
-        var expectedTimeout =
-            lambdaHostOptions.Value.ShutdownDuration
-            - lambdaHostOptions.Value.ShutdownDurationBuffer;
+        var expectedTimeout = lambdaHostOptions.Value.ShutdownDuration
+                              - lambdaHostOptions.Value.ShutdownDurationBuffer;
 
         // Act
         postConfig.PostConfigure(null, hostOptions1);
@@ -156,14 +151,12 @@ public class HostOptionsPostConfigurationTests
     public void PostConfigure_IgnoresNameParameter()
     {
         // Arrange
-        var lambdaHostOptions = Microsoft.Extensions.Options.Options.Create(
-            new LambdaHostOptions()
-        );
+        var lambdaHostOptions =
+            Microsoft.Extensions.Options.Options.Create(new LambdaHostOptions());
         var postConfig = new HostOptionsPostConfiguration(lambdaHostOptions);
         var hostOptions = new HostOptions();
-        var expectedTimeout =
-            lambdaHostOptions.Value.ShutdownDuration
-            - lambdaHostOptions.Value.ShutdownDurationBuffer;
+        var expectedTimeout = lambdaHostOptions.Value.ShutdownDuration
+                              - lambdaHostOptions.Value.ShutdownDurationBuffer;
 
         // Act
         postConfig.PostConfigure("anyName", hostOptions);

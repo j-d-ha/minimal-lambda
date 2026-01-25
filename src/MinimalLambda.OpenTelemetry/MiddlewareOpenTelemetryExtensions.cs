@@ -36,20 +36,16 @@ public static class MiddlewareOpenTelemetryExtensions
 
             var tracerProvider = builder.Services.GetRequiredService<TracerProvider>();
 
-            return builder.Use(next =>
-                context =>
-                    AWSLambdaWrapper.TraceAsync(
-                        tracerProvider,
-                        async Task<object?> (_, _) =>
-                        {
-                            await next(context);
+            return builder.Use(next => context => AWSLambdaWrapper.TraceAsync(
+                tracerProvider,
+                async Task<object?> (_, _) =>
+                {
+                    await next(context);
 
-                            return context.Features.Get<IResponseFeature>()?.GetResponse();
-                        },
-                        context.Features.Get<IEventFeature>()?.GetEvent(context),
-                        context
-                    )
-            );
+                    return context.Features.Get<IResponseFeature>()?.GetResponse();
+                },
+                context.Features.Get<IEventFeature>()?.GetEvent(context),
+                context));
         }
     }
 }

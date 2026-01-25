@@ -17,8 +17,7 @@ internal static class UseMiddlewareTSyntaxProvider
 
     internal static UseMiddlewareTInfo? Transformer(
         GeneratorSyntaxContext syntaxContext,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         var context = new GeneratorContext(syntaxContext, cancellationToken);
 
@@ -29,35 +28,32 @@ internal static class UseMiddlewareTSyntaxProvider
 
     private static bool TryGetInvocationOperation(
         GeneratorContext context,
-        [NotNullWhen(true)] out IInvocationOperation? invocationOperation
-    )
+        [NotNullWhen(true)] out IInvocationOperation? invocationOperation)
     {
         invocationOperation = null;
 
         var operation = context.SemanticModel.GetOperation(context.Node, context.CancellationToken);
 
-        if (
-            operation
-                is IInvocationOperation
+        if (operation is IInvocationOperation
+            {
+                TargetMethod:
                 {
-                    TargetMethod:
+                    IsGenericMethod: true,
+                    ContainingAssembly.Name: "MinimalLambda",
+                    ContainingNamespace:
                     {
-                        IsGenericMethod: true,
-                        ContainingAssembly.Name: "MinimalLambda",
+                        Name: "Builder",
                         ContainingNamespace:
                         {
-                            Name: "Builder",
-                            ContainingNamespace:
-                            { Name: "MinimalLambda", ContainingNamespace.IsGlobalNamespace: true },
+                            Name: "MinimalLambda", ContainingNamespace.IsGlobalNamespace: true,
                         },
                     },
-                } targetOperation
-            && targetOperation.TargetMethod.ConstructedFrom.TypeParameters.FirstOrDefault()
-                is { } typeParameter
+                },
+            } targetOperation
+            && targetOperation.TargetMethod.ConstructedFrom.TypeParameters.FirstOrDefault() is
+                { } typeParameter
             && typeParameter.ConstraintTypes.Any(c =>
-                context.WellKnownTypes.IsType(c, WellKnownType.MinimalLambda_ILambdaMiddleware)
-            )
-        )
+                context.WellKnownTypes.IsType(c, WellKnownType.MinimalLambda_ILambdaMiddleware)))
         {
             invocationOperation = targetOperation;
             return true;

@@ -25,6 +25,5 @@ internal interface ILambdaBootstrapOrchestrator
     Task RunAsync(
         Func<Stream, ILambdaContext, Task<Stream>> handler,
         Func<CancellationToken, Task<bool>>? initializer,
-        CancellationToken stoppingToken
-    );
+        CancellationToken stoppingToken);
 }

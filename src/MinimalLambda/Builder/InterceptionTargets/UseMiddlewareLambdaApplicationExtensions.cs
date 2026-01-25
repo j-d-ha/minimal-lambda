@@ -42,9 +42,7 @@ public static class UseMiddlewareLambdaApplicationExtensions
     /// <seealso cref="MiddlewareConstructorAttribute" />
     public static ILambdaInvocationBuilder UseMiddleware<T>(
         this ILambdaInvocationBuilder builder,
-        params object[] args
-    )
-        where T : ILambdaMiddleware
+        params object[] args) where T : ILambdaMiddleware
     {
         Debug.Fail("This method should have been intercepted at compile time!");
         throw new InvalidOperationException("This method is replaced at compile time.");

@@ -13,8 +13,7 @@ internal record UseMiddlewareTInfo(
     string? InterceptableLocationAttribute,
     MiddlewareClassInfo? ClassInfo,
     EquatableArray<DiagnosticInfo> DiagnosticInfos,
-    MethodType MethodType
-) : IMethodInfo;
+    MethodType MethodType) : IMethodInfo;
 
 internal static class UseMiddlewareTInfoExtensions
 {
@@ -22,37 +21,28 @@ internal static class UseMiddlewareTInfoExtensions
     {
         internal static UseMiddlewareTInfo Create(
             IInvocationOperation invocationOperation,
-            GeneratorContext context
-        )
+            GeneratorContext context)
         {
-            if (
-                invocationOperation.Syntax
-                is not InvocationExpressionSyntax invocationExpressionSyntax
-            )
+            if (invocationOperation.Syntax is not InvocationExpressionSyntax
+                invocationExpressionSyntax)
                 throw new InvalidOperationException("Syntax is not InvocationExpressionSyntax");
 
             List<DiagnosticInfo> diagnosticInfos = [];
 
-            var interceptableLocation = (
-                context.SemanticModel.GetInterceptableLocation(
-                    invocationExpressionSyntax,
-                    context.CancellationToken
-                )
-                ?? throw new InvalidOperationException(
-                    "Interceptable location is null (Should not happen)"
-                )
-            )
+            var interceptableLocation =
+                (context.SemanticModel.GetInterceptableLocation(
+                     invocationExpressionSyntax,
+                     context.CancellationToken)
+                 ?? throw new InvalidOperationException(
+                     "Interceptable location is null (Should not happen)"))
                 .ToInterceptableLocationInfo()
                 .Attribute;
 
             var middlewareClassType = invocationOperation
                 .TargetMethod.TypeArguments.FirstOrDefault()
-                .Map(typeSymbol =>
-                    typeSymbol as INamedTypeSymbol
-                    ?? throw new InvalidOperationException(
-                        "Middleware class type is not INamedTypeSymbol (Should not happen)"
-                    )
-                );
+                .Map(typeSymbol => typeSymbol as INamedTypeSymbol
+                                   ?? throw new InvalidOperationException(
+                                       "Middleware class type is not INamedTypeSymbol (Should not happen)"));
 
             TryGetLocationInfo(invocationExpressionSyntax, out var typeArgumentLocation);
 
@@ -68,21 +58,19 @@ internal static class UseMiddlewareTInfoExtensions
                 interceptableLocation,
                 classInfo,
                 diagnosticInfos.ToEquatableArray(),
-                MethodType.UseMiddlewareT
-            );
+                MethodType.UseMiddlewareT);
         }
     }
 
     private static bool TryGetLocationInfo(
         InvocationExpressionSyntax invocationExpressionSyntax,
-        out Location? locationInfo
-    )
+        out Location? locationInfo)
     {
         locationInfo = null;
-        if (
-            invocationExpressionSyntax is
-            { Expression: MemberAccessExpressionSyntax { Name: GenericNameSyntax genericName } }
-        )
+        if (invocationExpressionSyntax is
+            {
+                Expression: MemberAccessExpressionSyntax { Name: GenericNameSyntax genericName },
+            })
         {
             var typeArgument = genericName.TypeArgumentList.Arguments[0];
             locationInfo = typeArgument.GetLocation();

@@ -15,14 +15,14 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Amazon.Lambda.Core" />
-    <PackageReference Include="Amazon.Lambda.KafkaEvents" />
+    <PackageReference Include="Amazon.Lambda.Core"/>
+    <PackageReference Include="Amazon.Lambda.KafkaEvents"/>
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\MinimalLambda.Abstractions\MinimalLambda.Abstractions.csproj" />
+    <ProjectReference Include="..\..\MinimalLambda.Abstractions\MinimalLambda.Abstractions.csproj"/>
   </ItemGroup>
   <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
 </Project>

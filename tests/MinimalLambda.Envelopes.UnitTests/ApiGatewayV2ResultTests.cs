@@ -45,8 +45,7 @@ public class ApiGatewayV2ResultTests
             200,
             payload,
             new Dictionary<string, string>(),
-            false
-        );
+            false);
 
         // Act
         result.PackPayload(options);
@@ -67,8 +66,7 @@ public class ApiGatewayV2ResultTests
             200,
             "test",
             new Dictionary<string, string>(),
-            false
-        );
+            false);
 
         // Act & Assert
         result.Should().BeAssignableTo<APIGatewayHttpApiV2ProxyResponse>();
@@ -85,8 +83,7 @@ public class ApiGatewayV2ResultTests
             204,
             null,
             new Dictionary<string, string>(),
-            false
-        );
+            false);
         result.PackPayload(options);
 
         // Assert

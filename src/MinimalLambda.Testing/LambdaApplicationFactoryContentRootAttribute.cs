@@ -56,20 +56,16 @@ public sealed class LambdaApplicationFactoryContentRootAttribute : Attribute
         string key,
         string contentRootPath,
         string contentRootTest,
-        string priority
-    )
+        string priority)
     {
         Key = key;
         ContentRootPath = contentRootPath;
         ContentRootTest = contentRootTest;
-        if (
-            int.TryParse(
+        if (int.TryParse(
                 priority,
                 NumberStyles.Integer,
                 CultureInfo.InvariantCulture,
-                out var parsedPriority
-            )
-        )
+                out var parsedPriority))
             Priority = parsedPriority;
     }
 

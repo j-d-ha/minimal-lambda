@@ -7,8 +7,7 @@ public class DictionaryExtensionsTest
 {
     private readonly Dictionary<string, string> _dictionary = new()
     {
-        ["key1"] = "value1",
-        ["key2"] = "value2",
+        ["key1"] = "value1", ["key2"] = "value2",
     };
 
     [Fact]
@@ -41,7 +40,8 @@ public class DictionaryExtensionsTest
     {
         var act = () => _dictionary.GetRequired("missing", out _);
 
-        act.Should()
+        act
+            .Should()
             .Throw<InvalidOperationException>()
             .WithMessage("Key 'missing' is null or does not exist.");
     }

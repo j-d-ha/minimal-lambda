@@ -23,8 +23,7 @@ public class MapHandlerIncrementalGeneratorDiagnosticTests
             lambda.MapHandler(() => "hello world");
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
         diagnostics.Length.Should().Be(0);
     }
@@ -47,8 +46,7 @@ public class MapHandlerIncrementalGeneratorDiagnosticTests
             lambda.MapHandler(() => "hello world2");
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
         diagnostics.Length.Should().Be(0);
     }
@@ -69,8 +67,7 @@ public class MapHandlerIncrementalGeneratorDiagnosticTests
             lambda.MapHandler(([FromEvent] string input1, [FromEvent] string input2) => "hello world");
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
         diagnostics.Length.Should().Be(1);
 
@@ -110,8 +107,7 @@ public class MapHandlerIncrementalGeneratorDiagnosticTests
             {
                 public string GetMessage() => "Hello";
             }
-            """
-        );
+            """);
 
         diagnostics.Length.Should().Be(1);
 
@@ -139,8 +135,7 @@ public class MapHandlerIncrementalGeneratorDiagnosticTests
 
             await lambda.RunAsync();
             """,
-            LanguageVersion.CSharp10
-        );
+            LanguageVersion.CSharp10);
 
         diagnostics.Length.Should().Be(1);
         foreach (var diagnostic in diagnostics)
@@ -183,8 +178,7 @@ public class MapHandlerIncrementalGeneratorDiagnosticTests
                     await next(context);
                 }
             }
-            """
-        );
+            """);
 
         diagnostics.Length.Should().Be(1);
         foreach (var diagnostic in diagnostics)
@@ -217,8 +211,7 @@ public class MapHandlerIncrementalGeneratorDiagnosticTests
                 public Task InvokeAsync(ILambdaInvocationContext context, LambdaInvocationDelegate next) =>
                     next(context);
             }
-            """
-        );
+            """);
 
         diagnostics.Length.Should().Be(2);
         foreach (var diagnostic in diagnostics)
@@ -230,13 +223,11 @@ public class MapHandlerIncrementalGeneratorDiagnosticTests
 
     private static ImmutableArray<Diagnostic> GenerateDiagnostics(
         string source,
-        LanguageVersion languageVersion = LanguageVersion.CSharp11
-    )
+        LanguageVersion languageVersion = LanguageVersion.CSharp11)
     {
         var (driver, _) = GeneratorTestHelpers.GenerateFromSource(
             source,
-            languageVersion: languageVersion
-        );
+            languageVersion: languageVersion);
 
         driver.Should().NotBeNull();
 

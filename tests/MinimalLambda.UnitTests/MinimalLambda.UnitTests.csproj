@@ -9,31 +9,30 @@
     <LangVersion>14</LangVersion>
   </PropertyGroup>
   <ItemGroup>
-    <Using Include="Amazon.Lambda.Core" />
-    <Using Include="AutoFixture" />
-    <Using Include="AutoFixture.Xunit3" />
-    <Using Include="AwesomeAssertions" />
-    <Using Include="JetBrains.Annotations" />
-    <Using Include="MinimalLambda" />
-    <Using Include="MinimalLambda.Builder" />
-    <Using Include="MinimalLambda.Options" />
-    <Using Include="MinimalLambda.Runtime" />
-    <Using Include="NSubstitute" />
-    <Using Include="Xunit" />
+    <Using Include="Amazon.Lambda.Core"/>
+    <Using Include="AutoFixture"/>
+    <Using Include="AutoFixture.Xunit3"/>
+    <Using Include="AwesomeAssertions"/>
+    <Using Include="JetBrains.Annotations"/>
+    <Using Include="MinimalLambda"/>
+    <Using Include="MinimalLambda.Builder"/>
+    <Using Include="MinimalLambda.Options"/>
+    <Using Include="MinimalLambda.Runtime"/>
+    <Using Include="NSubstitute"/>
+    <Using Include="Xunit"/>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Amazon.Lambda.Core" />
-    <PackageReference Include="Amazon.Lambda.RuntimeSupport" />
-    <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson" />
-    <PackageReference Include="AutoFixture.AutoNSubstitute" />
-    <PackageReference Include="AutoFixture.Xunit3" />
-    <PackageReference Include="JetBrains.Annotations" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="NSubstitute" />
-    <PackageReference Include="AwesomeAssertions" />
-    <PackageReference Include="AutoFixture" />
-    <PackageReference Include="coverlet.collector" />
-    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
+    <PackageReference Include="Amazon.Lambda.Core"/>
+    <PackageReference Include="Amazon.Lambda.RuntimeSupport"/>
+    <PackageReference Include="Amazon.Lambda.Serialization.SystemTextJson"/>
+    <PackageReference Include="AutoFixture.AutoNSubstitute"/>
+    <PackageReference Include="AutoFixture.Xunit3"/>
+    <PackageReference Include="JetBrains.Annotations"/>
+    <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+    <PackageReference Include="NSubstitute"/>
+    <PackageReference Include="AwesomeAssertions"/>
+    <PackageReference Include="AutoFixture"/>
+    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage"/>
     <PackageReference Include="NSubstitute.Analyzers.CSharp">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -42,9 +41,12 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.v3"/>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\MinimalLambda\MinimalLambda.csproj" />
+    <ProjectReference Include="..\..\src\MinimalLambda\MinimalLambda.csproj"/>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest"/>
   </ItemGroup>
 </Project>

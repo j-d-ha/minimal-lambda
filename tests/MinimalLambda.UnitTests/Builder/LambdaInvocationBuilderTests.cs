@@ -87,8 +87,7 @@ public class LambdaInvocationBuilderTests
         middlewares
             .Should()
             .BeAssignableTo<
-                IReadOnlyList<Func<LambdaInvocationDelegate, LambdaInvocationDelegate>>
-            >();
+                IReadOnlyList<Func<LambdaInvocationDelegate, LambdaInvocationDelegate>>>();
     }
 
     [Theory]
@@ -108,8 +107,7 @@ public class LambdaInvocationBuilderTests
     [Theory]
     [AutoNSubstituteData]
     public void Handle_WithValidHandler_SetsHandlerAndReturnsBuilder(
-        IServiceProvider serviceProvider
-    )
+        IServiceProvider serviceProvider)
     {
         // Arrange
         var builder = new LambdaInvocationBuilder(serviceProvider);
@@ -126,8 +124,7 @@ public class LambdaInvocationBuilderTests
     [Theory]
     [AutoNSubstituteData]
     public void Handle_WhenHandlerAlreadySet_ThrowsInvalidOperationException(
-        IServiceProvider serviceProvider
-    )
+        IServiceProvider serviceProvider)
     {
         // Arrange
         var builder = new LambdaInvocationBuilder(serviceProvider);
@@ -140,7 +137,8 @@ public class LambdaInvocationBuilderTests
         var act = () => builder.Handle(handler2);
 
         // Assert
-        act.Should()
+        act
+            .Should()
             .ThrowExactly<InvalidOperationException>()
             .WithMessage("Lambda Handler has already been set.");
     }
@@ -162,8 +160,7 @@ public class LambdaInvocationBuilderTests
     [Theory]
     [AutoNSubstituteData]
     public void Use_WithValidMiddleware_AddsToListAndReturnsBuilder(
-        IServiceProvider serviceProvider
-    )
+        IServiceProvider serviceProvider)
     {
         // Arrange
         var builder = new LambdaInvocationBuilder(serviceProvider);
@@ -200,8 +197,7 @@ public class LambdaInvocationBuilderTests
     [Theory]
     [AutoNSubstituteData]
     public void Build_WithoutHandler_ThrowsInvalidOperationException(
-        IServiceProvider serviceProvider
-    )
+        IServiceProvider serviceProvider)
     {
         // Arrange
         var builder = new LambdaInvocationBuilder(serviceProvider);
@@ -210,7 +206,8 @@ public class LambdaInvocationBuilderTests
         var act = () => builder.Build();
 
         // Assert
-        act.Should()
+        act
+            .Should()
             .ThrowExactly<InvalidOperationException>()
             .WithMessage("Lambda Handler has not been set.");
     }
@@ -267,8 +264,7 @@ public class LambdaInvocationBuilderTests
     [Theory]
     [AutoNSubstituteData]
     public void Build_WithMultipleMiddleware_AllMiddlewareIncorporated(
-        IServiceProvider serviceProvider
-    )
+        IServiceProvider serviceProvider)
     {
         // Arrange
         var builder = new LambdaInvocationBuilder(serviceProvider);

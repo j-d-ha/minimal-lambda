@@ -10,15 +10,13 @@ public class SimpleLambdaTests
     {
         await using var factory =
             new LambdaApplicationFactory<SimpleLambda>().WithCancellationToken(
-                TestContext.Current.CancellationToken
-            );
+                TestContext.Current.CancellationToken);
         var setup = await factory.TestServer.StartAsync(TestContext.Current.CancellationToken);
         setup.InitStatus.Should().Be(InitStatus.InitCompleted);
 
         var response = await factory.TestServer.InvokeAsync<string, string>(
             "World",
-            TestContext.Current.CancellationToken
-        );
+            TestContext.Current.CancellationToken);
 
         response.WasSuccess.Should().BeTrue();
         response.Should().NotBeNull();
@@ -30,13 +28,11 @@ public class SimpleLambdaTests
     {
         await using var factory =
             new LambdaApplicationFactory<SimpleLambda>().WithCancellationToken(
-                TestContext.Current.CancellationToken
-            );
+                TestContext.Current.CancellationToken);
 
         var response = await factory.TestServer.InvokeAsync<string, string>(
             "World",
-            TestContext.Current.CancellationToken
-        );
+            TestContext.Current.CancellationToken);
 
         response.WasSuccess.Should().BeTrue();
         response.Should().NotBeNull();
@@ -48,18 +44,14 @@ public class SimpleLambdaTests
     {
         await using var factory =
             new LambdaApplicationFactory<SimpleLambda>().WithCancellationToken(
-                TestContext.Current.CancellationToken
-            );
+                TestContext.Current.CancellationToken);
 
         // Launch 5 concurrent invocations
         var tasks = Enumerable
             .Range(1, 5)
-            .Select(i =>
-                factory.TestServer.InvokeAsync<string, string>(
-                    $"User{i}",
-                    TestContext.Current.CancellationToken
-                )
-            )
+            .Select(i => factory.TestServer.InvokeAsync<string, string>(
+                $"User{i}",
+                TestContext.Current.CancellationToken))
             .ToArray();
 
         var responses = await Task.WhenAll(tasks);
@@ -74,8 +66,7 @@ public class SimpleLambdaTests
                 "Hello User2!",
                 "Hello User3!",
                 "Hello User4!",
-                "Hello User5!"
-            );
+                "Hello User5!");
     }
 
     [Fact]
@@ -83,19 +74,15 @@ public class SimpleLambdaTests
     {
         await using var factory =
             new LambdaApplicationFactory<SimpleLambda>().WithCancellationToken(
-                TestContext.Current.CancellationToken
-            );
+                TestContext.Current.CancellationToken);
         await factory.TestServer.StartAsync(TestContext.Current.CancellationToken);
 
         // Launch 5 concurrent invocations
         var tasks = Enumerable
             .Range(1, 5)
-            .Select(i =>
-                factory.TestServer.InvokeAsync<string, string>(
-                    $"User{i}",
-                    TestContext.Current.CancellationToken
-                )
-            )
+            .Select(i => factory.TestServer.InvokeAsync<string, string>(
+                $"User{i}",
+                TestContext.Current.CancellationToken))
             .ToArray();
 
         var responses = await Task.WhenAll(tasks);
@@ -110,8 +97,7 @@ public class SimpleLambdaTests
                 "Hello User2!",
                 "Hello User3!",
                 "Hello User4!",
-                "Hello User5!"
-            );
+                "Hello User5!");
     }
 
     [Fact]
@@ -119,13 +105,11 @@ public class SimpleLambdaTests
     {
         await using var factory =
             new LambdaApplicationFactory<SimpleLambda>().WithCancellationToken(
-                TestContext.Current.CancellationToken
-            );
+                TestContext.Current.CancellationToken);
 
         var response = await factory.TestServer.InvokeAsync<string, string>(
             "",
-            TestContext.Current.CancellationToken
-        );
+            TestContext.Current.CancellationToken);
 
         response.Should().NotBeNull();
         response.WasSuccess.Should().BeFalse();
@@ -140,26 +124,24 @@ public class SimpleLambdaTests
             .WithCancellationToken(TestContext.Current.CancellationToken)
             .WithHostBuilder(builder =>
             {
-                builder.ConfigureServices(
-                    (_, services) =>
+                builder.ConfigureServices((_, services) =>
+                {
+                    services.Configure<LambdaHostOptions>(options =>
                     {
-                        services.Configure<LambdaHostOptions>(options =>
-                        {
-                            options.BootstrapOptions.RuntimeApiEndpoint = "http://localhost:3002";
-                        });
-                    }
-                );
+                        options.BootstrapOptions.RuntimeApiEndpoint = "http://localhost:3002";
+                    });
+                });
             });
 
         var act = async () =>
             // ReSharper disable once AccessToDisposedClosure
             await factory.TestServer.StartAsync(TestContext.Current.CancellationToken);
 
-        await act.Should()
+        await act
+            .Should()
             .ThrowAsync<InvalidOperationException>()
             .WithMessage(
-                "Unexpected request received from the Lambda HTTP handler: GET http://http//localhost:3002/2018-06-01/runtime/invocation/next"
-            );
+                "Unexpected request received from the Lambda HTTP handler: GET http://http//localhost:3002/2018-06-01/runtime/invocation/next");
     }
 
     [Fact]
@@ -167,8 +149,7 @@ public class SimpleLambdaTests
     {
         await using var factory =
             new LambdaApplicationFactory<SimpleLambda>().WithCancellationToken(
-                TestContext.Current.CancellationToken
-            );
+                TestContext.Current.CancellationToken);
         await factory.TestServer.StartAsync(TestContext.Current.CancellationToken);
 
         using var cts = new CancellationTokenSource();

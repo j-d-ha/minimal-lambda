@@ -11,18 +11,15 @@ public class LambdaInvocationContextTests
         Dictionary<string, object?> properties,
         IServiceScopeFactory serviceScopeFactory,
         IFeatureCollection featuresCollection,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         // Act & Assert
-        var act = () =>
-            new LambdaInvocationContext(
-                null!,
-                serviceScopeFactory,
-                properties,
-                featuresCollection,
-                cancellationToken
-            );
+        var act = () => new LambdaInvocationContext(
+            null!,
+            serviceScopeFactory,
+            properties,
+            featuresCollection,
+            cancellationToken);
         act.Should().ThrowExactly<ArgumentNullException>();
     }
 
@@ -32,18 +29,15 @@ public class LambdaInvocationContextTests
         Dictionary<string, object?> properties,
         ILambdaContext lambdaContext,
         IFeatureCollection featuresCollection,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         // Act & Assert
-        var act = () =>
-            new LambdaInvocationContext(
-                lambdaContext,
-                null!,
-                properties,
-                featuresCollection,
-                cancellationToken
-            );
+        var act = () => new LambdaInvocationContext(
+            lambdaContext,
+            null!,
+            properties,
+            featuresCollection,
+            cancellationToken);
         act.Should().ThrowExactly<ArgumentNullException>();
     }
 
@@ -53,18 +47,15 @@ public class LambdaInvocationContextTests
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
         IFeatureCollection featuresCollection,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         // Act & Assert
-        var act = () =>
-            new LambdaInvocationContext(
-                lambdaContext,
-                serviceScopeFactory,
-                null!,
-                featuresCollection,
-                cancellationToken
-            );
+        var act = () => new LambdaInvocationContext(
+            lambdaContext,
+            serviceScopeFactory,
+            null!,
+            featuresCollection,
+            cancellationToken);
         act.Should().ThrowExactly<ArgumentNullException>();
     }
 
@@ -74,18 +65,15 @@ public class LambdaInvocationContextTests
         Dictionary<string, object?> properties,
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         // Act & Assert
-        var act = () =>
-            new LambdaInvocationContext(
-                lambdaContext,
-                serviceScopeFactory,
-                properties,
-                null!,
-                cancellationToken
-            );
+        var act = () => new LambdaInvocationContext(
+            lambdaContext,
+            serviceScopeFactory,
+            properties,
+            null!,
+            cancellationToken);
         act.Should().ThrowExactly<ArgumentNullException>();
     }
 
@@ -96,8 +84,7 @@ public class LambdaInvocationContextTests
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
         IFeatureCollection featuresCollection,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         // Act
         var context = new LambdaInvocationContext(
@@ -105,8 +92,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             properties,
             featuresCollection,
-            cancellationToken
-        );
+            cancellationToken);
 
         // Assert
         context.Should().NotBeNull();
@@ -118,8 +104,7 @@ public class LambdaInvocationContextTests
         string expectedValue,
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange
         lambdaContext.AwsRequestId.Returns(expectedValue);
@@ -128,8 +113,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         // Act
         var result = context.AwsRequestId;
@@ -144,8 +128,7 @@ public class LambdaInvocationContextTests
         IClientContext expectedValue,
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange
         lambdaContext.ClientContext.Returns(expectedValue);
@@ -154,8 +137,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         // Act
         var result = context.ClientContext;
@@ -170,8 +152,7 @@ public class LambdaInvocationContextTests
         string expectedValue,
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange
         lambdaContext.FunctionName.Returns(expectedValue);
@@ -180,8 +161,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         // Act
         var result = context.FunctionName;
@@ -196,8 +176,7 @@ public class LambdaInvocationContextTests
         string expectedValue,
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange
         lambdaContext.FunctionVersion.Returns(expectedValue);
@@ -206,8 +185,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         // Act
         var result = context.FunctionVersion;
@@ -222,8 +200,7 @@ public class LambdaInvocationContextTests
         ICognitoIdentity expectedValue,
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange
         lambdaContext.Identity.Returns(expectedValue);
@@ -232,8 +209,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         // Act
         var result = context.Identity;
@@ -248,8 +224,7 @@ public class LambdaInvocationContextTests
         string expectedValue,
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange
         lambdaContext.InvokedFunctionArn.Returns(expectedValue);
@@ -258,8 +233,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         // Act
         var result = context.InvokedFunctionArn;
@@ -274,8 +248,7 @@ public class LambdaInvocationContextTests
         ILambdaLogger expectedValue,
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange
         lambdaContext.Logger.Returns(expectedValue);
@@ -284,8 +257,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         // Act
         var result = context.Logger;
@@ -300,8 +272,7 @@ public class LambdaInvocationContextTests
         string expectedValue,
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange
         lambdaContext.LogGroupName.Returns(expectedValue);
@@ -310,8 +281,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         // Act
         var result = context.LogGroupName;
@@ -326,8 +296,7 @@ public class LambdaInvocationContextTests
         string expectedValue,
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange
         lambdaContext.LogStreamName.Returns(expectedValue);
@@ -336,8 +305,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         // Act
         var result = context.LogStreamName;
@@ -352,8 +320,7 @@ public class LambdaInvocationContextTests
         int expectedValue,
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange
         lambdaContext.MemoryLimitInMB.Returns(expectedValue);
@@ -362,8 +329,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         // Act
         var result = context.MemoryLimitInMB;
@@ -378,8 +344,7 @@ public class LambdaInvocationContextTests
         TimeSpan expectedValue,
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange
         lambdaContext.RemainingTime.Returns(expectedValue);
@@ -388,8 +353,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         // Act
         var result = context.RemainingTime;
@@ -403,22 +367,17 @@ public class LambdaInvocationContextTests
     internal void Properties_ReturnsPropertiesDictionaryPassedToConstructor(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange
-        var propertiesDict = new Dictionary<string, object?>
-        {
-            { "key1", "value1" },
-            { "key2", 42 },
-        };
+        var propertiesDict =
+            new Dictionary<string, object?> { { "key1", "value1" }, { "key2", 42 } };
         var context = new LambdaInvocationContext(
             lambdaContext,
             serviceScopeFactory,
             propertiesDict,
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         // Act
         var result = context.Properties;
@@ -433,8 +392,7 @@ public class LambdaInvocationContextTests
     internal void Items_ReturnsEmptyDictionaryInitially(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange & Act
         var context = new LambdaInvocationContext(
@@ -442,8 +400,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         // Assert
         context.Items.Should().NotBeNull();
@@ -455,8 +412,7 @@ public class LambdaInvocationContextTests
     internal void Items_AllowsAddingAndRetrievingValues(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange
         var context = new LambdaInvocationContext(
@@ -464,8 +420,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
         var key = new object();
         var value = "test-value";
 
@@ -482,8 +437,7 @@ public class LambdaInvocationContextTests
     internal void Items_AllowsClearingValues(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange
         var context = new LambdaInvocationContext(
@@ -491,8 +445,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
         context.Items["key1"] = "value1";
         context.Items["key2"] = "value2";
 
@@ -508,8 +461,7 @@ public class LambdaInvocationContextTests
     internal void CancellationToken_ReturnsCancellationTokenPassedToConstructor(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange
         var expectedToken = new CancellationToken();
@@ -518,8 +470,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            expectedToken
-        );
+            expectedToken);
 
         // Act
         var result = context.CancellationToken;
@@ -533,8 +484,7 @@ public class LambdaInvocationContextTests
     internal void Features_ReturnsFeaturesCollectionPassedToConstructor(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange
         var context = new LambdaInvocationContext(
@@ -542,8 +492,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         // Act
         var result = context.Features;
@@ -556,8 +505,7 @@ public class LambdaInvocationContextTests
     [AutoNSubstituteData]
     internal void ServiceProvider_IsCreatedOnFirstAccess(
         ILambdaContext lambdaContext,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange
         var mockScope = Substitute.For<IServiceScope>();
@@ -572,8 +520,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         // Act
         var result = context.ServiceProvider;
@@ -588,8 +535,7 @@ public class LambdaInvocationContextTests
     [AutoNSubstituteData]
     internal void ServiceProvider_ReturnsSameScopeOnSubsequentAccess(
         ILambdaContext lambdaContext,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange
         var mockScope = Substitute.For<IServiceScope>();
@@ -604,8 +550,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         // Act
         var result1 = context.ServiceProvider;
@@ -622,8 +567,7 @@ public class LambdaInvocationContextTests
     [AutoNSubstituteData]
     internal void ServiceProvider_UsesServiceScopeFactory(
         ILambdaContext lambdaContext,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange
         var serviceScopeFactory = Substitute.For<IServiceScopeFactory>();
@@ -635,8 +579,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         // Act
         _ = context.ServiceProvider;
@@ -649,8 +592,7 @@ public class LambdaInvocationContextTests
     [AutoNSubstituteData]
     internal async Task DisposeAsync_DisposesServiceScopeWhenAsyncDisposable(
         ILambdaContext lambdaContext,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange
         var asyncDisposableScope = Substitute.For<IServiceScope, IAsyncDisposable>();
@@ -662,8 +604,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
         _ = context.ServiceProvider; // Trigger lazy initialization
 
         // Act
@@ -677,8 +618,7 @@ public class LambdaInvocationContextTests
     [AutoNSubstituteData]
     internal async Task DisposeAsync_DisposesServiceScopeSynchronouslyWhenNotAsyncDisposable(
         ILambdaContext lambdaContext,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange
         var mockScope = Substitute.For<IServiceScope>();
@@ -690,8 +630,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
         _ = context.ServiceProvider; // Trigger lazy initialization
 
         // Act
@@ -706,8 +645,7 @@ public class LambdaInvocationContextTests
     internal async Task DisposeAsync_ClearsItemsCollection(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange
         var context = new LambdaInvocationContext(
@@ -715,8 +653,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
         context.Items["key1"] = "value1";
         context.Items["key2"] = "value2";
 
@@ -731,8 +668,7 @@ public class LambdaInvocationContextTests
     [AutoNSubstituteData]
     internal async Task DisposeAsync_DisposesServiceScopeBeforeNullingServiceProvider(
         ILambdaContext lambdaContext,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange
         var mockScope = Substitute.For<IServiceScope>();
@@ -747,8 +683,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
         _ = context.ServiceProvider; // Trigger initialization
 
         // Act
@@ -764,8 +699,7 @@ public class LambdaInvocationContextTests
     internal async Task DisposeAsync_CanBeCalledMultipleTimes(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange
         var context = new LambdaInvocationContext(
@@ -773,8 +707,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         // Act
         var act = async () =>
@@ -792,8 +725,7 @@ public class LambdaInvocationContextTests
     internal void ContextImplementsIAsyncDisposable(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange & Act
         var context = new LambdaInvocationContext(
@@ -801,8 +733,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         // Assert
         context.Should().BeAssignableTo<IAsyncDisposable>();
@@ -813,8 +744,7 @@ public class LambdaInvocationContextTests
     internal void ContextImplementsILambdaInvocationContext(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange & Act
         var context = new LambdaInvocationContext(
@@ -822,8 +752,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         // Assert
         context.Should().BeAssignableTo<ILambdaInvocationContext>();
@@ -834,8 +763,7 @@ public class LambdaInvocationContextTests
     internal void ContextImplementsILambdaContext(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange & Act
         var context = new LambdaInvocationContext(
@@ -843,8 +771,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         // Assert
         context.Should().BeAssignableTo<ILambdaContext>();
@@ -856,8 +783,7 @@ public class LambdaInvocationContextTests
         ILambdaContext lambdaContext1,
         ILambdaContext lambdaContext2,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange
         var context1 = new LambdaInvocationContext(
@@ -865,15 +791,13 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
         var context2 = new LambdaInvocationContext(
             lambdaContext2,
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         context1.Items["key"] = "value1";
         context2.Items["key"] = "value2";
@@ -888,8 +812,7 @@ public class LambdaInvocationContextTests
     internal void FeaturesCollection_CanBeUsedToStoreAndRetrieveFeaturesViaItems(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange
         var context = new LambdaInvocationContext(
@@ -897,8 +820,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             new Dictionary<string, object?>(),
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
         var featureType = typeof(string);
         var featureValue = "test-feature";
 
@@ -915,8 +837,7 @@ public class LambdaInvocationContextTests
     internal void PropertiesDictionary_PersistsAcrossMultipleInvocations(
         ILambdaContext lambdaContext,
         IServiceScopeFactory serviceScopeFactory,
-        IFeatureCollection featuresCollection
-    )
+        IFeatureCollection featuresCollection)
     {
         // Arrange
         var properties = new Dictionary<string, object?> { { "persistent", "value" } };
@@ -925,8 +846,7 @@ public class LambdaInvocationContextTests
             serviceScopeFactory,
             properties,
             featuresCollection,
-            CancellationToken.None
-        );
+            CancellationToken.None);
 
         // Act
         properties["persistent"] = "updated-value";

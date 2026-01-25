@@ -16,9 +16,8 @@ namespace MinimalLambda.Testing;
 // ConfigureHostBuilder
 internal sealed class DeferredHostBuilder : IHostBuilder
 {
-    private readonly TaskCompletionSource<Exception?> _entryPointCompletionTcs = new(
-        TaskCreationOptions.RunContinuationsAsynchronously
-    );
+    private readonly TaskCompletionSource<Exception?> _entryPointCompletionTcs =
+        new(TaskCreationOptions.RunContinuationsAsynchronously);
 
     private readonly ConfigurationManager _hostConfiguration = new();
 
@@ -26,8 +25,7 @@ internal sealed class DeferredHostBuilder : IHostBuilder
     // application
     // exits due to an exception or because it didn't wait for the shutdown signal
     private readonly TaskCompletionSource _hostStartTcs = new(
-        TaskCreationOptions.RunContinuationsAsynchronously
-    );
+        TaskCreationOptions.RunContinuationsAsynchronously);
 
     private Action<IHostBuilder> _configure;
     private Func<string[], object>? _hostFactory;
@@ -65,16 +63,14 @@ internal sealed class DeferredHostBuilder : IHostBuilder
     }
 
     public IHostBuilder ConfigureAppConfiguration(
-        Action<HostBuilderContext, IConfigurationBuilder> configureDelegate
-    )
+        Action<HostBuilderContext, IConfigurationBuilder> configureDelegate)
     {
         _configure += b => b.ConfigureAppConfiguration(configureDelegate);
         return this;
     }
 
     public IHostBuilder ConfigureContainer<TContainerBuilder>(
-        Action<HostBuilderContext, TContainerBuilder> configureDelegate
-    )
+        Action<HostBuilderContext, TContainerBuilder> configureDelegate)
     {
         _configure += b => b.ConfigureContainer(configureDelegate);
         return this;
@@ -90,25 +86,21 @@ internal sealed class DeferredHostBuilder : IHostBuilder
     }
 
     public IHostBuilder ConfigureServices(
-        Action<HostBuilderContext, IServiceCollection> configureDelegate
-    )
+        Action<HostBuilderContext, IServiceCollection> configureDelegate)
     {
         _configure += b => b.ConfigureServices(configureDelegate);
         return this;
     }
 
     public IHostBuilder UseServiceProviderFactory<TContainerBuilder>(
-        IServiceProviderFactory<TContainerBuilder> factory
-    )
-        where TContainerBuilder : notnull
+        IServiceProviderFactory<TContainerBuilder> factory) where TContainerBuilder : notnull
     {
         _configure += b => b.UseServiceProviderFactory(factory);
         return this;
     }
 
     public IHostBuilder UseServiceProviderFactory<TContainerBuilder>(
-        Func<HostBuilderContext, IServiceProviderFactory<TContainerBuilder>> factory
-    )
+        Func<HostBuilderContext, IServiceProviderFactory<TContainerBuilder>> factory)
         where TContainerBuilder : notnull
     {
         _configure += b => b.UseServiceProviderFactory(factory);
@@ -134,8 +126,7 @@ internal sealed class DeferredHostBuilder : IHostBuilder
     private sealed class DeferredHost(
         IHost host,
         TaskCompletionSource hostStartedTcs,
-        IHostApplicationLifetime applicationLifetime
-    ) : IHost, IAsyncDisposable
+        IHostApplicationLifetime applicationLifetime) : IHost, IAsyncDisposable
     {
         public async ValueTask DisposeAsync()
         {
@@ -160,16 +151,14 @@ internal sealed class DeferredHostBuilder : IHostBuilder
 
             await using var reg = cancellationToken.UnsafeRegister(
                 _ => hostStartedTcs.TrySetCanceled(),
-                null
-            );
+                null);
 
             // Wait on the existing host to start running and have this call wait on that. This
             // avoids starting the actual host too early and
             // leaves the application in charge of calling start.
             await using var reg2 = applicationLifetime.ApplicationStarted.UnsafeRegister(
                 _ => hostStartedTcs.TrySetResult(),
-                null
-            );
+                null);
 
             await hostStartedTcs.Task.ConfigureAwait(false);
         }

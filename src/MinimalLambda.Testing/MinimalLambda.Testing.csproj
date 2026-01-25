@@ -25,19 +25,19 @@
     <NoWarn>$(NoWarn);AD0001</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="MinimalLambda.Testing.UnitTests" />
+    <InternalsVisibleTo Include="MinimalLambda.Testing.UnitTests"/>
   </ItemGroup>
   <ItemGroup>
-    <None Include="README.md" Pack="true" PackagePath="\" />
+    <None Include="README.md" Pack="true" PackagePath="\"/>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\MinimalLambda.Abstractions\MinimalLambda.Abstractions.csproj" />
-    <ProjectReference Include="..\MinimalLambda\MinimalLambda.csproj" />
+    <ProjectReference Include="..\MinimalLambda.Abstractions\MinimalLambda.Abstractions.csproj"/>
+    <ProjectReference Include="..\MinimalLambda\MinimalLambda.csproj"/>
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" />
-    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" />
-    <PackageReference Include="Microsoft.AspNetCore.Routing" />
-    <PackageReference Include="Microsoft.Extensions.DependencyModel" />
+    <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions"/>
+    <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions"/>
+    <PackageReference Include="Microsoft.AspNetCore.Routing"/>
+    <PackageReference Include="Microsoft.Extensions.DependencyModel"/>
   </ItemGroup>
 </Project>

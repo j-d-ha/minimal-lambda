@@ -6,13 +6,11 @@ internal static class TypeSymbolExtensions
 {
     private static readonly SymbolDisplayFormat NullableFormat =
         SymbolDisplayFormat.FullyQualifiedFormat.AddMiscellaneousOptions(
-            SymbolDisplayMiscellaneousOptions.IncludeNullableReferenceTypeModifier
-        );
+            SymbolDisplayMiscellaneousOptions.IncludeNullableReferenceTypeModifier);
 
     private static readonly SymbolDisplayFormat NotNullableFormat =
         SymbolDisplayFormat.FullyQualifiedFormat.AddMiscellaneousOptions(
-            SymbolDisplayMiscellaneousOptions.ExpandNullable
-        );
+            SymbolDisplayMiscellaneousOptions.ExpandNullable);
 
     extension(ITypeSymbol typeSymbol)
     {

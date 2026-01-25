@@ -13,8 +13,7 @@ internal class LambdaInvocationContextFactory : ILambdaInvocationContextFactory
     public LambdaInvocationContextFactory(
         IServiceScopeFactory serviceScopeFactory,
         IFeatureCollectionFactory featureCollectionFactory,
-        ILambdaInvocationContextAccessor? contextAccessor = null
-    )
+        ILambdaInvocationContextAccessor? contextAccessor = null)
     {
         ArgumentNullException.ThrowIfNull(serviceScopeFactory);
         ArgumentNullException.ThrowIfNull(featureCollectionFactory);
@@ -27,8 +26,7 @@ internal class LambdaInvocationContextFactory : ILambdaInvocationContextFactory
     public ILambdaInvocationContext Create(
         ILambdaContext lambdaContext,
         IDictionary<string, object?> properties,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         _featureProviders ??= CreateFeatureProviders(properties);
 
@@ -37,8 +35,7 @@ internal class LambdaInvocationContextFactory : ILambdaInvocationContextFactory
             _serviceScopeFactory,
             properties,
             _featureCollectionFactory.Create(_featureProviders),
-            cancellationToken
-        );
+            cancellationToken);
 
         _contextAccessor?.LambdaInvocationContext = context;
 
@@ -46,8 +43,7 @@ internal class LambdaInvocationContextFactory : ILambdaInvocationContextFactory
     }
 
     private static IFeatureProvider[] CreateFeatureProviders(
-        IDictionary<string, object?> properties
-    )
+        IDictionary<string, object?> properties)
     {
         var list = new List<IFeatureProvider>(2);
 
@@ -60,8 +56,7 @@ internal class LambdaInvocationContextFactory : ILambdaInvocationContextFactory
     private static void AddIfPresent(
         IDictionary<string, object?> properties,
         string key,
-        List<IFeatureProvider> target
-    )
+        List<IFeatureProvider> target)
     {
         if (properties.TryGetValue(key, out var value) && value is IFeatureProvider provider)
             target.Add(provider);

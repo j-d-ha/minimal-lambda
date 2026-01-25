@@ -13,8 +13,8 @@
     <IsPackable>false</IsPackable>
   </PropertyGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="MinimalLambda.Testing.UnitTests" />
-    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+    <InternalsVisibleTo Include="MinimalLambda.Testing.UnitTests"/>
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2"/>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference
@@ -22,7 +22,7 @@
       ReferenceOutputAssembly="false"
       OutputItemType="Analyzer"
     />
-    <ProjectReference Include="..\..\..\..\src\MinimalLambda\MinimalLambda.csproj" />
+    <ProjectReference Include="..\..\..\..\src\MinimalLambda\MinimalLambda.csproj"/>
   </ItemGroup>
   <ItemGroup>
     <None Include="appsettings.json">

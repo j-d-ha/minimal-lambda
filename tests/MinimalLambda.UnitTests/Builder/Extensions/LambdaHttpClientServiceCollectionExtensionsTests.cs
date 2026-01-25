@@ -55,9 +55,8 @@ public class LambdaHttpClientServiceCollectionExtensionsTests
         var provider = serviceCollection.BuildServiceProvider();
 
         // Assert
-        var registeredClient = provider.GetKeyedService<HttpClient>(
-            typeof(ILambdaBootstrapOrchestrator)
-        );
+        var registeredClient =
+            provider.GetKeyedService<HttpClient>(typeof(ILambdaBootstrapOrchestrator));
         registeredClient.Should().BeSameAs(httpClient);
     }
 
@@ -99,14 +98,14 @@ public class LambdaHttpClientServiceCollectionExtensionsTests
         var provider = serviceCollection.BuildServiceProvider();
 
         // Assert
-        var registeredClient = provider.GetKeyedService<HttpClient>(
-            typeof(ILambdaBootstrapOrchestrator)
-        );
+        var registeredClient =
+            provider.GetKeyedService<HttpClient>(typeof(ILambdaBootstrapOrchestrator));
         registeredClient.Should().BeSameAs(httpClient);
     }
 
     [Fact]
-    public void TryAddLambdaBootstrapHttpClient_WithNullServiceCollection_ThrowsArgumentNullException()
+    public void
+        TryAddLambdaBootstrapHttpClient_WithNullServiceCollection_ThrowsArgumentNullException()
     {
         // Act
         var act = () =>
@@ -141,9 +140,8 @@ public class LambdaHttpClientServiceCollectionExtensionsTests
         var provider = serviceCollection.BuildServiceProvider();
 
         // Assert
-        var registeredClient = provider.GetKeyedService<HttpClient>(
-            typeof(ILambdaBootstrapOrchestrator)
-        );
+        var registeredClient =
+            provider.GetKeyedService<HttpClient>(typeof(ILambdaBootstrapOrchestrator));
         registeredClient.Should().BeSameAs(httpClient);
     }
 
@@ -161,9 +159,8 @@ public class LambdaHttpClientServiceCollectionExtensionsTests
         var provider = serviceCollection.BuildServiceProvider();
 
         // Assert
-        var registeredClient = provider.GetKeyedService<HttpClient>(
-            typeof(ILambdaBootstrapOrchestrator)
-        );
+        var registeredClient =
+            provider.GetKeyedService<HttpClient>(typeof(ILambdaBootstrapOrchestrator));
         registeredClient.Should().BeSameAs(firstClient);
     }
 
@@ -192,9 +189,8 @@ public class LambdaHttpClientServiceCollectionExtensionsTests
         var provider = serviceCollection.BuildServiceProvider();
 
         // Assert
-        var registeredClient = provider.GetKeyedService<HttpClient>(
-            typeof(ILambdaBootstrapOrchestrator)
-        );
+        var registeredClient =
+            provider.GetKeyedService<HttpClient>(typeof(ILambdaBootstrapOrchestrator));
         registeredClient.Should().BeSameAs(httpClient);
     }
 
@@ -212,9 +208,8 @@ public class LambdaHttpClientServiceCollectionExtensionsTests
         var provider = serviceCollection.BuildServiceProvider();
 
         // Assert
-        var registeredClient = provider.GetKeyedService<HttpClient>(
-            typeof(ILambdaBootstrapOrchestrator)
-        );
+        var registeredClient =
+            provider.GetKeyedService<HttpClient>(typeof(ILambdaBootstrapOrchestrator));
         registeredClient.Should().BeSameAs(firstClient);
     }
 

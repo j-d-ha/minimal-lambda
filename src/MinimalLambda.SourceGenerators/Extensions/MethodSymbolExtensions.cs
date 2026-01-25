@@ -14,14 +14,12 @@ internal static class MethodSymbolExtensions
         {
             var returnType = methodSymbol.ReturnType.QualifiedNullableName;
             var parameters = methodSymbol
-                .Parameters.Select(
-                    (p, i) =>
-                    {
-                        var type = p.Type.QualifiedNullableName;
-                        var defaultValue = p.IsOptional ? " = default" : "";
-                        return $"{type} arg{i}{defaultValue}";
-                    }
-                )
+                .Parameters.Select((p, i) =>
+                {
+                    var type = p.Type.QualifiedNullableName;
+                    var defaultValue = p.IsOptional ? " = default" : "";
+                    return $"{type} arg{i}{defaultValue}";
+                })
                 .ToArray();
             var parameterList = string.Join(", ", parameters);
 
@@ -46,14 +44,12 @@ internal static class MethodSymbolExtensions
 
             // Check for ValueTask and ValueTask<T>
             var valueTask = context.WellKnownTypes.Get(
-                WellKnownType.System_Threading_Tasks_ValueTask
-            );
+                WellKnownType.System_Threading_Tasks_ValueTask);
             if (returnType.Equals(valueTask, SymbolEqualityComparer.Default))
                 return true;
 
             var valueTaskOfT = context.WellKnownTypes.Get(
-                WellKnownType.System_Threading_Tasks_ValueTask_T
-            );
+                WellKnownType.System_Threading_Tasks_ValueTask_T);
             if (returnType.OriginalDefinition.Equals(valueTaskOfT, SymbolEqualityComparer.Default))
                 return true;
 
@@ -66,8 +62,7 @@ internal static class MethodSymbolExtensions
 
         internal bool HasMeaningfulReturnType(
             GeneratorContext context,
-            [NotNullWhen(true)] out INamedTypeSymbol? unwrappedReturnType
-        )
+            [NotNullWhen(true)] out INamedTypeSymbol? unwrappedReturnType)
         {
             unwrappedReturnType = null;
 
@@ -91,8 +86,7 @@ internal static class MethodSymbolExtensions
                     type,
                     WellKnownType.System_Void,
                     WellKnownType.System_Threading_Tasks_Task,
-                    WellKnownType.System_Threading_Tasks_ValueTask
-                );
+                    WellKnownType.System_Threading_Tasks_ValueTask);
         }
 
         private ITypeSymbol UnwrapReturnType(GeneratorContext context)
@@ -102,18 +96,13 @@ internal static class MethodSymbolExtensions
 
             var taskOfT = context.WellKnownTypes.Get(WellKnownType.System_Threading_Tasks_Task_T);
             var valueTaskOfT = context.WellKnownTypes.Get(
-                WellKnownType.System_Threading_Tasks_ValueTask_T
-            );
+                WellKnownType.System_Threading_Tasks_ValueTask_T);
 
             var originalDef = namedReturnType.OriginalDefinition;
 
-            if (
-                (
-                    originalDef.Equals(taskOfT, SymbolEqualityComparer.Default)
-                    || originalDef.Equals(valueTaskOfT, SymbolEqualityComparer.Default)
-                )
-                && namedReturnType.TypeArguments.Length > 0
-            )
+            if ((originalDef.Equals(taskOfT, SymbolEqualityComparer.Default)
+                 || originalDef.Equals(valueTaskOfT, SymbolEqualityComparer.Default))
+                && namedReturnType.TypeArguments.Length > 0)
                 return namedReturnType.TypeArguments[0];
 
             return namedReturnType;

@@ -7,6 +7,5 @@ internal interface ILambdaInvocationContextFactory
     ILambdaInvocationContext Create(
         ILambdaContext lambdaContext,
         IDictionary<string, object?> properties,
-        CancellationToken cancellationToken
-    );
+        CancellationToken cancellationToken);
 }

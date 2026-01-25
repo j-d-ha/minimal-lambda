@@ -17,19 +17,18 @@ public sealed class KinesisFirehoseEventEnvelope<T> : KinesisFirehoseEventEnvelo
     [UnconditionalSuppressMessage(
         "Aot",
         "IL3050:RequiresDynamicCode",
-        Justification = "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T"
-    )]
+        Justification =
+            "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T")]
     [UnconditionalSuppressMessage(
         "Aot",
         "IL2026:RequiresUnreferencedCode",
-        Justification = "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T"
-    )]
+        Justification =
+            "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T")]
     public override void ExtractPayload(EnvelopeOptions options)
     {
         foreach (var record in Records)
             record.DataContent = JsonSerializer.Deserialize<T>(
                 record.DecodeData(),
-                options.JsonOptions
-            );
+                options.JsonOptions);
     }
 }

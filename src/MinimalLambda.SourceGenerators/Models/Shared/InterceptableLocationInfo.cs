@@ -11,18 +11,15 @@ internal static class InterceptableLocationInfoExtensions
     extension(InterceptableLocationInfo location)
     {
         internal static InterceptableLocationInfo CreateFrom(
-            InterceptableLocation interceptableLocation
-        ) =>
+            InterceptableLocation interceptableLocation) =>
             new(
                 interceptableLocation.Version,
                 interceptableLocation.Data,
-                interceptableLocation.GetDisplayLocation()
-            );
+                interceptableLocation.GetDisplayLocation());
 
         internal static bool TryGet(
             GeneratorContext context,
-            [NotNullWhen(true)] out InterceptableLocationInfo? interceptableLocationInfo
-        )
+            [NotNullWhen(true)] out InterceptableLocationInfo? interceptableLocationInfo)
         {
             interceptableLocationInfo = null;
 
@@ -31,8 +28,7 @@ internal static class InterceptableLocationInfoExtensions
 
             var interceptableLocation = context.SemanticModel.GetInterceptableLocation(
                 invocationExpr,
-                context.CancellationToken
-            );
+                context.CancellationToken);
 
             if (interceptableLocation is null)
                 return false;

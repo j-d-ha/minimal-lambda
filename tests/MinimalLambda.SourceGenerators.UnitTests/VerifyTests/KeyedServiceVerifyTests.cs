@@ -43,8 +43,7 @@ public class KeyedServiceVerifyTests
             {
                 public string GetMessage() => "Hello";
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_KeyedService_IntAndLongKeys() =>
@@ -76,8 +75,7 @@ public class KeyedServiceVerifyTests
             {
                 public string GetMessage() => "Hello";
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_KeyedService_SmallIntegerTypes() =>
@@ -114,8 +112,7 @@ public class KeyedServiceVerifyTests
             {
                 public string GetMessage() => "Hello";
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_KeyedService_UnsignedIntegerTypes() =>
@@ -152,8 +149,7 @@ public class KeyedServiceVerifyTests
             {
                 public string GetMessage() => "Hello";
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_KeyedService_FloatingPointTypes() =>
@@ -188,8 +184,7 @@ public class KeyedServiceVerifyTests
             {
                 public string GetMessage() => "Hello";
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_KeyedService_OtherTypes() =>
@@ -228,6 +223,5 @@ public class KeyedServiceVerifyTests
             {
                 public string GetMessage() => "Hello";
             }
-            """
-        );
+            """);
 }

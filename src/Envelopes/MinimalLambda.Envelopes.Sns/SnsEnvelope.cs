@@ -17,19 +17,18 @@ public sealed class SnsEnvelope<T> : SnsEnvelopeBase<T>
     [UnconditionalSuppressMessage(
         "Aot",
         "IL3050:RequiresDynamicCode",
-        Justification = "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T"
-    )]
+        Justification =
+            "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T")]
     [UnconditionalSuppressMessage(
         "Aot",
         "IL2026:RequiresUnreferencedCode",
-        Justification = "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T"
-    )]
+        Justification =
+            "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T")]
     public override void ExtractPayload(EnvelopeOptions options)
     {
         foreach (var record in Records)
             record.Sns.MessageContent = JsonSerializer.Deserialize<T>(
                 record.Sns.Message,
-                options.JsonOptions
-            );
+                options.JsonOptions);
     }
 }

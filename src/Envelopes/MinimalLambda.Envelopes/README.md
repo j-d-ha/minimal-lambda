@@ -6,7 +6,8 @@ Shared infrastructure and abstractions for envelope packages.
 
 ## Overview
 
-This package contains shared infrastructure and common abstractions used across envelope packages in the MinimalLambda framework.
+This package contains shared infrastructure and common abstractions used across envelope packages in
+the MinimalLambda framework.
 
 > [!NOTE]
 > This is an infrastructure package automatically referenced by other envelope packages.
@@ -17,10 +18,11 @@ This package contains shared infrastructure and common abstractions used across 
 
 ## Other Packages
 
-Additional packages in the minimal-lambda framework for abstractions, observability, and event source handling.
+Additional packages in the minimal-lambda framework for abstractions, observability, and event
+source handling.
 
-| Package                                                                                               | NuGet                                                                                                                                                            | Downloads                                                                                                                                                              |
-|-------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Package                                                                                             | NuGet                                                                                                                                                          | Downloads                                                                                                                                                            |
+|-----------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------|
 | [**MinimalLambda**](../../MinimalLambda/README.md)                                                  | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.svg)](https://www.nuget.org/packages/MinimalLambda)                                                     | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.svg)](https://www.nuget.org/packages/MinimalLambda/)                                                     |
 | [**MinimalLambda.Abstractions**](../../MinimalLambda.Abstractions/README.md)                        | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.Abstractions.svg)](https://www.nuget.org/packages/MinimalLambda.Abstractions)                           | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.Abstractions.svg)](https://www.nuget.org/packages/MinimalLambda.Abstractions/)                           |
 | [**MinimalLambda.OpenTelemetry**](../../MinimalLambda.OpenTelemetry/README.md)                      | [![NuGet](https://img.shields.io/nuget/v/MinimalLambda.OpenTelemetry.svg)](https://www.nuget.org/packages/MinimalLambda.OpenTelemetry)                         | [![Downloads](https://img.shields.io/nuget/dt/MinimalLambda.OpenTelemetry.svg)](https://www.nuget.org/packages/MinimalLambda.OpenTelemetry/)                         |

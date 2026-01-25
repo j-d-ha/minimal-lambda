@@ -25,8 +25,7 @@ public class DefaultLambdaOnShutdownBuilderFactoryTests
         var factory = new DefaultLambdaOnShutdownBuilderFactory(
             serviceProvider!,
             scopeFactory!,
-            contextFactory!
-        );
+            contextFactory!);
 
         // Act & Assert - validation happens in LambdaOnShutdownBuilder constructor
         var act = () => factory.CreateBuilder();
@@ -40,8 +39,7 @@ public class DefaultLambdaOnShutdownBuilderFactoryTests
         var factory = new DefaultLambdaOnShutdownBuilderFactory(
             _serviceProvider,
             _scopeFactory,
-            _contextFactory
-        );
+            _contextFactory);
 
         // Assert
         factory.Should().NotBeNull();
@@ -54,8 +52,7 @@ public class DefaultLambdaOnShutdownBuilderFactoryTests
         var factory = new DefaultLambdaOnShutdownBuilderFactory(
             _serviceProvider,
             _scopeFactory,
-            _contextFactory
-        );
+            _contextFactory);
 
         // Act
         var builder = factory.CreateBuilder();
@@ -72,8 +69,7 @@ public class DefaultLambdaOnShutdownBuilderFactoryTests
         var factory = new DefaultLambdaOnShutdownBuilderFactory(
             _serviceProvider,
             _scopeFactory,
-            _contextFactory
-        );
+            _contextFactory);
 
         // Act
         var builder = factory.CreateBuilder();
@@ -89,8 +85,7 @@ public class DefaultLambdaOnShutdownBuilderFactoryTests
         var factory = new DefaultLambdaOnShutdownBuilderFactory(
             _serviceProvider,
             _scopeFactory,
-            _contextFactory
-        );
+            _contextFactory);
 
         // Act
         var builder1 = factory.CreateBuilder();

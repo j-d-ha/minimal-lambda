@@ -7,8 +7,7 @@ internal class DefaultLambdaOnInitBuilderFactory(
     IServiceProvider serviceProvider,
     IServiceScopeFactory scopeFactory,
     IOptions<LambdaHostOptions> options,
-    ILambdaLifecycleContextFactory contextFactory
-) : ILambdaOnInitBuilderFactory
+    ILambdaLifecycleContextFactory contextFactory) : ILambdaOnInitBuilderFactory
 {
     public ILambdaOnInitBuilder CreateBuilder() =>
         new LambdaOnInitBuilder(serviceProvider, scopeFactory, options, contextFactory);

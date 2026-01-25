@@ -203,7 +203,8 @@ public class LambdaApplicationBuilderTests
         var act = () => callbackDelegate.Invoke(mockBuilder);
 
         // Assert - should throw because no handler was registered in the application
-        act.Should()
+        act
+            .Should()
             .ThrowExactly<InvalidOperationException>()
             .WithMessage("Lambda Handler is not set.");
     }
@@ -737,8 +738,7 @@ public class LambdaApplicationBuilderTests
         configManager["LAMBDA_TASK_ROOT"] = "/another/path";
         var options = new LambdaApplicationOptions
         {
-            Configuration = configManager,
-            ContentRootPath = currentDir,
+            Configuration = configManager, ContentRootPath = currentDir,
         };
 
         // Act

@@ -40,8 +40,7 @@ public class AlbRequestEnvelopeTests
         var testData = _fixture.Create<TestPayload>();
         var json = JsonSerializer.Serialize(
             testData,
-            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
-        );
+            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
         var envelope = new AlbRequestEnvelope<TestPayload> { Body = json };
         var options = new EnvelopeOptions
         {
@@ -79,8 +78,7 @@ public class AlbRequestEnvelopeTests
     {
         // Arrange
         var property = typeof(AlbRequestEnvelope<TestPayload>).GetProperty(
-            nameof(AlbRequestEnvelope<TestPayload>.BodyContent)
-        );
+            nameof(AlbRequestEnvelope<TestPayload>.BodyContent));
 
         // Act
         var hasJsonIgnoreAttribute =

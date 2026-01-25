@@ -5,8 +5,8 @@ internal class LambdaInvocationBuilder : ILambdaInvocationBuilder
     internal const string EventFeatureProviderKey = "__EventFeatureProvider";
     internal const string ResponseFeatureProviderKey = "__ResponseFeatureProvider";
 
-    private readonly List<Func<LambdaInvocationDelegate, LambdaInvocationDelegate>> _middleware =
-    [];
+    private readonly List<Func<LambdaInvocationDelegate, LambdaInvocationDelegate>>
+        _middleware = [];
 
     public LambdaInvocationBuilder(IServiceProvider services)
     {
@@ -37,8 +37,7 @@ internal class LambdaInvocationBuilder : ILambdaInvocationBuilder
     }
 
     public ILambdaInvocationBuilder Use(
-        Func<LambdaInvocationDelegate, LambdaInvocationDelegate> middleware
-    )
+        Func<LambdaInvocationDelegate, LambdaInvocationDelegate> middleware)
     {
         ArgumentNullException.ThrowIfNull(middleware);
 

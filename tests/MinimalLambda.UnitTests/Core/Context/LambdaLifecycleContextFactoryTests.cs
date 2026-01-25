@@ -11,15 +11,13 @@ public class LambdaLifecycleContextFactoryTests
     internal void Constructor_WithValidDependencies_SuccessfullyConstructs(
         IServiceScopeFactory serviceScopeFactory,
         LifetimeStopwatch stopwatch,
-        IConfiguration configuration
-    )
+        IConfiguration configuration)
     {
         // Act
         var factory = new LambdaLifecycleContextFactory(
             serviceScopeFactory,
             stopwatch,
-            configuration
-        );
+            configuration);
 
         // Assert
         factory.Should().NotBeNull();
@@ -32,15 +30,13 @@ public class LambdaLifecycleContextFactoryTests
         LifetimeStopwatch stopwatch,
         IConfiguration configuration,
         IDictionary<string, object?> properties,
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         // Arrange
         var factory = new LambdaLifecycleContextFactory(
             serviceScopeFactory,
             stopwatch,
-            configuration
-        );
+            configuration);
 
         // Act
         var result = factory.Create(properties, cancellationToken);
@@ -55,15 +51,13 @@ public class LambdaLifecycleContextFactoryTests
     internal void Create_PassesPropertiesAndCancellationTokenToContext(
         IServiceScopeFactory serviceScopeFactory,
         LifetimeStopwatch stopwatch,
-        IConfiguration configuration
-    )
+        IConfiguration configuration)
     {
         // Arrange
         var factory = new LambdaLifecycleContextFactory(
             serviceScopeFactory,
             stopwatch,
-            configuration
-        );
+            configuration);
         var properties = new Dictionary<string, object?> { { "key", "value" } };
         var cancellationToken = new CancellationToken();
 
@@ -79,8 +73,7 @@ public class LambdaLifecycleContextFactoryTests
     [AutoNSubstituteData]
     internal void Create_ReadsRegionFromAwsRegionConfiguration(
         IServiceScopeFactory serviceScopeFactory,
-        LifetimeStopwatch stopwatch
-    )
+        LifetimeStopwatch stopwatch)
     {
         // Arrange
         var configValues = new Dictionary<string, string?> { { "AWS_REGION", "us-east-1" } };
@@ -89,8 +82,7 @@ public class LambdaLifecycleContextFactoryTests
         var factory = new LambdaLifecycleContextFactory(
             serviceScopeFactory,
             stopwatch,
-            configuration
-        );
+            configuration);
 
         // Act
         var result = factory.Create(new Dictionary<string, object?>(), CancellationToken.None);
@@ -103,8 +95,7 @@ public class LambdaLifecycleContextFactoryTests
     [AutoNSubstituteData]
     internal void Create_ReadsRegionFromAwsDefaultRegionWhenAwsRegionNotSet(
         IServiceScopeFactory serviceScopeFactory,
-        LifetimeStopwatch stopwatch
-    )
+        LifetimeStopwatch stopwatch)
     {
         // Arrange
         var configValues = new Dictionary<string, string?>
@@ -116,8 +107,7 @@ public class LambdaLifecycleContextFactoryTests
         var factory = new LambdaLifecycleContextFactory(
             serviceScopeFactory,
             stopwatch,
-            configuration
-        );
+            configuration);
 
         // Act
         var result = factory.Create(new Dictionary<string, object?>(), CancellationToken.None);
@@ -130,22 +120,19 @@ public class LambdaLifecycleContextFactoryTests
     [AutoNSubstituteData]
     internal void Create_PrefersAwsRegionOverAwsDefaultRegion(
         IServiceScopeFactory serviceScopeFactory,
-        LifetimeStopwatch stopwatch
-    )
+        LifetimeStopwatch stopwatch)
     {
         // Arrange
         var configValues = new Dictionary<string, string?>
         {
-            { "AWS_REGION", "us-east-1" },
-            { "AWS_DEFAULT_REGION", "us-west-2" },
+            { "AWS_REGION", "us-east-1" }, { "AWS_DEFAULT_REGION", "us-west-2" },
         };
         var configuration = new ConfigurationBuilder().AddInMemoryCollection(configValues).Build();
 
         var factory = new LambdaLifecycleContextFactory(
             serviceScopeFactory,
             stopwatch,
-            configuration
-        );
+            configuration);
 
         // Act
         var result = factory.Create(new Dictionary<string, object?>(), CancellationToken.None);
@@ -158,8 +145,7 @@ public class LambdaLifecycleContextFactoryTests
     [AutoNSubstituteData]
     internal void Create_ReadsExecutionEnvironmentFromConfiguration(
         IServiceScopeFactory serviceScopeFactory,
-        LifetimeStopwatch stopwatch
-    )
+        LifetimeStopwatch stopwatch)
     {
         // Arrange
         var configValues = new Dictionary<string, string?>
@@ -171,8 +157,7 @@ public class LambdaLifecycleContextFactoryTests
         var factory = new LambdaLifecycleContextFactory(
             serviceScopeFactory,
             stopwatch,
-            configuration
-        );
+            configuration);
 
         // Act
         var result = factory.Create(new Dictionary<string, object?>(), CancellationToken.None);
@@ -185,8 +170,7 @@ public class LambdaLifecycleContextFactoryTests
     [AutoNSubstituteData]
     internal void Create_ReadsFunctionNameFromConfiguration(
         IServiceScopeFactory serviceScopeFactory,
-        LifetimeStopwatch stopwatch
-    )
+        LifetimeStopwatch stopwatch)
     {
         // Arrange
         var configValues = new Dictionary<string, string?>
@@ -198,8 +182,7 @@ public class LambdaLifecycleContextFactoryTests
         var factory = new LambdaLifecycleContextFactory(
             serviceScopeFactory,
             stopwatch,
-            configuration
-        );
+            configuration);
 
         // Act
         var result = factory.Create(new Dictionary<string, object?>(), CancellationToken.None);
@@ -212,8 +195,7 @@ public class LambdaLifecycleContextFactoryTests
     [AutoNSubstituteData]
     internal void Create_ReadsFunctionMemorySizeFromConfiguration(
         IServiceScopeFactory serviceScopeFactory,
-        LifetimeStopwatch stopwatch
-    )
+        LifetimeStopwatch stopwatch)
     {
         // Arrange
         var configValues = new Dictionary<string, string?>
@@ -225,8 +207,7 @@ public class LambdaLifecycleContextFactoryTests
         var factory = new LambdaLifecycleContextFactory(
             serviceScopeFactory,
             stopwatch,
-            configuration
-        );
+            configuration);
 
         // Act
         var result = factory.Create(new Dictionary<string, object?>(), CancellationToken.None);
@@ -239,8 +220,7 @@ public class LambdaLifecycleContextFactoryTests
     [AutoNSubstituteData]
     internal void Create_ReturnsNullForFunctionMemorySizeWhenNotParseable(
         IServiceScopeFactory serviceScopeFactory,
-        LifetimeStopwatch stopwatch
-    )
+        LifetimeStopwatch stopwatch)
     {
         // Arrange
         var configValues = new Dictionary<string, string?>
@@ -252,8 +232,7 @@ public class LambdaLifecycleContextFactoryTests
         var factory = new LambdaLifecycleContextFactory(
             serviceScopeFactory,
             stopwatch,
-            configuration
-        );
+            configuration);
 
         // Act
         var result = factory.Create(new Dictionary<string, object?>(), CancellationToken.None);
@@ -266,8 +245,7 @@ public class LambdaLifecycleContextFactoryTests
     [AutoNSubstituteData]
     internal void Create_ReadsFunctionVersionFromConfiguration(
         IServiceScopeFactory serviceScopeFactory,
-        LifetimeStopwatch stopwatch
-    )
+        LifetimeStopwatch stopwatch)
     {
         // Arrange
         var configValues = new Dictionary<string, string?>
@@ -279,8 +257,7 @@ public class LambdaLifecycleContextFactoryTests
         var factory = new LambdaLifecycleContextFactory(
             serviceScopeFactory,
             stopwatch,
-            configuration
-        );
+            configuration);
 
         // Act
         var result = factory.Create(new Dictionary<string, object?>(), CancellationToken.None);
@@ -293,8 +270,7 @@ public class LambdaLifecycleContextFactoryTests
     [AutoNSubstituteData]
     internal void Create_ReadsInitializationTypeFromConfiguration(
         IServiceScopeFactory serviceScopeFactory,
-        LifetimeStopwatch stopwatch
-    )
+        LifetimeStopwatch stopwatch)
     {
         // Arrange
         var configValues = new Dictionary<string, string?>
@@ -306,8 +282,7 @@ public class LambdaLifecycleContextFactoryTests
         var factory = new LambdaLifecycleContextFactory(
             serviceScopeFactory,
             stopwatch,
-            configuration
-        );
+            configuration);
 
         // Act
         var result = factory.Create(new Dictionary<string, object?>(), CancellationToken.None);
@@ -320,8 +295,7 @@ public class LambdaLifecycleContextFactoryTests
     [AutoNSubstituteData]
     internal void Create_ReadsLogGroupNameFromConfiguration(
         IServiceScopeFactory serviceScopeFactory,
-        LifetimeStopwatch stopwatch
-    )
+        LifetimeStopwatch stopwatch)
     {
         // Arrange
         var configValues = new Dictionary<string, string?>
@@ -333,8 +307,7 @@ public class LambdaLifecycleContextFactoryTests
         var factory = new LambdaLifecycleContextFactory(
             serviceScopeFactory,
             stopwatch,
-            configuration
-        );
+            configuration);
 
         // Act
         var result = factory.Create(new Dictionary<string, object?>(), CancellationToken.None);
@@ -347,8 +320,7 @@ public class LambdaLifecycleContextFactoryTests
     [AutoNSubstituteData]
     internal void Create_ReadsLogStreamNameFromConfiguration(
         IServiceScopeFactory serviceScopeFactory,
-        LifetimeStopwatch stopwatch
-    )
+        LifetimeStopwatch stopwatch)
     {
         // Arrange
         var configValues = new Dictionary<string, string?>
@@ -360,8 +332,7 @@ public class LambdaLifecycleContextFactoryTests
         var factory = new LambdaLifecycleContextFactory(
             serviceScopeFactory,
             stopwatch,
-            configuration
-        );
+            configuration);
 
         // Act
         var result = factory.Create(new Dictionary<string, object?>(), CancellationToken.None);
@@ -374,8 +345,7 @@ public class LambdaLifecycleContextFactoryTests
     [AutoNSubstituteData]
     internal void Create_ReadsTaskRootFromConfiguration(
         IServiceScopeFactory serviceScopeFactory,
-        LifetimeStopwatch stopwatch
-    )
+        LifetimeStopwatch stopwatch)
     {
         // Arrange
         var configValues = new Dictionary<string, string?> { { "LAMBDA_TASK_ROOT", "/var/task" } };
@@ -384,8 +354,7 @@ public class LambdaLifecycleContextFactoryTests
         var factory = new LambdaLifecycleContextFactory(
             serviceScopeFactory,
             stopwatch,
-            configuration
-        );
+            configuration);
 
         // Act
         var result = factory.Create(new Dictionary<string, object?>(), CancellationToken.None);
@@ -399,45 +368,38 @@ public class LambdaLifecycleContextFactoryTests
     internal void Create_UsesStopwatchFromConstructor(
         IServiceScopeFactory serviceScopeFactory,
         LifetimeStopwatch stopwatch,
-        IConfiguration configuration
-    )
+        IConfiguration configuration)
     {
         // Arrange
         var factory = new LambdaLifecycleContextFactory(
             serviceScopeFactory,
             stopwatch,
-            configuration
-        );
+            configuration);
 
         // Act
         var result = factory.Create(new Dictionary<string, object?>(), CancellationToken.None);
 
         // Assert
-        (result.ElapsedTime >= TimeSpan.Zero)
-            .Should()
-            .BeTrue();
+        (result.ElapsedTime >= TimeSpan.Zero).Should().BeTrue();
     }
 
     [Theory]
     [AutoNSubstituteData]
     internal void Create_ReusesContextCoreAcrossMultipleCalls(
         IServiceScopeFactory serviceScopeFactory,
-        LifetimeStopwatch stopwatch
-    )
+        LifetimeStopwatch stopwatch)
     {
         // Arrange
         var configValues = new Dictionary<string, string?>
         {
-            { "AWS_REGION", "us-east-1" },
-            { "AWS_LAMBDA_FUNCTION_NAME", "my-function" },
+            { "AWS_REGION", "us-east-1" }, { "AWS_LAMBDA_FUNCTION_NAME", "my-function" },
         };
         var configuration = new ConfigurationBuilder().AddInMemoryCollection(configValues).Build();
 
         var factory = new LambdaLifecycleContextFactory(
             serviceScopeFactory,
             stopwatch,
-            configuration
-        );
+            configuration);
 
         // Act
         var result1 = factory.Create(new Dictionary<string, object?>(), CancellationToken.None);
@@ -454,8 +416,7 @@ public class LambdaLifecycleContextFactoryTests
     [AutoNSubstituteData]
     internal void Create_ReturnsNullForUnconfiguredProperties(
         IServiceScopeFactory serviceScopeFactory,
-        LifetimeStopwatch stopwatch
-    )
+        LifetimeStopwatch stopwatch)
     {
         // Arrange
         var configuration = new ConfigurationBuilder().Build();
@@ -463,8 +424,7 @@ public class LambdaLifecycleContextFactoryTests
         var factory = new LambdaLifecycleContextFactory(
             serviceScopeFactory,
             stopwatch,
-            configuration
-        );
+            configuration);
 
         // Act
         var result = factory.Create(new Dictionary<string, object?>(), CancellationToken.None);
@@ -485,8 +445,7 @@ public class LambdaLifecycleContextFactoryTests
     [AutoNSubstituteData]
     internal void Create_WithAllConfigurationValues_PopulatesAllProperties(
         IServiceScopeFactory serviceScopeFactory,
-        LifetimeStopwatch stopwatch
-    )
+        LifetimeStopwatch stopwatch)
     {
         // Arrange
         var configValues = new Dictionary<string, string?>
@@ -506,8 +465,7 @@ public class LambdaLifecycleContextFactoryTests
         var factory = new LambdaLifecycleContextFactory(
             serviceScopeFactory,
             stopwatch,
-            configuration
-        );
+            configuration);
 
         // Act
         var result = factory.Create(new Dictionary<string, object?>(), CancellationToken.None);
@@ -529,15 +487,13 @@ public class LambdaLifecycleContextFactoryTests
     internal void FactoryImplementsILambdaLifecycleContextFactory(
         IServiceScopeFactory serviceScopeFactory,
         LifetimeStopwatch stopwatch,
-        IConfiguration configuration
-    )
+        IConfiguration configuration)
     {
         // Act
         var factory = new LambdaLifecycleContextFactory(
             serviceScopeFactory,
             stopwatch,
-            configuration
-        );
+            configuration);
 
         // Assert
         factory.Should().BeAssignableTo<ILambdaLifecycleContextFactory>();

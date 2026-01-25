@@ -6,8 +6,7 @@ namespace MinimalLambda.SourceGenerators.Models;
 internal sealed record DiagnosticInfo(
     DiagnosticDescriptor DiagnosticDescriptor,
     LocationInfo? LocationInfo = null,
-    params object?[] MessageArgs
-)
+    params object?[] MessageArgs)
 {
     public bool Equals(DiagnosticInfo? other) =>
         other is not null
@@ -24,15 +23,14 @@ internal static class DiagnosticInfoExtensions
         internal static DiagnosticInfo Create(
             DiagnosticDescriptor diagnosticDescriptor,
             LocationInfo? locationInfo,
-            object?[] messageArgs
-        ) => new(diagnosticDescriptor, locationInfo, messageArgs);
+            object?[] messageArgs) =>
+            new(diagnosticDescriptor, locationInfo, messageArgs);
 
         internal Diagnostic ToDiagnostic() =>
             Diagnostic.Create(
                 diagnosticInfo.DiagnosticDescriptor,
                 diagnosticInfo.LocationInfo?.ToLocation(),
-                diagnosticInfo.MessageArgs
-            );
+                diagnosticInfo.MessageArgs);
 
         internal void ReportDiagnostic(SourceProductionContext context) =>
             context.ReportDiagnostic(diagnosticInfo.ToDiagnostic());

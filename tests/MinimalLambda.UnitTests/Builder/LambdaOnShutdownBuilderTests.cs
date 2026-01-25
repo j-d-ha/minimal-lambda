@@ -19,8 +19,7 @@ public class LambdaOnShutdownBuilderTests
     [Theory]
     [AutoNSubstituteData]
     internal void OnShutdown_WithNullHandler_ThrowsArgumentNullException(
-        LambdaOnShutdownBuilder builder
-    )
+        LambdaOnShutdownBuilder builder)
     {
         // Act
         var act = () => builder.OnShutdown(null!);
@@ -32,8 +31,7 @@ public class LambdaOnShutdownBuilderTests
     [Theory]
     [AutoNSubstituteData]
     internal void OnShutdown_WithValidHandler_AddsHandlerAndReturnsBuilder(
-        LambdaOnShutdownBuilder builder
-    )
+        LambdaOnShutdownBuilder builder)
     {
         // Arrange
         LambdaShutdownDelegate handler = _ => Task.CompletedTask;
@@ -68,8 +66,7 @@ public class LambdaOnShutdownBuilderTests
     [Theory]
     [AutoNSubstituteData]
     internal async Task Build_WithoutHandlers_ReturnsCompletedTaskFunction(
-        LambdaOnShutdownBuilder builder
-    )
+        LambdaOnShutdownBuilder builder)
     {
         // Act
         var buildFunc = builder.Build();
@@ -147,8 +144,7 @@ public class LambdaOnShutdownBuilderTests
     [Theory]
     [AutoNSubstituteData]
     internal async Task Build_WhenHandlerThrowsException_ThrowsAggregateException(
-        LambdaOnShutdownBuilder builder
-    )
+        LambdaOnShutdownBuilder builder)
     {
         // Arrange
         var testException = new InvalidOperationException("Test error");
@@ -168,8 +164,7 @@ public class LambdaOnShutdownBuilderTests
     [Theory]
     [AutoNSubstituteData]
     internal async Task Build_WithMultipleFailures_AggregatesAllErrors(
-        LambdaOnShutdownBuilder builder
-    )
+        LambdaOnShutdownBuilder builder)
     {
         // Arrange
         var exception1 = new InvalidOperationException("Error 1");
@@ -193,8 +188,7 @@ public class LambdaOnShutdownBuilderTests
     [Theory]
     [AutoNSubstituteData]
     internal async Task Build_WithMixedSuccessAndFailure_AggregatesOnlyErrors(
-        LambdaOnShutdownBuilder builder
-    )
+        LambdaOnShutdownBuilder builder)
     {
         // Arrange
         var successfulHandlerCalled = false;

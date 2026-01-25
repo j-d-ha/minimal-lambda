@@ -40,8 +40,7 @@ public class ApiGatewayV2RequestEnvelopeTests
         var testData = _fixture.Create<TestPayload>();
         var json = JsonSerializer.Serialize(
             testData,
-            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
-        );
+            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
         var envelope = new ApiGatewayV2RequestEnvelope<TestPayload> { Body = json };
         var options = new EnvelopeOptions
         {
@@ -88,7 +87,8 @@ public class ApiGatewayV2RequestEnvelopeTests
     public void ExtractPayload_WithInvalidJson_ThrowsJsonException()
     {
         // Arrange
-        var invalidJson = _fixture.Create<string>(); // AutoFixture generates invalid JSON as raw string
+        var invalidJson =
+            _fixture.Create<string>(); // AutoFixture generates invalid JSON as raw string
         var envelope = new ApiGatewayV2RequestEnvelope<TestPayload> { Body = invalidJson };
         var options = new EnvelopeOptions();
 
@@ -116,8 +116,7 @@ public class ApiGatewayV2RequestEnvelopeTests
     {
         // Arrange
         var property = typeof(ApiGatewayV2RequestEnvelope<TestPayload>).GetProperty(
-            nameof(ApiGatewayV2RequestEnvelope<TestPayload>.BodyContent)
-        );
+            nameof(ApiGatewayV2RequestEnvelope<TestPayload>.BodyContent));
 
         // Act
         var hasJsonIgnoreAttribute =
@@ -159,7 +158,8 @@ public class ApiGatewayV2RequestEnvelopeTests
     public void ExtractPayload_WithMalformedJsonStructure_ThrowsJsonException()
     {
         // Arrange
-        var malformedJson = """{"Name":"Valid","Value":"NotAnInt"}"""; // Value should be int, not string
+        var malformedJson =
+            """{"Name":"Valid","Value":"NotAnInt"}"""; // Value should be int, not string
         var envelope = new ApiGatewayV2RequestEnvelope<TestPayload> { Body = malformedJson };
         var options = new EnvelopeOptions();
 

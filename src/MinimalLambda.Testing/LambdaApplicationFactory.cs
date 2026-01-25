@@ -148,8 +148,7 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
     ///     creation.
     /// </remarks>
     public LambdaApplicationFactory<TEntryPoint> WithCancellationToken(
-        CancellationToken cancellationToken
-    )
+        CancellationToken cancellationToken)
     {
         _stoppingToken = cancellationToken;
         return this;
@@ -168,8 +167,8 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
     /// </param>
     /// <returns>A new <see cref="LambdaApplicationFactory{TEntryPoint}" />.</returns>
     public LambdaApplicationFactory<TEntryPoint> WithHostBuilder(
-        Action<IHostBuilder> configuration
-    ) => WithHostBuilderCore(configuration);
+        Action<IHostBuilder> configuration) =>
+        WithHostBuilderCore(configuration);
 
     /// <summary>
     ///     Core implementation of <see cref="WithHostBuilder" /> that creates a derived factory with
@@ -193,8 +192,7 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
     ///     factory creation behavior.
     /// </remarks>
     protected virtual LambdaApplicationFactory<TEntryPoint> WithHostBuilderCore(
-        Action<IHostBuilder> configuration
-    )
+        Action<IHostBuilder> configuration)
     {
         var factory = new DelegatedLambdaApplicationFactory(
             ServerOptions,
@@ -204,8 +202,7 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
             {
                 _configuration(builder);
                 configuration(builder);
-            }
-        );
+            });
 
         _derivedFactories.Add(factory);
 
@@ -234,8 +231,7 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
                         HostDefaults.ApplicationKey,
                         typeof(TEntryPoint).Assembly.GetName().Name ?? string.Empty
                     },
-                }
-            );
+                });
         });
         // This helper call does the hard work to determine if we can fallback to diagnostic
         // source events to get the host instance
@@ -243,8 +239,7 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
             typeof(TEntryPoint).Assembly,
             stopApplication: false,
             configureHostBuilder: deferredHostBuilder.ConfigureHostBuilder,
-            entrypointCompleted: deferredHostBuilder.EntryPointCompleted
-        );
+            entrypointCompleted: deferredHostBuilder.EntryPointCompleted);
 
         if (factory is not null)
         {
@@ -264,8 +259,7 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
     [MemberNotNull(nameof(_server))]
     private void ConfigureHostBuilder(
         IHostBuilder hostBuilder,
-        Task<Exception?> entryPointCompletion
-    )
+        Task<Exception?> entryPointCompletion)
     {
         SetContentRoot(hostBuilder);
         _configuration(hostBuilder);
@@ -273,8 +267,7 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
         _server = new LambdaTestServer(
             entryPointCompletion,
             ServerOptions,
-            _stoppingToken ?? CancellationToken.None
-        );
+            _stoppingToken ?? CancellationToken.None);
 
         // set Lambda Bootstrap Http Client
         hostBuilder.ConfigureServices(services =>
@@ -312,8 +305,7 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
 
     private static void UseSolutionRelativeContentRoot(
         IHostBuilder builder,
-        string solutionRelativePath
-    )
+        string solutionRelativePath)
     {
         ArgumentNullException.ThrowIfNull(solutionRelativePath);
 
@@ -331,8 +323,8 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
                 if (solutionPath != null)
                 {
                     builder.UseContentRoot(
-                        Path.GetFullPath(Path.Combine(directoryInfo.FullName, solutionRelativePath))
-                    );
+                        Path.GetFullPath(
+                            Path.Combine(directoryInfo.FullName, solutionRelativePath)));
                     return;
                 }
             }
@@ -341,29 +333,25 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
         } while (directoryInfo is not null);
 
         throw new InvalidOperationException(
-            $"Solution root could not be located using application root {applicationBasePath}."
-        );
+            $"Solution root could not be located using application root {applicationBasePath}.");
     }
 
     private string? GetContentRootFromAssembly()
     {
         var metadataAttributes = GetContentRootMetadataAttributes(
             typeof(TEntryPoint).Assembly.FullName!,
-            typeof(TEntryPoint).Assembly.GetName().Name!
-        );
+            typeof(TEntryPoint).Assembly.GetName().Name!);
 
         string? contentRoot = null;
         foreach (var contentRootAttribute in metadataAttributes)
         {
             var contentRootCandidate = Path.Combine(
                 AppContext.BaseDirectory,
-                contentRootAttribute.ContentRootPath
-            );
+                contentRootAttribute.ContentRootPath);
 
             var contentRootMarker = Path.Combine(
                 contentRootCandidate,
-                Path.GetFileName(contentRootAttribute.ContentRootTest)
-            );
+                Path.GetFileName(contentRootAttribute.ContentRootTest));
 
             if (File.Exists(contentRootMarker))
             {
@@ -377,8 +365,7 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
 
     private LambdaApplicationFactoryContentRootAttribute[] GetContentRootMetadataAttributes(
         string tEntryPointAssemblyFullName,
-        string tEntryPointAssemblyName
-    )
+        string tEntryPointAssemblyName)
     {
         var testAssembly = GetTestAssemblies();
         var metadataAttributes = testAssembly
@@ -387,10 +374,11 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
                 string.Equals(
                     a.Key,
                     tEntryPointAssemblyFullName,
-                    StringComparison.OrdinalIgnoreCase
-                )
-                || string.Equals(a.Key, tEntryPointAssemblyName, StringComparison.OrdinalIgnoreCase)
-            )
+                    StringComparison.OrdinalIgnoreCase)
+                || string.Equals(
+                    a.Key,
+                    tEntryPointAssemblyName,
+                    StringComparison.OrdinalIgnoreCase))
             .OrderBy(a => a.Priority)
             .ToArray();
 
@@ -416,8 +404,7 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
             var runtimeProjectLibraries = context.RuntimeLibraries.ToDictionary(
                 r => r.Name,
                 r => r,
-                StringComparer.Ordinal
-            );
+                StringComparer.Ordinal);
 
             // Find the list of projects
             _ = context.CompileLibraries.Where(l => l.Type == "project");
@@ -426,10 +413,10 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
 
             // Find the list of projects referencing TEntryPoint.
             var candidates = context.CompileLibraries.Where(library =>
-                library.Dependencies.Any(d =>
-                    string.Equals(d.Name, entryPointAssemblyName, StringComparison.Ordinal)
-                )
-            );
+                library.Dependencies.Any(d => string.Equals(
+                    d.Name,
+                    entryPointAssemblyName,
+                    StringComparison.Ordinal)));
 
             var testAssemblies = new List<Assembly>();
             foreach (var candidate in candidates)
@@ -453,8 +440,7 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
     {
         if (typeof(TEntryPoint).Assembly.EntryPoint == null)
             throw new InvalidOperationException(
-                $"Invalid assembly entry point: {typeof(TEntryPoint).Assembly.FullName}"
-            );
+                $"Invalid assembly entry point: {typeof(TEntryPoint).Assembly.FullName}");
 
         var depsFileName = $"{typeof(TEntryPoint).Assembly.GetName().Name}.deps.json";
         var depsFile = new FileInfo(Path.Combine(AppContext.BaseDirectory, depsFileName));
@@ -518,8 +504,7 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
             LambdaServerOptions options,
             Func<IHostBuilder, IHost> createHost,
             Func<IEnumerable<Assembly>> getTestAssemblies,
-            Action<IHostBuilder> configureWebHost
-        )
+            Action<IHostBuilder> configureWebHost)
         {
             ServerOptions = options;
             _createHost = createHost;
@@ -534,8 +519,7 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
         protected override void ConfigureWebHost(IHostBuilder builder) => _configuration(builder);
 
         protected override LambdaApplicationFactory<TEntryPoint> WithHostBuilderCore(
-            Action<IHostBuilder> configuration
-        ) =>
+            Action<IHostBuilder> configuration) =>
             new DelegatedLambdaApplicationFactory(
                 ServerOptions,
                 _createHost,
@@ -544,7 +528,6 @@ public class LambdaApplicationFactory<TEntryPoint> : IDisposable, IAsyncDisposab
                 {
                     _configuration(builder);
                     configuration(builder);
-                }
-            );
+                });
     }
 }

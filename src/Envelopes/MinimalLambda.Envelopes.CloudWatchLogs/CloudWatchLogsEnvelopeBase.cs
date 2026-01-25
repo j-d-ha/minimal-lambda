@@ -23,21 +23,21 @@ public abstract class CloudWatchLogsEnvelopeBase<T> : CloudWatchLogsEvent, IRequ
     [UnconditionalSuppressMessage(
         "Aot",
         "IL3050:RequiresDynamicCode",
-        Justification = "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T"
-    )]
+        Justification =
+            "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T")]
     [UnconditionalSuppressMessage(
         "Aot",
         "IL2026:RequiresUnreferencedCode",
-        Justification = "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T"
-    )]
+        Justification =
+            "Safe when EnvelopeOptions.JsonOptions includes source-generated context for T")]
     public virtual void ExtractPayload(EnvelopeOptions options)
     {
         var decodedData = Awslogs.DecodeData();
         AwslogsContent =
             JsonSerializer.Deserialize<AwsLogsEnvelope>(
                 decodedData,
-                options.LambdaDefaultJsonOptions
-            ) ?? throw new InvalidOperationException("Invalid CloudWatch Logs data.");
+                options.LambdaDefaultJsonOptions)
+            ?? throw new InvalidOperationException("Invalid CloudWatch Logs data.");
     }
 
     /// <summary>

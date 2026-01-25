@@ -16,8 +16,7 @@ internal sealed class LambdaBootstrapAdapter : ILambdaBootstrapOrchestrator
 
     public LambdaBootstrapAdapter(
         IOptions<LambdaHostOptions> lambdaHostSettings,
-        [FromKeyedServices(typeof(ILambdaBootstrapOrchestrator))] HttpClient? httpClient = null
-    )
+        [FromKeyedServices(typeof(ILambdaBootstrapOrchestrator))] HttpClient? httpClient = null)
     {
         ArgumentNullException.ThrowIfNull(lambdaHostSettings);
 
@@ -29,8 +28,7 @@ internal sealed class LambdaBootstrapAdapter : ILambdaBootstrapOrchestrator
     public async Task RunAsync(
         Func<Stream, ILambdaContext, Task<Stream>> handler,
         Func<CancellationToken, Task<bool>>? initializer,
-        CancellationToken stoppingToken
-    )
+        CancellationToken stoppingToken)
     {
         var convertedInitializer = LambdaBootstrapInitializerAdapter(initializer, stoppingToken);
 
@@ -44,14 +42,13 @@ internal sealed class LambdaBootstrapAdapter : ILambdaBootstrapOrchestrator
                 _httpClient,
                 wrappedHandler,
                 _settings.BootstrapOptions,
-                convertedInitializer
-            );
+                convertedInitializer);
 
         await bootstrap.RunAsync(stoppingToken);
     }
 
     private static LambdaBootstrapInitializer LambdaBootstrapInitializerAdapter(
         Func<CancellationToken, Task<bool>>? handler,
-        CancellationToken stoppingToken
-    ) => () => handler?.Invoke(stoppingToken) ?? Task.FromResult(true);
+        CancellationToken stoppingToken) =>
+        () => handler?.Invoke(stoppingToken) ?? Task.FromResult(true);
 }

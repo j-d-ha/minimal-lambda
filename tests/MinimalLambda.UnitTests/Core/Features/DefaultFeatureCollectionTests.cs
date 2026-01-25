@@ -11,8 +11,7 @@ public class DefaultFeatureCollectionTest
 
     /// <summary>Creates a DefaultFeatureCollection with optional feature providers.</summary>
     private static DefaultFeatureCollection CreateDefaultFeatureCollection(
-        IEnumerable<IFeatureProvider>? featureProviders = null
-    )
+        IEnumerable<IFeatureProvider>? featureProviders = null)
     {
         featureProviders ??= [];
         return new DefaultFeatureCollection(featureProviders);
@@ -53,8 +52,7 @@ public class DefaultFeatureCollectionTest
     [AutoNSubstituteData]
     public void Constructor_WithValidFeatureProviders_SuccessfullyConstructs(
         IFeatureProvider provider1,
-        IFeatureProvider provider2
-    )
+        IFeatureProvider provider2)
     {
         // Act
         var collection = new DefaultFeatureCollection(new[] { provider1, provider2 });
@@ -266,8 +264,7 @@ public class DefaultFeatureCollectionTest
     [AutoNSubstituteData]
     public void Get_TriesMultipleProvidersUntilOneSucceeds(
         IFeatureProvider provider1,
-        IFeatureProvider provider2
-    )
+        IFeatureProvider provider2)
     {
         // Arrange
         var collection = CreateDefaultFeatureCollection([provider1, provider2]);
@@ -295,8 +292,7 @@ public class DefaultFeatureCollectionTest
     [AutoNSubstituteData]
     public void Get_StopsAfterFirstSuccessfulProvider(
         IFeatureProvider provider1,
-        IFeatureProvider provider2
-    )
+        IFeatureProvider provider2)
     {
         // Arrange
         var collection = CreateDefaultFeatureCollection([provider1, provider2]);

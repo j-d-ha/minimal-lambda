@@ -11,13 +11,12 @@
     <NoWarn>$(NoWarn);IL2026;IL2087;IL2091;IL3050;IL3051</NoWarn>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="JetBrains.Annotations" />
-    <PackageReference Include="Microsoft.NET.Test.Sdk" />
-    <PackageReference Include="NSubstitute" />
-    <PackageReference Include="AutoFixture" />
-    <PackageReference Include="AwesomeAssertions" />
-    <PackageReference Include="coverlet.collector" />
-    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage" />
+    <PackageReference Include="JetBrains.Annotations"/>
+    <PackageReference Include="Microsoft.NET.Test.Sdk"/>
+    <PackageReference Include="NSubstitute"/>
+    <PackageReference Include="AutoFixture"/>
+    <PackageReference Include="AwesomeAssertions"/>
+    <PackageReference Include="Microsoft.Testing.Extensions.CodeCoverage"/>
     <PackageReference Include="NSubstitute.Analyzers.CSharp">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -26,16 +25,24 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="xunit.v3" />
+    <PackageReference Include="xunit.v3"/>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Envelopes\MinimalLambda.Envelopes.ApiGateway\MinimalLambda.Envelopes.ApiGateway.csproj" />
-    <ProjectReference Include="..\..\src\Envelopes\MinimalLambda.Envelopes.Alb\MinimalLambda.Envelopes.Alb.csproj" />
-    <ProjectReference Include="..\..\src\Envelopes\MinimalLambda.Envelopes.CloudWatchLogs\MinimalLambda.Envelopes.CloudWatchLogs.csproj" />
-    <ProjectReference Include="..\..\src\Envelopes\MinimalLambda.Envelopes.Kafka\MinimalLambda.Envelopes.Kafka.csproj" />
-    <ProjectReference Include="..\..\src\Envelopes\MinimalLambda.Envelopes.KinesisFirehose\MinimalLambda.Envelopes.KinesisFirehose.csproj" />
-    <ProjectReference Include="..\..\src\Envelopes\MinimalLambda.Envelopes.Kinesis\MinimalLambda.Envelopes.Kinesis.csproj" />
-    <ProjectReference Include="..\..\src\Envelopes\MinimalLambda.Envelopes.Sns\MinimalLambda.Envelopes.Sns.csproj" />
-    <ProjectReference Include="..\..\src\Envelopes\MinimalLambda.Envelopes.Sqs\MinimalLambda.Envelopes.Sqs.csproj" />
+    <ProjectReference Include="..\..\src\Envelopes\MinimalLambda.Envelopes.ApiGateway\MinimalLambda.Envelopes.ApiGateway.csproj"/>
+    <ProjectReference Include="..\..\src\Envelopes\MinimalLambda.Envelopes.Alb\MinimalLambda.Envelopes.Alb.csproj"/>
+    <ProjectReference Include="..\..\src\Envelopes\MinimalLambda.Envelopes.CloudWatchLogs\MinimalLambda.Envelopes.CloudWatchLogs.csproj"/>
+    <ProjectReference Include="..\..\src\Envelopes\MinimalLambda.Envelopes.Kafka\MinimalLambda.Envelopes.Kafka.csproj"/>
+    <ProjectReference Include="..\..\src\Envelopes\MinimalLambda.Envelopes.KinesisFirehose\MinimalLambda.Envelopes.KinesisFirehose.csproj"/>
+    <ProjectReference Include="..\..\src\Envelopes\MinimalLambda.Envelopes.Kinesis\MinimalLambda.Envelopes.Kinesis.csproj"/>
+    <ProjectReference Include="..\..\src\Envelopes\MinimalLambda.Envelopes.Sns\MinimalLambda.Envelopes.Sns.csproj"/>
+    <ProjectReference Include="..\..\src\Envelopes\MinimalLambda.Envelopes.Sqs\MinimalLambda.Envelopes.Sqs.csproj"/>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Update="xunit.runner.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="xunit.runner.json" CopyToOutputDirectory="PreserveNewest"/>
   </ItemGroup>
 </Project>

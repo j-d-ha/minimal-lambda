@@ -97,8 +97,7 @@ public class SnsEnvelopeTests
         var payload = _fixture.Create<MessagePayload>();
         var json = JsonSerializer.Serialize(
             payload,
-            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
-        );
+            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
         var record = new SnsEnvelopeBase<MessagePayload>.SnsRecordEnvelope
         {
             Sns = new SnsEnvelopeBase<MessagePayload>.SnsMessageEnvelope { Message = json },
@@ -143,7 +142,10 @@ public class SnsEnvelopeTests
         // Arrange
         var record = new SnsEnvelopeBase<MessagePayload>.SnsRecordEnvelope
         {
-            Sns = new SnsEnvelopeBase<MessagePayload>.SnsMessageEnvelope { Message = string.Empty },
+            Sns = new SnsEnvelopeBase<MessagePayload>.SnsMessageEnvelope
+            {
+                Message = string.Empty,
+            },
         };
         var envelope = new SnsEnvelope<MessagePayload> { Records = [record] };
         var options = new EnvelopeOptions();
@@ -158,8 +160,7 @@ public class SnsEnvelopeTests
     {
         // Arrange
         var property = typeof(SnsEnvelopeBase<MessagePayload>.SnsMessageEnvelope).GetProperty(
-            nameof(SnsEnvelopeBase<MessagePayload>.SnsMessageEnvelope.MessageContent)
-        );
+            nameof(SnsEnvelopeBase<MessagePayload>.SnsMessageEnvelope.MessageContent));
 
         // Act
         var hasJsonIgnoreAttribute =

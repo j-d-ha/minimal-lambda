@@ -46,8 +46,7 @@ public static class OnInitLambdaApplicationExtensions
     /// <seealso cref="ILambdaOnInitBuilder.OnInit(LambdaInitDelegate)" />
     public static ILambdaOnInitBuilder OnInit(
         this ILambdaOnInitBuilder application,
-        Delegate handler
-    )
+        Delegate handler)
     {
         Debug.Fail("This method should have been intercepted at compile time!");
         throw new InvalidOperationException("This method is replaced at compile time.");

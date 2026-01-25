@@ -20,8 +20,7 @@ public static class LambdaHttpClientServiceCollectionExtensions
         ///     bootstrap to communicate with the Lambda runtime API. This overload is useful for testing
         ///     scenarios where you want to inject a mock or fake HTTP client.
         /// </remarks>
-        public IServiceCollection AddLambdaBootstrapHttpClient<T>(T client)
-            where T : HttpClient
+        public IServiceCollection AddLambdaBootstrapHttpClient<T>(T client) where T : HttpClient
         {
             ArgumentNullException.ThrowIfNull(services);
 
@@ -45,8 +44,7 @@ public static class LambdaHttpClientServiceCollectionExtensions
         ///     </para>
         /// </remarks>
         public IServiceCollection AddLambdaBootstrapHttpClient(
-            Func<IServiceProvider, object?, HttpClient> factory
-        )
+            Func<IServiceProvider, object?, HttpClient> factory)
         {
             ArgumentNullException.ThrowIfNull(services);
 
@@ -67,8 +65,7 @@ public static class LambdaHttpClientServiceCollectionExtensions
         ///     already been registered. This overload is useful for testing scenarios where you want to inject
         ///     a mock or fake HTTP client without overwriting user-supplied configurations.
         /// </remarks>
-        public void TryAddLambdaBootstrapHttpClient<T>(T client)
-            where T : HttpClient
+        public void TryAddLambdaBootstrapHttpClient<T>(T client) where T : HttpClient
         {
             ArgumentNullException.ThrowIfNull(services);
 
@@ -91,15 +88,13 @@ public static class LambdaHttpClientServiceCollectionExtensions
         ///     </para>
         /// </remarks>
         public void TryAddLambdaBootstrapHttpClient(
-            Func<IServiceProvider, object?, HttpClient> factory
-        )
+            Func<IServiceProvider, object?, HttpClient> factory)
         {
             ArgumentNullException.ThrowIfNull(services);
 
             services.TryAddKeyedSingleton<HttpClient>(
                 typeof(ILambdaBootstrapOrchestrator),
-                factory
-            );
+                factory);
         }
     }
 }

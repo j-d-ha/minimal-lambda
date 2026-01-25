@@ -85,14 +85,14 @@ public class KinesisFirehoseEventEnvelopeTests
         var payload = _fixture.Create<TestPayload>();
         var json = JsonSerializer.Serialize(
             payload,
-            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }
-        );
+            new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase });
         var base64String = Convert.ToBase64String(Encoding.UTF8.GetBytes(json));
 
-        var record = new KinesisFirehoseEventEnvelopeBase<TestPayload>.FirehoseRecordEnvelope
-        {
-            Base64EncodedData = base64String,
-        };
+        var record =
+            new KinesisFirehoseEventEnvelopeBase<TestPayload>.FirehoseRecordEnvelope
+            {
+                Base64EncodedData = base64String,
+            };
 
         var envelope = new KinesisFirehoseEventEnvelope<TestPayload> { Records = [record] };
         var options = new EnvelopeOptions
@@ -117,11 +117,10 @@ public class KinesisFirehoseEventEnvelopeTests
     {
         // Arrange
         var property =
-            typeof(KinesisFirehoseEventEnvelopeBase<TestPayload>.FirehoseRecordEnvelope).GetProperty(
-                nameof(
-                    KinesisFirehoseEventEnvelopeBase<TestPayload>.FirehoseRecordEnvelope.DataContent
-                )
-            );
+            typeof(KinesisFirehoseEventEnvelopeBase<TestPayload>.FirehoseRecordEnvelope)
+                .GetProperty(
+                    nameof(KinesisFirehoseEventEnvelopeBase<TestPayload>.FirehoseRecordEnvelope
+                        .DataContent));
 
         // Act
         var hasJsonIgnoreAttribute =
@@ -141,9 +140,8 @@ public class KinesisFirehoseEventEnvelopeTests
         envelope.Should().BeAssignableTo<KinesisFirehoseEvent>();
     }
 
-    private static KinesisFirehoseEventEnvelopeBase<T>.FirehoseRecordEnvelope CreateFirehoseRecord<T>(
-        T payload
-    )
+    private static KinesisFirehoseEventEnvelopeBase<T>.FirehoseRecordEnvelope
+        CreateFirehoseRecord<T>(T payload)
     {
         var json = JsonSerializer.Serialize(payload);
         var base64String = Convert.ToBase64String(Encoding.UTF8.GetBytes(json));

@@ -11,8 +11,8 @@
     <IncludeSymbols>false</IncludeSymbols>
   </PropertyGroup>
   <ItemGroup>
-    <InternalsVisibleTo Include="MinimalLambda.SourceGenerators.UnitTests" />
-    <InternalsVisibleTo Include="DynamicProxyGenAssembly2" />
+    <InternalsVisibleTo Include="MinimalLambda.SourceGenerators.UnitTests"/>
+    <InternalsVisibleTo Include="DynamicProxyGenAssembly2"/>
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="LayeredCraft.SourceGeneratorTools.Generator">
@@ -23,18 +23,18 @@
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.CSharp" />
-    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all" />
-    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all" />
-    <PackageReference Include="Scriban" IncludeAssets="Build" />
+    <PackageReference Include="Microsoft.CSharp"/>
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all"/>
+    <PackageReference Include="Microsoft.CodeAnalysis.CSharp" PrivateAssets="all"/>
+    <PackageReference Include="Scriban" IncludeAssets="Build"/>
   </ItemGroup>
   <ItemGroup>
-    <Compile Remove="Templates\*.scriban" />
-    <EmbeddedResource Include="Templates\*.scriban" />
+    <Compile Remove="Templates\*.scriban"/>
+    <EmbeddedResource Include="Templates\*.scriban"/>
   </ItemGroup>
   <ItemGroup>
-    <AdditionalFiles Include="AnalyzerReleases.Shipped.md" />
-    <AdditionalFiles Include="AnalyzerReleases.Unshipped.md" />
+    <AdditionalFiles Include="AnalyzerReleases.Shipped.md"/>
+    <AdditionalFiles Include="AnalyzerReleases.Unshipped.md"/>
   </ItemGroup>
   <PropertyGroup>
     <!-- Disable PolySharp's ModuleInitializerAttribute shim -->

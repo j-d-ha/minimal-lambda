@@ -42,8 +42,7 @@ public class BlockLambdaVerifyTests
             {
                 public Task<string> GetMessage() => Task.FromResult("hello world");
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_BlockLambda_ReturnString() =>
@@ -64,8 +63,7 @@ public class BlockLambdaVerifyTests
             );
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_BlockLambda_TypeCast_InputFromKeyedServices() =>
@@ -97,8 +95,7 @@ public class BlockLambdaVerifyTests
             {
                 Task<string> GetMessage();
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_BlockLambda_ReturnsTask_TypeCast() =>
@@ -120,8 +117,7 @@ public class BlockLambdaVerifyTests
                     }
                 )
             );
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_BlockLambda_Async_ReturnTaskString_TypeCast() =>
@@ -136,8 +132,7 @@ public class BlockLambdaVerifyTests
             var lambda = builder.Build();
 
             lambda.MapHandler((Func<Task<string>>)(async () => "hello world"));
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_BlockLambda_TypeCast() =>
@@ -167,8 +162,7 @@ public class BlockLambdaVerifyTests
             {
                 string GetMessage();
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_BlockLambda_NoTypeInfo_TypeCast() =>
@@ -198,8 +192,7 @@ public class BlockLambdaVerifyTests
             {
                 string GetMessage();
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_BlockLambda_NoReturn_TypeCast() =>
@@ -229,8 +222,7 @@ public class BlockLambdaVerifyTests
             {
                 Task<string> GetMessage();
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_BlockLambda_ReturnImplicitNullable() =>
@@ -256,8 +248,7 @@ public class BlockLambdaVerifyTests
             {
                 string? GetMessage();
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_BlockLambda_StreamResponse() =>
@@ -275,8 +266,7 @@ public class BlockLambdaVerifyTests
             lambda.MapHandler(Stream () => new FileStream("hello.txt", FileMode.Open));
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_BlockLambda_AllInputSources() =>
@@ -313,8 +303,7 @@ public class BlockLambdaVerifyTests
             {
                 string GetMessage(string name);
             }
-            """
-        );
+            """);
 
     [Fact]
     public async Task Test_BlockLambda_ReturnTaskString() =>
@@ -337,6 +326,5 @@ public class BlockLambdaVerifyTests
             });
 
             await lambda.RunAsync();
-            """
-        );
+            """);
 }

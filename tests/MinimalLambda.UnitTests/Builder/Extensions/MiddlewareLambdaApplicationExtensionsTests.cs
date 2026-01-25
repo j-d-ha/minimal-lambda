@@ -83,16 +83,14 @@ public class MiddlewareLambdaApplicationExtensionsTests
         ILambdaInvocationContext? capturedContext = null;
         LambdaInvocationDelegate? capturedNext = null;
 
-        Func<ILambdaInvocationContext, LambdaInvocationDelegate, Task> middleware = async (
-            context,
-            next
-        ) =>
-        {
-            middlewareWasCalled = true;
-            capturedContext = context;
-            capturedNext = next;
-            await next(context);
-        };
+        Func<ILambdaInvocationContext, LambdaInvocationDelegate, Task> middleware =
+            async (context, next) =>
+            {
+                middlewareWasCalled = true;
+                capturedContext = context;
+                capturedNext = next;
+                await next(context);
+            };
 
         app.UseMiddleware(middleware);
         LambdaInvocationDelegate handler = async _ => await Task.CompletedTask;
@@ -264,9 +262,8 @@ public class MiddlewareLambdaApplicationExtensionsTests
         }
     }
 
-    private sealed class DisposableMiddleware(MiddlewareTracker tracker)
-        : ILambdaMiddleware,
-            IDisposable
+    private sealed class DisposableMiddleware(MiddlewareTracker tracker) : ILambdaMiddleware,
+        IDisposable
     {
         public Task InvokeAsync(ILambdaInvocationContext context, LambdaInvocationDelegate next)
         {
@@ -277,9 +274,8 @@ public class MiddlewareLambdaApplicationExtensionsTests
         public void Dispose() => tracker.RecordDispose();
     }
 
-    private sealed class AsyncDisposableMiddleware(MiddlewareTracker tracker)
-        : ILambdaMiddleware,
-            IAsyncDisposable
+    private sealed class AsyncDisposableMiddleware(MiddlewareTracker tracker) : ILambdaMiddleware,
+        IAsyncDisposable
     {
         public Task InvokeAsync(ILambdaInvocationContext context, LambdaInvocationDelegate next)
         {

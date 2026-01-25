@@ -94,6 +94,7 @@ task test:watch     # dotnet watch ... test
 ```
 
 Direct `dotnet` commands:
+
 ```bash
 # Run the full test suite (solution-level)
 DOTNET_NOLOGO=1 dotnet test --configuration Release
