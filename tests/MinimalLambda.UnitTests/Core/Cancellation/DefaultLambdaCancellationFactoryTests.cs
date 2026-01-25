@@ -4,6 +4,9 @@ namespace MinimalLambda.UnitTests;
 public class DefaultLambdaCancellationFactoryTest
 {
     [Fact]
+    public void ShouldFail() => true.Should().BeFalse("this test is intentionally failing");
+
+    [Fact]
     public void Constructor_WithNegativeBufferDuration_ThrowsArgumentOutOfRangeException()
     {
         // Arrange
