@@ -122,8 +122,7 @@ builder.Services.AddKeyedSingleton<ICache, MemoryCache>("memory");
 lambda.OnInit(async (
     [FromKeyedServices("redis")] ICache primaryCache,
     [FromKeyedServices("memory")] ICache fallbackCache,
-    CancellationToken ct
-) =>
+    CancellationToken ct) =>
 {
     await primaryCache.WarmUpAsync(ct);
     await fallbackCache.WarmUpAsync(ct);
