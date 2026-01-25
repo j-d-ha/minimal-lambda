@@ -29,11 +29,7 @@ OnInit handlers run once when AWS boots a new execution environment.
 - Running migrations or priming configuration secrets.
 
 ```csharp title="Program.cs" linenums="1"
-lambda.OnInit(async (
-    ICache cache,
-    ILogger<Program> logger,
-    CancellationToken ct
-) =>
+lambda.OnInit(async (ICache cache, ILogger<Program> logger, CancellationToken ct) =>
 {
     logger.LogInformation("Warming cache before first invocation");
     await cache.PopulateAsync(ct);
@@ -67,11 +63,7 @@ AWS sends SIGTERM before reclaiming the execution environment. OnShutdown handle
 - Use structured logging inside the handler—any exception is aggregated and rethrown from `StopAsync`.
 
 ```csharp title="Program.cs" linenums="1"
-lambda.OnShutdown(async (
-    ITelemetrySink telemetry,
-    ILogger<Program> logger,
-    CancellationToken ct
-) =>
+lambda.OnShutdown(async (ITelemetrySink telemetry, ILogger<Program> logger, CancellationToken ct) =>
 {
     try
     {
@@ -146,8 +138,7 @@ lambda.MapHandler(async (
     [FromEvent] OrderRequest request,
     ILambdaInvocationContext context,
     IOrderService service,
-    CancellationToken ct
-) =>
+    CancellationToken ct) =>
 {
     context.Items["RequestId"] = context.AwsRequestId;
 
